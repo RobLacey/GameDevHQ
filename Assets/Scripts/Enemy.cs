@@ -38,8 +38,13 @@ public class Enemy : MonoBehaviour
     {
         if (triggeredBy.tag == _playerTag)
         {
-            triggeredBy.GetComponent<IDamageable>().Damage();
-            Destroy(gameObject);
+            IDamageable damagable = triggeredBy.GetComponent<IDamageable>();
+
+            if (damagable != null)
+            {
+                damagable.Damage();            
+                Destroy(gameObject);
+            }
         }
         else if (triggeredBy.tag == _lazerTag)
         {

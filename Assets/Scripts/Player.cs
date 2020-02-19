@@ -78,8 +78,8 @@ public class Player : MonoBehaviour, IDamageable
 
     public void Damage(float damage)
     {
-        Debug.Log(damage);
         _lives--;
+
         if (_lives <= 0)
         {
             Destroy(gameObject);
