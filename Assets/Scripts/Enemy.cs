@@ -36,19 +36,11 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter(Collider triggeredBy)
     {
-        if (triggeredBy.tag == _playerTag)
-        {
-            IDamageable damagable = triggeredBy.GetComponent<IDamageable>();
+        IDamageable canDealDamage = triggeredBy.GetComponent<IDamageable>();
 
-            if (damagable != null)
-            {
-                damagable.Damage();            
-                Destroy(gameObject);
-            }
-        }
-        else if (triggeredBy.tag == _lazerTag)
+        if (canDealDamage != null)
         {
-            Destroy(triggeredBy.gameObject);
+            canDealDamage.Damage();            
             Destroy(gameObject);
         }
     }
