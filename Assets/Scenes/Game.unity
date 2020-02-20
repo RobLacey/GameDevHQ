@@ -146,7 +146,7 @@ Transform:
   m_GameObject: {fileID: 490145205}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.61, y: -2.98, z: 0}
-  m_LocalScale: {x: 0.20000002, y: 0.20000002, z: 0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 970948425}
   m_RootOrder: 1
@@ -254,7 +254,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 777350358}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.61, y: -2.98, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.20000002, y: 0.20000002, z: 0.2}
   m_Children: []
   m_Father: {fileID: 0}
@@ -280,10 +280,10 @@ MonoBehaviour:
   _bottomBound: -4.84
   _rightBound: 11.3
   _leftBound: -11.3
-  _lazerPrefab: {fileID: 3982499416177089663, guid: 6735e5bcfced6cb4096727073e9c1c10,
+  _lazerPrefab: {fileID: 4206705849271278955, guid: 2e46d43971ba4014e9a86d51c9712fa2,
     type: 3}
   _lazerContainer: {fileID: 490145205}
-  _lazerPositionOffset: {x: 0, y: 0.8, z: 0}
+  _lazerPositionOffset: {x: 0, y: 0.4, z: 0}
   _fireRate: 0.2
   _lives: 2
 --- !u!1 &858024756
