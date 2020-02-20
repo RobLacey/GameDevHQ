@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour, IDamageable
 {
+    //TODO Change everyting to Vector2
+
     [SerializeField] Vector3 _startPosition = default;
     [SerializeField] float _speed = 1f;
     [SerializeField] string _horizontalAxis = null;
@@ -14,14 +16,16 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] float _rightBound = default;
     [SerializeField] float _leftBound = default;
     [SerializeField] GameObject _lazerPrefab = default;
+    [SerializeField] GameObject _tripleShotPrefab = default;
     [SerializeField] GameObject _lazerContainer = default;
     [SerializeField] Vector3 _lazerPositionOffset = default;
     [SerializeField] float _fireRate = default;
     [SerializeField] int _lives = 3;
+    [SerializeField] bool _isTripleShotActive = false;
+    [SerializeField] float _tripleShotTimer = 5f;
 
     float _canFire = 0;
     public static event Action _Dead;
-    
 
     void Start()
     {
@@ -58,8 +62,16 @@ public class Player : MonoBehaviour, IDamageable
     private void Fire()
     {
         _canFire = Time.time + _fireRate;
-        Vector3 newPosition = transform.position + _lazerPositionOffset;
-        Instantiate(_lazerPrefab, newPosition, Quaternion.identity, _lazerContainer.transform);
+
+        if (_isTripleShotActive)
+        {
+            Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity, _lazerContainer.transform);
+        }
+        else
+        {
+            Vector3 newPosition = transform.position + _lazerPositionOffset;
+            Instantiate(_lazerPrefab, newPosition, Quaternion.identity, _lazerContainer.transform);
+        }
     }
 
     /// <summary> Sets the vertical boundry of the player movement. Can be changed via the associated variables </summary>
@@ -81,7 +93,7 @@ public class Player : MonoBehaviour, IDamageable
         }
     }
 
-    public void Damage(float damage)
+    public void Damage(float damage) //IDamageable
     {
         _lives--;
 
@@ -90,5 +102,17 @@ public class Player : MonoBehaviour, IDamageable
             _Dead?.Invoke();
             Destroy(gameObject);
         }
+    }
+
+    public void ActivatePowerUp()
+    {
+        StartCoroutine(TripleShot());
+    }
+
+    private IEnumerator TripleShot()
+    {
+        _isTripleShotActive = true;
+        yield return new WaitForSeconds(_tripleShotTimer);
+        _isTripleShotActive = false;
     }
 }

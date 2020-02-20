@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Lazer : MonoBehaviour, IDamageable
+public class LaserBeam : MonoBehaviour, IDamageable
 {
     [SerializeField] float speed = 10f;
     [SerializeField] int destroyTime = 2;
-
 
     private void Start()
     {

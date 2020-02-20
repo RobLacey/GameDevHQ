@@ -5,8 +5,12 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     [SerializeField] GameObject _enemyPrefab = default;
-    [SerializeField] GameObject _enemyContainer = default;
-    [SerializeField] float _waitTime = 5f;
+    [SerializeField] GameObject _spawnedContainer = default;
+    [SerializeField] GameObject _powerUp = default;
+    [SerializeField] float _minEnemySpawnTime = 1f;
+    [SerializeField] float _maxEnemySpawnTime = 1f;
+    [SerializeField] float _minPowerUpSpawnTime = 1f;
+    [SerializeField] float _maxPowerUpSpawnTime = 1f;
     [SerializeField] bool canSpawn = true;
 
     private void OnEnable()
@@ -21,17 +25,23 @@ public class SpawnManager : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(SpawnRoutine());
+        SpawnRoutine();
     }
 
-    private IEnumerator SpawnRoutine()
+    private void SpawnRoutine()
+    {
+        StartCoroutine(InstantiateNewObject(_enemyPrefab, Random.Range(_minEnemySpawnTime, _maxEnemySpawnTime)));
+        StartCoroutine(InstantiateNewObject(_powerUp, Random.Range(_minPowerUpSpawnTime, _maxPowerUpSpawnTime)));
+    }
+
+    private IEnumerator InstantiateNewObject(GameObject toSpawn, float timer)
     {
         while (canSpawn)
         {
-            Vector3 spawnPosition = _enemyPrefab.GetComponent<Enemy>().Spawn();
-            Instantiate(_enemyPrefab, spawnPosition, Quaternion.identity, _enemyContainer.transform);
-            yield return new WaitForSeconds(_waitTime);
-        }    
+            Vector3 spawnPosition = toSpawn.GetComponent<NonPlayerMovement>().Spawn();
+            Instantiate(toSpawn, spawnPosition, Quaternion.identity, _spawnedContainer.transform);
+            yield return new WaitForSeconds(timer);
+        }   
     }
 
     private void PlayerDead()

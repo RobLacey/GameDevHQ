@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class PowerUp : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        IDamageable canDealDamage = collision.GetComponent<IDamageable>();
+        Player hitPlayer = collision.GetComponent<Player>();
 
-        if (canDealDamage != null)
+        if (hitPlayer)
         {
-            canDealDamage.Damage();            
+            hitPlayer.ActivatePowerUp();
             Destroy(gameObject);
         }
     }
