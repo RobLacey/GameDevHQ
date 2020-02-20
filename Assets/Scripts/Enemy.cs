@@ -4,18 +4,11 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] float speed;
-    [SerializeField] float _topBounds;
-    [SerializeField] float _bottomBounds;
-    [SerializeField] float _rightBounds;
-    [SerializeField] float _LeftBounds;
-    [SerializeField] string _playerTag;
-    [SerializeField] string _lazerTag;
-
-    void Start()
-    {
-        Spawn();
-    }
+    [SerializeField] float speed = default;
+    [SerializeField] float _topBounds = default;
+    [SerializeField] float _bottomBounds = default;
+    [SerializeField] float _rightBounds = default;
+    [SerializeField] float _LeftBounds = default;
 
     void Update()
     {
@@ -23,25 +16,25 @@ public class Enemy : MonoBehaviour
 
         if (transform.position.y < _bottomBounds)
         {
-            Spawn();
+            transform.position = Spawn();
         }
     }
 
-    private void Spawn()
+    public Vector3 Spawn()
     {
         float randomX = Random.Range(_rightBounds, _LeftBounds);
-
-        transform.position = new Vector3(randomX, _topBounds, 0);
+        return new Vector3(randomX, _topBounds, 0);
     }
 
-    private void OnTriggerEnter(Collider triggeredBy)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        IDamageable canDealDamage = triggeredBy.GetComponent<IDamageable>();
+                IDamageable canDealDamage = collision.GetComponent<IDamageable>();
 
         if (canDealDamage != null)
         {
             canDealDamage.Damage();            
             Destroy(gameObject);
         }
+
     }
 }

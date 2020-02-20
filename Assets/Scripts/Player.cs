@@ -1,23 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Player : MonoBehaviour, IDamageable
 {
-    [SerializeField] Vector3 _startPosition;
+    [SerializeField] Vector3 _startPosition = default;
     [SerializeField] float _speed = 1f;
-    [SerializeField] string _horizontalAxis;
-    [SerializeField] string _verticalAxis;
-    [SerializeField] float _topBound;
-    [SerializeField] float _bottomBound;
-    [SerializeField] float _rightBound;
-    [SerializeField] float _leftBound;
-    [SerializeField] GameObject _lazerPrefab;
-    [SerializeField] Vector3 _lazerPositionOffset;
-    [SerializeField] float _fireRate;
+    [SerializeField] string _horizontalAxis = null;
+    [SerializeField] string _verticalAxis = null;
+    [SerializeField] float _topBound = default;
+    [SerializeField] float _bottomBound = default;
+    [SerializeField] float _rightBound = default;
+    [SerializeField] float _leftBound = default;
+    [SerializeField] GameObject _lazerPrefab = default;
+    [SerializeField] GameObject _lazerContainer = default;
+    [SerializeField] Vector3 _lazerPositionOffset = default;
+    [SerializeField] float _fireRate = default;
     [SerializeField] int _lives = 3;
 
     float _canFire = 0;
+    public static event Action _Dead;
+    
 
     void Start()
     {
@@ -54,7 +58,8 @@ public class Player : MonoBehaviour, IDamageable
     private void Fire()
     {
         _canFire = Time.time + _fireRate;
-        Instantiate(_lazerPrefab, transform.position + _lazerPositionOffset, Quaternion.identity);
+        Vector3 newPosition = transform.position + _lazerPositionOffset;
+        Instantiate(_lazerPrefab, newPosition, Quaternion.identity, _lazerContainer.transform);
     }
 
     /// <summary> Sets the vertical boundry of the player movement. Can be changed via the associated variables </summary>
@@ -82,6 +87,7 @@ public class Player : MonoBehaviour, IDamageable
 
         if (_lives <= 0)
         {
+            _Dead?.Invoke();
             Destroy(gameObject);
         }
     }
