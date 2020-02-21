@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PowerUp : MonoBehaviour
 {
-
     [SerializeField] PowerUpTypes _powerUpType = default;
 
     private void OnTriggerEnter2D(Collider2D collision)

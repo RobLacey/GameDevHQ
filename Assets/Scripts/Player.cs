@@ -28,13 +28,16 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] bool _areShieldsActive = false;
     [SerializeField] UnityEvent _playerDead = default;
 
+    //Variables
     float _canFireTimer = 0;
-    //TODO Action for losing life
+    UIManger _uIManager;
 
     void Start()
     {
         transform.position = _startPosition;
         _shields.SetActive(false);
+        _uIManager = FindObjectOfType<UIManger>();
+        _uIManager.SetLivesDisplay(_lives);
     }
 
     void Update()
@@ -109,6 +112,7 @@ public class Player : MonoBehaviour, IDamageable
         }
 
         _lives--;
+        _uIManager.SetLivesDisplay(_lives);
 
         if (_lives <= 0)
         {
