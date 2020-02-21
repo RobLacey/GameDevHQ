@@ -177,21 +177,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _powerUpType: 0
-  _activatePowerUp:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2402368312424498663, guid: 167ae382325690a458ee3772943b1dd0,
-          type: 3}
-        m_MethodName: 
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &1775687687233645557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,7 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17f601c4288a37c42a6880efb01dbc6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1
+  _speed: 1
   _topBounds: 6
   _bottomBounds: -6
   _rightBounds: 8.2

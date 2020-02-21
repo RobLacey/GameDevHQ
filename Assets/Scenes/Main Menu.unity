@@ -211,7 +211,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 51.196003, y: -27.339, z: 3.4440002}
 --- !u!1 &742270113
 GameObject:
@@ -319,8 +319,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _background: {fileID: 2100000, guid: 2db265fcc2cb0c6428532fb22c3c89d7, type: 2}
-  _speed: 0.002
-  offset: 5
+  _xSpeed: 0.003
+  _xOffset: 5
+  _ySpeed: 0
+  _yOffset: 0
 --- !u!64 &788256100
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -482,7 +484,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1016422297
 GameObject:
@@ -911,6 +913,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3058380234890933715, guid: 363ebedb1b3464946a4a912562cf54ad,
+        type: 3}
+      propertyPath: _xSpeed
+      value: 0.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 3520356409848875364, guid: 363ebedb1b3464946a4a912562cf54ad,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -5.3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 363ebedb1b3464946a4a912562cf54ad, type: 3}

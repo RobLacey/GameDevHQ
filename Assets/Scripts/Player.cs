@@ -6,6 +6,8 @@ using UnityEngine.Events;
 
 public class Player : MonoBehaviour, IDamageable
 {
+    //TODO resetting Timers when multiple powerups collected
+
     [SerializeField] Vector3 _startPosition = default;
     [SerializeField] float _speed = 1f;
     [SerializeField] float _speedBoostMuliplier = 2f;

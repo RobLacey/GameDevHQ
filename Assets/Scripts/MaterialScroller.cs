@@ -5,13 +5,16 @@ using UnityEngine;
 public class MaterialScroller : MonoBehaviour
 {
     [SerializeField] Material _background = default;
-    [SerializeField] float _speed = 0.01f;
-    [SerializeField] float offset = 0;
+    [SerializeField] float _xSpeed = 0;
+    [SerializeField] float _xOffset = 0;
+    [SerializeField] float _ySpeed = 0;
+    [SerializeField] float _yOffset = 0;
 
     // Update is called once per frame
     void Update()
     {
-        _background.SetTextureOffset("_MainTex", new Vector2(offset, 0));
-        offset += _speed * Time.deltaTime;
+        _background.SetTextureOffset("_MainTex", new Vector2(_xOffset, _yOffset));
+        _xOffset += _xSpeed * Time.deltaTime;
+        _yOffset += _ySpeed * Time.deltaTime;
     }
 }
