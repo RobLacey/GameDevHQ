@@ -4,47 +4,41 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField] GameObject _enemyPrefab = default;
+    [SerializeField] GameObject[] _enemyPrefab = default;
     [SerializeField] GameObject _spawnedContainer = default;
-    [SerializeField] GameObject _powerUp = default;
+    [SerializeField] GameObject[] _powerUps = default;
     [SerializeField] float _minEnemySpawnTime = 1f;
     [SerializeField] float _maxEnemySpawnTime = 1f;
     [SerializeField] float _minPowerUpSpawnTime = 1f;
     [SerializeField] float _maxPowerUpSpawnTime = 1f;
     [SerializeField] bool canSpawn = true;
-
-    private void OnEnable()
-    {
-        Player._Dead += PlayerDead;
-    }
-
-    private void OnDisable()
-    {
-        Player._Dead -= PlayerDead;
-    }
+    [SerializeField] float _startDelayTimer = 10f;
 
     void Start()
-    {
-        SpawnRoutine();
+    {        
+        StartCoroutine(SpawnObjects(_enemyPrefab, _minEnemySpawnTime, _maxEnemySpawnTime));
+        StartCoroutine(PowerUpSpawnDelay());
     }
 
-    private void SpawnRoutine()
+    private IEnumerator PowerUpSpawnDelay()
     {
-        StartCoroutine(InstantiateNewObject(_enemyPrefab, Random.Range(_minEnemySpawnTime, _maxEnemySpawnTime)));
-        StartCoroutine(InstantiateNewObject(_powerUp, Random.Range(_minPowerUpSpawnTime, _maxPowerUpSpawnTime)));
+        yield return new WaitForSeconds(_startDelayTimer);
+        StartCoroutine(SpawnObjects(_powerUps, _minPowerUpSpawnTime, _maxPowerUpSpawnTime));
     }
 
-    private IEnumerator InstantiateNewObject(GameObject toSpawn, float timer)
+    private IEnumerator SpawnObjects(GameObject[] spawnArray, float minTime, float maxTime)
     {
         while (canSpawn)
         {
-            Vector3 spawnPosition = toSpawn.GetComponent<NonPlayerMovement>().Spawn();
+            GameObject toSpawn = spawnArray[Random.Range(0, spawnArray.Length)];
+            float timer = Random.Range(minTime, maxTime);
+            Vector3 spawnPosition = toSpawn.GetComponent<ISpawnable>().SpawnPosition();
             Instantiate(toSpawn, spawnPosition, Quaternion.identity, _spawnedContainer.transform);
             yield return new WaitForSeconds(timer);
         }   
     }
 
-    private void PlayerDead()
+    public void PlayerDead() //UE
     {
         canSpawn = false;
     }

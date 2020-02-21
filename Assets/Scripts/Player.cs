@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Player : MonoBehaviour, IDamageable
 {
-    //TODO Change everyting to Vector2
-
     [SerializeField] Vector3 _startPosition = default;
     [SerializeField] float _speed = 1f;
+    [SerializeField] float _speedBoostMuliplier = 2f;
     [SerializeField] string _horizontalAxis = null;
     [SerializeField] string _verticalAxis = null;
     [SerializeField] float _topBound = default;
@@ -23,20 +23,25 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] int _lives = 3;
     [SerializeField] bool _isTripleShotActive = false;
     [SerializeField] float _tripleShotTimer = 5f;
+    [SerializeField] float _speedBoostTimer = 7f;
+    [SerializeField] GameObject _shields = default;
+    [SerializeField] bool _areShieldsActive = false;
+    [SerializeField] UnityEvent _playerDead = default;
 
-    float _canFire = 0;
-    public static event Action _Dead;
+    float _canFireTimer = 0;
+    //TODO Action for losing life
 
     void Start()
     {
         transform.position = _startPosition;
+        _shields.SetActive(false);
     }
 
     void Update()
     {
         Movement();
 
-        if (Input.GetKey(KeyCode.Space) && Time.time > _canFire)
+        if (Input.GetKey(KeyCode.Space) && Time.time > _canFireTimer)
         {
             Fire();
         }
@@ -61,7 +66,7 @@ public class Player : MonoBehaviour, IDamageable
 
     private void Fire()
     {
-        _canFire = Time.time + _fireRate;
+        _canFireTimer = Time.time + _fireRate;
 
         if (_isTripleShotActive)
         {
@@ -95,18 +100,40 @@ public class Player : MonoBehaviour, IDamageable
 
     public void Damage(float damage) //IDamageable
     {
+        if (_areShieldsActive)
+        {
+            _areShieldsActive = false;
+            _shields.SetActive(false);
+            GetComponent<CircleCollider2D>().enabled = false;
+            return;
+        }
+
         _lives--;
 
         if (_lives <= 0)
         {
-            _Dead?.Invoke();
+            _playerDead.Invoke();
             Destroy(gameObject);
         }
     }
 
-    public void ActivatePowerUp()
+    public void ActivatePowerUp(PowerUpTypes powerUp)
     {
-        StartCoroutine(TripleShot());
+        switch (powerUp)
+        {
+            case PowerUpTypes.TripleShot:
+                StartCoroutine(TripleShot());
+                break;
+            case PowerUpTypes.SpeedBoost:
+                StartCoroutine(SpeedBoost());
+                break;
+            case PowerUpTypes.Shield:
+                Shields();
+                break;
+            default:
+                Debug.Log("Non found");
+                break;
+        }
     }
 
     private IEnumerator TripleShot()
@@ -114,5 +141,19 @@ public class Player : MonoBehaviour, IDamageable
         _isTripleShotActive = true;
         yield return new WaitForSeconds(_tripleShotTimer);
         _isTripleShotActive = false;
+    }
+
+    private IEnumerator SpeedBoost()
+    {
+        _speed = _speed * _speedBoostMuliplier;
+        yield return new WaitForSeconds(_speedBoostTimer);
+        _speed = _speed / _speedBoostMuliplier;
+    }
+
+    private void Shields()
+    {
+        _areShieldsActive = true;
+        _shields.SetActive(true);
+        GetComponent<CircleCollider2D>().enabled = true;
     }
 }

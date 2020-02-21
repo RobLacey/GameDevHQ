@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NonPlayerMovement : MonoBehaviour
+public class NonPlayerMovement : MonoBehaviour, ISpawnable
 {
     [SerializeField] float speed = default;
     [SerializeField] float _topBounds = default;
@@ -23,7 +23,7 @@ public class NonPlayerMovement : MonoBehaviour
         {
             if (_respawn)
             {
-                transform.position = Spawn();
+                transform.position = SpawnPosition();
             }
             else
             {
@@ -32,9 +32,9 @@ public class NonPlayerMovement : MonoBehaviour
         }
     }
 
-    public Vector3 Spawn()
+    public Vector3 SpawnPosition() //ISpawnable
     {
         float randomX = Random.Range(_rightBounds, _LeftBounds);
-        return new Vector3(randomX, _topBounds, 0);
+        return new Vector3(randomX, _topBounds);
     }
 }
