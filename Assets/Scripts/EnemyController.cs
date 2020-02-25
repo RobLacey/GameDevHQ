@@ -14,15 +14,18 @@ public class EnemyController : MonoBehaviour, IDamageable
     [SerializeField] int _points = default;
     [SerializeField] GameObject _expolsion = default;
 
+
     SpawnManager _spawnManager;
-    SpriteRenderer _myBody;
+    protected SpriteRenderer _myBody;
     UIManger _uiManger;
+    protected AudioSource _audioSource;
 
     protected virtual void Awake()
     {
         _spawnManager = FindObjectOfType<SpawnManager>();
         _myBody = GetComponentInChildren<SpriteRenderer>();
         _uiManger = FindObjectOfType<UIManger>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -56,7 +59,7 @@ public class EnemyController : MonoBehaviour, IDamageable
         if (canDealDamage != null)
         {
             canDealDamage.GetComponent<IDamageable>().Damage(_damageDealt);
-            ProcessCollision();
+            Damage(_health);
         }
     }
 
@@ -73,6 +76,7 @@ public class EnemyController : MonoBehaviour, IDamageable
 
     public virtual void ProcessCollision()
     {
+        _audioSource.Play();
         _uiManger.AddToScore(_points);
         GetComponent<Collider2D>().enabled = false;
         _myBody.enabled = false;

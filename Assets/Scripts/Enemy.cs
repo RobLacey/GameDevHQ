@@ -5,8 +5,13 @@ using UnityEngine.Events;
 
 public class Enemy : EnemyController
 {
-    [SerializeField] AudioClip _explosion;
-    //[SerializeField] GameObject _expolsion = default;
+    [SerializeField] AudioClip _explosionSFX = default;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        _audioSource.clip = _explosionSFX;
+    }
 
     public override void ProcessCollision() //IDamageable
     {

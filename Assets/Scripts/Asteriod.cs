@@ -12,7 +12,7 @@ public class Asteriod : EnemyController
     [SerializeField] float _rightPathAngle = default;
     [SerializeField] float _minSize = default;
     [SerializeField] float _maxSize = default;
-    //[SerializeField] GameObject _expolsion = default;
+    [SerializeField] AudioClip _explosionSFX = default;
 
     //Variables
     Rigidbody2D _myRigidBody;
@@ -21,6 +21,7 @@ public class Asteriod : EnemyController
     {
         base.Awake();
         _myRigidBody = GetComponent<Rigidbody2D>();
+        _audioSource.clip = _explosionSFX;
     }
 
     private void Start()
@@ -46,7 +47,6 @@ public class Asteriod : EnemyController
             base.ProcessCollision();
             //TODO add animation death to player
             _myRigidBody.velocity = Vector2.zero;
-            //Instantiate(_expolsion, transform.position, Quaternion.identity, transform);
         }
     }
 }

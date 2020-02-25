@@ -24,17 +24,23 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] float _fireRate = default;
     [SerializeField] int _lives = 3;
     [SerializeField] bool _isTripleShotActive = false;
-    [SerializeField] float _tripleShotTimer = 5f;
-    [SerializeField] float _speedBoostTimer = 7f;
+    [SerializeField] bool _isSpeedBoostActive = false;
     [SerializeField] GameObject _shields = default;
     [SerializeField] bool _areShieldsActive = false;
     [SerializeField] GameObject[] _damageFX = default;
     [SerializeField] UnityEvent _playerDead = default;
+    [SerializeField] AudioClip _lazerSFX = default;
+    [SerializeField] AudioClip _tripleLazerSFX = default;
+    [SerializeField] GameObject _expolsion = default;
+    [SerializeField] AudioClip _explosionSFX = default;
+
 
     //Variables
     float _canFireTimer = 0;
     UIManger _uIManager;
     int _damageIndex = 0;
+    AudioSource _audioSource;
+    [SerializeField] List<PowerUp> currentPowerUps = new List<PowerUp>();
 
     void Start()
     {
@@ -42,6 +48,8 @@ public class Player : MonoBehaviour, IDamageable
         _shields.SetActive(false);
         _uIManager = FindObjectOfType<UIManger>();
         _uIManager.SetLivesDisplay(_lives);
+        _audioSource = GetComponent<AudioSource>();
+        _audioSource.clip = _lazerSFX;
     }
 
     void Update()
@@ -84,6 +92,8 @@ public class Player : MonoBehaviour, IDamageable
             Vector3 newPosition = transform.position + _lazerPositionOffset;
             Instantiate(_lazerPrefab, newPosition, Quaternion.identity, _lazerContainer.transform);
         }
+        _audioSource.Play();
+
     }
 
     /// <summary> Sets the vertical boundry of the player movement. Can be changed via the associated variables </summary>
@@ -133,49 +143,70 @@ public class Player : MonoBehaviour, IDamageable
 
         if (_lives <= 0)
         {
+            GameObject explosion = Instantiate(_expolsion, transform.position, Quaternion.identity);
+            explosion.tag = gameObject.tag;
+            AudioSource.PlayClipAtPoint(_explosionSFX, Camera.main.transform.position);
             _playerDead.Invoke();
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 
-    public void ActivatePowerUp(PowerUpTypes powerUp)
+    public void ActivatePowerUp(PowerUpTypes newPowerUp)
     {
-        switch (powerUp)
+        switch (newPowerUp)
         {
             case PowerUpTypes.TripleShot:
-                StartCoroutine(TripleShot());
+                if (_isTripleShotActive == true) return;
+                _isTripleShotActive = true;
+                _audioSource.clip = _tripleLazerSFX;
                 break;
             case PowerUpTypes.SpeedBoost:
-                StartCoroutine(SpeedBoost());
+                if (_isSpeedBoostActive == true) return;
+                _isSpeedBoostActive = true;
+                _speed = _speed * _speedBoostMuliplier;
                 break;
             case PowerUpTypes.Shield:
-                Shields();
+                _areShieldsActive = true;
+                _shields.SetActive(true);
+                GetComponent<CircleCollider2D>().enabled = true;
                 break;
             default:
-                Debug.Log("Non found");
                 break;
         }
     }
 
-    private IEnumerator TripleShot()
+    public void DeactivatePowerUps(PowerUp oldPowerUp)
     {
-        _isTripleShotActive = true;
-        yield return new WaitForSeconds(_tripleShotTimer);
-        _isTripleShotActive = false;
+        switch (oldPowerUp.ReturnPowerUpType())
+        {
+            case PowerUpTypes.TripleShot:
+                _isTripleShotActive = false;
+                _audioSource.clip = _lazerSFX;
+                currentPowerUps.Remove(oldPowerUp);
+                break;
+            case PowerUpTypes.SpeedBoost:
+                currentPowerUps.Remove(oldPowerUp);
+                _isSpeedBoostActive = false;
+                _speed = _speed / _speedBoostMuliplier;
+                break;
+            default:
+                break;
+        }
     }
 
-    private IEnumerator SpeedBoost()
+    public void CheckForActivePowerUps(PowerUp newPowerUp)
     {
-        _speed = _speed * _speedBoostMuliplier;
-        yield return new WaitForSeconds(_speedBoostTimer);
-        _speed = _speed / _speedBoostMuliplier;
-    }
-
-    private void Shields()
-    {
-        _areShieldsActive = true;
-        _shields.SetActive(true);
-        GetComponent<CircleCollider2D>().enabled = true;
+        foreach (var activePowerUp in currentPowerUps)
+        {
+            if(activePowerUp.ReturnPowerUpType() == newPowerUp.ReturnPowerUpType())
+            {
+                currentPowerUps.Remove(activePowerUp);
+                currentPowerUps.Add(newPowerUp);
+                Destroy(activePowerUp.gameObject);
+                return;
+            }
+        }
+        currentPowerUps.Add(newPowerUp);
     }
 
 }
