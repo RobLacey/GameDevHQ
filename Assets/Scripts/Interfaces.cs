@@ -2,10 +2,6 @@
 
 public interface IDamageable
     {
-    void Damage(float damage = 0);
+    void Damage(int damage);
     }
 
-public interface ISpawnable
-{
-    Vector3 SpawnPosition();
-}

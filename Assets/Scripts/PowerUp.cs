@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PowerUp : MonoBehaviour
+public class PowerUp : EnemyController
 {
     [SerializeField] PowerUpTypes _powerUpType = default;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    protected override void OnTriggerEnter2D(Collider2D collision)
     {
         Player hitPlayer = collision.GetComponent<Player>();
 

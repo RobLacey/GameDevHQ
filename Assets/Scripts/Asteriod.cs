@@ -2,56 +2,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Asteriod : MonoBehaviour
+public class Asteriod : EnemyController
 {
     [SerializeField] float _rotationSpeedMin = default;
     [SerializeField] float _rotationSpeedMax = default;
-    [SerializeField] float _minSpeed = default;
-    [SerializeField] float _maxSpeed = default;
+    [SerializeField] float _minForce = default;
+    [SerializeField] float _maxForce = default;
     [SerializeField] float _leftPathAngle = default;
     [SerializeField] float _rightPathAngle = default;
-    [SerializeField] float _startAngleMin = default;
-    [SerializeField] float _startAngleMax = default;
     [SerializeField] float _minSize = default;
     [SerializeField] float _maxSize = default;
-    [SerializeField] GameObject _asteriod = default;
+    //[SerializeField] GameObject _expolsion = default;
 
     //Variables
-    float _rotationSpeed = default;
-    NonPlayerMovement _myMovement = default;
+    Rigidbody2D _myRigidBody;
 
-    private void Awake()
+    protected override void Awake()
     {
-        _myMovement = GetComponent<NonPlayerMovement>();
+        base.Awake();
+        _myRigidBody = GetComponent<Rigidbody2D>();
     }
 
     private void Start()
     {
         SetUpStartingAngles();
-        float scale = Random.Range(_minSize, _maxSize);
-        transform.localScale = new Vector3(scale, scale, scale);
-        _myMovement.SetRandomSpeed(Random.Range(_minSpeed, _maxSpeed));
+        float startingSize = Random.Range(_minSize, _maxSize);
+        transform.localScale = new Vector3(startingSize, startingSize, startingSize);
+        _myRigidBody.mass = _myRigidBody.mass * startingSize;
+        _myRigidBody.AddRelativeForce(transform.up * Random.Range(_minForce, _maxForce), ForceMode2D.Impulse);
+        _myRigidBody.AddTorque(Random.Range(_rotationSpeedMin, _rotationSpeedMax));
     }
 
     private void SetUpStartingAngles()
     {
-        _rotationSpeed = Random.Range(_rotationSpeedMin, _rotationSpeedMax);
-        _asteriod.transform.localEulerAngles = new Vector3(0, 0, Random.Range(_startAngleMin, _startAngleMax));
-        transform.eulerAngles = new Vector3(0, 0, Random.Range(_leftPathAngle, _rightPathAngle));
+        Vector3 startAngle = new Vector3(0, 0, Random.Range(_leftPathAngle, _rightPathAngle));
+        transform.eulerAngles = startAngle;
     }
 
-    private void Update()
+    public override void ProcessCollision() //IDamagable
     {
-        _asteriod.transform.Rotate(0, 0, _rotationSpeed * Time.deltaTime, Space.Self);
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {        
-        IDamageable canDealDamage = collision.gameObject.GetComponent<IDamageable>();
-
-        if (canDealDamage != null)
+        if (_health <= 0)
         {
-            canDealDamage.Damage();
+            base.ProcessCollision();
+            //TODO add animation death to player
+            _myRigidBody.velocity = Vector2.zero;
+            //Instantiate(_expolsion, transform.position, Quaternion.identity, transform);
         }
     }
 }

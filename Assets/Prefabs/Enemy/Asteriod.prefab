@@ -9,9 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7306010057473501209}
-  - component: {fileID: 7256611534569433002}
   - component: {fileID: 1398626701817145991}
-  - component: {fileID: 8509354158181407706}
+  - component: {fileID: 7256611534569433002}
   - component: {fileID: 3392363669377112235}
   m_Layer: 0
   m_Name: Asteriod
@@ -35,27 +34,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &7256611534569433002
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1758853908579641028}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!58 &1398626701817145991
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -72,24 +50,27 @@ CircleCollider2D:
   m_Offset: {x: 0.03502679, y: 0.07005346}
   serializedVersion: 2
   m_Radius: 1.2005354
---- !u!114 &8509354158181407706
-MonoBehaviour:
+--- !u!50 &7256611534569433002
+Rigidbody2D:
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1758853908579641028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17f601c4288a37c42a6880efb01dbc6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _speed: 1
-  _topBounds: 6
-  _bottomBounds: -6
-  _rightBounds: 8.2
-  _LeftBounds: -8.2
-  _respawn: 0
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 100
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!114 &3392363669377112235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,17 +83,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b938adca3f67fd542aca0bbef7f2891b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotationSpeedMin: -30
-  _rotationSpeedMax: 30
-  _minSpeed: 0.1
-  _maxSpeed: 2
-  _leftPathAngle: -45
-  _rightPathAngle: 45
-  _startAngleMin: 45
-  _startAngleMax: 270
+  _speed: 0
+  _health: 3
+  _respawn: 1
+  _usesForce: 1
+  _damageDealt: 1
+  _points: 30
+  _rotationSpeedMin: -90
+  _rotationSpeedMax: 90
+  _minForce: 10
+  _maxForce: 60
+  _leftPathAngle: -130
+  _rightPathAngle: -230
   _minSize: 0.2
   _maxSize: 0.5
-  _asteriod: {fileID: 7927755323278278627}
+  _expolsion: {fileID: 1936163338393164463, guid: 79560f1d01894fb4fa98ef5b8fde5c07,
+    type: 3}
 --- !u!1 &7927755323278278627
 GameObject:
   m_ObjectHideFlags: 0
@@ -180,8 +166,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1570578759
-  m_SortingLayer: 1
+  m_SortingLayerID: -744504607
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 6691643d9d08ede40bc93504dc8acb2e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

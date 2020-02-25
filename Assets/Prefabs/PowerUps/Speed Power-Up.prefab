@@ -94,7 +94,6 @@ GameObject:
   - component: {fileID: 5943399622060334401}
   - component: {fileID: 4870625321829814931}
   - component: {fileID: 3213643084094243713}
-  - component: {fileID: 7724924927838758320}
   m_Layer: 0
   m_Name: Speed Power-Up
   m_TagString: Untagged
@@ -195,22 +194,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 358aacfb4647d954a9cd50a4b4075c26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _powerUpType: 1
---- !u!114 &7724924927838758320
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5943399622060334402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17f601c4288a37c42a6880efb01dbc6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   _speed: 1
   _topBounds: 6
   _bottomBounds: -6
   _rightBounds: 8.2
   _LeftBounds: -8.2
   _respawn: 0
+  _powerUpType: 1

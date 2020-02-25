@@ -93,7 +93,6 @@ GameObject:
   - component: {fileID: 1775687687233645560}
   - component: {fileID: 1775687687233645561}
   - component: {fileID: 1775687687233645556}
-  - component: {fileID: 1775687687233645557}
   - component: {fileID: 7328315549865857352}
   m_Layer: 0
   m_Name: Triple Shoot Power-Up
@@ -176,25 +175,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 358aacfb4647d954a9cd50a4b4075c26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _powerUpType: 0
---- !u!114 &1775687687233645557
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1775687687233645554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17f601c4288a37c42a6880efb01dbc6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   _speed: 1
   _topBounds: 6
   _bottomBounds: -6
   _rightBounds: 8.2
   _LeftBounds: -8.2
   _respawn: 0
+  _usesForce: 0
+  _powerUpType: 0
 --- !u!95 &7328315549865857352
 Animator:
   serializedVersion: 3

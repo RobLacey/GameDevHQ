@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   destroyTime: 1
+  _playerTag: Player
 --- !u!70 &3951205692753488701
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

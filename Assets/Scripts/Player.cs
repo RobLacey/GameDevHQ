@@ -28,11 +28,13 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] float _speedBoostTimer = 7f;
     [SerializeField] GameObject _shields = default;
     [SerializeField] bool _areShieldsActive = false;
+    [SerializeField] GameObject[] _damageFX = default;
     [SerializeField] UnityEvent _playerDead = default;
 
     //Variables
     float _canFireTimer = 0;
     UIManger _uIManager;
+    int _damageIndex = 0;
 
     void Start()
     {
@@ -103,8 +105,12 @@ public class Player : MonoBehaviour, IDamageable
         }
     }
 
-    public void Damage(float damage) //IDamageable
+    public void Damage(int damage) //IDamageable
     {
+        if (_lives <= 0) return;
+            
+        _lives -= damage;
+
         if (_areShieldsActive)
         {
             _areShieldsActive = false;
@@ -112,8 +118,17 @@ public class Player : MonoBehaviour, IDamageable
             GetComponent<CircleCollider2D>().enabled = false;
             return;
         }
+        ProcessCollision();
 
-        _lives--;
+        if (_damageIndex <= _damageFX.Length -1)
+        {
+            _damageFX[_damageIndex].SetActive(true);
+            _damageIndex++;
+        }   
+    }
+
+    public void ProcessCollision() //IDamagable
+    {
         _uIManager.SetLivesDisplay(_lives);
 
         if (_lives <= 0)
@@ -162,4 +177,5 @@ public class Player : MonoBehaviour, IDamageable
         _shields.SetActive(true);
         GetComponent<CircleCollider2D>().enabled = true;
     }
+
 }
