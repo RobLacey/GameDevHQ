@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class AnimBehaviour_Death : StateMachineBehaviour
 {
-    [SerializeField] string _playerTag;
+    [SerializeField] string _playerTag = default;
+
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (animator.tag == "Player")
+        if (animator.tag == _playerTag)
         {
             Destroy(animator.gameObject);
             return;

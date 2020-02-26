@@ -19,7 +19,6 @@ public class Enemy : EnemyController
         {
             base.ProcessCollision();
             SetSpeed(0);
-            //Instantiate(_expolsion, transform.position, Quaternion.identity, transform);
         }
     }
 }

@@ -16,9 +16,9 @@ public class WeaponsSystem : MonoBehaviour
     [SerializeField] AudioClip _powerUpEndSFX = default;
     [SerializeField] GameObject _speedBoostUI = default;
     [SerializeField] GameObject _shieldsUI = default;
-    [SerializeField] Weapon _singleShot;
-    [SerializeField] Weapon _tripleShot;
-    [SerializeField] PowerUpTypes _currentWeapon;
+    [SerializeField] Weapon _singleShot = default;
+    [SerializeField] Weapon _tripleShot = default;
+    [SerializeField] PowerUpTypes _currentWeapon = default;
 
     Action<PowerUpTypes> setActive;
 
@@ -73,14 +73,21 @@ public class WeaponsSystem : MonoBehaviour
 
     public void Fire()
     {
-        if(_singleShot._isActive)
+        GameObject shot = default ;
+
+        if (_singleShot._isActive)
         {
-            Vector3 newPosition = transform.position + _singleShot._lazerPositionOffset;
-            Instantiate(_singleShot._weaponPrefab, newPosition, Quaternion.identity, _spawnBuffer.transform);
+            Vector3 newPosition = transform.position + _singleShot._laserOffset;
+            shot = Instantiate(_singleShot._weaponPrefab, newPosition, Quaternion.identity, _spawnBuffer.transform);
         }
         if (_tripleShot._isActive)
         {
-            Instantiate(_tripleShot._weaponPrefab, transform.position, Quaternion.identity, _spawnBuffer.transform);
+            shot = Instantiate(_tripleShot._weaponPrefab, transform.position, Quaternion.identity, _spawnBuffer.transform);
+            shot.GetComponent<LaserBeam>().SetTag(gameObject.tag);
+        }
+        if (shot != null)
+        {
+            shot.GetComponent<LaserBeam>().SetTag(gameObject.tag);
         }
         _audioSource.Play();
     }

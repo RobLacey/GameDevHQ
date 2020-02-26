@@ -16,19 +16,30 @@ public class Asteriod : EnemyController
 
     //Variables
     Rigidbody2D _myRigidBody;
+    float startingSize;
 
     protected override void Awake()
     {
         base.Awake();
         _myRigidBody = GetComponent<Rigidbody2D>();
-        _audioSource.clip = _explosionSFX;
     }
 
     private void Start()
     {
+        _audioSource.clip = _explosionSFX;
         SetUpStartingAngles();
-        float startingSize = Random.Range(_minSize, _maxSize);
+        SetSize();
+        StartMotion();
+    }
+
+    private void SetSize()
+    {
+        startingSize = Random.Range(_minSize, _maxSize);
         transform.localScale = new Vector3(startingSize, startingSize, startingSize);
+    }
+
+    private void StartMotion()
+    {
         _myRigidBody.mass = _myRigidBody.mass * startingSize;
         _myRigidBody.AddRelativeForce(transform.up * Random.Range(_minForce, _maxForce), ForceMode2D.Impulse);
         _myRigidBody.AddTorque(Random.Range(_rotationSpeedMin, _rotationSpeedMax));
@@ -45,7 +56,6 @@ public class Asteriod : EnemyController
         if (_health <= 0)
         {
             base.ProcessCollision();
-            //TODO add animation death to player
             _myRigidBody.velocity = Vector2.zero;
         }
     }

@@ -7,18 +7,24 @@ public class LaserBeam : MonoBehaviour
     [SerializeField] float speed = 10f;
     [SerializeField] int destroyTime = 2;
     [SerializeField] int damage = 1;
-
-    Player _player;
+    [SerializeField] string _myTag = default;
+    [SerializeField] bool _enemyWeapon = default;
 
     private void Start()
     {
         Destroy(gameObject, destroyTime);
-        _player = FindObjectOfType<Player>();
     }
 
     void Update()
     {
-        transform.Translate(Vector3.up * speed * Time.deltaTime);
+        if (_enemyWeapon)
+        {
+            transform.Translate(-transform.up * speed * Time.deltaTime);
+        }
+        else
+        {
+            transform.Translate(transform.up * speed * Time.deltaTime);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -28,11 +34,16 @@ public class LaserBeam : MonoBehaviour
 
         if (canDealDamage != null && !isAPowerUp)
         {
-            if (collision.gameObject != _player)
+            if (collision.gameObject.tag != _myTag)
             {
                 canDealDamage.Damage(damage);
                 Destroy(gameObject);
             }
         }
+    }
+
+    public void SetTag(string newTag)
+    {
+        _myTag = newTag;
     }
 }

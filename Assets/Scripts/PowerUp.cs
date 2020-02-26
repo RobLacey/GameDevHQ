@@ -7,6 +7,7 @@ public class PowerUp : EnemyController
     [SerializeField] PowerUpTypes _powerUpType = default;
     [SerializeField] AudioClip _collectSFX = default;
 
+    //Variables
     Collider2D _myCollider;
     WeaponsSystem _weaponSystem;
     float timer = 0;

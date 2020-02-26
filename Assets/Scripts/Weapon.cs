@@ -15,7 +15,7 @@ public class Weapon
     [SerializeField] public float _volume = default;
     [SerializeField] public GameObject _weaponUIPrefab = default;
     [SerializeField] public float _fireRate;
-    [SerializeField] public Vector3 _lazerPositionOffset = default;
+    [SerializeField] public Vector3 _laserOffset = default;
 
     public void SetUp()
     {

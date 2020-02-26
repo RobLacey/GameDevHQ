@@ -10,12 +10,15 @@ public class Player : MonoBehaviour, IDamageable
     //TODO make enemy ring buffer and change respawn at bottom (keep for asteriods)
     //TODO sideways movement to enemies
     //TODO add health pickup
+    //TODO Breakout damage into health class
     //TODO have pickup that is capsule you must shoot first
     //TODO make homing missles
     //TODO Split off weapons and powerups in different classes??
     //TODO add some other enemy ship types
     //TODO Check and Tidy code
     //TODO maybe make it 3d/2.5D and find 3d ships and asteriods etc??
+    //TODO add minion helper weapon. Rotates around player and shoots at same time plus acts like a temp shield if hit it is destroyed.
+    //TODO Check garbage collection
 
     [SerializeField] Vector3 _startPosition = default;
     [SerializeField] float _speed = 1f;
@@ -37,12 +40,16 @@ public class Player : MonoBehaviour, IDamageable
     int _damageIndex = 0;
     WeaponsSystem _myWeaponSystem;
 
+    private void Awake()
+    {
+        _uIManager = FindObjectOfType<UIManger>();
+        _myWeaponSystem = GetComponent<WeaponsSystem>();
+    }
+
     void Start()
     {
         transform.position = _startPosition;
-        _uIManager = FindObjectOfType<UIManger>();
         _uIManager.SetLivesDisplay(_lives);
-        _myWeaponSystem = GetComponent<WeaponsSystem>();
     }
 
     void Update()

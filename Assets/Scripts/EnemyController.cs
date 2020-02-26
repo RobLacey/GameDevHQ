@@ -12,7 +12,7 @@ public class EnemyController : MonoBehaviour, IDamageable
     [SerializeField] int _points = default;
     [SerializeField] GameObject _expolsion = default;
 
-
+    //Variables
     SpawnManager _spawnManager;
     protected SpriteRenderer _myBody;
     UIManger _uiManger;
