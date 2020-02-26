@@ -19,9 +19,8 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] float _bottomBounds = default;
     [SerializeField] float _rightBounds = default;
     [SerializeField] float _LeftBounds = default;
-    [SerializeField] float startWavesDelay = default;
 
-    void Start()
+    public void StartSpawning()
     {
         StartCoroutine(SpawnObjects(_enemyPrefab, _minEnemySpawnTime, _maxEnemySpawnTime));
         StartCoroutine(PowerUpSpawnDelay());
@@ -35,7 +34,6 @@ public class SpawnManager : MonoBehaviour
 
     private IEnumerator SpawnObjects(GameObject[] spawnArray, float minTime, float maxTime)
     {
-        yield return new WaitForSeconds(startWavesDelay);
         while (canSpawn)
         {
             GameObject toSpawn = spawnArray[Random.Range(0, spawnArray.Length)];

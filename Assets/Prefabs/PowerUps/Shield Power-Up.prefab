@@ -183,9 +183,8 @@ MonoBehaviour:
   _damageDealt: 1
   _points: 0
   _expolsion: {fileID: 0}
-  _powerUpType: 2
-  _collectSFX: {fileID: 8300000, guid: 3d03aa93e5d33664e817f2f0f02cbdbd, type: 3}
-  _powerUpEndSFX: {fileID: 8300000, guid: b9accedb2016ae04d91bd28e16c738d9, type: 3}
+  _powerUpType: 3
+  _collectSFX: {fileID: 8300000, guid: 42562ff6954a2b343b5ee64ce479654e, type: 3}
 --- !u!95 &4870625321829814931
 Animator:
   serializedVersion: 3

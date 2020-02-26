@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 3058380234890933717}
   - component: {fileID: 3058380234890933716}
   - component: {fileID: 3058380234890933715}
-  m_Layer: 5
+  - component: {fileID: 717512088211304479}
+  m_Layer: 0
   m_Name: StarField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -108,5 +109,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _background: {fileID: 2100000, guid: 2b7ad9deadd18ee43a29f2aff8c9bbe2, type: 2}
-  _speed: 0.001
-  offset: 0
+  _xSpeed: 0
+  _xOffset: 0
+  _ySpeed: 0
+  _yOffset: 0
+--- !u!210 &717512088211304479
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058380234890933713}
+  m_Enabled: 1
+  m_SortingLayerID: 1570578759
+  m_SortingLayer: 1
+  m_SortingOrder: 1
