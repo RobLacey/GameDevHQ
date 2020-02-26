@@ -197,8 +197,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5179199aaad059b4d8a50e71d4c30051, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fireRateMin: 1
-  _fireRateMax: 4
+  _fireRateMin: 2
+  _fireRateMax: 6
   _weaponPrefab: {fileID: 832406360374031768, guid: 071fee86d15a09c4a952a1430240272e,
     type: 3}
   _laserOffset: {x: 0, y: -0.2, z: 0}

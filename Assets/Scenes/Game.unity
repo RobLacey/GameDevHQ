@@ -549,7 +549,7 @@ MonoBehaviour:
   - {fileID: 5943399622060334402, guid: e93b5980be7d2c4478d13d03e1149bef, type: 3}
   - {fileID: 1775687687233645554, guid: 5f1d946065f52044383b90b9885cf500, type: 3}
   _minEnemySpawnTime: 1
-  _maxEnemySpawnTime: 3
+  _maxEnemySpawnTime: 4
   _minPowerUpSpawnTime: 2
   _maxPowerUpSpawnTime: 4
   canSpawn: 1
