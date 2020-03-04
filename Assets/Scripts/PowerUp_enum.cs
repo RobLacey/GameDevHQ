@@ -1,4 +1,4 @@
 ﻿public enum PowerUpTypes
 {
-    SingleShot, TripleShot, SpeedBoost, Shield
+    SingleShot, TripleShot, SpeedBoost, Shield, Health
 }

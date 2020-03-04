@@ -3,10 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponsSystem : MonoBehaviour
+public class WeaponsSystem : MonoBehaviour, IWeaponSystem
 {
     [SerializeField] GameObject _shields = default;
-    [SerializeField] GameObject _spawnBuffer = default;
     [SerializeField] bool _isSpeedBoostActive = false;
     [SerializeField] bool _areShieldsActive = false;
     [SerializeField] float _speedBoost = 10f;
@@ -14,23 +13,31 @@ public class WeaponsSystem : MonoBehaviour
     [SerializeField] float _SpeedBoostTimer = 0f;
     [SerializeField] float _speedBoostPresence = 7f;
     [SerializeField] AudioClip _powerUpEndSFX = default;
-    [SerializeField] GameObject _speedBoostUI = default;
-    [SerializeField] GameObject _shieldsUI = default;
+    //[SerializeField] GameObject _speedBoostUI = default;
+    //[SerializeField] GameObject _shieldsUI = default;
     [SerializeField] Weapon _singleShot = default;
     [SerializeField] Weapon _tripleShot = default;
     [SerializeField] PowerUpTypes _currentWeapon = default;
+    [SerializeField] EventManager _Event_ActivatePowerUp;
+    [SerializeField] EventManager _Event_DeactivatePowerUp;
+    [SerializeField] EventManager _Event_AddHealth;
+    [SerializeField] PoolingAgent _poolingAgent;
 
     Action<PowerUpTypes> setActive;
 
+    //Properties
+    public bool ShieldsAreActive 
+        { get { return _areShieldsActive; } set { _areShieldsActive = value; } }
+
     //Variables
     AudioSource _audioSource;
-    Player _myPlayer;
     Collider2D _shieldsCollider;
+    ISpeedBoostable _speedBoostable;
 
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
-        _myPlayer = GetComponent<Player>();
+        _speedBoostable = GetComponent<ISpeedBoostable>();
         _shieldsCollider = GetComponent<CircleCollider2D>();
         _singleShot.SetUp();
         _tripleShot.SetUp();
@@ -40,6 +47,7 @@ public class WeaponsSystem : MonoBehaviour
     {
         setActive += _singleShot.SetActive;
         setActive += _tripleShot.SetActive;
+        _Event_ActivatePowerUp.AddListener(x => ActivatePowerUp(x));
     }
 
     private void OnDisable()
@@ -50,19 +58,16 @@ public class WeaponsSystem : MonoBehaviour
 
     void Start()
     {
-        _audioSource.clip = _singleShot._weaponSFX;
-        _shields.SetActive(false);
-        _shieldsCollider.enabled = false;
-        _speedBoostUI.SetActive(false);
-        _shieldsUI.SetActive(false);
+        SetUpShields(false);
+        SetUpSpeedBoost(false);
         ActivatePowerUp(PowerUpTypes.SingleShot);
     }
 
     void Update()
     {
-        if (_tripleShot._isActive)
-        {
-            TripleShotTimer();
+        if (_tripleShot._isActive) 
+        { 
+            TripleShotTimer(); 
         }
 
         if (_isSpeedBoostActive)
@@ -78,60 +83,41 @@ public class WeaponsSystem : MonoBehaviour
         if (_singleShot._isActive)
         {
             Vector3 newPosition = transform.position + _singleShot._laserOffset;
-            shot = Instantiate(_singleShot._weaponPrefab, newPosition, Quaternion.identity, _spawnBuffer.transform);
+            shot = _poolingAgent.InstantiateFromPool(_singleShot._weaponPrefab, newPosition);
         }
         if (_tripleShot._isActive)
         {
-            shot = Instantiate(_tripleShot._weaponPrefab, transform.position, Quaternion.identity, _spawnBuffer.transform);
-            shot.GetComponent<LaserBeam>().SetTag(gameObject.tag);
+            shot = _poolingAgent.InstantiateFromPool(_tripleShot._weaponPrefab, transform.position);
         }
         if (shot != null)
         {
-            shot.GetComponent<LaserBeam>().SetTag(gameObject.tag);
+            shot.GetComponent<ITagable>().SetTagName = gameObject.tag;
         }
         _audioSource.Play();
     }
 
-    public void ActivatePowerUp(PowerUpTypes newPowerUp)
+    public void ActivatePowerUp(object newPowerUp)
     {
-        switch (newPowerUp)
+        PowerUpTypes weapon = (PowerUpTypes)newPowerUp;
+        switch (weapon)
         {
             case PowerUpTypes.SingleShot:
-                setActive.Invoke(newPowerUp);
-                _audioSource.volume = _singleShot._volume;
-                _audioSource.clip = _singleShot._weaponSFX;
-                _currentWeapon = PowerUpTypes.SingleShot;
+                SetUpWeapon(_singleShot._volume, _singleShot._weaponSFX, PowerUpTypes.SingleShot);
                 break;
             case PowerUpTypes.TripleShot:
-                if (_tripleShot._isActive == true)
-                {
-                    _tripleShot._timer = _tripleShot._presenece;
-                    return;
-                }
-                setActive.Invoke(newPowerUp);
-                _audioSource.volume = _tripleShot._volume;
                 _tripleShot._timer = _tripleShot._presenece;
-                _audioSource.clip = _tripleShot._weaponSFX;
-                _currentWeapon = PowerUpTypes.TripleShot;
+                SetUpWeapon(_tripleShot._volume, _tripleShot._weaponSFX, PowerUpTypes.TripleShot);
                 break;
             case PowerUpTypes.SpeedBoost:
-                if (_isSpeedBoostActive == true) 
-                {
-                    _SpeedBoostTimer = _speedBoostPresence;
-                    return;
-                }
-                _speedBoostUI.SetActive(true);
                 _SpeedBoostTimer = _speedBoostPresence;
-                _isSpeedBoostActive = true;
-                _myPlayer.SetSpeed(_speedBoost);
+                SetUpSpeedBoost(true);
                 break;
             case PowerUpTypes.Shield:
-                if (_areShieldsActive == true) return;
-
-                _shieldsUI.SetActive(true);
-                _areShieldsActive = true;
-                _shieldsCollider.enabled = true;
-                _shields.SetActive(true);
+                if (ShieldsAreActive == true) return;
+                SetUpShields(true);
+                break;
+            case PowerUpTypes.Health:
+                _Event_AddHealth.Invoke();
                 break;
             default:
                 break;
@@ -143,21 +129,50 @@ public class WeaponsSystem : MonoBehaviour
         switch (oldPowerUp)
         {
             case PowerUpTypes.SpeedBoost:
-                _speedBoostUI.SetActive(false);
-                _isSpeedBoostActive = false;
-                _myPlayer.SetSpeed(_normalSpeed);
+                SetUpSpeedBoost(false);
                 break;
             case PowerUpTypes.Shield:
-                _shieldsUI.SetActive(false);
-                _areShieldsActive = false;
-                _shieldsCollider.enabled = false;
-                _shields.SetActive(false);
+                SetUpShields(false);
                 break;
             default:
                 break;
         }
+        _Event_DeactivatePowerUp.Invoke(oldPowerUp);
         AudioSource.PlayClipAtPoint(_powerUpEndSFX, Camera.main.transform.position);
 
+    }
+
+    private void SetUpWeapon(float volume, AudioClip audioClip, PowerUpTypes weaponType)
+    {
+        setActive.Invoke(weaponType);
+        _audioSource.volume = volume;
+        _audioSource.clip = audioClip;
+        _currentWeapon = weaponType;
+    }
+
+    private void SetUpSpeedBoost(bool active)
+    {
+        //_speedBoostUI.SetActive(active);
+        _isSpeedBoostActive = active;
+        _singleShot.ActivateSpeedBoost(active);
+        _tripleShot.ActivateSpeedBoost(active);
+        if (active)
+        {
+            _SpeedBoostTimer = _speedBoostPresence;
+            _speedBoostable.SetSpeed = _speedBoost;
+        }
+        else
+        {
+            _speedBoostable.SetSpeed = _normalSpeed;
+        }
+    }
+
+    private void SetUpShields(bool active)
+    {
+        //_shieldsUI.SetActive(active);
+        ShieldsAreActive = active;
+        _shieldsCollider.enabled = active;
+        _shields.SetActive(active);
     }
 
     private void TripleShotTimer()
@@ -178,19 +193,14 @@ public class WeaponsSystem : MonoBehaviour
         }
     }
 
-    public bool ReturnShieldActive()
-    {
-        return _areShieldsActive;
-    }
-
     public float ReturnFireRate()
     {
         switch (_currentWeapon) 
         {
             case PowerUpTypes.SingleShot:
-                return _singleShot._fireRate;
+                return _singleShot.FireRate();
             case PowerUpTypes.TripleShot:
-                return _tripleShot._fireRate;
+                return _tripleShot.FireRate();
         }
         Debug.Log("No weapon found");
         return 0;

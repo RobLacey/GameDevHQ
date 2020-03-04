@@ -319,7 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _background: {fileID: 2100000, guid: 2db265fcc2cb0c6428532fb22c3c89d7, type: 2}
-  _xSpeed: 0.003
+  _xSpeed: 0.01
   _xOffset: 5
   _ySpeed: 0
   _yOffset: 0
@@ -1044,7 +1044,7 @@ PrefabInstance:
     - target: {fileID: 3058380234890933715, guid: 363ebedb1b3464946a4a912562cf54ad,
         type: 3}
       propertyPath: _xSpeed
-      value: 0.001
+      value: 0.008
       objectReference: {fileID: 0}
     - target: {fileID: 3520356409848875364, guid: 363ebedb1b3464946a4a912562cf54ad,
         type: 3}

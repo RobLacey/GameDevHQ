@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,14 +11,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject _2 = default;
     [SerializeField] GameObject _1 = default;
     [SerializeField] GameObject _go = default;
+    [SerializeField] EventManager _Event_StartSpawning;
+    [SerializeField] EventManager _Event_PlayerDead;
 
-    //Variables
-    SpawnManager _spawnManager;
-    public bool _isGameOver { get; set; }
+    bool _isGameOver { get; set; }
 
-    private void Awake()
+    private void OnEnable()
     {
-        _spawnManager = FindObjectOfType<SpawnManager>();
+        _Event_PlayerDead.AddListener(() => GameOver());
     }
 
     private void Start()
@@ -58,7 +59,11 @@ public class GameManager : MonoBehaviour
         _go.SetActive(true);
         yield return new WaitForSeconds(1);
         _go.SetActive(false);
-        _spawnManager.StartSpawning();
+        _Event_StartSpawning.Invoke();
     }
 
+    private void GameOver()
+    {
+        _isGameOver = true;
+    }
 }

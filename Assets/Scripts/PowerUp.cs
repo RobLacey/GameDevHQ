@@ -1,42 +1,57 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PowerUp : EnemyController
+public class PowerUp : MonoBehaviour
 {
     [SerializeField] PowerUpTypes _powerUpType = default;
     [SerializeField] AudioClip _collectSFX = default;
+    [SerializeField] EventManager _Event_ActivatePowerUp;
+    [SerializeField] string _playerTag = default;
 
     //Variables
-    Collider2D _myCollider;
-    WeaponsSystem _weaponSystem;
-    float timer = 0;
+    SpriteRenderer[] _myBody;
+    AudioSource _audioSource;
+    Collider2D _collider2D;
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
+        _collider2D = GetComponent<Collider2D>();
+        _myBody = GetComponentsInChildren<SpriteRenderer>();
+        _audioSource = GetComponent<AudioSource>();
         _audioSource.clip = _collectSFX;
-        _weaponSystem = FindObjectOfType<WeaponsSystem>();
-        _myCollider = GetComponent<Collider2D>();
     }
 
-    protected override void OnTriggerEnter2D(Collider2D collision)
+    private void OnEnable()
     {
-        if (collision.tag == _weaponSystem.tag)
+        ActivateSprite(true);
+        _collider2D.enabled = true;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == _playerTag)
         {
-            ActivatePowerUp();
-            _weaponSystem.ActivatePowerUp(_powerUpType);
+            _audioSource.Play();
+            _collider2D.enabled = false;
+            ActivateSprite(false);
+            _Event_ActivatePowerUp.Invoke(_powerUpType);
+            StartCoroutine(DisableObject(_collectSFX.length));
         }
     }
 
-    public void ActivatePowerUp()
+    private void ActivateSprite(bool active)
     {
-        _myCollider.enabled = false;
-        _myBody.enabled = false;
-        SetSpeed(0);
-        timer = _audioSource.clip.length;
-        _audioSource.Play();
-        _weaponSystem.ActivatePowerUp(_powerUpType);
-        Destroy(gameObject, timer);
+        foreach (var sprite in _myBody)
+        {
+            sprite.enabled = active;
+        }
+    }
+
+    private IEnumerator DisableObject(float timer)
+    {
+        yield return new WaitForSeconds(timer);
+        gameObject.SetActive(false);
     }
 }

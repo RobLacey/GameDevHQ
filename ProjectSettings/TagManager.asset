@@ -4,8 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Lazer
   - Enemy
+  - Weapon
   layers:
   - Default
   - TransparentFX
@@ -46,9 +46,12 @@ TagManager:
   - name: Background
     uniqueID: 1570578759
     locked: 0
+  - name: Enemy
+    uniqueID: 3550462689
+    locked: 0
   - name: Player
     uniqueID: 368755943
     locked: 0
-  - name: Enemy
-    uniqueID: 3550462689
+  - name: FX
+    uniqueID: 2390516005
     locked: 0

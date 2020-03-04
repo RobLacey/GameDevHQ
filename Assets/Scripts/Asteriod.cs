@@ -12,11 +12,13 @@ public class Asteriod : EnemyController
     [SerializeField] float _rightPathAngle = default;
     [SerializeField] float _minSize = default;
     [SerializeField] float _maxSize = default;
-    [SerializeField] AudioClip _explosionSFX = default;
+    [SerializeField] EventManager _Event_ReturnBottomBounds = default;
 
     //Variables
     Rigidbody2D _myRigidBody;
     float startingSize;
+    float _bounds;
+    float _rotationSpeed;
 
     protected override void Awake()
     {
@@ -26,10 +28,25 @@ public class Asteriod : EnemyController
 
     private void Start()
     {
-        _audioSource.clip = _explosionSFX;
+        _bounds = (float)_Event_ReturnBottomBounds.Return_Parameter();
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
         SetUpStartingAngles();
         SetSize();
         StartMotion();
+        _rotationSpeed = Random.Range(_rotationSpeedMin, _rotationSpeedMax);
+    }
+
+    private void Update()
+    {
+        if (transform.position.y < _bounds)
+        {
+            gameObject.SetActive(false);
+        }
+        transform.Rotate(Vector3.forward * _rotationSpeed * Time.deltaTime);
     }
 
     private void SetSize()
@@ -40,23 +57,22 @@ public class Asteriod : EnemyController
 
     private void StartMotion()
     {
-        _myRigidBody.mass = _myRigidBody.mass * startingSize;
-        _myRigidBody.AddRelativeForce(transform.up * Random.Range(_minForce, _maxForce), ForceMode2D.Impulse);
-        _myRigidBody.AddTorque(Random.Range(_rotationSpeedMin, _rotationSpeedMax));
+        _myRigidBody.AddForce(transform.up * Random.Range(_minForce, _maxForce), ForceMode2D.Impulse);
     }
 
     private void SetUpStartingAngles()
     {
         Vector3 startAngle = new Vector3(0, 0, Random.Range(_leftPathAngle, _rightPathAngle));
-        transform.eulerAngles = startAngle;
+        transform.rotation = Quaternion.Euler(startAngle);
     }
 
     public override void ProcessCollision() //IDamagable
     {
-        if (_health <= 0)
+        if (_instanceHealth <= 0)
         {
             base.ProcessCollision();
             _myRigidBody.velocity = Vector2.zero;
+            gameObject.SetActive(false);
         }
     }
 }

@@ -13,9 +13,10 @@ GameObject:
   - component: {fileID: 7256611534569433002}
   - component: {fileID: 3392363669377112235}
   - component: {fileID: -502376503378886676}
+  - component: {fileID: -3434736352605442123}
   m_Layer: 0
   m_Name: Asteriod
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -63,9 +64,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 100
+  m_Mass: 10
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -84,23 +85,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b938adca3f67fd542aca0bbef7f2891b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 0
-  _health: 3
-  _respawn: 1
-  _usesForce: 1
+  _health: 6
   _damageDealt: 1
   _points: 30
   _expolsion: {fileID: 1936163338393164463, guid: 79560f1d01894fb4fa98ef5b8fde5c07,
     type: 3}
-  _explosionSFX: {fileID: 8300000, guid: cda2a82be2ca4d740bcaa7f799a085f7, type: 3}
+  _Event_AddToScore: {fileID: 11400000, guid: 4a2dc9baed5912647830d9d02c632b4f, type: 2}
+  _playerTag: Player
+  _poolingAgent: {fileID: -3434736352605442123}
   _rotationSpeedMin: -90
   _rotationSpeedMax: 90
-  _minForce: 10
-  _maxForce: 60
-  _leftPathAngle: -130
-  _rightPathAngle: -230
+  _minForce: 5
+  _maxForce: 20
+  _leftPathAngle: -150
+  _rightPathAngle: -200
   _minSize: 0.2
   _maxSize: 0.5
+  _Event_ReturnBottomBounds: {fileID: 11400000, guid: 48a14325e9d6e5c49b90b4569ecb790d,
+    type: 2}
 --- !u!82 &-502376503378886676
 AudioSource:
   m_ObjectHideFlags: 0
@@ -197,6 +199,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-3434736352605442123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1758853908579641028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ffabb8db136b4d4580bc073bed75f20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _poolType: 3
 --- !u!1 &7927755323278278627
 GameObject:
   m_ObjectHideFlags: 0

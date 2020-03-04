@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 4206705849271278868}
   - component: {fileID: 6583552691511598077}
   - component: {fileID: 2202473329187450481}
+  - component: {fileID: -3244843529354048550}
   m_Layer: 0
   m_Name: Triple Shot
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48,8 +49,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  destroyTime: 1
-  damage: 3
+  damage: 1
+  _myTag: Player
+  _isEnemyWeapon: 0
+  _Event_ReturnBounds: {fileID: 11400000, guid: 2b6e2a93dbe7fe64b9c0f14a1bfe5e38,
+    type: 2}
+  _boundsAdjustment: 1.2
+  _hiteffect: {fileID: 2386902876299727280, guid: 0fe4d7216aaa6494b88e1d80c63168ca,
+    type: 3}
+  _poolingAgent: {fileID: -3244843529354048550}
+  _damageFXOffset: {x: 0, y: -0.2, z: -1}
 --- !u!70 &2202473329187450481
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -66,6 +75,19 @@ CapsuleCollider2D:
   m_Offset: {x: 0.0015047193, y: 0.12800658}
   m_Size: {x: 0.79804134, y: 0.80059314}
   m_Direction: 0
+--- !u!114 &-3244843529354048550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4206705849271278955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ffabb8db136b4d4580bc073bed75f20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _poolType: 3
 --- !u!1001 &594597522076406742
 PrefabInstance:
   m_ObjectHideFlags: 0

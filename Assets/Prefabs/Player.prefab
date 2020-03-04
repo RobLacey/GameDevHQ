@@ -326,6 +326,8 @@ GameObject:
   - component: {fileID: 2402368312424498666}
   - component: {fileID: 8518654179965776083}
   - component: {fileID: 6296338941903917699}
+  - component: {fileID: 969928067784353168}
+  - component: {fileID: 6156815215693317810}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -434,48 +436,17 @@ MonoBehaviour:
   _bottomBound: -4
   _rightBound: 9.3
   _leftBound: -9.3
-  _lives: 3
+  _health: 3
   _damageFX:
   - {fileID: 5410049023227515842}
   - {fileID: 8615127356384851884}
-  _deathFX: {fileID: 1936163338393164463, guid: 8ebc6fa56e8706945a82a647068766b0,
+  _deathFX: {fileID: 1936163338393164463, guid: 79560f1d01894fb4fa98ef5b8fde5c07,
     type: 3}
-  _playerDead:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: PlayerDead
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_MethodName: GameOver
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_MethodName: set__isGameOver
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+  _Event_PlayerDead: {fileID: 11400000, guid: e55fc1b2b07d8c446afb9eea6334d350, type: 2}
+  _Event_SetLives: {fileID: 11400000, guid: 88f835a93f28d40459ebafb02c24beb5, type: 2}
+  _Event_AddHealth: {fileID: 11400000, guid: d06d1aed73e5dd849b47e26323268fd1, type: 2}
+  _poolingAgent: {fileID: 969928067784353168}
+  cheat: 0
 --- !u!114 &8518654179965776083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -489,7 +460,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shields: {fileID: 2402368312391297281}
-  _spawnBuffer: {fileID: 0}
   _isSpeedBoostActive: 0
   _areShieldsActive: 0
   _speedBoost: 10
@@ -497,33 +467,37 @@ MonoBehaviour:
   _SpeedBoostTimer: 0
   _speedBoostPresence: 7
   _powerUpEndSFX: {fileID: 8300000, guid: 97409592468cb0a458d154ebff859430, type: 3}
-  _speedBoostUI: {fileID: 0}
-  _shieldsUI: {fileID: 0}
   _singleShot:
+    _isActive: 0
     _weapon: 0
     _weaponPrefab: {fileID: 832406360374031768, guid: 7b37a600c75918d4b8dc0bb27c14ae8a,
       type: 3}
-    _isActive: 0
+    _fireRate: 0.2
+    _fireRateMulitpiler: 2
+    _laserOffset: {x: 0, y: 0.4, z: 0}
     _timer: 0
     _presenece: 0
     _weaponSFX: {fileID: 8300000, guid: 391e5bd1cfdcd624dae8c5da9ad393ac, type: 3}
     _volume: 1
-    _weaponUIPrefab: {fileID: 0}
-    _fireRate: 0.2
-    _laserOffset: {x: 0, y: 0.4, z: 0}
   _tripleShot:
+    _isActive: 0
     _weapon: 1
     _weaponPrefab: {fileID: 4206705849271278955, guid: a28ccd3c1e80aef438e0cac837369bca,
       type: 3}
-    _isActive: 0
+    _fireRate: 0.4
+    _fireRateMulitpiler: 2
+    _laserOffset: {x: 0, y: 0, z: 0}
     _timer: 0
     _presenece: 7
     _weaponSFX: {fileID: 8300000, guid: 5c322a5dd77e77f48a6cd09180d8bf1d, type: 3}
     _volume: 0.4
-    _weaponUIPrefab: {fileID: 0}
-    _fireRate: 0.4
-    _laserOffset: {x: 0, y: 0, z: 0}
   _currentWeapon: 0
+  _Event_ActivatePowerUp: {fileID: 11400000, guid: 00d0f070ffaadad4181d28d78c77172c,
+    type: 2}
+  _Event_DeactivatePowerUp: {fileID: 11400000, guid: 1a0c8d966116b9446ad71a228bc96f46,
+    type: 2}
+  _Event_AddHealth: {fileID: 11400000, guid: d06d1aed73e5dd849b47e26323268fd1, type: 2}
+  _poolingAgent: {fileID: 6156815215693317810}
 --- !u!82 &6296338941903917699
 AudioSource:
   m_ObjectHideFlags: 0
@@ -620,6 +594,32 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &969928067784353168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402368312424498663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ffabb8db136b4d4580bc073bed75f20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _poolType: 0
+--- !u!114 &6156815215693317810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402368312424498663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ffabb8db136b4d4580bc073bed75f20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _poolType: 1
 --- !u!1 &5410049023227515842
 GameObject:
   m_ObjectHideFlags: 0

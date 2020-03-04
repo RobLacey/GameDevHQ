@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7026554217981365300}
+  - component: {fileID: 6802884111060349486}
+  - component: {fileID: 7842371962685136087}
   m_Layer: 0
   m_Name: Wave 4
   m_TagString: Untagged
@@ -35,6 +37,45 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6802884111060349486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7026554217981365303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bd7a506946ceec4fa9927e114212254, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numberOfEnemiesInWave: 0
+  enemiesLeft: 0
+  enemies: []
+--- !u!114 &7842371962685136087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7026554217981365303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68d34f19054c4064aa693397e865c28e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _speed: 2
+  _Event_ReturnBottomBounds: {fileID: 11400000, guid: 48a14325e9d6e5c49b90b4569ecb790d,
+    type: 2}
+  farRight: 7
+  farLeft: -7
+  insideRight: 1
+  insideLeft: -1
+  _horizontalSpeedMax: 2
+  _allowSidewaysMovement: 0
+  right: 1
+  left: -1
+  horizontalSpeed: 0
 --- !u!1001 &7026554217060957301
 PrefabInstance:
   m_ObjectHideFlags: 0
