@@ -10,9 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 6488198125740988329}
   - component: {fileID: 3044013826009314715}
+  - component: {fileID: 2394893338131771831}
+  - component: {fileID: 4735641120644321076}
+  - component: {fileID: 117588556345456921}
   m_Layer: 0
   m_Name: Laser
-  m_TagString: Player
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -68,7 +71,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 368755943
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: b030d335857201646be69703e678d6e5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -81,3 +84,55 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!70 &2394893338131771831
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3982499416177089663}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0164642, y: 0.058152974}
+  m_Size: {x: 0.4842213, y: 2.7849247}
+  m_Direction: 0
+--- !u!114 &4735641120644321076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3982499416177089663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c76ba65652f2de449a47e75dd306428, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 10
+  damage: 1
+  _myTag: Player
+  _isEnemyWeapon: 0
+  _isSideShot: 0
+  _savePositionAtStart: 0
+  _hiteffect: {fileID: 2386902876299727280, guid: 8aa85601bcce95949864bcb6b8a2265b,
+    type: 3}
+  _poolingAgent: {fileID: 117588556345456921}
+  _myVars: {fileID: 11400000, guid: c4e6948b5f864f641b7a5a173ac45ab2, type: 2}
+  _direction: {x: 0, y: 1, z: 0}
+--- !u!114 &117588556345456921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3982499416177089663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b9ce659d1538849843d9b6a18c9165, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _poolType: 3

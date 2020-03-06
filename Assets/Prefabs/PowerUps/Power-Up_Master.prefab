@@ -10,10 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5943399622060334431}
   - component: {fileID: 5943399622060334400}
-  - component: {fileID: 5943399622060334401}
-  - component: {fileID: 3213643084094243713}
   - component: {fileID: -8954652193457221626}
-  - component: {fileID: -5931347310486473708}
+  - component: {fileID: 6166488233500941462}
+  - component: {fileID: 8458326859373002638}
   m_Layer: 0
   m_Name: Power-Up_Master
   m_TagString: Untagged
@@ -56,49 +55,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!61 &5943399622060334401
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5943399622060334402}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.0028966367, y: -0.0098644495}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 5.12, y: 5.12}
-    newSize: {x: 5.12, y: 5.12}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.8579486, y: 0.4111073}
-  m_EdgeRadius: 0
---- !u!114 &3213643084094243713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5943399622060334402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 358aacfb4647d954a9cd50a4b4075c26, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _powerUpType: 3
-  _collectSFX: {fileID: 8300000, guid: 3d03aa93e5d33664e817f2f0f02cbdbd, type: 3}
-  _Event_ActivatePowerUp: {fileID: 11400000, guid: 00d0f070ffaadad4181d28d78c77172c,
-    type: 2}
-  _playerTag: Player
 --- !u!82 &-8954652193457221626
 AudioSource:
   m_ObjectHideFlags: 0
@@ -195,7 +151,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &-5931347310486473708
+--- !u!114 &6166488233500941462
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -204,15 +160,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 5943399622060334402}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68d34f19054c4064aa693397e865c28e, type: 3}
+  m_Script: {fileID: 11500000, guid: 3eb7c54cd7458be4885a8b21bcbee797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _powerUpType: 0
+  _collectSFX: {fileID: 8300000, guid: 2520622a24a82834da9fa9998abbe712, type: 3}
+  _Event_ActivatePowerUp: {fileID: 11400000, guid: 032760db4a9315c4fbb64403d598135b,
+    type: 2}
+  _teamTag: Player
+--- !u!114 &8458326859373002638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5943399622060334402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be17e1a7f718b594789e6ca5005adc34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 1
-  _Event_ReturnBottomBounds: {fileID: 11400000, guid: 48a14325e9d6e5c49b90b4569ecb790d,
-    type: 2}
   _allowSidewaysMovement: 0
   farRight: 0
   farLeft: 0
   insideRight: 0
   insideLeft: 0
   _horizontalSpeedMax: 0
+  _myVars: {fileID: 11400000, guid: 327668118b716484db2e8b5b80035803, type: 2}

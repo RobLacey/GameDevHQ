@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 8541108456485817635}
   - component: {fileID: 5671427825723104497}
+  - component: {fileID: 7931514088675193799}
   m_Layer: 0
   m_Name: Ship
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -26,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 2139700675158274104}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_Children: []
   m_Father: {fileID: 3351172314564054459}
   m_RootOrder: 0
@@ -68,7 +69,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -744504607
-  m_SortingLayer: 3
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 3154912113cbb4a498df6f571c74e18c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -81,6 +82,32 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!61 &7931514088675193799
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2139700675158274104}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.021618307, y: 0.01938343}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 5.12, y: 5.12}
+    newSize: {x: 5.12, y: 5.12}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 2.0876198, y: 2.7446518}
+  m_EdgeRadius: 0
 --- !u!1 &5721451853606534461
 GameObject:
   m_ObjectHideFlags: 0
@@ -90,13 +117,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3351172314564054459}
-  - component: {fileID: 2571955796156623052}
   - component: {fileID: -2231994593720545213}
-  - component: {fileID: 4358144663129624687}
-  - component: {fileID: 4300665605583314668}
   - component: {fileID: 3014624357314046921}
-  - component: {fileID: -2268028317283205857}
-  - component: {fileID: -1293791194821678856}
+  - component: {fileID: -894950128879339210}
+  - component: {fileID: 1775212114289228207}
+  - component: {fileID: 372128635221909550}
+  - component: {fileID: 2781022295709722970}
+  - component: {fileID: 3316010059174687098}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -113,38 +140,12 @@ Transform:
   m_GameObject: {fileID: 5721451853606534461}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8541108456485817635}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &2571955796156623052
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5721451853606534461}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.00000020861626, y: 0.01938343}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 5.12, y: 5.12}
-    newSize: {x: 5.12, y: 5.12}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1.5427806, y: 2.7446518}
-  m_EdgeRadius: 0
 --- !u!50 &-2231994593720545213
 Rigidbody2D:
   serializedVersion: 4
@@ -166,44 +167,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &4358144663129624687
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5721451853606534461}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4432858656165d645b6ef7c308be15ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _health: 1
-  _damageDealt: 1
-  _points: 10
-  _expolsion: {fileID: 1936163338393164463, guid: 79560f1d01894fb4fa98ef5b8fde5c07,
-    type: 3}
-  _Event_AddToScore: {fileID: 11400000, guid: 4a2dc9baed5912647830d9d02c632b4f, type: 2}
-  _playerTag: Player
-  _poolingAgent: {fileID: -1293791194821678856}
---- !u!114 &4300665605583314668
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5721451853606534461}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5179199aaad059b4d8a50e71d4c30051, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _fireRateMin: 1
-  _fireRateMax: 4
-  _weaponPrefab: {fileID: 832406360374031768, guid: 071fee86d15a09c4a952a1430240272e,
-    type: 3}
-  _laserOffset: {x: 0, y: -0.2, z: 0}
-  _poolingAgent: {fileID: -2268028317283205857}
 --- !u!82 &3014624357314046921
 AudioSource:
   m_ObjectHideFlags: 0
@@ -300,7 +263,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &-2268028317283205857
+--- !u!114 &-894950128879339210
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -309,11 +272,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 5721451853606534461}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ffabb8db136b4d4580bc073bed75f20, type: 3}
+  m_Script: {fileID: 11500000, guid: b55cd7f77d5f1034cb14e3e3de6b13cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _poolType: 1
---- !u!114 &-1293791194821678856
+  _points: 10
+  _expolsion: {fileID: 1936163338393164463, guid: 1d2d40e1f6ac4da4cb97b67444a0b349,
+    type: 3}
+  _myBody: {fileID: 8541108456485817635}
+  _poolingAgent: {fileID: 2781022295709722970}
+  _Event_AddToScore: {fileID: 11400000, guid: 94ce8af8f09e68940895f8146b35e2d3, type: 2}
+--- !u!114 &1775212114289228207
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -322,7 +290,55 @@ MonoBehaviour:
   m_GameObject: {fileID: 5721451853606534461}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ffabb8db136b4d4580bc073bed75f20, type: 3}
+  m_Script: {fileID: 11500000, guid: ea48cc884afcb184284380b6328d39ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fireRateMin: 2
+  _fireRateMax: 4
+  _weaponPrefab: {fileID: 832406360374031768, guid: 071fee86d15a09c4a952a1430240272e,
+    type: 3}
+  _laserOffset: {x: 0, y: -0.4, z: 0}
+  _poolingAgent: {fileID: 3316010059174687098}
+  _laserSFX: {fileID: 8300000, guid: dd65bab4cb05f4d4387c208c6331254a, type: 3}
+  _volume: 0.4
+--- !u!114 &372128635221909550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5721451853606534461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23f5de7aed6d9f94b8f58a5fae9beddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _health: 1
+  _damageDealt: 1
+  _teamTag: Enemy
+--- !u!114 &2781022295709722970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5721451853606534461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b9ce659d1538849843d9b6a18c9165, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _poolType: 3
+--- !u!114 &3316010059174687098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5721451853606534461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b9ce659d1538849843d9b6a18c9165, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _poolType: 1
