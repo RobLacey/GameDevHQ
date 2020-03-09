@@ -3,42 +3,44 @@ using System;
 
 public interface IDamageable : ITagable
 {
-    void ProcessCollision(int damage);
+    void I_ProcessCollision(int damage);
 }
 
 public interface ITagable
 {
-    int TeamTag { get; set; }
+    TeamID I_TeamTag { get; }
+
 }
 
 public interface IKillable
 {
-    void Dead();
+    void I_Dead(bool collsionKill);
 }
 
 
 public interface ISpeedBoostable
 {
-    float SetSpeed { set; }
+    float I_SetSpeed { set; }
 }
 
 public interface IWeaponSystem 
 {
-    void Fire();
-    bool ShieldsAreActive { get; set; }
-    float ReturnFireRate();
-    void DeactivatePowerUps(PowerUpTypes oldPowerUp);
+    void I_Fire();
+    bool I_ShieldsAreActive { get; set; }
+    float I_ReturnFireRate();
+    void I_DeactivatePowerUps(PowerUpTypes oldPowerUp);
 }
 
-public interface ISpawnable
+public interface IEnemyWave
 {
-    void ActivateChildObjects(bool activate);
-    void LostEnemyFromWave();
+    void I_DeactivateChildObjects();
+    void I_ActivateChildObjects(bool activate);
+    void I_LostEnemyFromWave(int score);
 }
 
 public interface IScaleable
 {
-    void SetScale(Vector3 scale);
+    void I_SetScale(Vector3 scale);
 }
 
 

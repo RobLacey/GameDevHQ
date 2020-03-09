@@ -20,7 +20,7 @@ public class Expolsion : MonoBehaviour, IScaleable
         transform.Random2DRotation();
     }
 
-    public void SetScale(Vector3 scale)
+    public void I_SetScale(Vector3 scale)
     {
         transform.localScale = scale;
     }

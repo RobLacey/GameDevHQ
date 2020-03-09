@@ -524,7 +524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66a646372abe48c49aa8a74b76095006, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _teamTag: Player
+  _teamID: 0
   _startPosition: {x: 0, y: 0, z: 0}
   _speed: 3
   _horizontalAxis: Horizontal
@@ -535,11 +535,13 @@ MonoBehaviour:
   - {fileID: 8615127356384851884}
   _deathFX: {fileID: 1936163338393164463, guid: 1d2d40e1f6ac4da4cb97b67444a0b349,
     type: 3}
+  _poolingAgent: {fileID: 6015971997610575779}
+  cheat: 0
   _Event_PlayerDead: {fileID: 11400000, guid: 786a86b41c101234c85ab3832dbaadf1, type: 2}
   _Event_SetLives: {fileID: 11400000, guid: df9e99793f49aa545aa40c3c39ac1162, type: 2}
   _Event_AddHealth: {fileID: 11400000, guid: 1de5d0e4001753846b4f059198091fe5, type: 2}
-  _poolingAgent: {fileID: 6015971997610575779}
-  cheat: 0
+  _Event_WaveWipedCancel: {fileID: 11400000, guid: e7797a36b34c54548b19a890d20f87d5,
+    type: 2}
   _myVars: {fileID: 11400000, guid: 5991273b9aa1b5746adf6076fe1486ff, type: 2}
 --- !u!114 &1766429386902667308
 MonoBehaviour:
@@ -597,6 +599,18 @@ MonoBehaviour:
     _presenece: 7
     _weaponSFX: {fileID: 8300000, guid: 391e5bd1cfdcd624dae8c5da9ad393ac, type: 3}
     _volume: 0.5
+  _homingMissle:
+    _isActive: 0
+    _weapon: 6
+    _weaponPrefab: {fileID: 6564985789066767047, guid: 0ebb253c44b724149a645fba800d4373,
+      type: 3}
+    _fireRate: 0
+    _fireRateMulitpiler: 1
+    _laserOffset: {x: 0, y: 0, z: 0}
+    _timer: 0
+    _presenece: 0
+    _weaponSFX: {fileID: 8300000, guid: 3cd853b35101fba499d4aa4e16a7e97b, type: 3}
+    _volume: 0
   _currentWeapon: 0
   _Event_ActivatePowerUp: {fileID: 11400000, guid: 032760db4a9315c4fbb64403d598135b,
     type: 2}

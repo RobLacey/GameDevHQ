@@ -16,14 +16,23 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] float _powerUpStartDelay = 10f;
     [SerializeField] EventManager _Event_StartSpawning;
     [SerializeField] EventManager _Event_PlayerDead;
+    [SerializeField] EventManager _Event_RemoveEnemyASTarget;
+    [SerializeField] EventManager _Event_AddEnemy;
     [SerializeField] PoolingAgent _enemyPoolingAgent;
     [SerializeField] PoolingAgent _powerUpPoolingAgent;
-    [SerializeField] GlobalVariables _myVars;
+    [SerializeField] GlobalVariables _mySpawnLimits;
+
+    [SerializeField] List<GameObject> _activeEnemies = new List<GameObject>();
+
+    public List<GameObject> ActiveTargets { get { return _activeEnemies; } }
+
 
     private void OnEnable()
     {
         _Event_StartSpawning.AddListener(() => StartSpawning());
         _Event_PlayerDead.AddListener(() => PlayerDead());
+        _Event_RemoveEnemyASTarget.AddListener((x) => RemoveActiveTargets(x));
+        _Event_AddEnemy.AddListener((x) => _activeEnemies.Add((GameObject) x));
     }
 
     private void StartSpawning()
@@ -52,12 +61,21 @@ public class SpawnManager : MonoBehaviour
 
     private Vector3 SpawnPosition() 
     {
-        float randomX = Random.Range(_myVars.RightBounds, _myVars.LeftBounds);
-        return new Vector3(randomX, _myVars.TopBounds);
+        float randomX = Random.Range(_mySpawnLimits.RightBounds, _mySpawnLimits.LeftBounds);
+        return new Vector3(randomX, _mySpawnLimits.TopBounds);
     }
 
     private void PlayerDead()
     {
         canSpawn = false;
+    }
+
+    private void RemoveActiveTargets(object oldtaget)
+    {
+        GameObject toRemove = (GameObject)oldtaget;
+        if(_activeEnemies.Contains(toRemove))
+        {
+            _activeEnemies.Remove(toRemove);
+        }
     }
 }

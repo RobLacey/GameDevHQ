@@ -5,21 +5,20 @@ using UnityEngine;
 
 public class PowerUp : MonoBehaviour
 {
+    [SerializeField] TeamID _teamID;
     [SerializeField] PowerUpTypes _powerUpType = default;
     [SerializeField] AudioClip _collectSFX = default;
     [SerializeField] EventManager _Event_ActivatePowerUp;
-    [SerializeField] string _teamTag = default;
 
     //Variables
     SpriteRenderer[] _myBody;
     AudioSource _audioSource;
     Collider2D _collider2D;
 
-    public int TeamTag { get; set; }
+    public TeamID TeamTag { get { return _teamID; } }
 
     protected void Awake()
     {
-        TeamTag = _teamTag.GetHashCode();
         _collider2D = GetComponentInChildren<Collider2D>();
         _myBody = GetComponentsInChildren<SpriteRenderer>();
         _audioSource = GetComponent<AudioSource>();
@@ -38,7 +37,7 @@ public class PowerUp : MonoBehaviour
 
         if (canCollide != null)
         {
-            if (canCollide.TeamTag == TeamTag)
+            if (canCollide.I_TeamTag == TeamTag)
             {
                 _audioSource.Play();
                 _collider2D.enabled = false;

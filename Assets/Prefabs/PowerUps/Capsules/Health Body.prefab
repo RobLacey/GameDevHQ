@@ -7,10 +7,15 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2339085571146269897, guid: 446e98a3ff55e6b4bb0ef8b75fce4c7d,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fda76aefbe8d4fd43a960e6f6f5c499a, type: 2}
     - target: {fileID: 2339085572208419700, guid: 446e98a3ff55e6b4bb0ef8b75fce4c7d,
         type: 3}
       propertyPath: m_Name
-      value: Capsule_Master
+      value: Health Body
       objectReference: {fileID: 0}
     - target: {fileID: 2339085572208419722, guid: 446e98a3ff55e6b4bb0ef8b75fce4c7d,
         type: 3}

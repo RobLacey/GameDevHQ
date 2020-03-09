@@ -41,7 +41,7 @@ public class EnemyFireControl : MonoBehaviour, IKillable
         }
     }
 
-    public void Dead()
+    public void I_Dead(bool collsionKill)
     {
         StopAllCoroutines();
     }

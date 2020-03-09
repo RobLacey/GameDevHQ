@@ -31,4 +31,18 @@ public static class ExtensionsMethods
         _rotation.rotation = Quaternion.Euler(valueX, valueY, valueZ);
         return _rotation;
     }
+
+    public static bool StillOnScreen(this Transform myPosition, GlobalVariables bounds)
+    {
+        if (myPosition.position.y > bounds.TopBounds || myPosition.position.y < bounds.BottomBounds)
+        {
+            return false;
+        }
+
+        if (myPosition.position.x < bounds.LeftBounds || myPosition.position.x > bounds.RightBounds)
+        {
+            return false;
+        }
+        return true;
+    }
 }

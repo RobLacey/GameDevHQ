@@ -13,7 +13,8 @@ public class Asteriod : MonoBehaviour, IKillable
     [SerializeField] Transform _myBody;
     [SerializeField] float _minSize = default;
     [SerializeField] float _maxSize = default;
-    [SerializeField] GlobalVariables _myVars;
+    [SerializeField] EventManager _Event_RemoveEnemyAsTarget;
+    [SerializeField] GlobalVariables _screenBounds;
 
     //Variables
     Rigidbody2D _myRigidBody;
@@ -35,11 +36,12 @@ public class Asteriod : MonoBehaviour, IKillable
 
     private void Update()
     {
-        if (transform.position.y < _myVars.BottomBounds)
-        {
-            gameObject.SetActive(false);
-        }
-        transform.Rotate(Vector3.forward * _rotationSpeed * Time.deltaTime);
+        OffScreenCheck();
+    }
+
+    private void FixedUpdate()
+    {
+        _myBody.transform.Rotate(Vector3.forward * _rotationSpeed * Time.deltaTime);
     }
 
     private void SetSize()
@@ -51,6 +53,7 @@ public class Asteriod : MonoBehaviour, IKillable
     private void StartMotion()
     {
         _myRigidBody.AddForce(transform.up * Random.Range(_minForce, _maxForce), ForceMode2D.Impulse);
+        transform.rotation = Quaternion.Euler(Vector3.zero);
     }
 
     private void SetUpStartingAngles()
@@ -59,8 +62,18 @@ public class Asteriod : MonoBehaviour, IKillable
         transform.rotation = Quaternion.Euler(startAngle);
     }
 
-    public void Dead()
+    public void I_Dead(bool collsionKill)
     {
         _myRigidBody.velocity = Vector2.zero;
     }
+
+    private void OffScreenCheck()
+    {
+        if (!transform.StillOnScreen(_screenBounds))
+        {
+            _Event_RemoveEnemyAsTarget.Invoke(gameObject);
+            gameObject.SetActive(false);
+        }
+    }
+
 }

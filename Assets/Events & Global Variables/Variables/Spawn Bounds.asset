@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8e8550dcc660fa409a0c368e6b857f9, type: 3}
   m_Name: Spawn Bounds
   m_EditorClassIdentifier: 
-  _topBounds: 6
-  _bottomBounds: -6
-  _rightBounds: 8.5
-  _LeftBounds: -8.5
+  _topBounds: 6.5
+  _bottomBounds: -6.5
+  _rightBounds: 8
+  _LeftBounds: -8

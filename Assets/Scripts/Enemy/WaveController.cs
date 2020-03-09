@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WaveController : MonoBehaviour, ISpawnable
+public class WaveController : MonoBehaviour, IEnemyWave
 {
     GameObject[] enemies;
     int numberOfEnemiesInWave = 0;
     int enemiesLeft = 0;
+    [SerializeField] EventManager _Event_WaveWiped = default;
+    [SerializeField] EventManager _Event_AddToScore = default;
+
 
     private void Awake()
     {
@@ -23,10 +26,10 @@ public class WaveController : MonoBehaviour, ISpawnable
 
     private void OnEnable()
     {
-        ActivateChildObjects(true);
+        I_ActivateChildObjects(true);
     }
 
-    public void ActivateChildObjects(bool activate)
+    public void I_ActivateChildObjects(bool activate)
     {
         enemiesLeft = numberOfEnemiesInWave;
         foreach (var enemy in enemies)
@@ -35,12 +38,29 @@ public class WaveController : MonoBehaviour, ISpawnable
         }
     }
 
-    public void LostEnemyFromWave()
+    public void I_DeactivateChildObjects()
+    {
+        if (enemiesLeft <= 0)
+        {
+            foreach (var enemy in enemies)
+            {
+                enemy.SetActive(false);
+            }
+        }
+        gameObject.SetActive(false);
+    }
+
+    public void I_LostEnemyFromWave(int score)
     {
         enemiesLeft--;
         if (enemiesLeft <= 0)
         {
+            _Event_WaveWiped.Invoke(score, true);
             gameObject.SetActive(false);
+        }
+        else
+        {
+            _Event_AddToScore.Invoke(score);
         }
     }
 }

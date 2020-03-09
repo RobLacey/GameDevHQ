@@ -495,12 +495,6 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   priority: 0
---- !u!1 &678575093 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3415331576476612121, guid: 3999bbba746a2014f8ebe2c4b44c1800,
-    type: 3}
-  m_PrefabInstance: {fileID: 1423123429}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &777428383
 GameObject:
   m_ObjectHideFlags: 0
@@ -730,7 +724,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 970948423}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 6.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -770,11 +764,9 @@ MonoBehaviour:
   - {fileID: 1758853908579641028, guid: a4906d3cd8e271345b6e4be91c6b7011, type: 3}
   - {fileID: 1758853908579641028, guid: a4906d3cd8e271345b6e4be91c6b7011, type: 3}
   _powerUps:
-  - {fileID: 2913599096786263541, guid: d8e028a2ea60fcb4e95836e07b0dfcbd, type: 3}
-  - {fileID: 8099542955029866311, guid: 49607053c71a561438947001b54c9119, type: 3}
-  - {fileID: 3851054652056448198, guid: a9f9ae19aac9c7944ae273ef6b77f4fa, type: 3}
-  - {fileID: 8412364054054863246, guid: ddf0d07ed535e9b4682c8b3ae1fd703c, type: 3}
-  - {fileID: 6725770387144389083, guid: 7db31130dd107564f9fd27eed11af5ee, type: 3}
+  - {fileID: 196802280996391159, guid: b98d962b99a1a924da6116cdb7fdce00, type: 3}
+  - {fileID: 196802280996391159, guid: b98d962b99a1a924da6116cdb7fdce00, type: 3}
+  - {fileID: 196802280996391159, guid: b98d962b99a1a924da6116cdb7fdce00, type: 3}
   _minEnemySpawnTime: 1
   _maxEnemySpawnTime: 3
   _minPowerUpSpawnTime: 4
@@ -784,9 +776,13 @@ MonoBehaviour:
   _Event_StartSpawning: {fileID: 11400000, guid: 4e3dbc24ceb21e2489318279ece4bc67,
     type: 2}
   _Event_PlayerDead: {fileID: 11400000, guid: 786a86b41c101234c85ab3832dbaadf1, type: 2}
+  _Event_RemoveEnemyASTarget: {fileID: 11400000, guid: 343e9cbf54340ff419a6979287f648cc,
+    type: 2}
+  _Event_AddEnemy: {fileID: 11400000, guid: 532cd2fbb460d974fb69b8af40442f37, type: 2}
   _enemyPoolingAgent: {fileID: 970948426}
   _powerUpPoolingAgent: {fileID: 970948424}
-  _myVars: {fileID: 11400000, guid: 327668118b716484db2e8b5b80035803, type: 2}
+  _mySpawnLimits: {fileID: 11400000, guid: 327668118b716484db2e8b5b80035803, type: 2}
+  _activeEnemies: []
 --- !u!1 &977590377
 GameObject:
   m_ObjectHideFlags: 0
@@ -992,10 +988,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 347960502}
     m_Modifications:
-    - target: {fileID: 0}
-      propertyPath: m_Convex
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3058380234890933713, guid: 363ebedb1b3464946a4a912562cf54ad,
         type: 3}
       propertyPath: m_Name
@@ -1135,16 +1127,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4195115972309855964, guid: 3999bbba746a2014f8ebe2c4b44c1800,
-        type: 3}
-      propertyPath: _powerUpUI.Array.data[6].powerUpTypes
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4195115972309855964, guid: 3999bbba746a2014f8ebe2c4b44c1800,
-        type: 3}
-      propertyPath: _powerUpUI.Array.data[6]._UI
-      value: 
-      objectReference: {fileID: 678575093}
     - target: {fileID: 8330378786635889009, guid: 3999bbba746a2014f8ebe2c4b44c1800,
         type: 3}
       propertyPath: m_Name
@@ -1481,7 +1463,7 @@ PrefabInstance:
     - target: {fileID: 1502121058737624434, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
         type: 3}
       propertyPath: _poolCollection.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1502121058737624434, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
         type: 3}
@@ -1550,6 +1532,22 @@ PrefabInstance:
     - target: {fileID: 1502121058737624434, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
         type: 3}
       propertyPath: _poolCollection.Array.data[3].startingPrefabs
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1502121058737624434, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
+        type: 3}
+      propertyPath: _poolCollection.Array.data[4].name
+      value: Homing Missles
+      objectReference: {fileID: 0}
+    - target: {fileID: 1502121058737624434, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
+        type: 3}
+      propertyPath: _poolCollection.Array.data[4].prefab
+      value: 
+      objectReference: {fileID: 6564985789066767047, guid: 0ebb253c44b724149a645fba800d4373,
+        type: 3}
+    - target: {fileID: 1502121058737624434, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
+        type: 3}
+      propertyPath: _poolCollection.Array.data[4].startingPrefabs
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8563371345529926229, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
@@ -1681,9 +1679,9 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1570578759
   m_SortingLayer: 1
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: ed540728d49b33b48b6dd9bc32039075, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.8301887, g: 0.8301887, b: 0.8301887, a: 0.6313726}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1745,6 +1743,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: df9e99793f49aa545aa40c3c39ac1162, type: 2}
   - {fileID: 11400000, guid: aa88659e4a18fe940ba2b4f0eb38ed6e, type: 2}
   - {fileID: 11400000, guid: 4e3dbc24ceb21e2489318279ece4bc67, type: 2}
+  - {fileID: 11400000, guid: e7797a36b34c54548b19a890d20f87d5, type: 2}
+  - {fileID: 11400000, guid: 2540681e9a99f8e4fad32d602888b936, type: 2}
+  - {fileID: 11400000, guid: 532cd2fbb460d974fb69b8af40442f37, type: 2}
+  - {fileID: 0}
 --- !u!4 &2057372863
 Transform:
   m_ObjectHideFlags: 0
@@ -1769,7 +1771,7 @@ PrefabInstance:
     - target: {fileID: 1502121058737624434, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
         type: 3}
       propertyPath: _poolCollection.Array.size
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1502121058737624434, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
         type: 3}
@@ -1856,6 +1858,22 @@ PrefabInstance:
       propertyPath: _poolCollection.Array.data[4].startingPrefabs
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 1502121058737624434, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
+        type: 3}
+      propertyPath: _poolCollection.Array.data[5].name
+      value: Homing Missle Power Up
+      objectReference: {fileID: 0}
+    - target: {fileID: 1502121058737624434, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
+        type: 3}
+      propertyPath: _poolCollection.Array.data[5].prefab
+      value: 
+      objectReference: {fileID: 196802280996391159, guid: b98d962b99a1a924da6116cdb7fdce00,
+        type: 3}
+    - target: {fileID: 1502121058737624434, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
+        type: 3}
+      propertyPath: _poolCollection.Array.data[5].startingPrefabs
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 8563371345529926229, guid: 838a2edba7e4aa14f9ac32e53c1d8881,
         type: 3}
       propertyPath: m_Name
@@ -1931,6 +1949,47 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1766429386902667308, guid: 167ae382325690a458ee3772943b1dd0,
+        type: 3}
+      propertyPath: _homingMissle._weapon
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1766429386902667308, guid: 167ae382325690a458ee3772943b1dd0,
+        type: 3}
+      propertyPath: _homingMissle._weaponPrefab
+      value: 
+      objectReference: {fileID: 6564985789066767047, guid: 0ebb253c44b724149a645fba800d4373,
+        type: 3}
+    - target: {fileID: 1766429386902667308, guid: 167ae382325690a458ee3772943b1dd0,
+        type: 3}
+      propertyPath: _homingMissle._fireRate
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1766429386902667308, guid: 167ae382325690a458ee3772943b1dd0,
+        type: 3}
+      propertyPath: _homingMissle._fireRateMulitpiler
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1766429386902667308, guid: 167ae382325690a458ee3772943b1dd0,
+        type: 3}
+      propertyPath: _homingMissle._timer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1766429386902667308, guid: 167ae382325690a458ee3772943b1dd0,
+        type: 3}
+      propertyPath: _homingMissle._presenece
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1766429386902667308, guid: 167ae382325690a458ee3772943b1dd0,
+        type: 3}
+      propertyPath: _homingMissle._weaponSFX
+      value: 
+      objectReference: {fileID: 8300000, guid: 3cd853b35101fba499d4aa4e16a7e97b, type: 3}
+    - target: {fileID: 1766429386902667308, guid: 167ae382325690a458ee3772943b1dd0,
+        type: 3}
+      propertyPath: _homingMissle._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2402368311797211971, guid: 167ae382325690a458ee3772943b1dd0,
         type: 3}
       propertyPath: m_TagString
@@ -1949,7 +2008,7 @@ PrefabInstance:
     - target: {fileID: 2402368312424498667, guid: 167ae382325690a458ee3772943b1dd0,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.12
       objectReference: {fileID: 0}
     - target: {fileID: 2402368312424498667, guid: 167ae382325690a458ee3772943b1dd0,
         type: 3}
@@ -2010,10 +2069,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 0}
-      propertyPath: isGlobal
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5631973307571659125, guid: 86155f14990566e4f8bb9fd0a9f6408f,
         type: 3}
       propertyPath: m_Name

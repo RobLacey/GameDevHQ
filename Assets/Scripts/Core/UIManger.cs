@@ -6,8 +6,6 @@ using Random = UnityEngine.Random;
 
 public class UIManger : MonoBehaviour
 {
-    [SerializeField] int _score = 0;
-    [SerializeField] Text _scoreText = default;
     [SerializeField] Sprite[] _livesSprites = default;
     [SerializeField] Image _livesUI = default;
     [SerializeField] GameObject _gameOverUI = default;
@@ -19,7 +17,6 @@ public class UIManger : MonoBehaviour
     [SerializeField] int _flashed = default;
     [SerializeField] PowerUpUI[] _powerUpUI;
     [SerializeField] GameObject[] _countdownUI = default;
-    [SerializeField] EventManager _Event_AddToScore = default;
     [SerializeField] EventManager _Event_PlayerDead;
     [SerializeField] EventManager _Event_SetLives = default;
     [SerializeField] EventManager _Event_ActivatePowerUp = default;
@@ -38,7 +35,6 @@ public class UIManger : MonoBehaviour
 
     private void OnEnable()
     {
-        _Event_AddToScore.AddListener(x => AddToScore(x));
         _Event_PlayerDead.AddListener(() => GameOver());
         _Event_SetLives.AddListener(y => SetLivesDisplay(y));
         _Event_ActivatePowerUp.AddListener(x => ActivatePowerUPUI(x));
@@ -49,9 +45,8 @@ public class UIManger : MonoBehaviour
 
     private void Start()
     {
-        AddToScore(0);
         SetUpAllUI();
-        //ActivatePowerUPUI(PowerUpTypes.SingleShot);
+        ActivatePowerUPUI(PowerUpTypes.SingleShot);
         _gameOverUI.SetActive(false);
         _resetKeyUI.SetActive(false);
     }
@@ -90,18 +85,12 @@ public class UIManger : MonoBehaviour
         _Event_StartSpawning.Invoke();
     }
 
-    public void AddToScore(object points)
-    {
-        _score += (int)points;
-        _scoreText.text = _score.ToString();
-    }
-
     public void SetLivesDisplay(object lives)
     {
         _livesUI.sprite = _livesSprites[(int)lives];
     }
 
-    private void ActivatePowerUPUI(object type)
+    private void ActivatePowerUPUI(object type) //TODO simplify
     {
         PowerUpTypes newPowerUp = (PowerUpTypes)type;
         switch (newPowerUp)
@@ -110,16 +99,25 @@ public class UIManger : MonoBehaviour
                 FindPowerUp(PowerUpTypes.SingleShot).SetActive(true);
                 FindPowerUp(PowerUpTypes.TripleShot).SetActive(false);
                 FindPowerUp(PowerUpTypes.SideShot).SetActive(false);
+                FindPowerUp(PowerUpTypes.HomingMissle).SetActive(false);
                 break;
             case PowerUpTypes.TripleShot:
                 FindPowerUp(newPowerUp).SetActive(true);
                 FindPowerUp(PowerUpTypes.SingleShot).SetActive(false);
                 FindPowerUp(PowerUpTypes.SideShot).SetActive(false);
+                FindPowerUp(PowerUpTypes.HomingMissle).SetActive(false);
                 break;
             case PowerUpTypes.SideShot:
                 FindPowerUp(newPowerUp).SetActive(true);
                 FindPowerUp(PowerUpTypes.SingleShot).SetActive(false);
                 FindPowerUp(PowerUpTypes.TripleShot).SetActive(false);
+                FindPowerUp(PowerUpTypes.HomingMissle).SetActive(false);
+                break;
+            case PowerUpTypes.HomingMissle:
+                FindPowerUp(newPowerUp).SetActive(true);
+                FindPowerUp(PowerUpTypes.SingleShot).SetActive(false);
+                FindPowerUp(PowerUpTypes.TripleShot).SetActive(false);
+                FindPowerUp(PowerUpTypes.SideShot).SetActive(false);
                 break;
             case PowerUpTypes.SpeedBoost:
                 FindPowerUp(newPowerUp).SetActive(true);
@@ -158,11 +156,8 @@ public class UIManger : MonoBehaviour
     {
         foreach (var item in _powerUpUI)
         {
-                Debug.Log(item._UI);
             if (powerUpToFind == item.powerUpTypes)
             {
-                Debug.Log(item.powerUpTypes);
-
                 return item._UI;
             }
         }

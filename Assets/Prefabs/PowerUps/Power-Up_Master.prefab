@@ -163,11 +163,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb7c54cd7458be4885a8b21bcbee797, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _teamID: 0
   _powerUpType: 0
   _collectSFX: {fileID: 8300000, guid: 2520622a24a82834da9fa9998abbe712, type: 3}
   _Event_ActivatePowerUp: {fileID: 11400000, guid: 032760db4a9315c4fbb64403d598135b,
     type: 2}
-  _teamTag: Player
 --- !u!114 &8458326859373002638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,4 +187,5 @@ MonoBehaviour:
   insideRight: 0
   insideLeft: 0
   _horizontalSpeedMax: 0
-  _myVars: {fileID: 11400000, guid: 327668118b716484db2e8b5b80035803, type: 2}
+  _Event_RemoveEnemyAsTarget: {fileID: 0}
+  _screenBounds: {fileID: 11400000, guid: 7fd64ba6d27c63e409a5621b18a04dd1, type: 2}

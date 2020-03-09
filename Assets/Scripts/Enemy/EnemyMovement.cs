@@ -9,16 +9,17 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] float farRight, farLeft;
     [SerializeField] float insideRight, insideLeft;
     [SerializeField] float _horizontalSpeedMax;
-    [SerializeField] GlobalVariables _myVars;
+    [SerializeField] EventManager _Event_RemoveEnemyAsTarget;
+    [SerializeField] GlobalVariables _screenBounds;
 
+    //Variables
     float rightBoundsMax, leftBoundsMax;
     float horizontalSpeed;
-    ISpawnable _spawnable;
-    float _bounds;
+    IEnemyWave _partofWave;
 
     private void OnEnable()
     {
-        rightBoundsMax = Random.Range(insideRight, farRight);
+        rightBoundsMax = Random.Range(insideRight, farRight); //TODI fix this to us global vars
         leftBoundsMax = Random.Range(insideLeft,farLeft);
         horizontalSpeed = Random.Range(-_horizontalSpeedMax, _horizontalSpeedMax);
         StartPositionCheck();
@@ -26,8 +27,7 @@ public class EnemyMovement : MonoBehaviour
 
     private void Start()
     {
-        _bounds = _myVars.BottomBounds;
-        _spawnable = GetComponent<ISpawnable>();
+        _partofWave = GetComponent<IEnemyWave>();
     }
 
     private void Update()
@@ -45,15 +45,23 @@ public class EnemyMovement : MonoBehaviour
 
     }
 
-    private void OffScreenCheck() 
+    private void OffScreenCheck()
     {
-        if (transform.position.y < _bounds)
+        if (!transform.StillOnScreen(_screenBounds))
         {
-            if (_spawnable != null)
+            if (_partofWave != null)
             {
-                _spawnable.ActivateChildObjects(false);
-            }            
-            gameObject.SetActive(false);
+                foreach (Transform child in transform)
+                {
+                    _Event_RemoveEnemyAsTarget.Invoke(child.gameObject);
+                }
+                _partofWave.I_DeactivateChildObjects();
+            }
+            else if(_partofWave == null)
+            {
+                gameObject.SetActive(false);
+                Debug.Log("non wave objects need script on top layer");
+            }
         }
     }
 

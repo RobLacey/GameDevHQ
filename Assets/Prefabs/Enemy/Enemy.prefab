@@ -281,6 +281,9 @@ MonoBehaviour:
   _myBody: {fileID: 8541108456485817635}
   _poolingAgent: {fileID: 2781022295709722970}
   _Event_AddToScore: {fileID: 11400000, guid: 94ce8af8f09e68940895f8146b35e2d3, type: 2}
+  _Event_RemoveEnemyAsTarget: {fileID: 11400000, guid: 343e9cbf54340ff419a6979287f648cc,
+    type: 2}
+  _Event_AddEnemy: {fileID: 11400000, guid: 532cd2fbb460d974fb69b8af40442f37, type: 2}
 --- !u!114 &1775212114289228207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -313,9 +316,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23f5de7aed6d9f94b8f58a5fae9beddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _teamID: 1
   _health: 1
   _damageDealt: 1
-  _teamTag: Enemy
+  _Event_WaveWipedCancel: {fileID: 11400000, guid: e7797a36b34c54548b19a890d20f87d5,
+    type: 2}
+  _hasHealthBar: 0
 --- !u!114 &2781022295709722970
 MonoBehaviour:
   m_ObjectHideFlags: 0

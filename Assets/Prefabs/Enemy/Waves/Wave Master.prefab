@@ -47,6 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246d1b9b2b7c4ad4e81ea17e75fb17e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Event_WaveWiped: {fileID: 11400000, guid: e7797a36b34c54548b19a890d20f87d5, type: 2}
+  _Event_AddToScore: {fileID: 11400000, guid: 94ce8af8f09e68940895f8146b35e2d3, type: 2}
 --- !u!114 &7041148300919129833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,7 +68,9 @@ MonoBehaviour:
   insideRight: 1
   insideLeft: -1
   _horizontalSpeedMax: 1
-  _myVars: {fileID: 11400000, guid: 327668118b716484db2e8b5b80035803, type: 2}
+  _Event_RemoveEnemyAsTarget: {fileID: 11400000, guid: 343e9cbf54340ff419a6979287f648cc,
+    type: 2}
+  _screenBounds: {fileID: 11400000, guid: 7fd64ba6d27c63e409a5621b18a04dd1, type: 2}
 --- !u!1001 &2855869471442080039
 PrefabInstance:
   m_ObjectHideFlags: 0

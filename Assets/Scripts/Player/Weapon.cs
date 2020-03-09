@@ -22,7 +22,6 @@ public class Weapon
     public void SetUp()
     {
         _isActive = false;
-        _fireRateMulitpiler = 2f;
     }
 
     public void SetActive(PowerUpTypes activeWeapon)

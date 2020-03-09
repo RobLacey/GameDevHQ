@@ -59,6 +59,7 @@ public class PoolingManager : MonoBehaviour
         {
             if (pool.prefab == gameObjectToCreate)
             {
+
                 foreach (var prefab in pool._prefabPool)
                 {
                     if (!prefab.activeSelf)

@@ -112,16 +112,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c76ba65652f2de449a47e75dd306428, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  _teamID: 0
   damage: 1
-  _myTag: Player
-  _isEnemyWeapon: 0
-  _isSideShot: 0
-  _savePositionAtStart: 0
   _hiteffect: {fileID: 2386902876299727280, guid: 8aa85601bcce95949864bcb6b8a2265b,
     type: 3}
   _poolingAgent: {fileID: 117588556345456921}
-  _myVars: {fileID: 11400000, guid: c4e6948b5f864f641b7a5a173ac45ab2, type: 2}
+  _weaponHitBounds: {fileID: 11400000, guid: c4e6948b5f864f641b7a5a173ac45ab2, type: 2}
+  speed: 10
   _direction: {x: 0, y: 1, z: 0}
 --- !u!114 &117588556345456921
 MonoBehaviour:

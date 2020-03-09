@@ -6,15 +6,20 @@ using UnityEngine.Events;
 
 public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
 {
-    //TODO make homing missles
     //TODO Split off weapons and powerups in different classes??
     //TODO add some other enemy ship types
     //TODO Check and Tidy code
-    //TODO maybe make it 3d/2.5D and find 3d ships and asteriods etc??
-    //TODO add minion helper weapon. Rotates around player and shoots at same time plus acts like a temp shield if hit it is destroyed.
     //TODO Check garbage collection
+    //TODO Hozizontal Movemnt in seperate script
+    //TODO Make sonic bomb
+    //TODO add level progression and boss battle
+    //TODO redo start menu
+    //TODO add high score table - playerperf
+    //TODO Better Health bar
+    //TODO Imporve explosions (add random second explosion spawn maybe)
+    
 
-    [SerializeField] string _teamTag;
+    [SerializeField] TeamID _teamID;
     [SerializeField] Vector3 _startPosition = default;
     [SerializeField] float _speed = 1f;
     [SerializeField] string _horizontalAxis = null;
@@ -22,16 +27,19 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
     [SerializeField] int _health = 3;
     [SerializeField] GameObject[] _damageFX = default;
     [SerializeField] GameObject _deathFX = default;
+    [SerializeField] PoolingAgent _poolingAgent;
+    [SerializeField] bool cheat = false;
     [SerializeField] EventManager _Event_PlayerDead = default;
     [SerializeField] EventManager _Event_SetLives = default;
     [SerializeField] EventManager _Event_AddHealth;
-    [SerializeField] PoolingAgent _poolingAgent;
-    [SerializeField] bool cheat = false;
+    [SerializeField] EventManager _Event_WaveWipedCancel = default;
     [SerializeField] GlobalVariables _myVars;
 
+
     //Properties
-    public float SetSpeed { set { _speed = value; } }
-    public int TeamTag { get; set; }
+    public float I_SetSpeed { set { _speed = value; } }
+    public TeamID I_TeamTag { get { return _teamID; } }
+
 
     //Variables
     float _canFireTimer = 0;
@@ -41,7 +49,7 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
 
     private void Awake()
     {
-        TeamTag = _teamTag.GetHashCode();
+        //TeamTag = _teamTag.GetHashCode();
         _myWeaponSystem = GetComponent<IWeaponSystem>();
         if (cheat)
         {
@@ -71,8 +79,8 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
     {
         if (Input.GetKey(KeyCode.Space) && Time.time > _canFireTimer)
         {
-            _canFireTimer = Time.time + _myWeaponSystem.ReturnFireRate();
-            _myWeaponSystem.Fire();
+            _canFireTimer = Time.time + _myWeaponSystem.I_ReturnFireRate();
+            _myWeaponSystem.I_Fire();
         }
 
     }
@@ -107,12 +115,13 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
         {
             if (_health <= 0) return;
 
-            if (_myWeaponSystem.ShieldsAreActive)
+            if (_myWeaponSystem.I_ShieldsAreActive)
             {
-                _myWeaponSystem.DeactivatePowerUps(PowerUpTypes.Shield);
+                _myWeaponSystem.I_DeactivatePowerUps(PowerUpTypes.Shield);
                 return;
             }
             _health -= damage;
+            _Event_WaveWipedCancel.Invoke(0, false);
             _Event_SetLives.Invoke(_health);
             HealthDisplay(true);
             _damageIndex++;
@@ -136,7 +145,7 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
         _Event_SetLives.Invoke(_health);
     }
 
-    public void ProcessCollision(int damage)
+    public void I_ProcessCollision(int damage)
     {
         Damage(damage);
 
