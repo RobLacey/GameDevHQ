@@ -12,10 +12,20 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: e0e7f80c89c75e54b99bf249d080a600, type: 2}
+    - target: {fileID: 2339085571146269897, guid: 446e98a3ff55e6b4bb0ef8b75fce4c7d,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2339085572208419700, guid: 446e98a3ff55e6b4bb0ef8b75fce4c7d,
         type: 3}
       propertyPath: m_Name
       value: Triple Shot Body
+      objectReference: {fileID: 0}
+    - target: {fileID: 2339085572208419701, guid: 446e98a3ff55e6b4bb0ef8b75fce4c7d,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2339085572208419722, guid: 446e98a3ff55e6b4bb0ef8b75fce4c7d,
         type: 3}

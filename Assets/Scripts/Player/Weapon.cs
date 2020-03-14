@@ -6,12 +6,12 @@ using System;
 [Serializable]
 public class Weapon
 {
-    [SerializeField] public bool _isActive;
+    [SerializeField] public string _name;
     [SerializeField] public PowerUpTypes _weapon;
     [SerializeField] public GameObject _weaponPrefab;
+    [SerializeField] public bool _isActive;
     [SerializeField] public float _fireRate;
     [SerializeField] float _fireRateMulitpiler = 1f;
-    [SerializeField] public Vector3 _laserOffset = default;
     [SerializeField] public float _timer;
     [SerializeField] public float _presenece;
     [SerializeField] public AudioClip _weaponSFX = default;

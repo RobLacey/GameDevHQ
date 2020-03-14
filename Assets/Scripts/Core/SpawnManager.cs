@@ -6,55 +6,47 @@ using Random = UnityEngine.Random;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField] GameObject[] _enemyPrefab = default;
-    [SerializeField] GameObject[] _powerUps = default;
-    [SerializeField] float _minEnemySpawnTime = 1f;
-    [SerializeField] float _maxEnemySpawnTime = 1f;
-    [SerializeField] float _minPowerUpSpawnTime = 1f;
-    [SerializeField] float _maxPowerUpSpawnTime = 1f;
+    [SerializeField] GameObject[] _spawnArray = default;
+    [SerializeField] float _minSpawnTime = 1f;
+    [SerializeField] float _maxSpawnTime = 1f;
+    [SerializeField] bool _trackActiveObjects = false;
     [SerializeField] bool canSpawn = true;
-    [SerializeField] float _powerUpStartDelay = 10f;
     [SerializeField] EventManager _Event_StartSpawning;
     [SerializeField] EventManager _Event_PlayerDead;
     [SerializeField] EventManager _Event_RemoveEnemyASTarget;
     [SerializeField] EventManager _Event_AddEnemy;
-    [SerializeField] PoolingAgent _enemyPoolingAgent;
-    [SerializeField] PoolingAgent _powerUpPoolingAgent;
+    [SerializeField] EventManager _Event_ReturnActiveEnemies;
+    [SerializeField] PoolingAgent _poolingAgent;
     [SerializeField] GlobalVariables _mySpawnLimits;
 
-    [SerializeField] List<GameObject> _activeEnemies = new List<GameObject>();
-
-    public List<GameObject> ActiveTargets { get { return _activeEnemies; } }
-
+    public List<GameObject> ActiveTargets { get; private set; }
 
     private void OnEnable()
     {
         _Event_StartSpawning.AddListener(() => StartSpawning());
         _Event_PlayerDead.AddListener(() => PlayerDead());
-        _Event_RemoveEnemyASTarget.AddListener((x) => RemoveActiveTargets(x));
-        _Event_AddEnemy.AddListener((x) => _activeEnemies.Add((GameObject) x));
+        if (_trackActiveObjects)
+        {
+            _Event_ReturnActiveEnemies.AddListener(() => ActiveTargets);
+            _Event_RemoveEnemyASTarget.AddListener((x) => RemoveActiveTargets(x));
+            _Event_AddEnemy.AddListener((x) => ActiveTargets.Add((GameObject)x)); // TODO Error
+        }
     }
 
     private void StartSpawning()
     {
-        StartCoroutine(SpawnObjects(_enemyPrefab, _minEnemySpawnTime, _maxEnemySpawnTime, _enemyPoolingAgent, Vector3.zero));
-        StartCoroutine(PowerUpSpawnDelay());
+        ActiveTargets = new List<GameObject>();
+        StartCoroutine(SpawnObjects());
     }
 
-    private IEnumerator PowerUpSpawnDelay()
-    {
-        yield return new WaitForSeconds(_powerUpStartDelay);
-        StartCoroutine(SpawnObjects(_powerUps, _minPowerUpSpawnTime, _maxPowerUpSpawnTime, _powerUpPoolingAgent, Vector3.back));
-    }
-
-    private IEnumerator SpawnObjects(GameObject[] spawnArray, float minTime, float maxTime, PoolingAgent agent, Vector3 offset)
+    private IEnumerator SpawnObjects()
     {
         while (canSpawn)
         {
-            GameObject toSpawn = spawnArray[Random.Range(0, spawnArray.Length)];
+            GameObject toSpawn = _spawnArray[Random.Range(0, _spawnArray.Length)];
             Vector3 newPos = SpawnPosition();
-            agent.InstantiateFromPool(toSpawn, newPos + offset, Quaternion.identity);
-            float timer = Random.Range(minTime, maxTime);
+            _poolingAgent.InstantiateFromPool(toSpawn, newPos, Quaternion.identity);
+            float timer = Random.Range(_minSpawnTime, _maxSpawnTime);
             yield return new WaitForSeconds(timer);
         }
     }
@@ -73,9 +65,9 @@ public class SpawnManager : MonoBehaviour
     private void RemoveActiveTargets(object oldtaget)
     {
         GameObject toRemove = (GameObject)oldtaget;
-        if(_activeEnemies.Contains(toRemove))
+        if(ActiveTargets.Contains(toRemove))
         {
-            _activeEnemies.Remove(toRemove);
+            ActiveTargets.Remove(toRemove);
         }
     }
 }

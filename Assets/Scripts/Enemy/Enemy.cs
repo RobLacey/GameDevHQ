@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour, IKillable
+public class Enemy : MonoBehaviour, IKillable, IWaveMemeber
 {
     [SerializeField] int _points = 0;
     [SerializeField] GameObject _expolsion = default;
-    [SerializeField] Transform _myBody;
+    [SerializeField] float _expolsionSize = 0.5f;
     [SerializeField] PoolingAgent _poolingAgent;
+    [SerializeField] GameObject _shrapnel;
     [SerializeField] EventManager _Event_AddToScore = default;
     [SerializeField] EventManager _Event_RemoveEnemyAsTarget;
     [SerializeField] EventManager _Event_AddEnemy;
@@ -15,11 +16,14 @@ public class Enemy : MonoBehaviour, IKillable
 
     SpriteRenderer _mySprite;
     Collider2D _collider2D;
-    IEnemyWave _myWave;
+    IEnemyWave _partOfWave;
+    bool _started = false;
+
+    public GameObject Myself { get { return gameObject; } }
 
     private void Awake()
     {
-        _myWave = GetComponentInParent<IEnemyWave>(); //TODO maybe change to event
+        _partOfWave = GetComponentInParent<IEnemyWave>(); 
         _mySprite = GetComponentInChildren<SpriteRenderer>();
         _collider2D = GetComponentInChildren<Collider2D>();
     }
@@ -27,14 +31,18 @@ public class Enemy : MonoBehaviour, IKillable
     {
         _mySprite.enabled = true;
         _collider2D.enabled = true;
-        _Event_AddEnemy.Invoke(gameObject);
+        if (_started)
+        {
+            _Event_AddEnemy.Invoke(gameObject);
+        }
+        _started = true;
     }
 
     public void I_Dead(bool collsionKill)
     {
-        if (_myWave != null && !collsionKill)
+        if (_partOfWave != null && !collsionKill)
         {
-            _myWave.I_LostEnemyFromWave(_points);
+            _partOfWave.I_LostEnemyFromWave(_points, transform.position);
         }
         else
         {
@@ -42,10 +50,19 @@ public class Enemy : MonoBehaviour, IKillable
         }
         _collider2D.enabled = false;
         _mySprite.enabled = false;
-        GameObject newObject = _poolingAgent.InstantiateFromPool(_expolsion, transform.position, Quaternion.identity);
-        newObject.GetComponent<IScaleable>().I_SetScale(_myBody.localScale);
+        CreateDeathFX();
         _Event_RemoveEnemyAsTarget.Invoke(gameObject);
         gameObject.SetActive(false);
     }
 
+    private void CreateDeathFX()
+    {
+        if (_shrapnel != null)
+        {
+            _poolingAgent.InstantiateFromPool(_shrapnel, transform.position, Quaternion.identity);
+        }
+
+        GameObject newObject = _poolingAgent.InstantiateFromPool(_expolsion, transform.position, Quaternion.identity);
+        newObject.GetComponent<IScaleable>().I_SetScale(new Vector3(_expolsionSize, _expolsionSize, _expolsionSize));
+    }
 }

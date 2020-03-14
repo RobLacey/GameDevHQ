@@ -24,12 +24,12 @@ public class Asteriod : MonoBehaviour, IKillable
     private void Awake()
     {
         _myRigidBody = GetComponent<Rigidbody2D>();
+        SetSize();
     }
 
     private void OnEnable()
     {
         SetUpStartingAngles();
-        SetSize();
         StartMotion();
         _rotationSpeed = Random.Range(_rotationSpeedMin, _rotationSpeedMax);
     }
@@ -53,7 +53,7 @@ public class Asteriod : MonoBehaviour, IKillable
     private void StartMotion()
     {
         _myRigidBody.AddForce(transform.up * Random.Range(_minForce, _maxForce), ForceMode2D.Impulse);
-        transform.rotation = Quaternion.Euler(Vector3.zero);
+        transform.rotation = Quaternion.Euler(Vector3.zero); //Straightens up after push in rotations direction
     }
 
     private void SetUpStartingAngles()
@@ -75,5 +75,4 @@ public class Asteriod : MonoBehaviour, IKillable
             gameObject.SetActive(false);
         }
     }
-
 }

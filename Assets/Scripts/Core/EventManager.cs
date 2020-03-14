@@ -11,7 +11,7 @@ public class EventManager : ScriptableObject
     private Action newEvent;
     private Action<object> newEvent_Object;
     private Action<object, object> newEvent_Object_Object;
-    private Func<object> newEvent_ReturnValue;
+    public Func<object> newEvent_ReturnValue;
 
 
     //Add listener Methods

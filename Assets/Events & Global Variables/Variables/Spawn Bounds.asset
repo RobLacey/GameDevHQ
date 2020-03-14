@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _topBounds: 6.5
   _bottomBounds: -6.5
-  _rightBounds: 8
-  _LeftBounds: -8
+  _rightBounds: 7.5
+  _LeftBounds: -7.5

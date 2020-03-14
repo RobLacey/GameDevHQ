@@ -6,8 +6,7 @@ using Random = UnityEngine.Random;
 
 public class UIManger : MonoBehaviour
 {
-    [SerializeField] Sprite[] _livesSprites = default;
-    [SerializeField] Image _livesUI = default;
+    [SerializeField] Image _healthUI;
     [SerializeField] GameObject _gameOverUI = default;
     [SerializeField] GameObject _resetKeyUI = default;
     [SerializeField] float _onMin = default;
@@ -16,6 +15,7 @@ public class UIManger : MonoBehaviour
     [SerializeField] float _offMax = default;
     [SerializeField] int _flashed = default;
     [SerializeField] PowerUpUI[] _powerUpUI;
+    [SerializeField] WeaponUI[] _weaponUI;
     [SerializeField] GameObject[] _countdownUI = default;
     [SerializeField] EventManager _Event_PlayerDead;
     [SerializeField] EventManager _Event_SetLives = default;
@@ -30,6 +30,13 @@ public class UIManger : MonoBehaviour
     public class PowerUpUI
     {
         [SerializeField] public PowerUpTypes powerUpTypes;
+        [SerializeField] public GameObject _UI;
+    }
+
+    [Serializable]
+    public class WeaponUI
+    {
+        [SerializeField] public PowerUpTypes weaponTypes;
         [SerializeField] public GameObject _UI;
     }
 
@@ -85,48 +92,37 @@ public class UIManger : MonoBehaviour
         _Event_StartSpawning.Invoke();
     }
 
-    public void SetLivesDisplay(object lives)
+    public void SetLivesDisplay(object lives) 
     {
-        _livesUI.sprite = _livesSprites[(int)lives];
+        float currentHealth = Mathf.Clamp((float)lives, 0, 1);
+        _healthUI.fillAmount = currentHealth;
     }
 
-    private void ActivatePowerUPUI(object type) //TODO simplify
+    private void ActivatePowerUPUI(object type)
     {
         PowerUpTypes newPowerUp = (PowerUpTypes)type;
         switch (newPowerUp)
         {
             case PowerUpTypes.SingleShot:
-                FindPowerUp(PowerUpTypes.SingleShot).SetActive(true);
-                FindPowerUp(PowerUpTypes.TripleShot).SetActive(false);
-                FindPowerUp(PowerUpTypes.SideShot).SetActive(false);
-                FindPowerUp(PowerUpTypes.HomingMissle).SetActive(false);
+                FindWeaponUp(PowerUpTypes.SingleShot, true);
                 break;
             case PowerUpTypes.TripleShot:
-                FindPowerUp(newPowerUp).SetActive(true);
-                FindPowerUp(PowerUpTypes.SingleShot).SetActive(false);
-                FindPowerUp(PowerUpTypes.SideShot).SetActive(false);
-                FindPowerUp(PowerUpTypes.HomingMissle).SetActive(false);
+                FindWeaponUp(PowerUpTypes.TripleShot, true);
                 break;
             case PowerUpTypes.SideShot:
-                FindPowerUp(newPowerUp).SetActive(true);
-                FindPowerUp(PowerUpTypes.SingleShot).SetActive(false);
-                FindPowerUp(PowerUpTypes.TripleShot).SetActive(false);
-                FindPowerUp(PowerUpTypes.HomingMissle).SetActive(false);
+                FindWeaponUp(PowerUpTypes.SideShot, true);
                 break;
             case PowerUpTypes.HomingMissle:
-                FindPowerUp(newPowerUp).SetActive(true);
-                FindPowerUp(PowerUpTypes.SingleShot).SetActive(false);
-                FindPowerUp(PowerUpTypes.TripleShot).SetActive(false);
-                FindPowerUp(PowerUpTypes.SideShot).SetActive(false);
+                FindWeaponUp(PowerUpTypes.HomingMissle, true);
                 break;
             case PowerUpTypes.SpeedBoost:
-                FindPowerUp(newPowerUp).SetActive(true);
+                FindPowerUp(PowerUpTypes.SpeedBoost, true);
                 break;
             case PowerUpTypes.Shield:
-                FindPowerUp(newPowerUp).SetActive(true);
+                FindPowerUp(PowerUpTypes.Shield, true);
                 break;
             case PowerUpTypes.Health:
-                StartCoroutine(HealthDisplay(FindPowerUp(newPowerUp)));
+                StartCoroutine(HealthDisplay(PowerUpTypes.Health));
                 break;
         }
     }
@@ -137,31 +133,48 @@ public class UIManger : MonoBehaviour
         switch (newPowerUp)
         {
             case PowerUpTypes.SpeedBoost:
-                FindPowerUp(newPowerUp).SetActive(false);
+                FindPowerUp(PowerUpTypes.SpeedBoost, false);
                 break;
             case PowerUpTypes.Shield:
-                FindPowerUp(newPowerUp).SetActive(false);
+                FindPowerUp(PowerUpTypes.Shield, false);
                 break;
         }
     }
 
-    IEnumerator HealthDisplay(GameObject healthUI)
+    IEnumerator HealthDisplay(PowerUpTypes powerUpToFind)
     {
-        healthUI.SetActive(true);
+        GameObject healthUI= FindPowerUp(powerUpToFind, true);
         yield return new WaitForSeconds(3f);
         healthUI.SetActive(false);
     }
 
-    private GameObject FindPowerUp(PowerUpTypes powerUpToFind)
+    private GameObject FindPowerUp(PowerUpTypes powerUpToFind, bool active)
     {
         foreach (var item in _powerUpUI)
         {
             if (powerUpToFind == item.powerUpTypes)
             {
+                item._UI.SetActive(active);
                 return item._UI;
             }
         }
         return null;
+    }
+
+    private void FindWeaponUp(PowerUpTypes weaponToFind, bool active)
+    {
+        foreach (var item in _weaponUI)
+        {
+            if (weaponToFind == item.weaponTypes)
+            {
+                item._UI.SetActive(active);
+                continue;
+            }
+            if (active != false)
+            {
+                item._UI.SetActive(false);
+            }
+        }
     }
 
     public void GameOver()

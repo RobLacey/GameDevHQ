@@ -8,20 +8,39 @@ public class ScoreController : MonoBehaviour
     [SerializeField] int _score = 0;
     [SerializeField] Text _scoreText = default;
     [SerializeField] Text _waveWipeText = default;
-    [SerializeField] EventManager _Event_AddToScore = default;
-    [SerializeField] EventManager _Event_WaveWiped = default;
+    [SerializeField] Text _waveWipeTitle = default;
+    [SerializeField] Color _colorOn;
+    [SerializeField] Color _colorOff;
+    [SerializeField] int _flashColor = 3;
+    [SerializeField] float _flashingPeriod = 0.5f;
     [SerializeField] bool _waveWipeBonusOn = false;
     [SerializeField] int _waveWipeBonus = 1;
     [SerializeField] int _scorePad = 6;
     [SerializeField] int _waveWipePad = 2;
+    [SerializeField] AudioClip _waveWipeResetSFX = default;
+    [SerializeField] float _volume = 0.8f;
+    [SerializeField] EventManager _Event_AddToScore = default;
+    [SerializeField] EventManager _Event_WaveWiped = default;
+    [SerializeField] EventManager _Event_GetTarget;
 
+    //Variable
     char _pad = '0';
+    Camera _camera;
+
     public bool WaveWipe { set { _waveWipeBonusOn = value; } }
+
+    public RectTransform ReturnPosition { get { return _waveWipeText.GetComponent<RectTransform>(); } }
+
+    private void Awake()
+    {
+        _camera = Camera.main;
+    }
 
     private void OnEnable()
     {
         _Event_AddToScore.AddListener(x => AddToScore(x));
         _Event_WaveWiped.AddListener((x, y) => WaveWipeBonusScore(x, y));
+        _Event_GetTarget.AddListener(() => ReturnPosition);
     }
 
     private void Start()
@@ -46,6 +65,8 @@ public class ScoreController : MonoBehaviour
         }
         else if(_waveWipeBonusOn && !active)
         {
+            StartCoroutine(FlashColour());
+            AudioSource.PlayClipAtPoint(_waveWipeResetSFX, _camera.transform.position, _volume);
             _waveWipeBonusOn = false;
             _waveWipeBonus = 1;
         }
@@ -57,5 +78,23 @@ public class ScoreController : MonoBehaviour
         AddToScore((int) score);
     }
 
+    IEnumerator FlashColour()
+    {
+        for (int count = 0; count < _flashColor; count++)
+        {
+            yield return StartCoroutine(FlickerTimer());
+        }
+        yield return null;
+    }
+
+    IEnumerator FlickerTimer()
+    {
+        _waveWipeText.color = _colorOn;
+        _waveWipeTitle.color = _colorOn;
+        yield return new WaitForSeconds(_flashingPeriod);
+        _waveWipeText.color = _colorOff;
+        _waveWipeTitle.color = _colorOff;
+        yield return new WaitForSeconds(_flashingPeriod);
+    }
 
 }

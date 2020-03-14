@@ -5,223 +5,136 @@ using UnityEngine;
 
 public class WeaponsSystem : MonoBehaviour, IWeaponSystem
 {
-    [SerializeField] GameObject _shields = default;
-    [SerializeField] bool _isSpeedBoostActive = false;
-    [SerializeField] bool _areShieldsActive = false;
-    [SerializeField] float _speedBoost = 10f;
-    [SerializeField] float _normalSpeed = 5f;
-    [SerializeField] float _SpeedBoostTimer = 0f;
-    [SerializeField] float _speedBoostPresence = 7f;
     [SerializeField] AudioClip _powerUpEndSFX = default;
-    [SerializeField] Weapon _singleShot = default;
-    [SerializeField] Weapon _tripleShot = default;
-    [SerializeField] Weapon _sideShot = default;
-    [SerializeField] Weapon _homingMissle = default;
-    [SerializeField] PowerUpTypes _currentWeapon = default;
+    [SerializeField] Weapon _currentWeapon = default;
     [SerializeField] EventManager _Event_ActivatePowerUp;
     [SerializeField] EventManager _Event_DeactivatePowerUp;
-    [SerializeField] EventManager _Event_AddHealth;
     [SerializeField] EventManager _Event_DefaultWeapon;
     [SerializeField] PoolingAgent _poolingAgent;
+    [SerializeField] Weapon[] _weapons;
 
     Action<PowerUpTypes> setActive;
-    GameObject _currentWeaponPrefab;
-
-    //Properties
-    public bool I_ShieldsAreActive 
-        { get { return _areShieldsActive; } set { _areShieldsActive = value; } }
 
     //Variables
     AudioSource _audioSource;
-    CircleCollider2D _shieldsCollider;
-    ISpeedBoostable _speedBoostable;
 
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
-        _speedBoostable = GetComponent<ISpeedBoostable>();
-        _shieldsCollider = GetComponentInChildren<CircleCollider2D>();
-        _singleShot.SetUp();
-        _tripleShot.SetUp();
-        _sideShot.SetUp();
-        _homingMissle.SetUp();
     }
 
     private void OnEnable()
     {
-        setActive += _singleShot.SetActive;
-        setActive += _tripleShot.SetActive;
-        setActive += _sideShot.SetActive;
-        setActive += _homingMissle.SetActive;
-        _Event_ActivatePowerUp.AddListener(x => ActivatePowerUp(x));
+        foreach (var weapon in _weapons)
+        {
+            setActive += weapon.SetActive;
+        }
     }
 
     private void OnDisable()
     {
-        setActive -= _singleShot.SetActive;
-        setActive -= _tripleShot.SetActive;
-        setActive -= _sideShot.SetActive;
-        setActive -= _homingMissle.SetActive;
+        foreach (var weapon in _weapons)
+        {
+            setActive -= weapon.SetActive;
+        }
     }
 
-    void Start()
+    private void Start()
     {
-        SetUpShields(false);
-        SetUpSpeedBoost(false);
-        ActivatePowerUp(PowerUpTypes.SingleShot);
+        foreach (var weapon in _weapons)
+        {
+            weapon.SetUp();
+        }
+
+        _Event_ActivatePowerUp.AddListener(x => I_ActivateWeapon(x));
+        _Event_DeactivatePowerUp.AddListener(x => I_DeactivateWeapon(x));
+        I_ActivateWeapon(PowerUpTypes.SingleShot);
     }
 
     void Update()
     {
-        if (_tripleShot._isActive) //TODO combine methods
+        if (_currentWeapon._isActive && _currentWeapon._weapon != PowerUpTypes.SingleShot)
         { 
-            WeaponTimer(_tripleShot); 
-        }
-
-        if (_sideShot._isActive) 
-        { 
-            WeaponTimer(_sideShot);
-        }
-
-        if (_homingMissle._isActive) 
-        { 
-            WeaponTimer(_homingMissle);
-        }
-
-        if (_isSpeedBoostActive)
-        {
-            SpeedBoostTimer();
+            WeaponTimer(); 
         }
     }
 
     public void I_Fire() 
     {
-        _poolingAgent.InstantiateFromPool(_currentWeaponPrefab, transform.position, Quaternion.identity);
+        _poolingAgent.InstantiateFromPool(_currentWeapon._weaponPrefab, transform.position, Quaternion.identity);
         _audioSource.Play();
     }
 
-    public void ActivatePowerUp(object newPowerUp)
+    public void I_ActivateWeapon(object newPowerUp)
     {
-        PowerUpTypes weapon = (PowerUpTypes)newPowerUp;
-        switch (weapon)
+        PowerUpTypes newWeapon = (PowerUpTypes)newPowerUp;
+
+        foreach (var weapon in _weapons)
         {
-            case PowerUpTypes.SingleShot:
-                _currentWeaponPrefab = _singleShot._weaponPrefab;
-                SetUpWeapon(_singleShot._volume, _singleShot._weaponSFX, weapon);
+            if (weapon._weapon == newWeapon)
+            {
+                _currentWeapon = weapon;
+                SetUpWeapon();
                 break;
-            case PowerUpTypes.TripleShot:
-                _currentWeaponPrefab = _tripleShot._weaponPrefab;
-                _tripleShot._timer = _tripleShot._presenece;
-                SetUpWeapon(_tripleShot._volume, _tripleShot._weaponSFX, weapon);
-                break;
-            case PowerUpTypes.SideShot:
-                _currentWeaponPrefab = _sideShot._weaponPrefab;
-                _sideShot._timer = _sideShot._presenece;
-                SetUpWeapon(_sideShot._volume, _sideShot._weaponSFX, weapon);
-                break;
-            case PowerUpTypes.HomingMissle:
-                _currentWeaponPrefab = _homingMissle._weaponPrefab;
-                _homingMissle._timer = _homingMissle._presenece;
-                SetUpWeapon(_homingMissle._volume, _homingMissle._weaponSFX, weapon);
-                break;
-            case PowerUpTypes.SpeedBoost:
-                _SpeedBoostTimer = _speedBoostPresence;
-                SetUpSpeedBoost(true);
-                break;
-            case PowerUpTypes.Shield:
-                if (I_ShieldsAreActive == true) return;
-                SetUpShields(true);
-                break;
-            case PowerUpTypes.Health:
-                _Event_AddHealth.Invoke();
-                break;
-            default:
-                break;
+            }
+        }
+
+        if (newWeapon == PowerUpTypes.SpeedBoost)
+        {
+            SetUpSpeedBoost(true);
         }
     }
 
-    public void I_DeactivatePowerUps(PowerUpTypes oldPowerUp)
+    public void I_DeactivateWeapon(object oldPowerUp)
     {
-        switch (oldPowerUp)
+        switch ((PowerUpTypes)oldPowerUp)
         {
             case PowerUpTypes.SpeedBoost:
                 SetUpSpeedBoost(false);
                 break;
-            case PowerUpTypes.Shield:
-                SetUpShields(false);
-                break;
-            default:
-                break;
         }
-        _Event_DeactivatePowerUp.Invoke(oldPowerUp);
-        AudioSource.PlayClipAtPoint(_powerUpEndSFX, Camera.main.transform.position);
     }
 
-    private void SetUpWeapon(float volume, AudioClip audioClip, PowerUpTypes weaponType)
+    private void SetUpWeapon()
     {
-        setActive.Invoke(weaponType);
-        _audioSource.volume = volume;
-        _audioSource.clip = audioClip;
-        _currentWeapon = weaponType;
+        setActive.Invoke(_currentWeapon._weapon);
+        _audioSource.volume = _currentWeapon._volume;
+        _audioSource.clip = _currentWeapon._weaponSFX;
+
+        if (_currentWeapon._weapon != PowerUpTypes.SingleShot)
+        {
+            _currentWeapon._timer = _currentWeapon._presenece;
+        }
     }
 
     private void SetUpSpeedBoost(bool active)
     {
-        _isSpeedBoostActive = active;
-        _singleShot.ActivateSpeedBoost(active);
-        _tripleShot.ActivateSpeedBoost(active);
-        _sideShot.ActivateSpeedBoost(active);
-        if (active)
+        foreach (var item in _weapons)
         {
-            _SpeedBoostTimer = _speedBoostPresence;
-            _speedBoostable.I_SetSpeed = _speedBoost;
-        }
-        else
-        {
-            _speedBoostable.I_SetSpeed = _normalSpeed;
+            item.ActivateSpeedBoost(active);
         }
     }
 
-    private void SetUpShields(bool active)
+    private void WeaponTimer()
     {
-        I_ShieldsAreActive = active;
-        _shieldsCollider.enabled = active;
-        _shields.SetActive(active);
-    }
-
-    private void WeaponTimer(Weapon weapon)
-    {
-        weapon._timer -= Time.deltaTime;
-        if (weapon._timer <= 0)
+        _currentWeapon._timer -= Time.deltaTime;
+        if (_currentWeapon._timer <= 0)
         {
             _Event_DefaultWeapon.Invoke(PowerUpTypes.SingleShot);
-            ActivatePowerUp(PowerUpTypes.SingleShot);
+            I_ActivateWeapon(PowerUpTypes.SingleShot);
             AudioSource.PlayClipAtPoint(_powerUpEndSFX, Camera.main.transform.position);
-        }
-    }
-
-    private void SpeedBoostTimer()
-    {
-        _SpeedBoostTimer -= Time.deltaTime;
-        if (_SpeedBoostTimer <= 0)
-        {
-            I_DeactivatePowerUps(PowerUpTypes.SpeedBoost);
         }
     }
 
     public float I_ReturnFireRate()
     {
-        switch (_currentWeapon) 
+        foreach (var item in _weapons)
         {
-            case PowerUpTypes.SingleShot:
-                return _singleShot.FireRate();
-            case PowerUpTypes.TripleShot:
-                return _tripleShot.FireRate();
-            case PowerUpTypes.SideShot:
-                return _sideShot.FireRate();
-            case PowerUpTypes.HomingMissle:
-                return _homingMissle.FireRate();
-        }
+            if (item._weapon == _currentWeapon._weapon)
+            {
+                return item.FireRate();
+            }
+        }        
         Debug.Log("No weapon found");
         return 0;
     }

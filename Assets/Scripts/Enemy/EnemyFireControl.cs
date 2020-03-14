@@ -24,7 +24,7 @@ public class EnemyFireControl : MonoBehaviour, IKillable
         _audioSource.volume = _volume;
     }
 
-    private void Start()
+    private void OnEnable()
     {
         _fireRate = UnityEngine.Random.Range(_fireRateMin, _fireRateMax);
         StartCoroutine(Fire());
@@ -34,10 +34,10 @@ public class EnemyFireControl : MonoBehaviour, IKillable
     {
         while (true)
         {
-            _fireRate = UnityEngine.Random.Range(_fireRateMin, _fireRateMax);
             yield return new WaitForSeconds(_fireRate);
             _poolingAgent.InstantiateFromPool(_weaponPrefab, transform.position + _laserOffset, Quaternion.identity);
             _audioSource.Play();
+            _fireRate = UnityEngine.Random.Range(_fireRateMin, _fireRateMax);
         }
     }
 

@@ -23,7 +23,6 @@ public class Health : MonoBehaviour, IDamageable
 
     private void Awake()
     {
-        Debug.Log("Enemies not recycling properly so missles get confused");
         if (_hasHealthBar)
         {
             _healthBar = GetComponentInChildren<Slider>();
@@ -45,7 +44,6 @@ public class Health : MonoBehaviour, IDamageable
 
         if (canDealDamage != null && canDealDamage.I_TeamTag != I_TeamTag)
         {
-        Debug.Log(collision.gameObject.name);
             _Event_WaveWipedCancel.Invoke(0, false);
             _collisionKill = true;
             canDealDamage.I_ProcessCollision(_damageDealt);

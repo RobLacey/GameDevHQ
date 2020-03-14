@@ -1,4 +1,4 @@
 ﻿public enum PoolingID
 {
-    Enemy, Weapons, PowerUps, FX
+    Enemy, Weapons, PowerUps, FX, UIElement
 }

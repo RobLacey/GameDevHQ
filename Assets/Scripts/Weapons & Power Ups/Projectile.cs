@@ -15,6 +15,11 @@ public class Projectile : MonoBehaviour
 
     public TeamID I_TeamTag { get { return _teamID; } }
 
+    private void Awake()
+    {
+        _startingPos = transform.localPosition;
+    }
+
     protected virtual void OnEnable()
     {
         transform.localPosition = _startingPos;

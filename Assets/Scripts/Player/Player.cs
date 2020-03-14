@@ -6,17 +6,13 @@ using UnityEngine.Events;
 
 public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
 {
-    //TODO Split off weapons and powerups in different classes??
-    //TODO add some other enemy ship types
     //TODO Check and Tidy code
+    //TODO Make Power Up colours match UI and add text to capsules
     //TODO Check garbage collection
-    //TODO Hozizontal Movemnt in seperate script
     //TODO Make sonic bomb
     //TODO add level progression and boss battle
-    //TODO redo start menu
     //TODO add high score table - playerperf
-    //TODO Better Health bar
-    //TODO Imporve explosions (add random second explosion spawn maybe)
+    //TODO First start Event to stop unneccessary Onenable calls and allow Start to get called as stoppped from pooling manager
     
 
     [SerializeField] TeamID _teamID;
@@ -24,7 +20,7 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
     [SerializeField] float _speed = 1f;
     [SerializeField] string _horizontalAxis = null;
     [SerializeField] string _verticalAxis = null;
-    [SerializeField] int _health = 3;
+    [SerializeField] float _health = 10;
     [SerializeField] GameObject[] _damageFX = default;
     [SerializeField] GameObject _deathFX = default;
     [SerializeField] PoolingAgent _poolingAgent;
@@ -33,6 +29,8 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
     [SerializeField] EventManager _Event_SetLives = default;
     [SerializeField] EventManager _Event_AddHealth;
     [SerializeField] EventManager _Event_WaveWipedCancel = default;
+    [SerializeField] EventManager _Event_DeactivatePowerUp;
+
     [SerializeField] GlobalVariables _myVars;
 
 
@@ -43,14 +41,15 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
 
     //Variables
     float _canFireTimer = 0;
-    int _startingHealth = 0;
+    float _startingHealth = 0;
     int _damageIndex = 0;
     IWeaponSystem _myWeaponSystem;
+    IPowerUpSystem _myPowerUpSystem;
 
     private void Awake()
     {
-        //TeamTag = _teamTag.GetHashCode();
         _myWeaponSystem = GetComponent<IWeaponSystem>();
+        _myPowerUpSystem = GetComponent<IPowerUpSystem>();
         if (cheat)
         {
             Debug.Log("Cheat ON");
@@ -115,17 +114,32 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
         {
             if (_health <= 0) return;
 
-            if (_myWeaponSystem.I_ShieldsAreActive)
+            if (_myPowerUpSystem.I_ShieldsAreActive)
             {
-                _myWeaponSystem.I_DeactivatePowerUps(PowerUpTypes.Shield);
+                _Event_DeactivatePowerUp.Invoke(PowerUpTypes.Shield);
                 return;
             }
-            _health -= damage;
             _Event_WaveWipedCancel.Invoke(0, false);
-            _Event_SetLives.Invoke(_health);
-            HealthDisplay(true);
-            _damageIndex++;
+            RemoveHealth(damage);
         }
+    }
+
+    private void RemoveHealth(int damage)
+    {
+        _health -= damage;
+        float _newHealth = _health / _startingHealth;
+        _Event_SetLives.Invoke(_newHealth);
+        HealthDisplay(true);
+    }
+
+    private void AddHealth()
+    {
+        if (_health == _startingHealth) return;
+        _health++;
+        float _newHealth = _health / _startingHealth;
+        _Event_SetLives.Invoke(_newHealth);
+        _damageIndex--;
+        HealthDisplay(false);
     }
 
     private void HealthDisplay(bool active)
@@ -133,17 +147,10 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
         if (_damageIndex <= _damageFX.Length - 1)
         {
             _damageFX[_damageIndex].SetActive(active);
-        }
+        }            
+        _damageIndex++;
     }
 
-    private void AddHealth()
-    {
-        if (_health == _startingHealth) return;
-        _health++;
-        _damageIndex--;
-        HealthDisplay(false);
-        _Event_SetLives.Invoke(_health);
-    }
 
     public void I_ProcessCollision(int damage)
     {

@@ -14,9 +14,9 @@ public class PoolingManager : MonoBehaviour
     [System.Serializable]
     public class Pool //Maybe have scriptable Object
     {
-        [SerializeField] public string name; 
+        [SerializeField] public string name = "Object"; 
         [SerializeField] public GameObject prefab;
-        [SerializeField] public int startingPrefabs = 0;
+        [SerializeField] public int startingPrefabs = 3;
         [HideInInspector] public Transform _poolFolder = null;
     
         public Queue<GameObject> _prefabPool = new Queue<GameObject>();
@@ -55,6 +55,7 @@ public class PoolingManager : MonoBehaviour
 
     public GameObject PoolingProcess(GameObject gameObjectToCreate, Vector3 newPosition, Quaternion rotation)
     {
+        Debug.Log("Object Instantiated");
         foreach (var pool in _poolCollection)
         {
             if (pool.prefab == gameObjectToCreate)
