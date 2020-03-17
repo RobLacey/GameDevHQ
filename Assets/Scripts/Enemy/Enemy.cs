@@ -13,11 +13,9 @@ public class Enemy : MonoBehaviour, IKillable, IWaveMemeber
     [SerializeField] EventManager _Event_RemoveEnemyAsTarget;
     [SerializeField] EventManager _Event_AddEnemy;
 
-
     SpriteRenderer _mySprite;
     Collider2D _collider2D;
     IEnemyWave _partOfWave;
-    bool _started = false;
 
     public GameObject Myself { get { return gameObject; } }
 
@@ -27,15 +25,12 @@ public class Enemy : MonoBehaviour, IKillable, IWaveMemeber
         _mySprite = GetComponentInChildren<SpriteRenderer>();
         _collider2D = GetComponentInChildren<Collider2D>();
     }
+
     private void OnEnable()
     {
         _mySprite.enabled = true;
         _collider2D.enabled = true;
-        if (_started)
-        {
-            _Event_AddEnemy.Invoke(gameObject);
-        }
-        _started = true;
+        _Event_AddEnemy.Invoke(gameObject);
     }
 
     public void I_Dead(bool collsionKill)

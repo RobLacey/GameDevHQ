@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
 public class GameManager : MonoBehaviour
 {
     [SerializeField] EventManager _Event_PlayerDead;
     [SerializeField] EventManager _Event_StartLevel;
 
-    bool _isGameOver { get; set; }
+    bool IsGameOver { get; set; }
 
     private void OnEnable()
     {
@@ -30,12 +29,12 @@ public class GameManager : MonoBehaviour
             Debug.Log("Quit");
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && _isGameOver)
+        if (Input.GetKeyDown(KeyCode.R) && IsGameOver)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
-        if (Input.GetKeyDown(KeyCode.M) && _isGameOver)
+        if (Input.GetKeyDown(KeyCode.M) && IsGameOver)
         {
             SceneManager.LoadScene(0);
         }
@@ -43,6 +42,6 @@ public class GameManager : MonoBehaviour
 
     private void GameOver()
     {
-        _isGameOver = true;
+        IsGameOver = true;
     }
 }

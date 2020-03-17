@@ -3,7 +3,7 @@ using System;
 
 public interface IDamageable : ITagable
 {
-    void I_ProcessCollision(int damage);
+    void I_ProcessCollision(float damage);
 }
 
 public interface ITagable
@@ -47,10 +47,9 @@ public interface IEnemyWave
     void I_LostEnemyFromWave(int score, Vector3 lastEnemiesPosition);
 }
 
-public interface IShrapnel
+public interface IShowDamage
 {
-    void I_DeactivateChildObjects();
-    //void I_LostShrapnelPiece();
+    void DamageDisplay(float damageCalc);
 }
 
 public interface IScaleable
@@ -62,6 +61,7 @@ public interface IWaveMemeber
 {
     GameObject Myself { get; }
 }
+
 
 
 

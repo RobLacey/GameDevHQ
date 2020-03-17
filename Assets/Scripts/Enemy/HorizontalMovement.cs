@@ -9,6 +9,7 @@ public class HorizontalMovement : MonoBehaviour
     [SerializeField] float _leftPathEdge = -6f;
     [SerializeField] float _rightPathEdge = 6f;
 
+
     //Variables
     float _duration;
     float _rightBoundsMax, _leftBoundsMax;
@@ -28,7 +29,7 @@ public class HorizontalMovement : MonoBehaviour
     {
         _timer += Time.deltaTime;
         float perc = _timer / _duration;
-        transform.VectorLerp(_leftBoundsMax, _rightBoundsMax, perc.easeINOut());
+        transform.VectorLerp(_leftBoundsMax, _rightBoundsMax, perc.EaseINOut());
         SwapDirections();
     }
 

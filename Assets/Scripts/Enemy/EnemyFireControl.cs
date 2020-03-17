@@ -7,11 +7,11 @@ public class EnemyFireControl : MonoBehaviour, IKillable
 {
     [SerializeField] float _fireRateMin= default;
     [SerializeField] float _fireRateMax = default;
-    [SerializeField] GameObject _weaponPrefab = default;
     [SerializeField] Vector3 _laserOffset = default;
-    [SerializeField] PoolingAgent _poolingAgent;
     [SerializeField] AudioClip _laserSFX;
     [SerializeField] float _volume;
+    [SerializeField] GameObject _weaponPrefab = default;
+    [SerializeField] PoolingAgent _poolingAgent;
 
     //Variables
     float _fireRate = 0;

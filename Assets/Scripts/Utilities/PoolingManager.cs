@@ -7,7 +7,7 @@ public class PoolingManager : MonoBehaviour
     [SerializeField] public GameObject newPoolPrefab;
     [SerializeField] PoolingID _poolType;
     [SerializeField] Pool[] _poolCollection;
-    string _poolingFolderName = " Pool";
+    readonly string _poolingFolderName = " Pool";
 
     public PoolingID PoolingID { get { return _poolType; } }
 
@@ -22,7 +22,7 @@ public class PoolingManager : MonoBehaviour
         public Queue<GameObject> _prefabPool = new Queue<GameObject>();
     }
 
-    private void Awake()
+    private void Start()
     {
         if (_poolCollection.Length == 0) return;
 
@@ -55,7 +55,7 @@ public class PoolingManager : MonoBehaviour
 
     public GameObject PoolingProcess(GameObject gameObjectToCreate, Vector3 newPosition, Quaternion rotation)
     {
-        Debug.Log("Object Instantiated");
+        //Debug.Log("Object Instantiated");
         foreach (var pool in _poolCollection)
         {
             if (pool.prefab == gameObjectToCreate)
@@ -84,5 +84,4 @@ public class PoolingManager : MonoBehaviour
         thisPool._prefabPool.Enqueue(newObject);
         return newObject;
     }
-
 }

@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5943399622060334402}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -181,11 +181,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 1
-  _allowSidewaysMovement: 0
-  farRight: 0
-  farLeft: 0
-  insideRight: 0
-  insideLeft: 0
-  _horizontalSpeedMax: 0
   _Event_RemoveEnemyAsTarget: {fileID: 0}
+  _Event_UpdateMe: {fileID: 11400000, guid: 2e1e4d2165d532f4a8da307605c1f574, type: 2}
   _screenBounds: {fileID: 11400000, guid: 7fd64ba6d27c63e409a5621b18a04dd1, type: 2}

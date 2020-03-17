@@ -2,14 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WeaponsSystem : MonoBehaviour, IWeaponSystem
 {
     [SerializeField] AudioClip _powerUpEndSFX = default;
+    [SerializeField] float _powerUpEndVolume = default;
     [SerializeField] Weapon _currentWeapon = default;
     [SerializeField] EventManager _Event_ActivatePowerUp;
     [SerializeField] EventManager _Event_DeactivatePowerUp;
     [SerializeField] EventManager _Event_DefaultWeapon;
+    [SerializeField] EventManager _Event_CountDownTimer;
     [SerializeField] PoolingAgent _poolingAgent;
     [SerializeField] Weapon[] _weapons;
 
@@ -51,7 +54,7 @@ public class WeaponsSystem : MonoBehaviour, IWeaponSystem
         I_ActivateWeapon(PowerUpTypes.SingleShot);
     }
 
-    void Update()
+    private void Update()
     {
         if (_currentWeapon._isActive && _currentWeapon._weapon != PowerUpTypes.SingleShot)
         { 
@@ -118,11 +121,12 @@ public class WeaponsSystem : MonoBehaviour, IWeaponSystem
     private void WeaponTimer()
     {
         _currentWeapon._timer -= Time.deltaTime;
+        _Event_CountDownTimer.Invoke(_currentWeapon._timer);
         if (_currentWeapon._timer <= 0)
         {
             _Event_DefaultWeapon.Invoke(PowerUpTypes.SingleShot);
             I_ActivateWeapon(PowerUpTypes.SingleShot);
-            AudioSource.PlayClipAtPoint(_powerUpEndSFX, Camera.main.transform.position);
+            _audioSource.PlayOneShot(_powerUpEndSFX, _powerUpEndVolume);
         }
     }
 

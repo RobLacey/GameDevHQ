@@ -9,6 +9,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] GameObject[] _spawnArray = default;
     [SerializeField] float _minSpawnTime = 1f;
     [SerializeField] float _maxSpawnTime = 1f;
+    [SerializeField] float _startDelay = default;
     [SerializeField] bool _trackActiveObjects = false;
     [SerializeField] bool canSpawn = true;
     [SerializeField] EventManager _Event_StartSpawning;
@@ -21,6 +22,11 @@ public class SpawnManager : MonoBehaviour
 
     public List<GameObject> ActiveTargets { get; private set; }
 
+    private void Awake()
+    {
+        ActiveTargets = new List<GameObject>();
+    }
+
     private void OnEnable()
     {
         _Event_StartSpawning.AddListener(() => StartSpawning());
@@ -29,13 +35,19 @@ public class SpawnManager : MonoBehaviour
         {
             _Event_ReturnActiveEnemies.AddListener(() => ActiveTargets);
             _Event_RemoveEnemyASTarget.AddListener((x) => RemoveActiveTargets(x));
-            _Event_AddEnemy.AddListener((x) => ActiveTargets.Add((GameObject)x)); // TODO Error
+            _Event_AddEnemy.AddListener((x) => ActiveTargets.Add((GameObject)x));
         }
     }
 
     private void StartSpawning()
     {
         ActiveTargets = new List<GameObject>();
+        StartCoroutine(StartDelay());
+    }
+
+    private IEnumerator StartDelay()
+    {
+        yield return new WaitForSeconds(_startDelay);
         StartCoroutine(SpawnObjects());
     }
 
@@ -43,10 +55,10 @@ public class SpawnManager : MonoBehaviour
     {
         while (canSpawn)
         {
+            float timer = Random.Range(_minSpawnTime, _maxSpawnTime);
             GameObject toSpawn = _spawnArray[Random.Range(0, _spawnArray.Length)];
             Vector3 newPos = SpawnPosition();
             _poolingAgent.InstantiateFromPool(toSpawn, newPos, Quaternion.identity);
-            float timer = Random.Range(_minSpawnTime, _maxSpawnTime);
             yield return new WaitForSeconds(timer);
         }
     }
@@ -65,6 +77,7 @@ public class SpawnManager : MonoBehaviour
     private void RemoveActiveTargets(object oldtaget)
     {
         GameObject toRemove = (GameObject)oldtaget;
+
         if(ActiveTargets.Contains(toRemove))
         {
             ActiveTargets.Remove(toRemove);

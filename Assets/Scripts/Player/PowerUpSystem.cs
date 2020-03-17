@@ -7,7 +7,7 @@ public class PowerUpSystem : MonoBehaviour ,IPowerUpSystem
     [SerializeField] GameObject _shields = default;
     [SerializeField] bool _isSpeedBoostActive = false;
     [SerializeField] bool _areShieldsActive = false;
-    [SerializeField] float _speedBoost = 10f;
+    [SerializeField] float _speedBoostMulitplier = 10f;
     [SerializeField] float _normalSpeed = 5f;
     [SerializeField] float _SpeedBoostTimer = 0f;
     [SerializeField] float _speedBoostPresence = 7f;
@@ -15,6 +15,7 @@ public class PowerUpSystem : MonoBehaviour ,IPowerUpSystem
     [SerializeField] EventManager _Event_ActivatePowerUp;
     [SerializeField] EventManager _Event_DeactivatePowerUp;
     [SerializeField] EventManager _Event_AddHealth;
+    [SerializeField] EventManager _Event_CountDownTimer;
 
     CircleCollider2D _shieldsCollider;
     ISpeedBoostable _speedBoostable;
@@ -93,7 +94,7 @@ public class PowerUpSystem : MonoBehaviour ,IPowerUpSystem
         if (active)
         {
             _SpeedBoostTimer = _speedBoostPresence;
-            _speedBoostable.I_SetSpeed = _speedBoost;
+            _speedBoostable.I_SetSpeed = _normalSpeed * _speedBoostMulitplier;
         }
         else
         {
@@ -111,6 +112,7 @@ public class PowerUpSystem : MonoBehaviour ,IPowerUpSystem
     private void SpeedBoostTimer()
     {
         _SpeedBoostTimer -= Time.deltaTime;
+        _Event_CountDownTimer.Invoke(_SpeedBoostTimer);
         if (_SpeedBoostTimer <= 0)
         {
             _Event_DeactivatePowerUp.Invoke(PowerUpTypes.SpeedBoost);

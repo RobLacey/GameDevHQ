@@ -7,13 +7,12 @@ using UnityEngine.Events;
 public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
 {
     //TODO Check and Tidy code
-    //TODO Make Power Up colours match UI and add text to capsules
     //TODO Check garbage collection
-    //TODO Make sonic bomb
     //TODO add level progression and boss battle
     //TODO add high score table - playerperf
-    //TODO First start Event to stop unneccessary Onenable calls and allow Start to get called as stoppped from pooling manager
-    
+    //TODO Start Cinematic
+
+   
 
     [SerializeField] TeamID _teamID;
     [SerializeField] Vector3 _startPosition = default;
@@ -21,8 +20,11 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
     [SerializeField] string _horizontalAxis = null;
     [SerializeField] string _verticalAxis = null;
     [SerializeField] float _health = 10;
-    [SerializeField] GameObject[] _damageFX = default;
+    [SerializeField] GameObject _damageFX = default;
+    [SerializeField] AudioClip _damageSoundFX = default;
+    [SerializeField] float _sfxVolume = 1f;
     [SerializeField] GameObject _deathFX = default;
+    [SerializeField] Vector3 _explosionSize = default;
     [SerializeField] PoolingAgent _poolingAgent;
     [SerializeField] bool cheat = false;
     [SerializeField] EventManager _Event_PlayerDead = default;
@@ -33,7 +35,6 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
 
     [SerializeField] GlobalVariables _myVars;
 
-
     //Properties
     public float I_SetSpeed { set { _speed = value; } }
     public TeamID I_TeamTag { get { return _teamID; } }
@@ -42,14 +43,17 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
     //Variables
     float _canFireTimer = 0;
     float _startingHealth = 0;
-    int _damageIndex = 0;
     IWeaponSystem _myWeaponSystem;
     IPowerUpSystem _myPowerUpSystem;
+    IShowDamage _myDamage;
+    AudioSource _myAudioSource;
 
     private void Awake()
     {
         _myWeaponSystem = GetComponent<IWeaponSystem>();
         _myPowerUpSystem = GetComponent<IPowerUpSystem>();
+        _myDamage = GetComponent<IShowDamage>();
+        _myAudioSource = GetComponent<AudioSource>();
         if (cheat)
         {
             Debug.Log("Cheat ON");
@@ -65,10 +69,10 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
     {
         transform.position = _startPosition;
         _startingHealth = _health;
-        _Event_SetLives.Invoke(_health);
+        _Event_SetLives.Invoke(_health / _startingHealth);
     }
 
-    void Update()
+    private void Update()
     {
         Movement();
         Fire();
@@ -108,7 +112,7 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
         transform.position = new Vector3(xPosition, yPosition, 0);
     }
 
-    private void Damage(int damage)
+    private void Damage(float damage)
     {
         if (!cheat)
         {
@@ -120,45 +124,37 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
                 return;
             }
             _Event_WaveWipedCancel.Invoke(0, false);
+            _damageFX.SetActive(true);
+            _myAudioSource.PlayOneShot(_damageSoundFX, _sfxVolume);
             RemoveHealth(damage);
         }
     }
 
-    private void RemoveHealth(int damage)
+    private void RemoveHealth(float damage)
     {
         _health -= damage;
-        float _newHealth = _health / _startingHealth;
-        _Event_SetLives.Invoke(_newHealth);
-        HealthDisplay(true);
+        float newHealth = _health / _startingHealth;
+        _Event_SetLives.Invoke(newHealth);
+        _myDamage.DamageDisplay(newHealth);
     }
 
     private void AddHealth()
     {
         if (_health == _startingHealth) return;
         _health++;
-        float _newHealth = _health / _startingHealth;
-        _Event_SetLives.Invoke(_newHealth);
-        _damageIndex--;
-        HealthDisplay(false);
+        float newHealth = _health / _startingHealth;
+        _Event_SetLives.Invoke(newHealth);
+        _myDamage.DamageDisplay(newHealth);
     }
 
-    private void HealthDisplay(bool active)
-    {
-        if (_damageIndex <= _damageFX.Length - 1)
-        {
-            _damageFX[_damageIndex].SetActive(active);
-        }            
-        _damageIndex++;
-    }
-
-
-    public void I_ProcessCollision(int damage)
+    public void I_ProcessCollision(float damage)
     {
         Damage(damage);
 
         if (_health <= 0)
         {
-            _poolingAgent.InstantiateFromPool(_deathFX, transform.position, Quaternion.identity);
+            GameObject explosion = _poolingAgent.InstantiateFromPool(_deathFX, transform.position, Quaternion.identity);
+            explosion.GetComponent<IScaleable>().I_SetScale(_explosionSize);
             _Event_PlayerDead.Invoke();
             gameObject.SetActive(false);
         }

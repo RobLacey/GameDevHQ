@@ -71,19 +71,19 @@ public static class ExtensionsMethods
 
     //Tween library
 
-    public static float easeINOut (this float perc)
+    public static float EaseINOut (this float perc)
     {
         perc = perc * perc * (3f - 2f * perc);
         return perc;
     }
 
-    public static float easeIN (this float perc)
+    public static float EaseIN (this float perc)
     {
         perc = 1f - Mathf.Cos(perc * Mathf.PI * 0.5f);
         return perc;
     }
 
-    public static float easeOut (this float perc)
+    public static float EaseOut (this float perc)
     {
         perc = Mathf.Sin(perc * Mathf.PI * 0.5f);
         return perc;
@@ -101,4 +101,18 @@ public static class ExtensionsMethods
         return to - from.position;
     }
 
+    //GetChildren
+
+    public static GameObject[] FillWithChildren (this GameObject[] array, Transform parent)
+    {
+        int index = 0;
+        array = new GameObject[parent.childCount];
+        foreach (Transform child in parent)
+        {
+            array[index] = child.gameObject;
+            index++;
+        }
+        return array;
+
+    }
 }

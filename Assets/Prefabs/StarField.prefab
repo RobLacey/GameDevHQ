@@ -109,3 +109,4 @@ MonoBehaviour:
   _xOffset: 0
   _ySpeed: 0.005
   _yOffset: 0
+  _Event_UpdateMe: {fileID: 11400000, guid: 2e1e4d2165d532f4a8da307605c1f574, type: 2}

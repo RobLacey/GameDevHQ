@@ -10,7 +10,7 @@ public class MaterialScroller : MonoBehaviour
     [SerializeField] float _ySpeed = 0;
     [SerializeField] float _yOffset = 0;
 
-    void Update()
+    private void Update()
     {
         _background.SetTextureOffset("_MainTex", new Vector2(_xOffset, _yOffset));
         _xOffset += _xSpeed * Time.deltaTime;

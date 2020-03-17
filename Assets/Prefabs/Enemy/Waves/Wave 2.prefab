@@ -16,6 +16,7 @@ MonoBehaviour:
   _minSpeed: 3
   _leftPathEdge: -6
   _rightPathEdge: 6
+  _Event_UpdateMe: {fileID: 11400000, guid: 2e1e4d2165d532f4a8da307605c1f574, type: 2}
 --- !u!1001 &3300557706615738644
 PrefabInstance:
   m_ObjectHideFlags: 0

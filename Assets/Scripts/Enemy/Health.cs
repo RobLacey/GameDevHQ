@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Health : MonoBehaviour, IDamageable
 {
     [SerializeField] TeamID _teamID;
-    [SerializeField] int _health = default;
+    [SerializeField] float _health = default;
     [SerializeField] int _damageDealt = 1;
     [SerializeField] EventManager _Event_WaveWipedCancel = default;
     [SerializeField] bool _hasHealthBar;
@@ -16,17 +16,19 @@ public class Health : MonoBehaviour, IDamageable
     public TeamID I_TeamTag { get { return _teamID; } }
 
     //Variables
-    int _instanceHealth;
+    float _instanceHealth;
     IKillable[] _killables;
     bool _collisionKill = false;
     Slider _healthBar;
+    IShowDamage _showDamage;
 
     private void Awake()
     {
+        _showDamage = GetComponent<IShowDamage>();
+
         if (_hasHealthBar)
         {
             _healthBar = GetComponentInChildren<Slider>();
-            _healthBar.maxValue = _health;
         }
         _killables = GetComponents<IKillable>();
     }
@@ -35,7 +37,7 @@ public class Health : MonoBehaviour, IDamageable
     {
        _instanceHealth = _health;
        _collisionKill = false;
-       if(_hasHealthBar) _healthBar.value = _health;
+       if(_hasHealthBar) _healthBar.value = _instanceHealth / _health;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -51,7 +53,7 @@ public class Health : MonoBehaviour, IDamageable
         }
     }
 
-    public void I_ProcessCollision(int damage)
+    public void I_ProcessCollision(float damage)
     {
         _instanceHealth -= damage;
 
@@ -62,14 +64,23 @@ public class Health : MonoBehaviour, IDamageable
                 item.I_Dead(_collisionKill);
             }
         }
-        UpdateHealthBar(); 
+        UpdateHealthBar();
+        ShowDamage();
     }
 
     private void UpdateHealthBar()
     {
         if (_hasHealthBar)
         {
-            _healthBar.value = _instanceHealth;
+            _healthBar.value = _instanceHealth / _health;
+        }
+    }
+
+    private void ShowDamage()
+    {
+        if (_showDamage != null)
+        {
+            _showDamage.DamageDisplay(_instanceHealth / _health);
         }
     }
 }

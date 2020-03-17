@@ -117,6 +117,7 @@ MonoBehaviour:
   _hiteffect: {fileID: 2386902876299727280, guid: 8aa85601bcce95949864bcb6b8a2265b,
     type: 3}
   _poolingAgent: {fileID: 117588556345456921}
+  _Event_UpdateMe: {fileID: 11400000, guid: 2e1e4d2165d532f4a8da307605c1f574, type: 2}
   _weaponHitBounds: {fileID: 11400000, guid: 7fd64ba6d27c63e409a5621b18a04dd1, type: 2}
   speed: 3
   _direction: {x: 0, y: -1, z: 0}

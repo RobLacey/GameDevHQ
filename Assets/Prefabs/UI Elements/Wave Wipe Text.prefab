@@ -209,3 +209,4 @@ MonoBehaviour:
   _Event_GetTarget: {fileID: 11400000, guid: 2bb3909c96ba43b4caf302561d7f6aaf, type: 2}
   _waveWipeSFX: {fileID: 8300000, guid: 6408fce7c02f0a64ab5f2910fb5d70af, type: 3}
   _volume: 0.8
+  _Event_UpdateMe: {fileID: 11400000, guid: 2e1e4d2165d532f4a8da307605c1f574, type: 2}
