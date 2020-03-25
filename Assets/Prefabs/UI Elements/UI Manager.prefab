@@ -1,51 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1677611576
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1677611579}
-  - component: {fileID: 1677611578}
-  m_Layer: 0
-  m_Name: EventSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1677611579
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1677611576}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -399.99997, y: -224.99998, z: 0}
-  m_LocalScale: {x: 0.41666663, y: 0.41666663, z: 0.41666663}
-  m_Children: []
-  m_Father: {fileID: 8330378786635889013}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1677611578
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1677611576}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 0}
-  m_sendNavigationEvents: 1
-  m_DragThreshold: 10
 --- !u!1 &403204129698389289
 GameObject:
   m_ObjectHideFlags: 0
@@ -136,7 +90,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8330378786635889013}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -730,7 +684,7 @@ RectTransform:
   m_Children:
   - {fileID: 4217870301776289604}
   m_Father: {fileID: 8330378786635889013}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -810,6 +764,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _healthUI: {fileID: 3410512520221284352}
+  _collectedHealthUI: {fileID: 6865438281009587754}
   _healthText: {fileID: 5153821653099285429}
   _healthBarColour:
   - {r: 0.02616591, g: 0.7924528, b: 0.15270863, a: 0.23921569}
@@ -818,6 +773,8 @@ MonoBehaviour:
   _flashSpeed: 1
   _Event_SetLives: {fileID: 11400000, guid: df9e99793f49aa545aa40c3c39ac1162, type: 2}
   _Event_PlayerDead: {fileID: 11400000, guid: 786a86b41c101234c85ab3832dbaadf1, type: 2}
+  _Event_ActivatePowerUp: {fileID: 11400000, guid: 032760db4a9315c4fbb64403d598135b,
+    type: 2}
 --- !u!82 &973350110
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1387,7 +1344,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8330378786635889013}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2630,7 +2587,6 @@ RectTransform:
   - {fileID: 8330378785841715547}
   - {fileID: 1092235336859775460}
   - {fileID: 7140050526605924199}
-  - {fileID: 1677611579}
   - {fileID: 836129970206908112}
   - {fileID: 486071373448128792}
   - {fileID: 7481965514977991341}
@@ -2716,15 +2672,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameOverUI: {fileID: 3117089891566525541}
-  _resetKeyUI: {fileID: 6398611091453690188}
+  _resetUI: {fileID: 6398611091453690188}
   _onMin: 0.1
   _onMax: 0.4
   _offMin: 0.05
   _offMax: 0.2
   _flashed: 6
   _powerUpUI:
-  - powerUpTypes: 5
-    _UI: {fileID: 6865438281009587754}
   - powerUpTypes: 4
     _UI: {fileID: 2995164293398526038}
   - powerUpTypes: 3
@@ -2755,6 +2709,7 @@ MonoBehaviour:
     type: 2}
   _Event_PowerUpCountDownTimer: {fileID: 11400000, guid: 06fcb56e4938f5c419370ce142c61ac9,
     type: 2}
+  _Event_NoHighScore: {fileID: 11400000, guid: de83c2dcfc55ec046bdade1c68aae930, type: 2}
 --- !u!114 &900020422392570798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2784,6 +2739,9 @@ MonoBehaviour:
   _Event_AddToScore: {fileID: 11400000, guid: 94ce8af8f09e68940895f8146b35e2d3, type: 2}
   _Event_WaveWiped: {fileID: 11400000, guid: e7797a36b34c54548b19a890d20f87d5, type: 2}
   _Event_GetTarget: {fileID: 11400000, guid: 2bb3909c96ba43b4caf302561d7f6aaf, type: 2}
+  _Event_AddHighScore: {fileID: 11400000, guid: 447072126ea40ae43b39e81521aab09e,
+    type: 2}
+  _Event_PlayerDead: {fileID: 11400000, guid: 786a86b41c101234c85ab3832dbaadf1, type: 2}
 --- !u!1 &8330378787052972205
 GameObject:
   m_ObjectHideFlags: 0
@@ -3069,7 +3027,7 @@ RectTransform:
   - {fileID: 3023392495263160181}
   - {fileID: 3001166723920414982}
   m_Father: {fileID: 8330378786635889013}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

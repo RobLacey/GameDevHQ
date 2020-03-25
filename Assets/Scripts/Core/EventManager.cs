@@ -14,25 +14,30 @@ public class EventManager : ScriptableObject
     public Func<object> newEvent_ReturnValue;
 
 
+
     //Add listener Methods
     public void AddListener(Action listener)
     {
         newEvent += listener;
+        AddToEventCleaner();
     }
 
     public void AddListener(Action<object> listener)
     {
         newEvent_Object += listener;
+        AddToEventCleaner();
     }
 
     public void AddListener(Action<object, object> listener)
     {
         newEvent_Object_Object += listener;
+        AddToEventCleaner();
     }
 
     public void AddListener(Func<object> listener)
     {
         newEvent_ReturnValue += listener;
+        AddToEventCleaner();
     }
 
     //Invoke Methods
@@ -58,6 +63,11 @@ public class EventManager : ScriptableObject
     }
 
     //Remove Listener Methods
+    private void AddToEventCleaner()
+    {
+        EventCleaner eventCleaner = FindObjectOfType<EventCleaner>();
+        eventCleaner.AddListenerToClear(this);
+    }
 
     public void RemoveListeners()
     {
@@ -67,7 +77,6 @@ public class EventManager : ScriptableObject
         newEvent_Object_Object = null;
         //Debug.Log(newEvent_Object.GetInvocationList().Length);
     }
-
 }
 
 

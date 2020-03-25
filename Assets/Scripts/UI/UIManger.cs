@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 public class UIManger : MonoBehaviour
 {
     [SerializeField] Canvas _gameOverUI = default;
-    [SerializeField] Canvas _resetKeyUI = default;
+    [SerializeField] Canvas _resetUI = default;
     [SerializeField] float _onMin = default;
     [SerializeField] float _onMax = default;
     [SerializeField] float _offMin = default;
@@ -26,9 +26,9 @@ public class UIManger : MonoBehaviour
     [SerializeField] EventManager _Event_DefaultWeapon;
     [SerializeField] EventManager _Event_WeaponCountDownTimer;
     [SerializeField] EventManager _Event_PowerUpCountDownTimer;
+    [SerializeField] EventManager _Event_NoHighScore;
 
-
-    Coroutine coroutine = null;
+    //Coroutine coroutine = null;
 
     [Serializable]
     public class PowerUpUI
@@ -53,6 +53,7 @@ public class UIManger : MonoBehaviour
         _Event_DefaultWeapon.AddListener(x => ActivatePowerUPUI(x));
         _Event_WeaponCountDownTimer.AddListener((x) => WeaponCountdownTimer(x));
         _Event_PowerUpCountDownTimer.AddListener((x) => PowerUpCountdownTimer(x));
+        _Event_NoHighScore.AddListener(() => NoHighScore());
     }
 
     private void Start()
@@ -61,7 +62,7 @@ public class UIManger : MonoBehaviour
         ActivatePowerUPUI(PowerUpTypes.SingleShot);
         DeactviatePowerUPUI(PowerUpTypes.SingleShot);
         _gameOverUI.enabled = false;
-        _resetKeyUI.enabled = false;
+        _resetUI.enabled = false;
     }
 
     private void SetUpAllUI()
@@ -117,13 +118,13 @@ public class UIManger : MonoBehaviour
             case PowerUpTypes.Shield:
                 FindPowerUp(PowerUpTypes.Shield, true);
                 break;
-            case PowerUpTypes.Health:
-                if (coroutine != null)
-                {
-                    StopCoroutine(coroutine);
-                }
-                coroutine = StartCoroutine(HealthDisplay(PowerUpTypes.Health));
-                break;
+            //case PowerUpTypes.Health:
+            //    if (coroutine != null)
+            //    {
+            //        StopCoroutine(coroutine);
+            //    }
+            //    coroutine = StartCoroutine(HealthDisplay(PowerUpTypes.Health));
+            //    break;
         }
     }
 
@@ -143,12 +144,12 @@ public class UIManger : MonoBehaviour
         }
     }
 
-    IEnumerator HealthDisplay(PowerUpTypes powerUpToFind)
-    {
-        Canvas healthUI = FindPowerUp(powerUpToFind, true);
-        yield return new WaitForSeconds(3f);
-        healthUI.enabled = false;
-    }
+    //IEnumerator HealthDisplay(PowerUpTypes powerUpToFind)
+    //{
+    //    Canvas healthUI = FindPowerUp(powerUpToFind, true);
+    //    yield return new WaitForSeconds(3f);
+    //    healthUI.enabled = false;
+    //}
 
     private Canvas FindPowerUp(PowerUpTypes powerUpToFind, bool active)
     {
@@ -188,9 +189,22 @@ public class UIManger : MonoBehaviour
         }
     }
 
-    public void GameOver()
+    private void GameOver()
     {
         StartCoroutine(FlashGameOver());
+        _weaponcountDown.enabled = false;
+        _powerUpcountDown.enabled = false;
+
+        foreach (var item in _powerUpUI)
+        {
+            item._UI.enabled = false;
+        }
+
+        foreach (var item in _weaponUI)
+        {
+            item._UI.enabled = false;
+        }
+
     }
 
     IEnumerator FlashGameOver()
@@ -200,7 +214,6 @@ public class UIManger : MonoBehaviour
             yield return StartCoroutine(FlickerTimer());
         }
         _gameOverUI.enabled = true;
-        _resetKeyUI.enabled = true;
         yield return null;
     }
 
@@ -222,5 +235,10 @@ public class UIManger : MonoBehaviour
     {
         float newValue = (float)value;
         _powerUpcountDown.text = newValue.ToString("0.0");
+    }
+
+    private void NoHighScore()
+    {
+        _resetUI.enabled = true;
     }
 }

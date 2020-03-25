@@ -12,6 +12,11 @@ PrefabInstance:
       propertyPath: _expolsionSize
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: -894950128879339210, guid: c4cefd2a109daf44098aecfa85a50fc6,
+        type: 3}
+      propertyPath: _points
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 1775212114289228207, guid: c4cefd2a109daf44098aecfa85a50fc6,
         type: 3}
       propertyPath: _laserOffset.y

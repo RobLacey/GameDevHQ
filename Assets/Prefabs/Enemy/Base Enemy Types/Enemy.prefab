@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b55cd7f77d5f1034cb14e3e3de6b13cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _points: 10
+  _points: 100
   _expolsion: {fileID: 1936163338393164463, guid: 1d2d40e1f6ac4da4cb97b67444a0b349,
     type: 3}
   _expolsionSize: 0.2

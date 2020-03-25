@@ -1,5 +1,24 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &7960315192881886132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2503924447751857833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d72313fccaac69e45ba4177a7ef47ffd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _damagesSteps:
+  - _damagePerc: 0.9
+    _damageFX: {fileID: 4791526182207384967}
+  - _damagePerc: 0.6
+    _damageFX: {fileID: 1072887050407941706}
+  - _damagePerc: 0.3
+    _damageFX: {fileID: 4776072223769544013}
 --- !u!1 &7400045594097289022
 GameObject:
   m_ObjectHideFlags: 0
@@ -33,25 +52,6 @@ Transform:
   m_Father: {fileID: 4852863170809370159}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7960315192881886132
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2503924447751857833}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d72313fccaac69e45ba4177a7ef47ffd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _damagesSteps:
-  - _damagePerc: 0.9
-    _damageFX: {fileID: 4791526182207384967}
-  - _damagePerc: 0.6
-    _damageFX: {fileID: 1072887050407941706}
-  - _damagePerc: 0.3
-    _damageFX: {fileID: 4776072223769544013}
 --- !u!1001 &584428173008135435
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -587,7 +587,7 @@ PrefabInstance:
     - target: {fileID: -894950128879339210, guid: c4cefd2a109daf44098aecfa85a50fc6,
         type: 3}
       propertyPath: _points
-      value: 100
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: -894950128879339210, guid: c4cefd2a109daf44098aecfa85a50fc6,
         type: 3}
@@ -608,7 +608,7 @@ PrefabInstance:
     - target: {fileID: 372128635221909550, guid: c4cefd2a109daf44098aecfa85a50fc6,
         type: 3}
       propertyPath: _damageDealt
-      value: 10
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1775212114289228207, guid: c4cefd2a109daf44098aecfa85a50fc6,
         type: 3}

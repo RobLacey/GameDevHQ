@@ -5,17 +5,24 @@ using UnityEngine;
 
 public class EventCleaner : MonoBehaviour
 {
-    [SerializeField] public List<EventManager> events = new List<EventManager>();
-
+    List<EventManager> newEvents = new List<EventManager>();
 
     private void OnDisable()
     {
-        foreach (var item in events)
+        foreach (var item in newEvents)
         {
             if (item != null)
             {
                 item.RemoveListeners();
             }
+        }
+    }
+
+    public void AddListenerToClear(EventManager eventManager)
+    {
+        if (!newEvents.Contains(eventManager))
+        {
+            newEvents.Add(eventManager);
         }
     }
 }

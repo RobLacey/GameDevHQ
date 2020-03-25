@@ -9,10 +9,8 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
     //TODO Check and Tidy code
     //TODO Check garbage collection
     //TODO add level progression and boss battle
-    //TODO add high score table - playerperf
     //TODO Start Cinematic
-
-   
+    //TODO Add null check and message if trying to assign listener when no Event exists
 
     [SerializeField] TeamID _teamID;
     [SerializeField] Vector3 _startPosition = default;
@@ -47,6 +45,7 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
     IPowerUpSystem _myPowerUpSystem;
     IShowDamage _myDamage;
     AudioSource _myAudioSource;
+    bool isDead;
 
     private void Awake()
     {
@@ -74,18 +73,20 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
 
     private void Update()
     {
-        Movement();
-        Fire();
+        if (!isDead)
+        {
+            Movement();
+            Fire();
+        }    
     }
 
     private void Fire()
     {
-        if (Input.GetKey(KeyCode.Space) && Time.time > _canFireTimer)
+        if (Input.GetKey(KeyCode.Space) && Time.time > _canFireTimer && !isDead)
         {
             _canFireTimer = Time.time + _myWeaponSystem.I_ReturnFireRate();
             _myWeaponSystem.I_Fire();
         }
-
     }
 
     private void Movement()
@@ -156,6 +157,7 @@ public class Player : MonoBehaviour, IDamageable, ISpeedBoostable
             GameObject explosion = _poolingAgent.InstantiateFromPool(_deathFX, transform.position, Quaternion.identity);
             explosion.GetComponent<IScaleable>().I_SetScale(_explosionSize);
             _Event_PlayerDead.Invoke();
+            isDead = true;
             gameObject.SetActive(false);
         }
     }

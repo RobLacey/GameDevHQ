@@ -22,6 +22,8 @@ public class ScoreController : MonoBehaviour
     [SerializeField] EventManager _Event_AddToScore = default;
     [SerializeField] EventManager _Event_WaveWiped = default;
     [SerializeField] EventManager _Event_GetTarget;
+    [SerializeField] EventManager _Event_AddHighScore;
+    [SerializeField] EventManager _Event_PlayerDead;
 
     //Variable
     char _pad = '0';
@@ -41,6 +43,7 @@ public class ScoreController : MonoBehaviour
         _Event_AddToScore.AddListener(x => AddToScore(x));
         _Event_WaveWiped.AddListener((x, y) => WaveWipeBonusScore(x, y));
         _Event_GetTarget.AddListener(() => ReturnPosition);
+        _Event_PlayerDead.AddListener(() => _Event_AddHighScore.Invoke(_score));
     }
 
     private void Start()
