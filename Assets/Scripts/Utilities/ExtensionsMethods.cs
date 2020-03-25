@@ -113,6 +113,35 @@ public static class ExtensionsMethods
             index++;
         }
         return array;
+    }
 
+    //Colour Lerps
+
+    public static Color PulseAlpha(this Color color, float timer, bool toBlack)
+    {
+        float knee;
+
+        if (toBlack)
+        { knee = 0; }
+        else
+        { knee = 0.1f;}
+
+        float t = Mathf.PingPong((Time.time * timer), 1) + knee;
+        color = new Color(color.r, color.g, color.b, t );
+        return color;
+    }
+
+    public static Color FadeDown(this Color color, float perc)
+    {
+        float alpha = Mathf.Lerp(1, 0, perc);
+        color = new Color(color.r, color.g, color.b, alpha );
+        return color;
+    }
+
+    public static Color FadeUp(this Color color, float perc)
+    {
+        float alpha = Mathf.Lerp(0, 1, perc);
+        color = new Color(color.r, color.g, color.b, alpha );
+        return color;
     }
 }

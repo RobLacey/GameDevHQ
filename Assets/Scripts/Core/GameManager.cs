@@ -9,9 +9,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] EventManager _Event_StartLevel;
     [SerializeField] EventManager _Event_SetMusicVolume;
     [SerializeField] EventManager _Event_NoHighScore;
+    [SerializeField] int _MainMenuIndex;
 
 
     public bool IsGameOver { get; set; }
+
+    private void Awake()
+    {
+        IsGameOver = false;
+    }
 
     private void OnEnable()
     {
@@ -41,7 +47,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.M) && IsGameOver)
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene(_MainMenuIndex);
         }
     }
 

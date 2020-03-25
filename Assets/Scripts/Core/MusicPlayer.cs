@@ -5,8 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class MusicPlayer : MonoBehaviour
 {
-    [SerializeField] AudioClip _LevelMusic;
+    [SerializeField] AudioClip _menuMusic;
     [SerializeField] AudioClip _gameOverMusic;
+    [SerializeField] AudioClip _inGameMusic;
     [SerializeField] EventManager _Event_SetMusicVolume;
     [SerializeField] EventManager _Event_PlayerDead;
     [SerializeField] EventManager _Event_StartLevel;
@@ -16,9 +17,14 @@ public class MusicPlayer : MonoBehaviour
     private void Awake()
     {
         _myAudioSource = GetComponent<AudioSource>();
-        if (SceneManager.GetActiveScene().buildIndex == 0)
+        var musicPlayers = FindObjectsOfType<MusicPlayer>();
+        if (musicPlayers.Length > 1)
         {
-            StartLevel();
+            Destroy(gameObject);
+        }
+        else
+        {
+            DontDestroyOnLoad(gameObject);
         }
     }
 
@@ -27,17 +33,58 @@ public class MusicPlayer : MonoBehaviour
         _Event_SetMusicVolume.AddListener((value) => _myAudioSource.volume = (float)value);
         _Event_PlayerDead.AddListener(() => GameOverMusic());
         _Event_StartLevel.AddListener(() => StartLevel());
+        SceneManager.sceneLoaded += CheckMusic;
+    }
+
+    private void CheckMusic(Scene scene, LoadSceneMode mode)
+    {
+        switch (scene.buildIndex)
+        {
+            case (0):
+                StartLevel();
+                break;
+            case (1):
+                StartLevel();
+                break;
+            case (2):
+                StartLevel();
+                break;
+            case (3):
+                _Event_PlayerDead.AddListener(() => GameOverMusic());
+                InGameMusic();
+                break;
+            default:
+                break;
+        }
     }
 
     private void StartLevel()
     {
-        _myAudioSource.clip = _LevelMusic;
+        if (_myAudioSource.clip == _menuMusic)
+        {
+            return;
+        }
+        _myAudioSource.clip = _menuMusic;
         _myAudioSource.Play();
     }
 
     private void GameOverMusic()
     {
+        if (_myAudioSource.clip == _gameOverMusic)
+        {
+            return;
+        }
         _myAudioSource.clip = _gameOverMusic;
+        _myAudioSource.Play();
+    }
+
+    private void InGameMusic()
+    {
+        if (_myAudioSource.clip == _inGameMusic)
+        {
+            return;
+        }
+        _myAudioSource.clip = _inGameMusic;
         _myAudioSource.Play();
     }
 }

@@ -44,8 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d07395b6b9ca164e9293333f30f6119, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _LevelMusic: {fileID: 0}
-  _gameOverMusic: {fileID: 0}
+  _menuMusic: {fileID: 8300000, guid: 9d3facf0360b81c48a4bfd83b11cc8a0, type: 3}
+  _gameOverMusic: {fileID: 8300000, guid: f48ed527507b2134c872af72c1bd4807, type: 3}
+  _inGameMusic: {fileID: 8300000, guid: a4072972a03b8194bba09d70c275f7c9, type: 3}
   _Event_SetMusicVolume: {fileID: 11400000, guid: 6b5580ad23d8cfb46ace150f616d1a6b,
     type: 2}
   _Event_PlayerDead: {fileID: 11400000, guid: 786a86b41c101234c85ab3832dbaadf1, type: 2}
@@ -61,7 +62,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1

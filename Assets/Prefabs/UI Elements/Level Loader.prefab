@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2308267732195013140
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2143042479284740995}
+  - component: {fileID: 5764912682195239124}
+  m_Layer: 0
+  m_Name: Level Loader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2143042479284740995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2308267732195013140}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5764912682195239124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2308267732195013140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30cf27ef3d9cf7340ade70d461239418, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _loadingText: {fileID: 0}
+  _loadingBar: {fileID: 0}
+  _loadingImage: {fileID: 0}
+  _hitSpaceText: Press Any Key..
+  _loadedText: loaded
+  _rotationSpeed: 150
+  _pulseText: 1
+  _pulseImage: 0
+  _pulsePercentage: 0.3
+  _waitOnLoad: 1
+  _nextSceneIndex: 2
+  _isLoadingScreen: 0
+  _mainGameIsNext: 0
+  _Event_StartNextScene: {fileID: 11400000, guid: a53499474fd7194428f6d89be250a83c,
+    type: 2}
+  _Event_StartFadeOut: {fileID: 11400000, guid: a3506d433d536464e8b9e2d6bfafdca1,
+    type: 2}
+  _Event_StartFadeIn: {fileID: 11400000, guid: 4a1bc289c29612442a96c121909fe498, type: 2}
+  _Event_FinishedFadeIn: {fileID: 11400000, guid: e0d2e2fa30d5480498780170e77ff954,
+    type: 2}
+  _Event_Destroy_On_Load: {fileID: 11400000, guid: d1e3c6b4e24e7cf429940502a91bde57,
+    type: 2}
