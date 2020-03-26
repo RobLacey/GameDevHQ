@@ -50,7 +50,7 @@ MonoBehaviour:
   _Event_SetMusicVolume: {fileID: 11400000, guid: 6b5580ad23d8cfb46ace150f616d1a6b,
     type: 2}
   _Event_PlayerDead: {fileID: 11400000, guid: 786a86b41c101234c85ab3832dbaadf1, type: 2}
-  _Event_StartLevel: {fileID: 11400000, guid: aa88659e4a18fe940ba2b4f0eb38ed6e, type: 2}
+  _musicFadeIn: 6
 --- !u!82 &1309174954711492137
 AudioSource:
   m_ObjectHideFlags: 0

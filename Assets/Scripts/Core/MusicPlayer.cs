@@ -10,6 +10,7 @@ public class MusicPlayer : MonoBehaviour
     [SerializeField] AudioClip _inGameMusic;
     [SerializeField] EventManager _Event_SetMusicVolume;
     [SerializeField] EventManager _Event_PlayerDead;
+    [SerializeField] float _musicFadeIn = 5f;
 
     AudioSource _myAudioSource;
 
@@ -17,6 +18,7 @@ public class MusicPlayer : MonoBehaviour
     {
         _myAudioSource = GetComponent<AudioSource>();
         var musicPlayers = FindObjectsOfType<MusicPlayer>();
+
         if (musicPlayers.Length > 1)
         {
             Destroy(gameObject);
@@ -50,10 +52,10 @@ public class MusicPlayer : MonoBehaviour
                 StartLevel();
                 break;
             case (2):
-                _Event_SetMusicVolume.AddListener((value) => _myAudioSource.volume = (float)value);
                 StartLevel();
                 break;
             case (3):
+                _Event_SetMusicVolume.AddListener((value) => StartMusic(value));
                 _Event_PlayerDead.AddListener(() => GameOverMusic());
                 InGameMusic();
                 break;
@@ -90,5 +92,32 @@ public class MusicPlayer : MonoBehaviour
         }
         _myAudioSource.clip = _inGameMusic;
         _myAudioSource.Play();
+    }
+
+    private void StartMusic(object volume)
+    {
+        _myAudioSource.volume = (float)volume;
+
+        if (SceneManager.GetActiveScene().buildIndex == 3)
+        {
+            StartCoroutine(IncreaseVolume());
+        }
+    }
+
+    IEnumerator IncreaseVolume()
+    {
+        float timer = 0;
+        float perc = 0;
+        float endvolume = _myAudioSource.volume;
+
+        _myAudioSource.volume = 0;
+
+        while (_myAudioSource.volume < endvolume)
+        {
+            timer += Time.deltaTime;
+            perc = timer / _musicFadeIn;
+            _myAudioSource.volume = Mathf.Lerp( 0, endvolume, perc);
+            yield return null;
+        }
     }
 }

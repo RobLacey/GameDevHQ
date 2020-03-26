@@ -2,44 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PowerUpSystem : MonoBehaviour ,IPowerUpSystem
+public class PowerUpSystem : MonoBehaviour
 {
     [SerializeField] GameObject _shields = default;
-    [SerializeField] bool _isSpeedBoostActive = false;
-    [SerializeField] bool _areShieldsActive = false;
-    [SerializeField] float _speedBoostMulitplier = 10f;
-    [SerializeField] float _normalSpeed = 5f;
-    [SerializeField] float _SpeedBoostTimer = 0f;
     [SerializeField] float _speedBoostPresence = 7f;
     [SerializeField] AudioClip _powerUpEndSFX = default;
     [SerializeField] EventManager _Event_ActivatePowerUp;
     [SerializeField] EventManager _Event_DeactivatePowerUp;
     [SerializeField] EventManager _Event_AddHealth;
     [SerializeField] EventManager _Event_CountDownTimer;
+    [SerializeField] EventManager _Event_Are_Shields_Active;
 
-    CircleCollider2D _shieldsCollider;
-    ISpeedBoostable _speedBoostable;
+    //Variables
+    CapsuleCollider2D _shieldsCollider;
+    bool _isSpeedBoostActive = false;
+    bool _areShieldsActive = false;
+    float _SpeedBoostTimer = 0f;
 
     //Properties
-    public bool I_ShieldsAreActive
-    { get { return _areShieldsActive; } set { _areShieldsActive = value; } }
+    public bool ShieldsAreActive
+    { get { return _areShieldsActive; } 
+      set { 
+            _areShieldsActive = value;
+            _shieldsCollider.enabled = value;
+            _shields.SetActive(value);
+          }
+    }
 
     private void Awake()
     {
-        _shieldsCollider = GetComponentInChildren<CircleCollider2D>();
-        _speedBoostable = GetComponent<ISpeedBoostable>();
+        _shieldsCollider = GetComponentInChildren<CapsuleCollider2D>();
     }
 
     private void OnEnable()
     {
         _Event_ActivatePowerUp.AddListener(x => I_ActivatePowerUp(x));
         _Event_DeactivatePowerUp.AddListener(x => I_DeactivatePowerUps(x));
+        _Event_Are_Shields_Active.AddListener(() => ShieldsAreActive);
     }
 
     private void Start()
     {
-        SetUpShields(false);
-        SetUpSpeedBoost(false);
+        ShieldsAreActive = false;
     }
 
     private void Update()
@@ -50,18 +54,18 @@ public class PowerUpSystem : MonoBehaviour ,IPowerUpSystem
         }
     }
 
-    public void I_ActivatePowerUp(object newPowerUp)
+    private void I_ActivatePowerUp(object newPowerUp)
     {
         PowerUpTypes weapon = (PowerUpTypes)newPowerUp;
         switch (weapon)
         {
             case PowerUpTypes.SpeedBoost:
                 _SpeedBoostTimer = _speedBoostPresence;
-                SetUpSpeedBoost(true);
+                _isSpeedBoostActive = true;
                 break;
             case PowerUpTypes.Shield:
-                if (I_ShieldsAreActive == true) return;
-                SetUpShields(true);
+                if (ShieldsAreActive == true) return;
+                ShieldsAreActive = true;
                 break;
             case PowerUpTypes.Health:
                 _Event_AddHealth.Invoke();
@@ -71,42 +75,20 @@ public class PowerUpSystem : MonoBehaviour ,IPowerUpSystem
         }
     }
 
-    public void I_DeactivatePowerUps(object oldPowerUp)
+    private void I_DeactivatePowerUps(object oldPowerUp)
     {
         switch ((PowerUpTypes)oldPowerUp)
         {
             case PowerUpTypes.SpeedBoost:
-                SetUpSpeedBoost(false);
+                _isSpeedBoostActive = false;
                 break;
             case PowerUpTypes.Shield:
-                SetUpShields(false);
+                ShieldsAreActive = false;
                 break;
             default:
                 break;
         }
         AudioSource.PlayClipAtPoint(_powerUpEndSFX, Camera.main.transform.position);
-    }
-
-
-    private void SetUpSpeedBoost(bool active)
-    {
-        _isSpeedBoostActive = active;
-        if (active)
-        {
-            _SpeedBoostTimer = _speedBoostPresence;
-            _speedBoostable.I_SetSpeed = _normalSpeed * _speedBoostMulitplier;
-        }
-        else
-        {
-            _speedBoostable.I_SetSpeed = _normalSpeed;
-        }
-    }
-
-    private void SetUpShields(bool active)
-    {
-        I_ShieldsAreActive = active;
-        _shieldsCollider.enabled = active;
-        _shields.SetActive(active);
     }
 
     private void SpeedBoostTimer()

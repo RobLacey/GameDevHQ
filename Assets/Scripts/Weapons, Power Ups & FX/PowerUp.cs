@@ -6,15 +6,14 @@ using UnityEngine;
 public class PowerUp : MonoBehaviour
 {
     [SerializeField] TeamID _teamID;
-    [SerializeField] PowerUpTypes _powerUpType = default;
-    [SerializeField] AudioClip _collectSFX = default;
-    [SerializeField] EventManager _Event_ActivatePowerUp;
+    [SerializeField] protected AudioClip _collectSFX = default;
 
     //Variables
     SpriteRenderer[] _myBody;
-    AudioSource _audioSource;
-    Collider2D _collider2D;
+    protected AudioSource _audioSource;
+    protected Collider2D _collider2D;
 
+    //Properties
     public TeamID TeamTag { get { return _teamID; } }
 
     protected void Awake()
@@ -31,24 +30,7 @@ public class PowerUp : MonoBehaviour
         _collider2D.enabled = true;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        IDamageable canCollide = collision.GetComponentInParent<IDamageable>();
-
-        if (canCollide != null)
-        {
-            if (canCollide.I_TeamTag == TeamTag)
-            {
-                _audioSource.Play();
-                _collider2D.enabled = false;
-                ActivateSprite(false);
-                _Event_ActivatePowerUp.Invoke(_powerUpType);
-                StartCoroutine(DisableObject(_collectSFX.length));
-            }
-        }    
-    }
-
-    private void ActivateSprite(bool active)
+    protected void ActivateSprite(bool active)
     {
         foreach (var sprite in _myBody)
         {
@@ -56,7 +38,7 @@ public class PowerUp : MonoBehaviour
         }
     }
 
-    private IEnumerator DisableObject(float timer)
+    protected IEnumerator DisableObject(float timer)
     {
         yield return new WaitForSeconds(timer);
         gameObject.SetActive(false);

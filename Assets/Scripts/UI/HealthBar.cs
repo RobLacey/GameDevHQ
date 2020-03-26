@@ -6,12 +6,12 @@ using UnityEngine.UI;
 public class HealthBar : MonoBehaviour
 {
     [SerializeField] Image _healthUI;
-    [SerializeField] Canvas _collectedHealthUI;
     [SerializeField] Text _healthText;
     [SerializeField] Color[] _healthBarColour;
     [SerializeField] float _flashSpeed = 1f;
     [SerializeField] EventManager _Event_SetLives = default;
     [SerializeField] EventManager _Event_PlayerDead = default;
+    [SerializeField] EventManager _Event_DeactivatePowerUp;
     [SerializeField] EventManager _Event_ActivatePowerUp = default;
 
 
@@ -21,7 +21,6 @@ public class HealthBar : MonoBehaviour
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
-        _collectedHealthUI.enabled = false;
     }
 
     private void OnEnable()
@@ -83,13 +82,12 @@ public class HealthBar : MonoBehaviour
 
     IEnumerator HealthDisplay()
     {
-        _collectedHealthUI.enabled = true;
         yield return new WaitForSeconds(3f);
-        _collectedHealthUI.enabled = false;
+        _Event_DeactivatePowerUp.Invoke(PowerUpTypes.Health);
     }
 
 
-    IEnumerator FlashDisplay()
+IEnumerator FlashDisplay()
     {
         while (true)
         {

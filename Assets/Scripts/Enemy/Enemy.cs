@@ -7,16 +7,18 @@ public class Enemy : MonoBehaviour, IKillable, IWaveMemeber
     [SerializeField] int _points = 0;
     [SerializeField] GameObject _expolsion = default;
     [SerializeField] float _expolsionSize = 0.5f;
-    [SerializeField] PoolingAgent _poolingAgent;
     [SerializeField] GameObject _shrapnel;
     [SerializeField] EventManager _Event_AddToScore = default;
     [SerializeField] EventManager _Event_RemoveEnemyAsTarget;
     [SerializeField] EventManager _Event_AddEnemy;
 
+    //Variables
     SpriteRenderer _mySprite;
     Collider2D _collider2D;
     IEnemyWave _partOfWave;
+    PoolingAgent _poolingAgent;
 
+    //Properties
     public GameObject Myself { get { return gameObject; } }
 
     private void Awake()
@@ -24,6 +26,7 @@ public class Enemy : MonoBehaviour, IKillable, IWaveMemeber
         _partOfWave = GetComponentInParent<IEnemyWave>(); 
         _mySprite = GetComponentInChildren<SpriteRenderer>();
         _collider2D = GetComponentInChildren<Collider2D>();
+        _poolingAgent = _poolingAgent.SetUpPoolingAgent(GetComponents<PoolingAgent>(), PoolingID.FX);
     }
 
     private void OnEnable()

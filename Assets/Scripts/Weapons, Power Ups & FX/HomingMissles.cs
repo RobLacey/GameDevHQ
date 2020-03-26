@@ -5,10 +5,8 @@ using UnityEngine;
 
 public class HomingMissles : Projectile
 {
-    [SerializeField] Vector3 _direction;
     [SerializeField] float _speed;
     [SerializeField] float _rotationSpeed;
-    [SerializeField] GameObject _target;
     [SerializeField] Vector3 _defaultTarget;
     [SerializeField] float _timerSetting;
     [SerializeField] EventManager _Event_RemoveEnemyAsTarget;
@@ -18,6 +16,7 @@ public class HomingMissles : Projectile
     //Variables
     float _timer;
     List<GameObject> _activeEnemeiesList;
+    GameObject _target;
 
     protected override void OnEnable()
     {
@@ -32,7 +31,7 @@ public class HomingMissles : Projectile
     {
         base.Update();
 
-        transform.Translate(_direction * _speed * Time.deltaTime);
+        transform.Translate(Vector3.up * _speed * Time.deltaTime);
 
         CheckForTarget();
         Timer();

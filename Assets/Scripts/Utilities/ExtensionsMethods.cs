@@ -145,4 +145,17 @@ public static class ExtensionsMethods
         return color;
     }
 
+    //Pooling Agent
+
+    public static PoolingAgent SetUpPoolingAgent(this PoolingAgent agentToSet,PoolingAgent[] array, PoolingID poolingID)
+    {
+        foreach (var item in array)
+        {
+            if (item._poolType == poolingID)
+            {
+                return item;
+            }
+        }
+        return null;
+    }
 }

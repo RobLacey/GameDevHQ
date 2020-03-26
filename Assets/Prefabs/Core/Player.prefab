@@ -152,7 +152,7 @@ GameObject:
   - component: {fileID: 2402368312391297280}
   - component: {fileID: 2402368312391297282}
   - component: {fileID: 8945052969698055125}
-  - component: {fileID: 2902467465264729015}
+  - component: {fileID: 439194278807740938}
   m_Layer: 0
   m_Name: Shields Body
   m_TagString: Player
@@ -320,8 +320,8 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!58 &2902467465264729015
-CircleCollider2D:
+--- !u!70 &439194278807740938
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -330,12 +330,12 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.010445415, y: 0.19845305}
-  serializedVersion: 2
-  m_Radius: 2.9151275
+  m_Offset: {x: -0.015664248, y: 0.0000005960464}
+  m_Size: {x: 2.1438837, y: 2.8644178}
+  m_Direction: 0
 --- !u!1 &2402368312424498663
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,6 +348,7 @@ GameObject:
   - component: {fileID: 4698147734062784624}
   - component: {fileID: 6296338941903917699}
   - component: {fileID: 3521702147536188399}
+  - component: {fileID: 7442656756788904390}
   - component: {fileID: 1766429386902667308}
   - component: {fileID: 54328764318753838}
   - component: {fileID: 2230571076660818457}
@@ -508,10 +509,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _teamID: 0
-  _startPosition: {x: 0, y: -2, z: 0}
-  _speed: 3
-  _horizontalAxis: Horizontal
-  _verticalAxis: Vertical
   _health: 10
   _damageFX: {fileID: 7261540309894886447}
   _damageSoundFX: {fileID: 8300000, guid: f8f1aff243155854fb8c9305851241ec, type: 3}
@@ -525,6 +522,30 @@ MonoBehaviour:
   _Event_SetLives: {fileID: 11400000, guid: df9e99793f49aa545aa40c3c39ac1162, type: 2}
   _Event_AddHealth: {fileID: 11400000, guid: 1de5d0e4001753846b4f059198091fe5, type: 2}
   _Event_WaveWipedCancel: {fileID: 11400000, guid: e7797a36b34c54548b19a890d20f87d5,
+    type: 2}
+  _Event_DeactivatePowerUp: {fileID: 11400000, guid: 6ea991cefad11e74da82ed26b2243396,
+    type: 2}
+  _Event_Are_Shields_Active: {fileID: 11400000, guid: a546f7a704ef8b24cbd53df97ace0726,
+    type: 2}
+--- !u!114 &7442656756788904390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2402368312424498663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 497b612512a22ec41a0a551370e41eba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _startPosition: {x: 0, y: -2, z: 0}
+  _speed: 1
+  _horizontalAxis: Horizontal
+  _verticalAxis: Vertical
+  _normalSpeed: 5
+  _speedBoostMulitplier: 1.5
+  _Event_ActivatePowerUp: {fileID: 11400000, guid: 032760db4a9315c4fbb64403d598135b,
     type: 2}
   _Event_DeactivatePowerUp: {fileID: 11400000, guid: 6ea991cefad11e74da82ed26b2243396,
     type: 2}
@@ -543,71 +564,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _powerUpEndSFX: {fileID: 8300000, guid: 97409592468cb0a458d154ebff859430, type: 3}
   _powerUpEndVolume: 1
-  _currentWeapon:
-    _name: 
-    _weapon: 0
-    _weaponPrefab: {fileID: 0}
-    _isActive: 0
-    _fireRate: 0
-    _fireRateMulitpiler: 1
-    _timer: 0
-    _presenece: 0
-    _weaponSFX: {fileID: 0}
-    _volume: 0
+  _poolingAgent: {fileID: 5357481768388540624}
+  _defaultWeapon: {fileID: 11400000, guid: 36edb1007ba13fa4fabe9acd223d2736, type: 2}
   _Event_ActivatePowerUp: {fileID: 11400000, guid: 032760db4a9315c4fbb64403d598135b,
     type: 2}
   _Event_DeactivatePowerUp: {fileID: 11400000, guid: 6ea991cefad11e74da82ed26b2243396,
     type: 2}
-  _Event_DefaultWeapon: {fileID: 11400000, guid: 2540681e9a99f8e4fad32d602888b936,
+  _Event_NewWeapon: {fileID: 11400000, guid: e11f2f020c927ef4fa67a53d423857b7, type: 2}
+  _Event_UpdateWeaponUI: {fileID: 11400000, guid: 2540681e9a99f8e4fad32d602888b936,
     type: 2}
   _Event_CountDownTimer: {fileID: 11400000, guid: ba8917b3fab65024c8e2259abb9a3e1d,
     type: 2}
-  _poolingAgent: {fileID: 5357481768388540624}
-  _weapons:
-  - _name: Single Shot Laser
-    _weapon: 0
-    _weaponPrefab: {fileID: 832406360374031768, guid: 7b37a600c75918d4b8dc0bb27c14ae8a,
-      type: 3}
-    _isActive: 0
-    _fireRate: 0.2
-    _fireRateMulitpiler: 1.5
-    _timer: 0
-    _presenece: 0
-    _weaponSFX: {fileID: 8300000, guid: 391e5bd1cfdcd624dae8c5da9ad393ac, type: 3}
-    _volume: 0.5
-  - _name: Triple Shot Laser
-    _weapon: 1
-    _weaponPrefab: {fileID: 4206705849271278955, guid: a28ccd3c1e80aef438e0cac837369bca,
-      type: 3}
-    _isActive: 0
-    _fireRate: 0.4
-    _fireRateMulitpiler: 1.5
-    _timer: 0
-    _presenece: 7
-    _weaponSFX: {fileID: 8300000, guid: 391e5bd1cfdcd624dae8c5da9ad393ac, type: 3}
-    _volume: 0.5
-  - _name: Side Shot Laser
-    _weapon: 2
-    _weaponPrefab: {fileID: 4345945138986759809, guid: aa16b1d903636fc4d978be505e5d35e1,
-      type: 3}
-    _isActive: 0
-    _fireRate: 0.2
-    _fireRateMulitpiler: 1.5
-    _timer: 0
-    _presenece: 7
-    _weaponSFX: {fileID: 8300000, guid: 391e5bd1cfdcd624dae8c5da9ad393ac, type: 3}
-    _volume: 0.5
-  - _name: Homing Missle
-    _weapon: 6
-    _weaponPrefab: {fileID: 6564985789066767047, guid: 0ebb253c44b724149a645fba800d4373,
-      type: 3}
-    _isActive: 0
-    _fireRate: 0.4
-    _fireRateMulitpiler: 1.5
-    _timer: 0
-    _presenece: 7
-    _weaponSFX: {fileID: 8300000, guid: 391e5bd1cfdcd624dae8c5da9ad393ac, type: 3}
-    _volume: 0.5
 --- !u!114 &54328764318753838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -623,8 +590,6 @@ MonoBehaviour:
   _shields: {fileID: 2402368312391297281}
   _isSpeedBoostActive: 0
   _areShieldsActive: 0
-  _speedBoostMulitplier: 1.5
-  _normalSpeed: 5
   _SpeedBoostTimer: 0
   _speedBoostPresence: 7
   _powerUpEndSFX: {fileID: 8300000, guid: 97409592468cb0a458d154ebff859430, type: 3}
@@ -634,6 +599,8 @@ MonoBehaviour:
     type: 2}
   _Event_AddHealth: {fileID: 11400000, guid: 1de5d0e4001753846b4f059198091fe5, type: 2}
   _Event_CountDownTimer: {fileID: 11400000, guid: 06fcb56e4938f5c419370ce142c61ac9,
+    type: 2}
+  _Event_Are_Shields_Active: {fileID: 11400000, guid: a546f7a704ef8b24cbd53df97ace0726,
     type: 2}
 --- !u!114 &2230571076660818457
 MonoBehaviour:

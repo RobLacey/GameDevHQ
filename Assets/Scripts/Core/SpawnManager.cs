@@ -17,13 +17,16 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] EventManager _Event_RemoveEnemyASTarget;
     [SerializeField] EventManager _Event_AddEnemy;
     [SerializeField] EventManager _Event_ReturnActiveEnemies;
-    [SerializeField] PoolingAgent _poolingAgent;
     [SerializeField] GlobalVariables _mySpawnLimits;
+
+    //Variable
+    PoolingAgent _poolingAgent;
 
     public List<GameObject> ActiveTargets { get; private set; }
 
     private void Awake()
     {
+        _poolingAgent = GetComponent<PoolingAgent>();
         ActiveTargets = new List<GameObject>();
     }
 

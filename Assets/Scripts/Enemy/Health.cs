@@ -9,9 +9,8 @@ public class Health : MonoBehaviour, IDamageable
     [SerializeField] TeamID _teamID;
     [SerializeField] float _health = default;
     [SerializeField] int _damageDealt = 1;
-    [SerializeField] EventManager _Event_WaveWipedCancel = default;
     [SerializeField] bool _hasHealthBar;
-
+    [SerializeField] EventManager _Event_WaveWipedCancel = default;
 
     public TeamID I_TeamTag { get { return _teamID; } }
 

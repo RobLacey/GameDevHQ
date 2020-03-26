@@ -47,6 +47,7 @@ MonoBehaviour:
   _spawnArray: []
   _minSpawnTime: 1
   _maxSpawnTime: 4
+  _startDelay: 0
   _trackActiveObjects: 1
   canSpawn: 1
   _Event_StartSpawning: {fileID: 11400000, guid: 4e3dbc24ceb21e2489318279ece4bc67,

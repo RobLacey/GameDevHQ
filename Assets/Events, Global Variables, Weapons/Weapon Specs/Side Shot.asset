@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94fa7c8b06c15f34a9f9e45c089b2ed6, type: 3}
+  m_Name: Side Shot
+  m_EditorClassIdentifier: 
+  _weaponType: 2
+  _weaponPrefab: {fileID: 4345945138986759809, guid: aa16b1d903636fc4d978be505e5d35e1,
+    type: 3}
+  _fireRate: 0.2
+  _fireRateMulitpiler: 1.5
+  _presenece: 7
+  _weaponSFX: {fileID: 8300000, guid: 391e5bd1cfdcd624dae8c5da9ad393ac, type: 3}
+  _volume: 0.7

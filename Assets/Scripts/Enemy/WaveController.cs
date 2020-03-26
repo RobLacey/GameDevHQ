@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class WaveController : MonoBehaviour, IEnemyWave
 {
-    [SerializeField] PoolingAgent _poolingAgent;
     [SerializeField] GameObject _wipeUI;
     [SerializeField] EventManager _Event_WaveWiped = default;
     [SerializeField] EventManager _Event_AddToScore = default;
@@ -15,9 +14,11 @@ public class WaveController : MonoBehaviour, IEnemyWave
     int numberOfEnemiesInWave;
     int enemiesLeft = 0;
     Camera _mainCamera;
+    PoolingAgent _poolingAgent;
 
     private void Awake()
     {
+        _poolingAgent = _poolingAgent.SetUpPoolingAgent(GetComponents<PoolingAgent>(), PoolingID.UIElement);
         _mainCamera = Camera.main;
         int index = 0;
         numberOfEnemiesInWave = transform.childCount;

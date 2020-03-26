@@ -7,16 +7,18 @@ public class Projectile : MonoBehaviour
     [SerializeField] TeamID _teamID;
     [SerializeField] int damage = 1;
     [SerializeField] GameObject _hiteffect;
-    [SerializeField] PoolingAgent _poolingAgent;
     [SerializeField] GlobalVariables _weaponHitBounds;
 
     //Variables
     Vector3 _startingPos;
+    PoolingAgent _poolingAgent;
 
+    //Properties
     public TeamID I_TeamTag { get { return _teamID; } }
 
     private void Awake()
     {
+        _poolingAgent = _poolingAgent.SetUpPoolingAgent(GetComponents<PoolingAgent>(), PoolingID.FX);
         _startingPos = transform.localPosition;
     }
 

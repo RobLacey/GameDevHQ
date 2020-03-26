@@ -18,27 +18,6 @@ public interface IKillable
 }
 
 
-public interface ISpeedBoostable
-{
-    float I_SetSpeed { set; }
-}
-
-public interface IWeaponSystem 
-{
-    void I_Fire();
-    float I_ReturnFireRate();
-}
-
-public interface IPowerUpSystem
-{
-    bool I_ShieldsAreActive { get; set; } 
-
-    void I_ActivatePowerUp(object newPowerUp);
-
-    void I_DeactivatePowerUps(object oldPowerUp);
-
-}
-
 public interface IEnemyWave
 {
     void I_DeactivateChildObjects();

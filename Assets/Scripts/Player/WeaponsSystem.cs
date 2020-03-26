@@ -2,144 +2,104 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class WeaponsSystem : MonoBehaviour, IWeaponSystem
+public class WeaponsSystem : MonoBehaviour
 {
     [SerializeField] AudioClip _powerUpEndSFX = default;
     [SerializeField] float _powerUpEndVolume = default;
-    [SerializeField] Weapon _currentWeapon = default;
+    [SerializeField] WeaponSpec _defaultWeapon;
     [SerializeField] EventManager _Event_ActivatePowerUp;
     [SerializeField] EventManager _Event_DeactivatePowerUp;
-    [SerializeField] EventManager _Event_DefaultWeapon;
+    [SerializeField] EventManager _Event_NewWeapon;
+    [SerializeField] EventManager _Event_UpdateWeaponUI;
     [SerializeField] EventManager _Event_CountDownTimer;
-    [SerializeField] PoolingAgent _poolingAgent;
-    [SerializeField] Weapon[] _weapons;
-
-    Action<PowerUpTypes> setActive;
 
     //Variables
     AudioSource _audioSource;
+    float _timer = 0;
+    WeaponSpec _currentWeapon;
+    bool _startTimer = false;
+    float _canFireTimer = 0;
+    PoolingAgent _poolingAgent;
 
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
+        _poolingAgent = _poolingAgent.SetUpPoolingAgent(GetComponents<PoolingAgent>(), PoolingID.Weapons);
     }
 
     private void OnEnable()
     {
-        foreach (var weapon in _weapons)
-        {
-            setActive += weapon.SetActive;
-        }
-    }
-
-    private void OnDisable()
-    {
-        foreach (var weapon in _weapons)
-        {
-            setActive -= weapon.SetActive;
-        }
+        ActivateNewWeapon(_defaultWeapon);
     }
 
     private void Start()
     {
-        foreach (var weapon in _weapons)
-        {
-            weapon.SetUp();
-        }
-
-        _Event_ActivatePowerUp.AddListener(x => ActivateNewWeapon(x));
-        _Event_DeactivatePowerUp.AddListener(x => DeactivateSpeedBoost(x));
-        ActivateNewWeapon(PowerUpTypes.SingleShot);
+        _Event_NewWeapon.AddListener((x) => ActivateNewWeapon(x));
+        _Event_ActivatePowerUp.AddListener(x => ActivateSpeedBoost(x));
+        _Event_DeactivatePowerUp.AddListener(x => EndSpeedBoost(x));
     }
 
     private void Update()
     {
-        if (_currentWeapon._isActive && _currentWeapon._weapon != PowerUpTypes.SingleShot)
+        Fire();
+
+        if (_startTimer)
         { 
             WeaponTimer(); 
         }
     }
 
-    public void I_Fire() 
+    private void Fire() 
     {
-        _poolingAgent.InstantiateFromPool(_currentWeapon._weaponPrefab, transform.position, Quaternion.identity);
-        _audioSource.Play();
-    }
-
-    private void ActivateNewWeapon(object newPowerUp)
-    {
-        PowerUpTypes newWeapon = (PowerUpTypes)newPowerUp;
-
-        foreach (var weapon in _weapons)
+        if (Input.GetKey(KeyCode.Space) && Time.time > _canFireTimer)
         {
-            if (weapon._weapon == newWeapon)
-            {
-                _currentWeapon = weapon;
-                SetUpWeapon();
-                break;
-            }
+            _canFireTimer = Time.time + _currentWeapon.FireRate();
+            _poolingAgent.InstantiateFromPool(_currentWeapon._weaponPrefab, transform.position, Quaternion.identity);
+            _audioSource.Play();
         }
 
-        if (newWeapon == PowerUpTypes.SpeedBoost)
-        {
-            SetUpSpeedBoost(true);
-        }
     }
 
-    private void DeactivateSpeedBoost(object oldPowerUp)
+    private void ActivateNewWeapon(object newWeapon)
     {
-        switch ((PowerUpTypes)oldPowerUp)
-        {
-            case PowerUpTypes.SpeedBoost:
-                SetUpSpeedBoost(false);
-                break;
-        }
-    }
-
-    private void SetUpWeapon()
-    {
-        setActive.Invoke(_currentWeapon._weapon);
+        _currentWeapon = (WeaponSpec)newWeapon;
         _audioSource.volume = _currentWeapon._volume;
         _audioSource.clip = _currentWeapon._weaponSFX;
+        _Event_UpdateWeaponUI.Invoke(_currentWeapon._weaponType);
 
-        if (_currentWeapon._weapon != PowerUpTypes.SingleShot)
+        if (_currentWeapon._presenece != 0)
         {
-            _currentWeapon._timer = _currentWeapon._presenece;
+            _timer = _currentWeapon._presenece;
+            _startTimer = true;
         }
     }
 
-    private void SetUpSpeedBoost(bool active)
+    private void ActivateSpeedBoost(object newPowerUp)
     {
-        foreach (var item in _weapons)
+        if ((PowerUpTypes)newPowerUp == PowerUpTypes.SpeedBoost)
         {
-            item.ActivateSpeedBoost(active);
+            _currentWeapon.ActivateSpeedBoost(true);
+        }
+    }
+
+    private void EndSpeedBoost(object newPowerUp)
+    {
+        if ((PowerUpTypes)newPowerUp == PowerUpTypes.SpeedBoost)
+        {
+            _currentWeapon.ActivateSpeedBoost(false);
         }
     }
 
     private void WeaponTimer()
     {
-        _currentWeapon._timer -= Time.deltaTime;
-        _Event_CountDownTimer.Invoke(_currentWeapon._timer);
-        if (_currentWeapon._timer <= 0)
+        _timer -= Time.deltaTime;
+        _Event_CountDownTimer.Invoke(_timer);
+        if (_timer <= 0)
         {
-            _Event_DefaultWeapon.Invoke(PowerUpTypes.SingleShot);
-            ActivateNewWeapon(PowerUpTypes.SingleShot);
+            ActivateNewWeapon(_defaultWeapon);
             _audioSource.PlayOneShot(_powerUpEndSFX, _powerUpEndVolume);
+            _startTimer = false;
         }
-    }
-
-    public float I_ReturnFireRate()
-    {
-        foreach (var item in _weapons)
-        {
-            if (item._weapon == _currentWeapon._weapon)
-            {
-                return item.FireRate();
-            }
-        }        
-        Debug.Log("No weapon found");
-        return 0;
     }
 }

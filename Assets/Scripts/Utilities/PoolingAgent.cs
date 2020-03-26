@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PoolingAgent : MonoBehaviour
 {
-    [SerializeField] PoolingID _poolType;
+    [SerializeField] public PoolingID _poolType;
     PoolingManager _myPoolManager;
 
     private void Awake()

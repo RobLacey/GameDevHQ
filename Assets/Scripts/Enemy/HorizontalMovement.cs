@@ -9,7 +9,6 @@ public class HorizontalMovement : MonoBehaviour
     [SerializeField] float _leftPathEdge = -6f;
     [SerializeField] float _rightPathEdge = 6f;
 
-
     //Variables
     float _duration;
     float _rightBoundsMax, _leftBoundsMax;
