@@ -21,7 +21,7 @@ public class LoadingScreen : MonoBehaviour
     [SerializeField] EventManager _Event_StartNextScene;
     [SerializeField] EventManager _Event_StartFadeOut;
     [SerializeField] EventManager _Event_StartFadeIn;
-    [SerializeField] EventManager _Event_FinishedFadeIn;
+    [SerializeField] EventManager _Event_StartLoading;
 
     AsyncOperation asyncOperation;
     bool _finished = false;
@@ -29,7 +29,7 @@ public class LoadingScreen : MonoBehaviour
     private void OnEnable()
     {
         _Event_StartNextScene.AddListener(() => StartNextScene());
-        _Event_FinishedFadeIn.AddListener(() => StartLoadingNextScene());
+        _Event_StartLoading.AddListener(() => StartLoadingNextScene());
     }
 
     private void Start()

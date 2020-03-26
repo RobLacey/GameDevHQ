@@ -27,8 +27,6 @@ public interface IWeaponSystem
 {
     void I_Fire();
     float I_ReturnFireRate();
-    void I_ActivateWeapon(object newWeapon);
-    void I_DeactivateWeapon(object oldWeapon);
 }
 
 public interface IPowerUpSystem

@@ -144,4 +144,5 @@ public static class ExtensionsMethods
         color = new Color(color.r, color.g, color.b, alpha );
         return color;
     }
+
 }

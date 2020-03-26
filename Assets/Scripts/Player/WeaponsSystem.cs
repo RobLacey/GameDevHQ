@@ -49,9 +49,9 @@ public class WeaponsSystem : MonoBehaviour, IWeaponSystem
             weapon.SetUp();
         }
 
-        _Event_ActivatePowerUp.AddListener(x => I_ActivateWeapon(x));
-        _Event_DeactivatePowerUp.AddListener(x => I_DeactivateWeapon(x));
-        I_ActivateWeapon(PowerUpTypes.SingleShot);
+        _Event_ActivatePowerUp.AddListener(x => ActivateNewWeapon(x));
+        _Event_DeactivatePowerUp.AddListener(x => DeactivateSpeedBoost(x));
+        ActivateNewWeapon(PowerUpTypes.SingleShot);
     }
 
     private void Update()
@@ -68,7 +68,7 @@ public class WeaponsSystem : MonoBehaviour, IWeaponSystem
         _audioSource.Play();
     }
 
-    public void I_ActivateWeapon(object newPowerUp)
+    private void ActivateNewWeapon(object newPowerUp)
     {
         PowerUpTypes newWeapon = (PowerUpTypes)newPowerUp;
 
@@ -88,7 +88,7 @@ public class WeaponsSystem : MonoBehaviour, IWeaponSystem
         }
     }
 
-    public void I_DeactivateWeapon(object oldPowerUp)
+    private void DeactivateSpeedBoost(object oldPowerUp)
     {
         switch ((PowerUpTypes)oldPowerUp)
         {
@@ -125,7 +125,7 @@ public class WeaponsSystem : MonoBehaviour, IWeaponSystem
         if (_currentWeapon._timer <= 0)
         {
             _Event_DefaultWeapon.Invoke(PowerUpTypes.SingleShot);
-            I_ActivateWeapon(PowerUpTypes.SingleShot);
+            ActivateNewWeapon(PowerUpTypes.SingleShot);
             _audioSource.PlayOneShot(_powerUpEndSFX, _powerUpEndVolume);
         }
     }

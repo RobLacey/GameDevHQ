@@ -179,5 +179,5 @@ MonoBehaviour:
   _Event_StartFadeOut: {fileID: 11400000, guid: a3506d433d536464e8b9e2d6bfafdca1,
     type: 2}
   _Event_StartFadeIn: {fileID: 11400000, guid: 4a1bc289c29612442a96c121909fe498, type: 2}
-  _Event_FinishedFadeIn: {fileID: 11400000, guid: e0d2e2fa30d5480498780170e77ff954,
+  _Event_StartLoading: {fileID: 11400000, guid: e0d2e2fa30d5480498780170e77ff954,
     type: 2}

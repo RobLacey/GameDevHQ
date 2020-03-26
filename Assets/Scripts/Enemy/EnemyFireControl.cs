@@ -12,10 +12,13 @@ public class EnemyFireControl : MonoBehaviour, IKillable
     [SerializeField] float _volume;
     [SerializeField] GameObject _weaponPrefab = default;
     [SerializeField] PoolingAgent _poolingAgent;
+    [SerializeField] EventManager _Event_PlayerDead = default;
+
 
     //Variables
     float _fireRate = 0;
     AudioSource _audioSource;
+    bool _allowFiring = true;
 
     private void Awake()
     {
@@ -26,13 +29,15 @@ public class EnemyFireControl : MonoBehaviour, IKillable
 
     private void OnEnable()
     {
+        _allowFiring = true;
+        _Event_PlayerDead.AddListener(() => StopFiring());
         _fireRate = UnityEngine.Random.Range(_fireRateMin, _fireRateMax);
         StartCoroutine(Fire());
     }
 
     private IEnumerator Fire()
     {
-        while (true)
+        while (_allowFiring)
         {
             yield return new WaitForSeconds(_fireRate);
             _poolingAgent.InstantiateFromPool(_weaponPrefab, transform.position + _laserOffset, Quaternion.identity);
@@ -44,5 +49,10 @@ public class EnemyFireControl : MonoBehaviour, IKillable
     public void I_Dead(bool collsionKill)
     {
         StopAllCoroutines();
+    }
+
+    private void StopFiring()
+    {
+        _allowFiring = false;
     }
 }

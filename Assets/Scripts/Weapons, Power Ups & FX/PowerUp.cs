@@ -14,20 +14,15 @@ public class PowerUp : MonoBehaviour
     SpriteRenderer[] _myBody;
     AudioSource _audioSource;
     Collider2D _collider2D;
-    Camera _myCamera;
-    Canvas myCanvas;
 
     public TeamID TeamTag { get { return _teamID; } }
 
     protected void Awake()
     {
-        _myCamera = Camera.main;
-        myCanvas = GetComponentInChildren<Canvas>();
         _collider2D = GetComponentInChildren<Collider2D>();
         _myBody = GetComponentsInChildren<SpriteRenderer>();
         _audioSource = GetComponent<AudioSource>();
         _audioSource.clip = _collectSFX;
-        myCanvas.worldCamera = _myCamera;
     }
 
     private void OnEnable()

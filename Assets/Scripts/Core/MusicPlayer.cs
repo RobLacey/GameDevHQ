@@ -10,7 +10,6 @@ public class MusicPlayer : MonoBehaviour
     [SerializeField] AudioClip _inGameMusic;
     [SerializeField] EventManager _Event_SetMusicVolume;
     [SerializeField] EventManager _Event_PlayerDead;
-    [SerializeField] EventManager _Event_StartLevel;
 
     AudioSource _myAudioSource;
 
@@ -32,8 +31,12 @@ public class MusicPlayer : MonoBehaviour
     {
         _Event_SetMusicVolume.AddListener((value) => _myAudioSource.volume = (float)value);
         _Event_PlayerDead.AddListener(() => GameOverMusic());
-        _Event_StartLevel.AddListener(() => StartLevel());
         SceneManager.sceneLoaded += CheckMusic;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= CheckMusic;
     }
 
     private void CheckMusic(Scene scene, LoadSceneMode mode)
@@ -47,6 +50,7 @@ public class MusicPlayer : MonoBehaviour
                 StartLevel();
                 break;
             case (2):
+                _Event_SetMusicVolume.AddListener((value) => _myAudioSource.volume = (float)value);
                 StartLevel();
                 break;
             case (3):

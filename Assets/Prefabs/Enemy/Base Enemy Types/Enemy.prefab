@@ -229,6 +229,7 @@ MonoBehaviour:
   _weaponPrefab: {fileID: 832406360374031768, guid: 071fee86d15a09c4a952a1430240272e,
     type: 3}
   _poolingAgent: {fileID: 3316010059174687098}
+  _Event_PlayerDead: {fileID: 11400000, guid: 786a86b41c101234c85ab3832dbaadf1, type: 2}
 --- !u!114 &2781022295709722970
 MonoBehaviour:
   m_ObjectHideFlags: 0

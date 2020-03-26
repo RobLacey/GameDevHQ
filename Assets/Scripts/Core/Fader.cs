@@ -16,7 +16,7 @@ public class Fader : MonoBehaviour
     [SerializeField] EventManager _Event_StartNextScene;
     [SerializeField] EventManager _Event_StartFadeOut;
     [SerializeField] EventManager _Event_StartFadeIn;
-    [SerializeField] EventManager _Event_FinishedFadeIn;
+    [SerializeField] EventManager _Event_StartLoading;
 
     private void OnEnable()
     {
@@ -69,7 +69,7 @@ public class Fader : MonoBehaviour
                 yield return null;
             }
             yield return new WaitForSeconds(_fadeInDelays);
-            _Event_FinishedFadeIn.Invoke();
+            _Event_StartLoading.Invoke();
         }
     }
 
