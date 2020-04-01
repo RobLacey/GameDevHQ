@@ -43,22 +43,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30cf27ef3d9cf7340ade70d461239418, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _loadingText: {fileID: 0}
-  _loadingBar: {fileID: 0}
-  _loadingImage: {fileID: 0}
-  _hitSpaceText: Press Any Key..
-  _loadedText: loaded
-  _rotationSpeed: 150
-  _pulseText: 1
-  _pulseImage: 0
-  _pulsePercentage: 0.3
   _waitOnLoad: 1
-  _nextSceneIndex: 2
   _isLoadingScreen: 0
-  _Event_StartNextScene: {fileID: 11400000, guid: a53499474fd7194428f6d89be250a83c,
-    type: 2}
-  _Event_StartFadeOut: {fileID: 11400000, guid: a3506d433d536464e8b9e2d6bfafdca1,
-    type: 2}
-  _Event_StartFadeIn: {fileID: 11400000, guid: 4a1bc289c29612442a96c121909fe498, type: 2}
+  _loadingDelay: 3
+  _nextSceneIndex: 2
   _Event_StartLoading: {fileID: 11400000, guid: e0d2e2fa30d5480498780170e77ff954,
+    type: 2}
+  _Event_Async_Progress: {fileID: 11400000, guid: 3d23083dcbe5d6a4d96b7811f9959890,
+    type: 2}
+  _Event_Start_Level_Exit_Process: {fileID: 11400000, guid: 96a79de8e7c52df49bd9cd220d3392c7,
     type: 2}

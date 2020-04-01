@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using System;
 using Random = UnityEngine.Random;
 
@@ -18,8 +17,8 @@ public class GameOverUIController : MonoBehaviour
 
     private void OnEnable()
     {
-        _Event_PlayerDead.AddListener(() => GameOver());
-        _Event_NoHighScore.AddListener(() => NoHighScore());
+        _Event_PlayerDead.AddListener(() => GameOver(), this);
+        _Event_NoHighScore.AddListener(() => NoHighScore(), this);
     }
 
     private void Start()

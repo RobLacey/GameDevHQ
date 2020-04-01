@@ -6,6 +6,7 @@ using UnityEngine;
 public class EventCleaner : MonoBehaviour
 {
     List<EventManager> newEvents = new List<EventManager>();
+    [SerializeField] EventInvocationLists _eventInvocationLists;
 
     private void OnDisable()
     {
@@ -15,6 +16,11 @@ public class EventCleaner : MonoBehaviour
             {
                 item.RemoveListeners();
             }
+        }
+
+        if (_eventInvocationLists != null)
+        {
+            _eventInvocationLists.SortLists(); 
         }
     }
 

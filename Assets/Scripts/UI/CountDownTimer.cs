@@ -9,19 +9,21 @@ public class CountDownTimer : MonoBehaviour
     [SerializeField] EventManager _Event_PlayerDead;
 
     Text _countDownText = default;
+    Canvas _countDownCanvas = default;
 
     private void Awake()
     {
         _countDownText = GetComponent<Text>();
+        _countDownCanvas = GetComponent<Canvas>();
     }
     private void Start()
     {
-        _countDownText.enabled = false;
+        _countDownCanvas.enabled = false;
     }
     private void OnEnable()
     {
-        _Event_CountDownTimer.AddListener((x) => Countdown(x));
-        _Event_PlayerDead.AddListener(() => OnPlayerDeath());
+        _Event_CountDownTimer.AddListener((x) => Countdown(x), this);
+        _Event_PlayerDead.AddListener(() => OnPlayerDeath(), this);
     }
 
     private void Countdown(object value)
@@ -29,12 +31,12 @@ public class CountDownTimer : MonoBehaviour
         float newValue = (float)value;
         if (newValue > 0)
         {
-            _countDownText.enabled = true;
+            _countDownCanvas.enabled = true;
             _countDownText.text = newValue.ToString("0.0");
         }
         else
         {
-            _countDownText.enabled = false;
+            _countDownCanvas.enabled = false;
         }
     }
 

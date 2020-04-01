@@ -172,12 +172,7 @@ MonoBehaviour:
   _fadeOut: 1
   _fadeInTime: 2
   _fadeOutTime: 2
-  _fadeInDelays: 1
+  _fadeInDelays: 0.5
   _FadeOutDelays: 1
-  _Event_StartNextScene: {fileID: 11400000, guid: a53499474fd7194428f6d89be250a83c,
-    type: 2}
-  _Event_StartFadeOut: {fileID: 11400000, guid: a3506d433d536464e8b9e2d6bfafdca1,
-    type: 2}
-  _Event_StartFadeIn: {fileID: 11400000, guid: 4a1bc289c29612442a96c121909fe498, type: 2}
-  _Event_StartLoading: {fileID: 11400000, guid: e0d2e2fa30d5480498780170e77ff954,
+  _Event_Start_Level_Exit_Process: {fileID: 11400000, guid: 96a79de8e7c52df49bd9cd220d3392c7,
     type: 2}

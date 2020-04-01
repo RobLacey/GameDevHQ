@@ -25,9 +25,9 @@ public class HealthBar : MonoBehaviour
 
     private void OnEnable()
     {
-        _Event_SetLives.AddListener(y => SetLivesDisplay(y));
-        _Event_PlayerDead.AddListener(() => _audioSource.Stop());
-        _Event_ActivatePowerUp.AddListener(x => AddHealth(x));
+        _Event_SetLives.AddListener(y => SetLivesDisplay(y), this);
+        _Event_PlayerDead.AddListener(() => _audioSource.Stop(), this);
+        _Event_ActivatePowerUp.AddListener(x => AddHealth(x), this);
     }
 
     private void SetLivesDisplay(object lives)
@@ -83,7 +83,7 @@ public class HealthBar : MonoBehaviour
     IEnumerator HealthDisplay()
     {
         yield return new WaitForSeconds(3f);
-        _Event_DeactivatePowerUp.Invoke(PowerUpTypes.Health);
+        _Event_DeactivatePowerUp.Invoke(PowerUpTypes.Health, this);
     }
 
 

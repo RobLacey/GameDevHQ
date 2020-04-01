@@ -62,14 +62,14 @@ public class WaveController : MonoBehaviour, IEnemyWave
         enemiesLeft--;
         if (enemiesLeft <= 0)
         {
-            _Event_WaveWiped.Invoke(score, true);
+            _Event_WaveWiped.Invoke(score, true, this);
             gameObject.SetActive(false);
             GameObject newObject = _poolingAgent.InstantiateFromPool(_wipeUI, transform.position, Quaternion.identity);
             newObject.GetComponentInChildren<Text>().transform.position = GetScreenPosition(lastEnemiesPosition);
         }
         else
         {
-            _Event_AddToScore.Invoke(score);
+            _Event_AddToScore.Invoke(score, this);
         }
     }
 

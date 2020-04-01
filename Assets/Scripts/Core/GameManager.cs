@@ -7,9 +7,8 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] EventManager _Event_StartLevel;
-    [SerializeField] EventManager _Event_SetMusicVolume;
     [SerializeField] EventManager _Event_NoHighScore;
-    [SerializeField] EventManager _Event_StartFadeOut;
+    [SerializeField] EventManager _Event_StartLoading;
     [SerializeField] GameObject _backgroundScene;
     [SerializeField] ParticleSystem _speedBlur1;
     [SerializeField] ParticleSystem _speedBlur2;
@@ -17,10 +16,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] float _secondPhaseDelay;
     [SerializeField] int _mainGameScene = 3;
     [SerializeField] float _musicFadeIn = 2f;
-
+    [SerializeField] int _nextSceneIndex = 1;
 
     //Variables
     AudioSource _myAudioSource;
+    int _currentBuildIndex;
 
     public bool IsGameOver { get; set; }
 
@@ -30,21 +30,22 @@ public class GameManager : MonoBehaviour
         {
             _backgroundScene.SetActive(false);
         }
+        _currentBuildIndex = SceneManager.GetActiveScene().buildIndex;
         _myAudioSource = GetComponent<AudioSource>();
         IsGameOver = false;
     }
 
     private void OnEnable()
     {
-        _Event_NoHighScore.AddListener(() => GameOver());
+        _Event_NoHighScore.AddListener(() => GameOver(), this);
     }
 
     private void Start()
     {
-        _Event_SetMusicVolume.Invoke(PlayerPrefs.GetFloat(PlayerSettings._musicSettings));
+        //_Event_SetMusicVolume.Invoke(PlayerPrefs.GetFloat(PlayerSettings._musicSettings), this);
         //TODO Add Audio Mixer for SFX to set level
         //TODO Add Pause Menu to Change Music and SFX too
-        if (SceneManager.GetActiveScene().buildIndex == _mainGameScene)
+        if (_currentBuildIndex == _mainGameScene)
         {
             StartCoroutine(StartSequence());
         }
@@ -53,7 +54,7 @@ public class GameManager : MonoBehaviour
     IEnumerator StartSequence()
     {
         yield return new WaitForSeconds(_firstPhaseDelay);
-        _Event_StartLevel.Invoke();
+        _Event_StartLevel.Invoke(this);
         yield return new WaitForSeconds(_secondPhaseDelay);
         StartCoroutine(FadeOutSFX());
         _backgroundScene.SetActive(true);
@@ -65,20 +66,14 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
-            Debug.Log("Quit");
-        }
-
         if (Input.GetKeyDown(KeyCode.R) && IsGameOver)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            _Event_StartLoading.Invoke(_currentBuildIndex, this);
         }
 
         if (Input.GetKeyDown(KeyCode.M) && IsGameOver)
         {
-            _Event_StartFadeOut.Invoke();
+            _Event_StartLoading.Invoke(_nextSceneIndex, this);
         }
     }
 
@@ -102,5 +97,11 @@ public class GameManager : MonoBehaviour
             _myAudioSource.volume = Mathf.Lerp(endvolume, 0, perc);
             yield return null;
         }
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
+        Debug.Log("Quit");
     }
 }

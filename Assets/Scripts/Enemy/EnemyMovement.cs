@@ -38,7 +38,7 @@ public class EnemyMovement : MonoBehaviour
             {
                 foreach (Transform child in transform)
                 {
-                    _Event_RemoveEnemyAsTarget.Invoke(child.gameObject);
+                    _Event_RemoveEnemyAsTarget.Invoke(child.gameObject, this);
                 }
                 _partofWave.I_DeactivateChildObjects();
             }

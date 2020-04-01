@@ -43,23 +43,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7db414d30b9167f44acdf0099bc87b2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  events:
-  - {fileID: 11400000, guid: 032760db4a9315c4fbb64403d598135b, type: 2}
-  - {fileID: 11400000, guid: 532cd2fbb460d974fb69b8af40442f37, type: 2}
-  - {fileID: 11400000, guid: 1de5d0e4001753846b4f059198091fe5, type: 2}
-  - {fileID: 11400000, guid: 94ce8af8f09e68940895f8146b35e2d3, type: 2}
-  - {fileID: 11400000, guid: 6ea991cefad11e74da82ed26b2243396, type: 2}
-  - {fileID: 11400000, guid: 2540681e9a99f8e4fad32d602888b936, type: 2}
-  - {fileID: 11400000, guid: 786a86b41c101234c85ab3832dbaadf1, type: 2}
-  - {fileID: 11400000, guid: 343e9cbf54340ff419a6979287f648cc, type: 2}
-  - {fileID: 11400000, guid: df9e99793f49aa545aa40c3c39ac1162, type: 2}
-  - {fileID: 11400000, guid: aa88659e4a18fe940ba2b4f0eb38ed6e, type: 2}
-  - {fileID: 11400000, guid: 4e3dbc24ceb21e2489318279ece4bc67, type: 2}
-  - {fileID: 11400000, guid: e7797a36b34c54548b19a890d20f87d5, type: 2}
-  - {fileID: 11400000, guid: a4718f0912b3f33428999506b4b1a32f, type: 2}
-  - {fileID: 11400000, guid: 2bb3909c96ba43b4caf302561d7f6aaf, type: 2}
-  - {fileID: 11400000, guid: ba8917b3fab65024c8e2259abb9a3e1d, type: 2}
-  - {fileID: 11400000, guid: 06fcb56e4938f5c419370ce142c61ac9, type: 2}
-  - {fileID: 11400000, guid: 77917fb39655864449c7578d163b507b, type: 2}
-  - {fileID: 11400000, guid: 6b5580ad23d8cfb46ace150f616d1a6b, type: 2}
-  newEvents: []
+  _eventInvocationLists: {fileID: 11400000, guid: 5b2f3cf7de0858e4da80de36b76ecfe2,
+    type: 2}

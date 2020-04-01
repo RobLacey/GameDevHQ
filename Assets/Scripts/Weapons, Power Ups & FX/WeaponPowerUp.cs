@@ -18,7 +18,7 @@ public class WeaponPowerUp : PowerUp
                 _audioSource.Play();
                 _collider2D.enabled = false;
                 ActivateSprite(false);
-                _Event_NewWeapon.Invoke(_weaponSpec);
+                _Event_NewWeapon.Invoke(_weaponSpec, this);
                 StartCoroutine(DisableObject(_collectSFX.length));
             }
         }

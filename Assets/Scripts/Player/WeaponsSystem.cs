@@ -30,14 +30,14 @@ public class WeaponsSystem : MonoBehaviour
 
     private void OnEnable()
     {
-        ActivateNewWeapon(_defaultWeapon);
+        _Event_NewWeapon.AddListener((x) => ActivateNewWeapon(x), this);
+        _Event_ActivatePowerUp.AddListener(x => ActivateSpeedBoost(x), this);
+        _Event_DeactivatePowerUp.AddListener(x => EndSpeedBoost(x), this);
     }
 
     private void Start()
     {
-        _Event_NewWeapon.AddListener((x) => ActivateNewWeapon(x));
-        _Event_ActivatePowerUp.AddListener(x => ActivateSpeedBoost(x));
-        _Event_DeactivatePowerUp.AddListener(x => EndSpeedBoost(x));
+        ActivateNewWeapon(_defaultWeapon);
     }
 
     private void Update()
@@ -66,7 +66,7 @@ public class WeaponsSystem : MonoBehaviour
         _currentWeapon = (WeaponSpec)newWeapon;
         _audioSource.volume = _currentWeapon._volume;
         _audioSource.clip = _currentWeapon._weaponSFX;
-        _Event_UpdateWeaponUI.Invoke(_currentWeapon._weaponType);
+        _Event_UpdateWeaponUI.Invoke(_currentWeapon._weaponType, this);
 
         if (_currentWeapon._presenece != 0)
         {
@@ -94,7 +94,7 @@ public class WeaponsSystem : MonoBehaviour
     private void WeaponTimer()
     {
         _timer -= Time.deltaTime;
-        _Event_CountDownTimer.Invoke(_timer);
+        _Event_CountDownTimer.Invoke(_timer, this);
         if (_timer <= 0)
         {
             ActivateNewWeapon(_defaultWeapon);

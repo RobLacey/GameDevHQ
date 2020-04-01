@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
+    //TODO add in exclude from build sections
     //TODO Check and Tidy code
     //TODO Check garbage collection
     //TODO add level progression and boss battle
@@ -49,12 +50,12 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private void OnEnable()
     {
-        _Event_AddHealth.AddListener(() => AddHealth());
+        _Event_AddHealth.AddListener(() => AddHealth(), this);
     }
 
     private void Start()
     {
-        _Event_SetLives.Invoke(_health / _startingHealth);
+        _Event_SetLives.Invoke(_health / _startingHealth, this);
     }
 
     private void Damage(float damage)
@@ -63,12 +64,12 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         {
             if (_health <= 0) return;
 
-            if ((bool)_Event_Are_Shields_Active.Return_Parameter())
+            if ((bool)_Event_Are_Shields_Active.ReturnParameter(this))
             {
-                _Event_DeactivatePowerUp.Invoke(PowerUpTypes.Shield);
+                _Event_DeactivatePowerUp.Invoke(PowerUpTypes.Shield, this);
                 return;
             }
-            _Event_WaveWipedCancel.Invoke(0, false);
+            _Event_WaveWipedCancel.Invoke(0, false, this);
             _damageFX.SetActive(true);
             _myAudioSource.PlayOneShot(_damageSoundFX, _sfxVolume);
             RemoveHealth(damage);
@@ -79,7 +80,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         _health -= damage;
         float newHealth = _health / _startingHealth;
-        _Event_SetLives.Invoke(newHealth);
+        _Event_SetLives.Invoke(newHealth, this);
         _myDamage.DamageDisplay(newHealth);
     }
 
@@ -88,7 +89,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (_health == _startingHealth) return;
         _health++;
         float newHealth = _health / _startingHealth;
-        _Event_SetLives.Invoke(newHealth);
+        _Event_SetLives.Invoke(newHealth, this);
         _myDamage.DamageDisplay(newHealth);
     }
 
@@ -100,7 +101,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         {
             GameObject explosion = _poolingAgent.InstantiateFromPool(_deathFX, transform.position, Quaternion.identity);
             explosion.GetComponent<IScaleable>().I_SetScale(_explosionSize);
-            _Event_PlayerDead.Invoke();
+            _Event_PlayerDead.Invoke(this);
             gameObject.SetActive(false);
         }
     }

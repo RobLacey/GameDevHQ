@@ -28,6 +28,7 @@ public class PowerUp : MonoBehaviour
     {
         ActivateSprite(true);
         _collider2D.enabled = true;
+        transform.position = new Vector3(transform.position.x, transform.position.y, -1); //Adjusts for gfx error with emission
     }
 
     protected void ActivateSprite(bool active)

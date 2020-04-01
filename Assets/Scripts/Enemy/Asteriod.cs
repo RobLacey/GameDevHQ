@@ -71,7 +71,7 @@ public class Asteriod : MonoBehaviour, IKillable
     {
         if (!transform.StillOnScreen(_screenBounds))
         {
-            _Event_RemoveEnemyAsTarget.Invoke(gameObject);
+            _Event_RemoveEnemyAsTarget.Invoke(gameObject, this);
             gameObject.SetActive(false);
         }
     }

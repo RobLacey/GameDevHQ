@@ -11,7 +11,6 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] float _maxSpawnTime = 1f;
     [SerializeField] float _startDelay = default;
     [SerializeField] bool _trackActiveObjects = false;
-    [SerializeField] bool canSpawn = true;
     [SerializeField] EventManager _Event_StartSpawning;
     [SerializeField] EventManager _Event_PlayerDead;
     [SerializeField] EventManager _Event_RemoveEnemyASTarget;
@@ -21,6 +20,7 @@ public class SpawnManager : MonoBehaviour
 
     //Variable
     PoolingAgent _poolingAgent;
+    bool _canSpawn = true;
 
     public List<GameObject> ActiveTargets { get; private set; }
 
@@ -32,13 +32,14 @@ public class SpawnManager : MonoBehaviour
 
     private void OnEnable()
     {
-        _Event_StartSpawning.AddListener(() => StartSpawning());
-        _Event_PlayerDead.AddListener(() => PlayerDead());
+        _Event_StartSpawning.AddListener(() => StartSpawning(), this);
+        _Event_PlayerDead.AddListener(() => PlayerDead(), this);
+
         if (_trackActiveObjects)
         {
-            _Event_ReturnActiveEnemies.AddListener(() => ActiveTargets);
-            _Event_RemoveEnemyASTarget.AddListener((x) => RemoveActiveTargets(x));
-            _Event_AddEnemy.AddListener((x) => ActiveTargets.Add((GameObject)x));
+            _Event_ReturnActiveEnemies.AddReturnParameter(() => ActiveTargets, this);
+            _Event_RemoveEnemyASTarget.AddListener((x) => RemoveActiveTargets(x), this);
+            _Event_AddEnemy.AddListener((x) => ActiveTargets.Add((GameObject)x), this);
         }
     }
 
@@ -56,7 +57,7 @@ public class SpawnManager : MonoBehaviour
 
     private IEnumerator SpawnObjects()
     {
-        while (canSpawn)
+        while (_canSpawn)
         {
             float timer = Random.Range(_minSpawnTime, _maxSpawnTime);
             GameObject toSpawn = _spawnArray[Random.Range(0, _spawnArray.Length)];
@@ -74,7 +75,7 @@ public class SpawnManager : MonoBehaviour
 
     private void PlayerDead()
     {
-        canSpawn = false;
+        _canSpawn = false;
     }
 
     private void RemoveActiveTargets(object oldtaget)

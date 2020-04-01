@@ -19,9 +19,9 @@ public class UIActivator : MonoBehaviour
 
     private void OnEnable()
     {
-        _Event_ActivatePowerUp.AddListener(x => ActivatePowerUPUI(x));
-        _Event_DeactivatePowerUp.AddListener(x => DeactviatePowerUPUI(x));
-        _Event_UpdateWeaponUI.AddListener(x => ActivateWeaponUI(x));
+        _Event_ActivatePowerUp.AddListener(x => ActivatePowerUPUI(x), this);
+        _Event_DeactivatePowerUp.AddListener(x => DeactviatePowerUPUI(x), this);
+        _Event_UpdateWeaponUI.AddListener(x => ActivateWeaponUI(x), this);
     }
 
     private void ActivatePowerUPUI(object type)

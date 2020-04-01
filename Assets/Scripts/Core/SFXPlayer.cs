@@ -18,8 +18,8 @@ public class SFXPlayer : MonoBehaviour
 
     private void OnEnable()
     {
-        _Event_PlayerDead.AddListener(() => GameOverMusic());
-        _Event_StartLevel.AddListener(() => StartLevel());
+        _Event_PlayerDead.AddListener(() => GameOverMusic(), this);
+        _Event_StartLevel.AddListener(() => StartLevel(), this);
     }
 
     private void StartLevel()

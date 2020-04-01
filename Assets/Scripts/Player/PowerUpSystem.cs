@@ -36,9 +36,9 @@ public class PowerUpSystem : MonoBehaviour
 
     private void OnEnable()
     {
-        _Event_ActivatePowerUp.AddListener(x => I_ActivatePowerUp(x));
-        _Event_DeactivatePowerUp.AddListener(x => I_DeactivatePowerUps(x));
-        _Event_Are_Shields_Active.AddListener(() => ShieldsAreActive);
+        _Event_ActivatePowerUp.AddListener(x => I_ActivatePowerUp(x), this);
+        _Event_DeactivatePowerUp.AddListener(x => I_DeactivatePowerUps(x), this);
+        _Event_Are_Shields_Active.AddReturnParameter(() => ShieldsAreActive, this);
     }
 
     private void Start()
@@ -68,7 +68,7 @@ public class PowerUpSystem : MonoBehaviour
                 ShieldsAreActive = true;
                 break;
             case PowerUpTypes.Health:
-                _Event_AddHealth.Invoke();
+                _Event_AddHealth.Invoke(this);
                 break;
             default:
                 break;
@@ -94,10 +94,10 @@ public class PowerUpSystem : MonoBehaviour
     private void SpeedBoostTimer()
     {
         _SpeedBoostTimer -= Time.deltaTime;
-        _Event_CountDownTimer.Invoke(_SpeedBoostTimer);
+        _Event_CountDownTimer.Invoke(_SpeedBoostTimer, this);
         if (_SpeedBoostTimer <= 0)
         {
-            _Event_DeactivatePowerUp.Invoke(PowerUpTypes.SpeedBoost);
+            _Event_DeactivatePowerUp.Invoke(PowerUpTypes.SpeedBoost, this);
         }
     }
 }

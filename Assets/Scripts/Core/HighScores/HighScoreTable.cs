@@ -9,6 +9,7 @@ public class HighScoreTable : MonoBehaviour
     [SerializeField] Vector3 _startPosition;
     [SerializeField] Vector3 _gapBetweenEntries;
     [SerializeField] EventManager _Event_UpdateHighScoreDisplay;
+    [SerializeField] EventManager _Event_CreateHighscore_Table;
 
     //Variables
     HighScoreContainer[] _highScoreDisplayEntries;
@@ -16,24 +17,19 @@ public class HighScoreTable : MonoBehaviour
 
     private void OnEnable()
     {
-        _Event_UpdateHighScoreDisplay.AddListener((x) => UpdateHighScoreList(x));
+        _Event_UpdateHighScoreDisplay.AddListener((x) => UpdateHighScoreList(x), this);
+        _Event_CreateHighscore_Table.AddListener((value) => CreateHighScoreTable(value), this);
     }
 
-    private void Start()
+    private void CreateHighScoreTable(object newHighScoresList)
     {
-        LoadHighScoreData();
+        _highScoresList = (HighScoresToSave)newHighScoresList;
         PopulateHighScoreTable();
-    }
-
-    private void LoadHighScoreData()
-    {
-        string jsonString = PlayerPrefs.GetString(HighScoreController._highScoreTableData);
-        _highScoresList = JsonUtility.FromJson<HighScoresToSave>(jsonString);
-        _highScoreDisplayEntries = new HighScoreContainer[_highScoresList._highScoreEntries.Count];
     }
 
     private void PopulateHighScoreTable()
     {
+        _highScoreDisplayEntries = new HighScoreContainer[_highScoresList._highScoreEntries.Count];
         for (int index = 0; index < _highScoresList._highScoreEntries.Count; index++)
         {
             _highScoreDisplayEntries[index] = Instantiate(_scorePrefab, _highScoreParent.transform);

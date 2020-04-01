@@ -24,8 +24,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnEnable()
     {
-        _Event_ActivatePowerUp.AddListener(x => AdjustSpeed(x));
-        _Event_DeactivatePowerUp.AddListener(x => AdjustSpeed(x));
+        _Event_ActivatePowerUp.AddListener(x => AdjustSpeed(x), this);
+        _Event_DeactivatePowerUp.AddListener(x => AdjustSpeed(x), this);
     }
 
     private void Start()

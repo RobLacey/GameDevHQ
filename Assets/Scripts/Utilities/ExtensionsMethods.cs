@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public static class ExtensionsMethods
@@ -117,16 +118,9 @@ public static class ExtensionsMethods
 
     //Colour Lerps
 
-    public static Color PulseAlpha(this Color color, float timer, bool toBlack)
+    public static Color PulseAlpha(this Color color, float alphaAmount, float speed) //TODO Improve, maybe do lerp or use sine
     {
-        float knee;
-
-        if (toBlack)
-        { knee = 0; }
-        else
-        { knee = 0.1f;}
-
-        float t = Mathf.PingPong((Time.time * timer), 1) + knee;
+        float t = Mathf.PingPong(Time.time * speed, 1) + alphaAmount;
         color = new Color(color.r, color.g, color.b, t );
         return color;
     }
@@ -157,5 +151,13 @@ public static class ExtensionsMethods
             }
         }
         return null;
+    }
+
+    //UI ElementColourChange
+
+    public static ColorBlock SwapUIColour (this ColorBlock colorBlock, Color newColour)
+    {
+        colorBlock.normalColor = newColour;
+        return colorBlock;
     }
 }

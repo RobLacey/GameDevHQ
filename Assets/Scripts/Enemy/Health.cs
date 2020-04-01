@@ -45,7 +45,7 @@ public class Health : MonoBehaviour, IDamageable
 
         if (canDealDamage != null && canDealDamage.I_TeamTag != I_TeamTag)
         {
-            _Event_WaveWipedCancel.Invoke(0, false);
+            _Event_WaveWipedCancel.Invoke(0, false, this);
             _collisionKill = true;
             canDealDamage.I_ProcessCollision(_damageDealt);
             I_ProcessCollision(_instanceHealth);

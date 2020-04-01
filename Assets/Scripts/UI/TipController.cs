@@ -27,7 +27,8 @@ public class TipController : MonoBehaviour
 
     IEnumerator RotateTips()
     {
-        int index = 0;
+        int index = Random.Range(0, _tips.Length -1);
+
         while (true)
         {
             _tipText.text = _tips[index]._tip;

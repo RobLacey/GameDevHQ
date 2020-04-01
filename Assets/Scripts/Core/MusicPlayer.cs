@@ -12,6 +12,7 @@ public class MusicPlayer : MonoBehaviour
     [SerializeField] EventManager _Event_PlayerDead;
     [SerializeField] float _musicFadeIn = 5f;
 
+    //Variables
     AudioSource _myAudioSource;
 
     private void Awake()
@@ -31,14 +32,19 @@ public class MusicPlayer : MonoBehaviour
 
     private void OnEnable()
     {
-        _Event_SetMusicVolume.AddListener((value) => _myAudioSource.volume = (float)value);
-        _Event_PlayerDead.AddListener(() => GameOverMusic());
+        _Event_SetMusicVolume.AddListener((value) => SetAudio(value), this);
+        _Event_PlayerDead.AddListener(() => GameOverMusic(), this);
         SceneManager.sceneLoaded += CheckMusic;
     }
 
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= CheckMusic;
+    }
+
+    private void SetAudio(object newVolume)
+    {
+        _myAudioSource.volume = (float)newVolume;
     }
 
     private void CheckMusic(Scene scene, LoadSceneMode mode)
@@ -49,14 +55,16 @@ public class MusicPlayer : MonoBehaviour
                 StartLevel();
                 break;
             case (1):
+                _Event_SetMusicVolume.AddListener((value) => SetAudio(value), this);
                 StartLevel();
                 break;
             case (2):
+                _Event_SetMusicVolume.AddListener((value) => SetAudio(value), this);
                 StartLevel();
                 break;
             case (3):
-                _Event_SetMusicVolume.AddListener((value) => StartMusic(value));
-                _Event_PlayerDead.AddListener(() => GameOverMusic());
+                _Event_SetMusicVolume.AddListener((value) => StartMusic(value), this);
+                _Event_PlayerDead.AddListener(() => GameOverMusic(), this);
                 InGameMusic();
                 break;
             default:
@@ -97,11 +105,7 @@ public class MusicPlayer : MonoBehaviour
     private void StartMusic(object volume)
     {
         _myAudioSource.volume = (float)volume;
-
-        if (SceneManager.GetActiveScene().buildIndex == 3)
-        {
-            StartCoroutine(IncreaseVolume());
-        }
+        StartCoroutine(IncreaseVolume());
     }
 
     IEnumerator IncreaseVolume()

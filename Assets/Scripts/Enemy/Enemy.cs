@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour, IKillable, IWaveMemeber
     {
         _mySprite.enabled = true;
         _collider2D.enabled = true;
-        _Event_AddEnemy.Invoke(gameObject);
+        _Event_AddEnemy.Invoke(gameObject, this);
     }
 
     public void I_Dead(bool collsionKill)
@@ -44,12 +44,12 @@ public class Enemy : MonoBehaviour, IKillable, IWaveMemeber
         }
         else
         {
-            _Event_AddToScore.Invoke(_points);
+            _Event_AddToScore.Invoke(_points, this);
         }
         _collider2D.enabled = false;
         _mySprite.enabled = false;
         CreateDeathFX();
-        _Event_RemoveEnemyAsTarget.Invoke(gameObject);
+        _Event_RemoveEnemyAsTarget.Invoke(gameObject, this);
         gameObject.SetActive(false);
     }
 

@@ -30,7 +30,7 @@ public class EnemyFireControl : MonoBehaviour, IKillable
     private void OnEnable()
     {
         _allowFiring = true;
-        _Event_PlayerDead.AddListener(() => StopFiring());
+        _Event_PlayerDead.AddListener(() => StopFiring(), this);
         _fireRate = UnityEngine.Random.Range(_fireRateMin, _fireRateMax);
         StartCoroutine(Fire());
     }

@@ -40,10 +40,10 @@ public class ScoreController : MonoBehaviour
 
     private void OnEnable()
     {
-        _Event_AddToScore.AddListener(x => AddToScore(x));
-        _Event_WaveWiped.AddListener((x, y) => WaveWipeBonusScore(x, y));
-        _Event_GetTarget.AddListener(() => ReturnPosition);
-        _Event_PlayerDead.AddListener(() => _Event_AddHighScore.Invoke(_score));
+        _Event_AddToScore.AddListener(x => AddToScore(x),this);
+        _Event_WaveWiped.AddListener((x, y) => WaveWipeBonusScore(x, y), this);
+        _Event_GetTarget.AddReturnParameter(() => ReturnPosition, this);
+        _Event_PlayerDead.AddListener(() => _Event_AddHighScore.Invoke(_score, this), this);
     }
 
     private void Start()

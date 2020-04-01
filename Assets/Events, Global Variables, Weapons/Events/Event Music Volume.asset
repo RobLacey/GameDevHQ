@@ -12,3 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cfe04111ca158842b948ae7168fc831, type: 3}
   m_Name: Event Music Volume
   m_EditorClassIdentifier: 
+  _listenerlist: []
+  _invokerlist: []
+  _innvocationLists: {fileID: 0}
+  _parameterTypes: []
+  _returnTypes: 
+  _justInvoke: 0
+  _resetTypeData: 1

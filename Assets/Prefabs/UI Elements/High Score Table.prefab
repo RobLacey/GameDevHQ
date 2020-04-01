@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 4199598501865212536}
   - component: {fileID: 5805051663538726332}
   m_Layer: 5
-  m_Name: HighScore Table
+  m_Name: High Score Table
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -106,7 +106,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4199598502135167211}
-  - {fileID: 4199598502520058718}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -164,14 +163,15 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 4199598502520058718}
   m_Father: {fileID: 4199598501865212536}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 11.275002, y: -1.425003}
-  m_SizeDelta: {x: 182.55, y: 172.85}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 1.7000122, y: -14.200012}
+  m_SizeDelta: {x: 796.3, y: 724.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4199598502135167209
 CanvasRenderer:
@@ -311,20 +311,20 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4199598502520058719}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4199598502557926834}
   - {fileID: 4199598501816859530}
   - {fileID: 4199598502374387804}
-  m_Father: {fileID: 4199598501865212536}
-  m_RootOrder: 1
+  m_Father: {fileID: 4199598502135167211}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 11.272499, y: 114.975006}
-  m_SizeDelta: {x: 182.545, y: -59.950012}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -36}
+  m_SizeDelta: {x: 796.3, y: 73.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4199598502520058716
 CanvasRenderer:

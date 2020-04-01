@@ -36,7 +36,7 @@ public class WaveWipeText : MonoBehaviour
 
     private void Start()
     {
-        RectTransform _target = (RectTransform) _Event_GetTarget.Return_Parameter();
+        RectTransform _target = (RectTransform) _Event_GetTarget.ReturnParameter(this);
         _targetPosition = _camera.ScreenToWorldPoint(_target.position);
     }
 

@@ -18,7 +18,7 @@ public class SpecialPowerUp : PowerUp
                 _audioSource.Play();
                 _collider2D.enabled = false;
                 ActivateSprite(false);
-                _Event_ActivatePowerUp.Invoke(_powerUpType);
+                _Event_ActivatePowerUp.Invoke(_powerUpType, this);
                 StartCoroutine(DisableObject(_collectSFX.length));
             }
         }

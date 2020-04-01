@@ -24,7 +24,7 @@ public class HomingMissles : Projectile
         _activeEnemeiesList = new List<GameObject>();
         _timer = _timerSetting;
         _target = null;
-        _Event_RemoveEnemyAsTarget.AddListener((x) => RemoveTarget(x));
+        _Event_RemoveEnemyAsTarget.AddListener((x) => RemoveTarget(x), this);
     }
 
     protected override void Update()
@@ -68,7 +68,7 @@ public class HomingMissles : Projectile
 
     public GameObject FindTarget()
     {
-        _activeEnemeiesList = (List<GameObject>)_Event_ReturnActiveEnemies.Return_Parameter();
+        _activeEnemeiesList = (List<GameObject>)_Event_ReturnActiveEnemies.ReturnParameter(this);
         float shortestDistance = Mathf.Infinity;
         GameObject bestTarget = null;
 
