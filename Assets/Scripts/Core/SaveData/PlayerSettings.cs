@@ -15,7 +15,7 @@ public class PlayerSettings : MonoBehaviour
     [SerializeField] EventManager _Event_Load_File;
     [SerializeField] EventManager _Event_Check_For_File;
     [SerializeField] EventManager _Event_SetMusicVolume;
-    [SerializeField] EventManager _Event_SetSfxVolume;
+    [SerializeField] EventManager _Event_SetSfxVolume; // TODO Not attcahed to anything
 
 
     [Serializable]

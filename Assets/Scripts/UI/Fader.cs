@@ -69,7 +69,7 @@ public class Fader : MonoBehaviour
     private IEnumerator FadeOut(Action callback)
     {
         float perc;
-        float timer = 0;
+        float timer = 0; 
 
         if (_fadeOut)
         {

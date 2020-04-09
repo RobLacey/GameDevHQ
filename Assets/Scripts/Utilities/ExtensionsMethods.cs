@@ -139,6 +139,13 @@ public static class ExtensionsMethods
         return color;
     }
 
+    public static Color CrossFade(this Color color, Color targetColor,  float perc)
+    {
+        return Color.Lerp(color, targetColor, perc); ;
+    }
+
+
+
     //Pooling Agent
 
     public static PoolingAgent SetUpPoolingAgent(this PoolingAgent agentToSet,PoolingAgent[] array, PoolingID poolingID)

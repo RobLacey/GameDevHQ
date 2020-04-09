@@ -5,12 +5,20 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
+    //TODO Make more eneries and enemy weapons
+    //TODO Speed boost makes engine flame larger
+    //TODO Pickup - Time extender, choose to activate and doubles usage time on pickup
+    //TODO Warp Bomb
+    //TODO Add Music fades
+    //TODO Let enemy past loose points
+    //TODO large ships/larger squadrons worth bigger muiltpier
+    //TODO make asteriods easier to kill
+    //TODO Adjust HighScore input as number too short
     //TODO add in exclude from build sections
     //TODO Check and Tidy code
     //TODO Check garbage collection
     //TODO add level progression and boss battle
     //TODO Start Cinematic
-    //TODO Add null check and message if trying to assign listener when no Event exists
 
     [SerializeField] TeamID _teamID;
     [SerializeField] float _health = 10;

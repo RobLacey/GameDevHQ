@@ -78,7 +78,6 @@ public class LevelLoader : MonoBehaviour
         yield return null;
     }
 
-
     private void StartNextScene()
     {
         StartCoroutine(StartWhenLoaded());
