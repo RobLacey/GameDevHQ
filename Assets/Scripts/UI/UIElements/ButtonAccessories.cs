@@ -6,28 +6,21 @@ using UnityEngine.UI;
 [System.Serializable]
 public class ButtonAccessories 
 {
-    [SerializeField] Image _pointer;
-    [SerializeField] GameObject _animation;
+    [SerializeField] Image[] _activationList;
 
     public void OnAwake()
     {
         ActivatePointer(false);
-        ActivateAnimation(false);
     }
 
     public void ActivatePointer(bool active)
     {
-        if (_pointer)
+        if (_activationList.Length > 0)
         {
-            _pointer.enabled = active;
-        }
-    }
-
-    public void ActivateAnimation(bool active)
-    {
-        if (_animation)
-        {
-            _animation.SetActive(active);
+            foreach (var item in _activationList)
+            {
+                item.enabled = active;
+            }
         }
     }
 }

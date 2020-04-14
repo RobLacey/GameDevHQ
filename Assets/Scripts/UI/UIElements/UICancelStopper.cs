@@ -6,11 +6,11 @@ using UnityEngine.EventSystems;
 public class UICancelStopper : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] ButtonMaster _uiTopLevel;
-    [SerializeField] GameObject _gameObject;
-    [SerializeField] List<ButtonMaster> _openList = new List<ButtonMaster>();
 
     //Variables
     GameObject _uiElement;
+
+    List<ButtonMaster> _openList = new List<ButtonMaster>();
 
     private void Awake()
     {
@@ -21,12 +21,7 @@ public class UICancelStopper : MonoBehaviour, IPointerClickHandler
         }
         _uiElement = _uiTopLevel.DefaultStartPosition.gameObject;
         _uiTopLevel.FirstSelected();
-        TrackOpenMenus(_uiTopLevel);
-    }
-
-    private void Update()
-    {
-        _gameObject = EventSystem.current.currentSelectedGameObject;
+        AddToTrackedList(_uiTopLevel);
     }
 
     public void SetLastUIObject(GameObject uiObject)
@@ -42,27 +37,37 @@ public class UICancelStopper : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public void TrackOpenMenus(ButtonMaster value)
+    public void AddToTrackedList(ButtonMaster value)
+    {
+        RemoveFromTrackedList(value);
+
+        if (!_openList.Contains(value))
+        {
+            _openList.Add(value);
+        }
+    }
+
+    public void RemoveFromTrackedList(ButtonMaster value)
     {
         if (_openList.Contains(value))
         {
-            for (int index = _openList.Count - 1; index > 0; index--)
-            {
-                if (_openList[index] == value)
-                {
-                    return;
-                }
-                else
-                {
-                    Debug.Log(_openList[index]);
-                    _openList[index].MoveToParentLevel(_uiElement.GetComponent<ButtonController>());
-                    _openList.RemoveAt(index);
-                }
-            }
+            ManageTrackedList(value);                
         }
-        else
+    }
+
+    private void ManageTrackedList(ButtonMaster value)
+    {
+        for (int index = _openList.Count - 1; index > 0; index--)
         {
-            _openList.Add(value);
+            if (_openList[index] == value)
+            {
+                return;
+            }
+            else
+            {
+                _openList[index].MoveToParentLevel();
+                _openList.RemoveAt(index);
+            }
         }
     }
 }

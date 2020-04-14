@@ -5,36 +5,75 @@ using UnityEngine;
 [System.Serializable]
 public class ButtonSize
 {
-    public bool _changeSize;
-    [SerializeField] [Range(-0.3f, 0.3f)] public float _sizeChange;
+    [SerializeField] Choose _ChangeSizeOn;
+    [SerializeField] [Range(0.01f, 0.1f)] float _highlightedSize = 0.05f;
+    [SerializeField] bool _onPressed;
+    [SerializeField] [Range(-0.1f, 0.1f)] float _pressedSize = 0.05f;
+    [SerializeField] [Range(0f, 0.3f)] float _pressedTime = 0.05f;
 
     //Variables
+    Transform _myTransform;
     Vector3 _startSize;
+    enum Choose { None, Highlighted, Selected };
 
     public void OnAwake(Transform newTransform)
     {
+        _myTransform = newTransform;
         _startSize = newTransform.localScale;
     }
 
-    public void ScaleUp(Transform newTransform)
+    public void HighlightedScaleUp()
     {
-        if (_changeSize)
+        if (_ChangeSizeOn == Choose.Highlighted)
         {
-            if(newTransform.localScale.x == _startSize.x)
-            {
-                newTransform.localScale += new Vector3(_sizeChange, 0, 0);
-            }
+            ChangeSize();
         }
     }
 
-    public void ScaleDown(Transform newTransform)
+    public void SelectedScaleUp()
     {
-        if (_changeSize)
+        if (_ChangeSizeOn == Choose.Selected)
         {
-            if (newTransform.localScale.x != _startSize.x)
-            {
-                newTransform.localScale = _startSize;
-            }
+            ChangeSize();
         }
+    }
+
+
+    public void HighlightedScaleDown()
+    {
+        if (_ChangeSizeOn == Choose.Highlighted)
+        {
+            _myTransform.localScale = _startSize;
+        }
+    }
+
+    public void SelectedScaleDown()
+    {
+        if (_ChangeSizeOn == Choose.Selected)
+        {
+            _myTransform.localScale = _startSize;
+        }
+    }
+
+    private void ChangeSize()
+    {
+        float temp = _startSize.x + _highlightedSize;
+        if (_myTransform.localScale.x < temp)
+        {
+            _myTransform.localScale += new Vector3(_highlightedSize, _highlightedSize, 0);
+        }
+    }
+
+    public IEnumerator PressedSequence()
+    {
+        if (_onPressed)
+        {
+            Vector3 difference = _myTransform.localScale - _startSize;
+            _myTransform.localScale -= new Vector3(-_pressedSize, -_pressedSize, 0);
+            yield return new WaitForSeconds(_pressedTime);
+            _myTransform.localScale = _startSize + difference;
+        }
+        else
+            { yield return null; }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,130 +8,132 @@ public class ButtonColour
 {
     public Image[] _images;
     public Text _mainText;
+    public bool _LerpImageColours;
+    public bool _LerpTextColours;
+    public float _crossFadeTime = 0.4f;
     public Color _selectedColour = Color.white;
     public Color _highlightedColour = Color.white;
-    public Color _normalColour = Color.white;
-    public Color _pressedColour = Color.white;
     public bool _highlight;
-    public bool _pressed;
     public bool _selected;
-    public InvertText _invertTextColour;
-    bool _canInverseTextColour;
-    public ColourLerp _colourLerp;
+    public bool _pressFlash;
+    public Color _flashColour = Color.white;
 
-    [System.Serializable]
-    public class InvertText
-    {
-        public Text subText;
-        public bool invertOnHighlight;
-        public bool invertOnPressed;
-        public bool invertOnSelected;
-        public Color standardColour = Color.white;
-        public Color inverseColour = Color.white;
-
-        public bool Inverted { get; set; }
-
-        public bool CheckSettings()
-        {
-            if (invertOnPressed || invertOnSelected || invertOnHighlight)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public void InvertTextColours()
-        {
-            if (subText)
-            {
-                if (!Inverted)
-                {
-                    subText.color = standardColour;
-                    Inverted = true;
-                }
-                else
-                {
-                    subText.color = inverseColour;
-                    Inverted = false;
-                }
-
-            }        
-        }
-    }
+    //Variables
+    public bool PressFlash { set { _pressFlash = value; } }
+    public bool Selected { set { _selected = value; } }
+    public ColourLerp MyColourLerper { get; set; }
+    Color _normalColour = Color.white;
+    float _flashTimer = 0.1f;
 
     public void OnAwake()
     {
-        if (_invertTextColour.CheckSettings())
-        {
-            _canInverseTextColour = true;
-        }
         if (_images.Length > 0) _normalColour = _images[0].color;
         if (_mainText) _normalColour = _mainText.color;
+        if(MyColourLerper != null) MyColourLerper.StartColour = _normalColour;
     }
 
-    public void SetColour(UIEventTypes uIEventTypes)
+    public void OnSelectedColourChange(UIEventTypes uIEventTypes)
     {
-        if (_images.Length > 0 || _mainText || _invertTextColour.subText)
+        if (_pressFlash)
+        {
+            MyColourLerper.NewLerp();
+            if (_images.Length > 0)
+            {
+                MyColourLerper.StartFlash(_flashColour, _flashTimer, (x) => SetImageColour(x), GetColour(uIEventTypes));
+            }
+
+            if (_mainText)
+            {
+                MyColourLerper.StartFlash(_flashColour, _flashTimer, (x) => SetTextColour(x), GetColour(uIEventTypes));
+            }
+        }
+        else
+        {
+            SetUIColour(uIEventTypes);
+        }
+    }
+
+    private Color GetColour(UIEventTypes uIEventTypes)
+    {
+        switch (uIEventTypes)
+        {
+            case UIEventTypes.Normal:
+                return _normalColour;
+            case UIEventTypes.Highlighted:
+                if (_highlight)
+                    { return _highlightedColour;}
+                else
+                    { return _normalColour; }
+            case UIEventTypes.Selected:
+                if (_selected)
+                    { return _selectedColour; }
+                else
+                    { return _normalColour; }
+        }
+        return _normalColour;
+    }
+
+    public void SetUIColour(UIEventTypes uIEventTypes)
+    {
+        if (_images.Length > 0 || _mainText)
         {
             switch (uIEventTypes)
             {
                 case UIEventTypes.Normal:
-                    SetUIColour(_normalColour);
-                    _invertTextColour.Inverted = false;
+                    ColourChangesProcesses(_normalColour);
                     break;
                 case UIEventTypes.Highlighted:
                     if (_highlight)
                     {
-                        _invertTextColour.Inverted = _invertTextColour.invertOnHighlight;
-                        SetUIColour(_highlightedColour);
+                        ColourChangesProcesses(_highlightedColour);
                     }
                     break;
                 case UIEventTypes.Selected:
                     if (_selected)
                     {
-                        _invertTextColour.Inverted = _invertTextColour.invertOnSelected;
-                        SetUIColour(_selectedColour);
+                        ColourChangesProcesses(_selectedColour);
                     }
-                    break;
-                case UIEventTypes.Pressed:
-                    if (_pressed)
+                    else
                     {
-                        _invertTextColour.Inverted = _invertTextColour.invertOnPressed;
-                        SetUIColour(_pressedColour);
+                        ColourChangesProcesses(_normalColour);
                     }
-                    break;
-                default:
                     break;
             }
-
         }
     }
 
-    private void SetUIColour(Color newColour)
+    private void ColourChangesProcesses(Color newColour)
     {
+        if (_LerpTextColours || _LerpImageColours)
+        {
+            MyColourLerper.NewLerp();
+        }
+
         if (_images.Length > 0)
         {
-            foreach (var item in _images)
+            if (_LerpImageColours)
             {
-                item.color = newColour;
+                MyColourLerper.StartLerp(newColour, _crossFadeTime, (x) => SetImageColour(x));
+            }
+            else
+            {
+                foreach (var item in _images)
+                {
+                    item.color = newColour;
+                }
             }
         }
 
-        if (_mainText && !_canInverseTextColour)
+        if (_mainText)
         {
-            if (_colourLerp != null)
+            if (_LerpTextColours)
             {
-                _colourLerp.StartLerp(_mainText.color, newColour, (x) => SetTextColour(x));
+                MyColourLerper.StartLerp(newColour, _crossFadeTime, (x) => SetTextColour(x));
             }
             else
             {
                 _mainText.color = newColour;
             }
-        }
-
-        if (_canInverseTextColour)
-        {
-            _invertTextColour.InvertTextColours();
         }
     }
 
@@ -141,4 +142,11 @@ public class ButtonColour
         _mainText.color = newColour;
     }
 
+    private void SetImageColour(Color newColour)
+    {
+        foreach (var item in _images)
+        {
+            item.color = newColour;
+        }
+    }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(AudioSource))]
 public class ButtonMaster : MonoBehaviour
@@ -12,39 +13,34 @@ public class ButtonMaster : MonoBehaviour
     [SerializeField] bool _saveSelectedOnExit;
 
     ButtonController[] _selectables;
-    AudioSource _audioSource;
-    ButtonController _lastMovedFrom;
-    UICancelStopper _uICancelStopper;
-    Canvas _myCanvas;
+    [SerializeField] ButtonController _lastMovedFrom;
 
     public ButtonController DefaultStartPosition { get { return _defaultStartPosition; } }
-    public Canvas MyCanvas { get { return _myCanvas; } set{ _myCanvas = value; } }
+    public Canvas MyCanvas { get; set; }
 
     private void Awake()
     {
-        _myCanvas = GetComponent<Canvas>();
-        _uICancelStopper = FindObjectOfType<UICancelStopper>();
+        MyCanvas = GetComponent<Canvas>();
         _lastMovedFrom = _defaultStartPosition;
         _selectables = GetComponentsInChildren<ButtonController>();
-        _audioSource = GetComponent<AudioSource>();
-        if (_audioSource == null) {Debug.Log("No AudioSource + " + gameObject); return; }
+    }
 
-        foreach (var item in _selectables)
+    public void FirstSelected(ButtonMaster buttonMaster = null)
+    {
+        MyCanvas.enabled = true;
+        EventSystem.current.SetSelectedGameObject(_lastMovedFrom.gameObject);
+        _lastMovedFrom.SetHighlight_Nothing_Selected();
+        if (buttonMaster != null)
         {
-            item._audio.MyAudiosource = _audioSource;
+            foreach (var item in _selectables)
+            {
+                item.MyParentController = buttonMaster;
+            }
         }
     }
 
-    public void FirstSelected()
+    public void ClearOtherSelections(GameObject eventData = null)
     {
-        _myCanvas.enabled = true;
-        //EventSystem.current.SetSelectedGameObject(_lastMovedFrom.gameObject);
-        _lastMovedFrom.SetHighlight_Nothing_Selected();
-    }
-
-    public void ClearOtherSelections(GameObject eventData)
-    {
-        // Add in clearing a list of children to reach current level or clear all if another button pressed
         foreach (var item in _selectables)
         {
             if (item.gameObject != eventData)
@@ -54,7 +50,7 @@ public class ButtonMaster : MonoBehaviour
         }
     }
 
-    public void OnHoverOver(GameObject eventData)
+    public void OnHoverOver(GameObject eventData = null)
     {
         foreach (var item in _selectables)
         {
@@ -65,29 +61,25 @@ public class ButtonMaster : MonoBehaviour
         }
     }
 
-    public void MoveToChildLevel(ButtonController lastSelected)
+    public void MoveToChildLevel()
     {
-        //_uICancelStopper.OpenList = this;
-        //Debug.Log(gameObject.name + " : Move to Move to child");
-        _lastMovedFrom = lastSelected;
         if (_turnOffOnMoveToChild)
         {
-            _myCanvas.enabled = false;
+            MyCanvas.enabled = false;
         }
     }
 
-    public void MoveToParentLevel(ButtonController lastSelected)
+    public void MoveToParentLevel()
     {
-        //_uICancelStopper.OpenList = this;
-        //Debug.Log(gameObject.name + " : Move to parent");
+        ClearOtherSelections();
+        MyCanvas.enabled = false;
+    }
+
+    public void SetLastSelected(ButtonController lastSelected)
+    {
         if (_saveSelectedOnExit)
         {
-            _lastMovedFrom = lastSelected;
+            _lastMovedFrom = lastSelected; //Fix This
         }
-        else
-        {
-            _lastMovedFrom = _defaultStartPosition;
-        }
-        _myCanvas.enabled = false;
     }
 }

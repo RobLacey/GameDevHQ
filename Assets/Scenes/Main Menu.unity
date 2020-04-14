@@ -245,7 +245,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.90588236, g: 0.90588236, b: 0.90588236, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -322,7 +322,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.90588236, g: 0.90588236, b: 0.90588236, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -550,13 +550,14 @@ RectTransform:
   - {fileID: 1639830276}
   - {fileID: 1393195145}
   - {fileID: 496156075}
+  - {fileID: 1185435596}
   m_Father: {fileID: 1900933740}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1381, y: 253}
-  m_SizeDelta: {x: 709, y: 202}
+  m_AnchoredPosition: {x: 1353.3, y: 259.4}
+  m_SizeDelta: {x: 764.5, y: 189.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &288778487
 MonoBehaviour:
@@ -573,6 +574,7 @@ MonoBehaviour:
   _defaultStartPosition: {fileID: 1639830279}
   _turnOffOnMoveToChild: 0
   _saveSelectedOnExit: 0
+  _lastMovedFrom: {fileID: 1639830279}
 --- !u!114 &288778488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -756,6 +758,7 @@ GameObject:
   - component: {fileID: 372414079}
   - component: {fileID: 372414078}
   - component: {fileID: 372414077}
+  - component: {fileID: 372414076}
   m_Layer: 5
   m_Name: High Score Button
   m_TagString: Untagged
@@ -775,13 +778,25 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1437461046}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 198.7, y: -121}
   m_SizeDelta: {x: 499.5, y: 76.2}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &372414076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372414074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &372414077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -795,26 +810,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _childController: {fileID: 999603839}
-  _parentController: {fileID: 0}
+  _isCancelOrBackButton: 0
   _justDisplayData: 0
   _colours:
     _images: []
     _mainText: {fileID: 372414079}
+    _LerpImageColours: 0
+    _LerpTextColours: 0
+    _crossFadeTime: 0.4
     _selectedColour: {r: 0, g: 0.011921406, b: 1, a: 1}
     _highlightedColour: {r: 0.34405494, g: 1, b: 0, a: 1}
-    _normalColour: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    _pressedColour: {r: 0, g: 0, b: 0, a: 1}
     _highlight: 1
-    _pressed: 1
     _selected: 1
-    _invertTextColour:
-      subText: {fileID: 0}
-      invertOnHighlight: 0
-      invertOnPressed: 0
-      invertOnSelected: 0
-      standardColour: {r: 1, g: 1, b: 1, a: 1}
-      inverseColour: {r: 1, g: 1, b: 1, a: 1}
-    _colourLerp: {fileID: 0}
+    _pressFlash: 1
+    _flashColour: {r: 0, g: 0, b: 0, a: 1}
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -824,11 +833,24 @@ MonoBehaviour:
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
   _accessories:
-    _pointer: {fileID: 0}
-    _animation: {fileID: 0}
+    _activationList: []
   _buttonSize:
-    _changeSize: 0
-    _sizeChange: 0
+    _ChangeSizeOn: 0
+    _highlightedSize: 0.05
+    _onPressed: 1
+    _pressedSize: -0.05
+    _pressedTime: 0.2
+  _invertColourCorrection:
+    subText: {fileID: 0}
+    toggleCheckMark: {fileID: 0}
+    invertOnHighlight: 0
+    invertOnSelected: 0
+    invertedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _mainImage: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToImage: {fileID: 0}
+    _swapToText: 
 --- !u!114 &372414078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1421,6 +1443,7 @@ GameObject:
   - component: {fileID: 496156075}
   - component: {fileID: 496156076}
   - component: {fileID: 496156078}
+  - component: {fileID: 496156079}
   - component: {fileID: 496156077}
   m_Layer: 5
   m_Name: SFX Slider
@@ -1450,7 +1473,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 20, y: -45}
+  m_AnchoredPosition: {x: 27, y: -43}
   m_SizeDelta: {x: 562.2, y: 46}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &496156076
@@ -1468,7 +1491,7 @@ MonoBehaviour:
   m_Navigation:
     m_Mode: 4
     m_SelectOnUp: {fileID: 1393195146}
-    m_SelectOnDown: {fileID: 0}
+    m_SelectOnDown: {fileID: 1185435597}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 0
@@ -1566,28 +1589,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _childController: {fileID: 0}
-  _parentController: {fileID: 1437461047}
+  _isCancelOrBackButton: 0
   _justDisplayData: 0
   _colours:
     _images:
-    - {fileID: 640582916}
     - {fileID: 1884521448}
     _mainText: {fileID: 1495508363}
+    _LerpImageColours: 1
+    _LerpTextColours: 1
+    _crossFadeTime: 0.4
     _selectedColour: {r: 0.11012411, g: 0, b: 1, a: 1}
     _highlightedColour: {r: 0.47487617, g: 1, b: 0, a: 1}
-    _normalColour: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    _pressedColour: {r: 0, g: 0, b: 0, a: 1}
     _highlight: 1
-    _pressed: 1
     _selected: 1
-    _invertTextColour:
-      subText: {fileID: 0}
-      invertOnHighlight: 0
-      invertOnPressed: 0
-      invertOnSelected: 0
-      standardColour: {r: 1, g: 1, b: 1, a: 1}
-      inverseColour: {r: 1, g: 1, b: 1, a: 1}
-    _colourLerp: {fileID: 0}
+    _pressFlash: 1
+    _flashColour: {r: 0, g: 0, b: 0, a: 1}
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -1597,11 +1613,110 @@ MonoBehaviour:
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
   _accessories:
-    _pointer: {fileID: 1884521448}
-    _animation: {fileID: 0}
+    _activationList:
+    - {fileID: 1884521448}
   _buttonSize:
-    _changeSize: 0
-    _sizeChange: 0
+    _ChangeSizeOn: 1
+    _highlightedSize: 0.05
+    _onPressed: 1
+    _pressedSize: -0.05
+    _pressedTime: 0.2
+  _invertColourCorrection:
+    subText: {fileID: 0}
+    toggleCheckMark: {fileID: 0}
+    invertOnHighlight: 0
+    invertOnSelected: 0
+    invertedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _mainImage: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToImage: {fileID: 0}
+    _swapToText: 
+--- !u!114 &496156079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496156074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &542154233
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 542154234}
+  - component: {fileID: 542154236}
+  - component: {fileID: 542154235}
+  m_Layer: 5
+  m_Name: Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &542154234
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542154233}
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1185435596}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -0.000024319, y: 0}
+  m_SizeDelta: {x: 50, y: 25}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &542154235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542154233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0.08450699, b: 1, a: 0.6313726}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 47de8b78075a42f4a8f385421effaf0b, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &542154236
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542154233}
+  m_CullTransparentMesh: 0
 --- !u!1 &584479520
 GameObject:
   m_ObjectHideFlags: 0
@@ -1748,6 +1863,79 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 640582914}
   m_CullTransparentMesh: 0
+--- !u!1 &666460720
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 666460721}
+  - component: {fileID: 666460723}
+  - component: {fileID: 666460722}
+  m_Layer: 5
+  m_Name: Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &666460721
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666460720}
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1740218057}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -0.000024319, y: 0}
+  m_SizeDelta: {x: 50, y: 25}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &666460722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666460720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0.08450699, b: 1, a: 0.6313726}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 47de8b78075a42f4a8f385421effaf0b, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &666460723
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666460720}
+  m_CullTransparentMesh: 0
 --- !u!1 &797151007
 GameObject:
   m_ObjectHideFlags: 0
@@ -1781,12 +1969,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1437461046}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 145, y: -50}
-  m_SizeDelta: {x: 392, y: 76.2}
+  m_AnchoredPosition: {x: 180.7, y: -50}
+  m_SizeDelta: {x: 463.4, y: 76.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &797151009
 MonoBehaviour:
@@ -1800,9 +1988,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _crossFadeTime: 1
-  _startColour: {r: 0, g: 0, b: 0, a: 0}
-  _percentage: 0
 --- !u!114 &797151010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1816,26 +2001,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _childController: {fileID: 288778487}
-  _parentController: {fileID: 0}
+  _isCancelOrBackButton: 0
   _justDisplayData: 0
   _colours:
     _images: []
     _mainText: {fileID: 797151012}
+    _LerpImageColours: 0
+    _LerpTextColours: 0
+    _crossFadeTime: 0.4
     _selectedColour: {r: 0, g: 0.011921406, b: 1, a: 1}
     _highlightedColour: {r: 0.34405494, g: 1, b: 0, a: 1}
-    _normalColour: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    _pressedColour: {r: 0, g: 0, b: 0, a: 1}
     _highlight: 1
-    _pressed: 1
     _selected: 1
-    _invertTextColour:
-      subText: {fileID: 0}
-      invertOnHighlight: 0
-      invertOnPressed: 0
-      invertOnSelected: 0
-      standardColour: {r: 1, g: 1, b: 1, a: 1}
-      inverseColour: {r: 1, g: 1, b: 1, a: 1}
-    _colourLerp: {fileID: 797151009}
+    _pressFlash: 1
+    _flashColour: {r: 0, g: 0, b: 0, a: 1}
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -1845,11 +2024,24 @@ MonoBehaviour:
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
   _accessories:
-    _pointer: {fileID: 0}
-    _animation: {fileID: 0}
+    _activationList: []
   _buttonSize:
-    _changeSize: 0
-    _sizeChange: 0
+    _ChangeSizeOn: 0
+    _highlightedSize: 0.05
+    _onPressed: 0
+    _pressedSize: -0.05
+    _pressedTime: 0.2
+  _invertColourCorrection:
+    subText: {fileID: 0}
+    toggleCheckMark: {fileID: 0}
+    invertOnHighlight: 0
+    invertOnSelected: 0
+    invertedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _mainImage: {fileID: 0}
+    _textToSwap: {fileID: 797151012}
+    _swapToImage: {fileID: 0}
+    _swapToText: Inside
 --- !u!114 &797151011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1919,7 +2111,7 @@ MonoBehaviour:
     m_MinSize: 0
     m_MaxSize: 100
     m_Alignment: 3
-    m_AlignByGeometry: 0
+    m_AlignByGeometry: 1
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
@@ -2025,6 +2217,7 @@ GameObject:
   - component: {fileID: 843882334}
   - component: {fileID: 843882333}
   - component: {fileID: 843882337}
+  - component: {fileID: 843882336}
   m_Layer: 5
   m_Name: Quit Button
   m_TagString: Untagged
@@ -2044,7 +2237,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1437461046}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -2145,6 +2338,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 843882331}
   m_CullTransparentMesh: 0
+--- !u!114 &843882336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843882331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &843882337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2158,26 +2363,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _childController: {fileID: 0}
-  _parentController: {fileID: 0}
+  _isCancelOrBackButton: 0
   _justDisplayData: 0
   _colours:
     _images: []
     _mainText: {fileID: 843882334}
+    _LerpImageColours: 0
+    _LerpTextColours: 1
+    _crossFadeTime: 0.4
     _selectedColour: {r: 0, g: 0.011921406, b: 1, a: 1}
     _highlightedColour: {r: 0.34405494, g: 1, b: 0, a: 1}
-    _normalColour: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    _pressedColour: {r: 0, g: 0, b: 0, a: 1}
     _highlight: 1
-    _pressed: 1
     _selected: 1
-    _invertTextColour:
-      subText: {fileID: 0}
-      invertOnHighlight: 0
-      invertOnPressed: 0
-      invertOnSelected: 0
-      standardColour: {r: 1, g: 1, b: 1, a: 1}
-      inverseColour: {r: 1, g: 1, b: 1, a: 1}
-    _colourLerp: {fileID: 0}
+    _pressFlash: 0
+    _flashColour: {r: 1, g: 1, b: 1, a: 1}
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -2187,11 +2386,24 @@ MonoBehaviour:
     _sound_Cancel: {fileID: 0}
     _volume_Cancel: 0
   _accessories:
-    _pointer: {fileID: 0}
-    _animation: {fileID: 0}
+    _activationList: []
   _buttonSize:
-    _changeSize: 0
-    _sizeChange: 0
+    _ChangeSizeOn: 0
+    _highlightedSize: 0.05
+    _onPressed: 1
+    _pressedSize: -0.05
+    _pressedTime: 0.2
+  _invertColourCorrection:
+    subText: {fileID: 0}
+    toggleCheckMark: {fileID: 0}
+    invertOnHighlight: 0
+    invertOnSelected: 0
+    invertedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _mainImage: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToImage: {fileID: 0}
+    _swapToText: 
 --- !u!1 &877937777
 GameObject:
   m_ObjectHideFlags: 0
@@ -2319,6 +2531,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 447403829}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &999603837 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
+    type: 3}
+  m_PrefabInstance: {fileID: 447403829}
+  m_PrefabAsset: {fileID: 0}
 --- !u!82 &999603838
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2427,9 +2645,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultStartPosition: {fileID: 1815701218}
+  _defaultStartPosition: {fileID: 1740218058}
   _turnOffOnMoveToChild: 0
   _saveSelectedOnExit: 0
+  _lastMovedFrom: {fileID: 0}
 --- !u!1 &1016422297
 GameObject:
   m_ObjectHideFlags: 0
@@ -2443,6 +2662,7 @@ GameObject:
   - component: {fileID: 1016422300}
   - component: {fileID: 1016422299}
   - component: {fileID: 1016422303}
+  - component: {fileID: 1016422302}
   m_Layer: 5
   m_Name: Start Game_Button
   m_TagString: Untagged
@@ -2462,7 +2682,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1437461046}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -2565,6 +2785,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1016422297}
   m_CullTransparentMesh: 0
+--- !u!114 &1016422302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1016422297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1016422303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2578,26 +2810,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _childController: {fileID: 0}
-  _parentController: {fileID: 0}
+  _isCancelOrBackButton: 0
   _justDisplayData: 0
   _colours:
     _images: []
     _mainText: {fileID: 1016422300}
+    _LerpImageColours: 0
+    _LerpTextColours: 0
+    _crossFadeTime: 0.4
     _selectedColour: {r: 0, g: 0.011921406, b: 1, a: 1}
     _highlightedColour: {r: 0.34405494, g: 1, b: 0, a: 1}
-    _normalColour: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    _pressedColour: {r: 0, g: 0, b: 0, a: 1}
     _highlight: 1
-    _pressed: 1
-    _selected: 1
-    _invertTextColour:
-      subText: {fileID: 0}
-      invertOnHighlight: 0
-      invertOnPressed: 0
-      invertOnSelected: 0
-      standardColour: {r: 1, g: 1, b: 1, a: 1}
-      inverseColour: {r: 1, g: 1, b: 1, a: 1}
-    _colourLerp: {fileID: 0}
+    _selected: 0
+    _pressFlash: 0
+    _flashColour: {r: 1, g: 1, b: 1, a: 1}
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -2607,11 +2833,24 @@ MonoBehaviour:
     _sound_Cancel: {fileID: 0}
     _volume_Cancel: 0
   _accessories:
-    _pointer: {fileID: 0}
-    _animation: {fileID: 0}
+    _activationList: []
   _buttonSize:
-    _changeSize: 0
-    _sizeChange: 0
+    _ChangeSizeOn: 0
+    _highlightedSize: 0.05
+    _onPressed: 1
+    _pressedSize: -0.05
+    _pressedTime: 0.2
+  _invertColourCorrection:
+    subText: {fileID: 0}
+    toggleCheckMark: {fileID: 0}
+    invertOnHighlight: 0
+    invertOnSelected: 0
+    invertedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _mainImage: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToImage: {fileID: 0}
+    _swapToText: 
 --- !u!1 &1079126280
 GameObject:
   m_ObjectHideFlags: 0
@@ -2685,6 +2924,193 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1079126280}
   m_CullTransparentMesh: 0
+--- !u!1 &1185435595
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1185435596}
+  - component: {fileID: 1185435599}
+  - component: {fileID: 1185435598}
+  - component: {fileID: 1185435597}
+  - component: {fileID: 1185435601}
+  - component: {fileID: 1185435600}
+  m_Layer: 5
+  m_Name: Cancel Button
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1185435596
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185435595}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 542154234}
+  m_Father: {fileID: 288778486}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -371, y: -92}
+  m_SizeDelta: {x: 60, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1185435597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185435595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 4
+    m_SelectOnUp: {fileID: 496156076}
+    m_SelectOnDown: {fileID: 1639830277}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 0
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1185435598}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1185435598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185435595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 07f1e02adb9e8514197c37a68f6368b9, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1185435599
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185435595}
+  m_CullTransparentMesh: 0
+--- !u!114 &1185435600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185435595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 739d0ea009571764893e3ada5d446660, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _childController: {fileID: 0}
+  _isCancelOrBackButton: 1
+  _justDisplayData: 0
+  _colours:
+    _images:
+    - {fileID: 1185435598}
+    _mainText: {fileID: 0}
+    _LerpImageColours: 0
+    _LerpTextColours: 1
+    _crossFadeTime: 0.4
+    _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
+    _highlightedColour: {r: 0.47589064, g: 1, b: 0, a: 1}
+    _highlight: 1
+    _selected: 1
+    _pressFlash: 1
+    _flashColour: {r: 0, g: 0, b: 0, a: 1}
+  _audio:
+    _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
+      type: 3}
+    _volume_Highlighted: 0.1
+    _sound_Select: {fileID: 8300000, guid: 8683ee9a71e6d7444bb4f800f5ac6b75, type: 3}
+    _volume_Select: 0.2
+    _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
+    _volume_Cancel: 0.1
+  _accessories:
+    _activationList: []
+  _buttonSize:
+    _ChangeSizeOn: 0
+    _highlightedSize: 0.05
+    _onPressed: 0
+    _pressedSize: 0.05
+    _pressedTime: 0.05
+  _invertColourCorrection:
+    subText: {fileID: 0}
+    toggleCheckMark: {fileID: 0}
+    invertOnHighlight: 0
+    invertOnSelected: 0
+    invertedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _mainImage: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToImage: {fileID: 0}
+    _swapToText: 
+--- !u!114 &1185435601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185435595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1196221475
 GameObject:
   m_ObjectHideFlags: 0
@@ -2712,7 +3138,7 @@ RectTransform:
   m_GameObject: {fileID: 1196221475}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.8, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
   m_Children: []
   m_Father: {fileID: 877937778}
   m_RootOrder: 0
@@ -2794,6 +3220,195 @@ RectTransform:
   m_AnchoredPosition: {x: -174.5, y: 0}
   m_SizeDelta: {x: 325.4, y: 24}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1257553966
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1257553967}
+  - component: {fileID: 1257553972}
+  - component: {fileID: 1257553971}
+  - component: {fileID: 1257553970}
+  - component: {fileID: 1257553969}
+  - component: {fileID: 1257553968}
+  m_Layer: 5
+  m_Name: Options Button 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1257553967
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257553966}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1437461046}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 238, y: 72}
+  m_SizeDelta: {x: 578.1, y: 76.2}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1257553968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257553966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1257553969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257553966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 739d0ea009571764893e3ada5d446660, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _childController: {fileID: 288778487}
+  _isCancelOrBackButton: 0
+  _justDisplayData: 0
+  _colours:
+    _images: []
+    _mainText: {fileID: 1257553971}
+    _LerpImageColours: 0
+    _LerpTextColours: 0
+    _crossFadeTime: 0.4
+    _selectedColour: {r: 0, g: 0.011921406, b: 1, a: 1}
+    _highlightedColour: {r: 0.34405494, g: 1, b: 0, a: 1}
+    _highlight: 1
+    _selected: 1
+    _pressFlash: 1
+    _flashColour: {r: 0, g: 0, b: 0, a: 1}
+  _audio:
+    _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
+      type: 3}
+    _volume_Highlighted: 0.1
+    _sound_Select: {fileID: 8300000, guid: 8683ee9a71e6d7444bb4f800f5ac6b75, type: 3}
+    _volume_Select: 0.2
+    _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
+    _volume_Cancel: 0.1
+  _accessories:
+    _activationList: []
+  _buttonSize:
+    _ChangeSizeOn: 0
+    _highlightedSize: 0.05
+    _onPressed: 1
+    _pressedSize: -0.05
+    _pressedTime: 0.2
+  _invertColourCorrection:
+    subText: {fileID: 0}
+    toggleCheckMark: {fileID: 0}
+    invertOnHighlight: 0
+    invertOnSelected: 0
+    invertedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _mainImage: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToImage: {fileID: 0}
+    _swapToText: 
+--- !u!114 &1257553970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257553966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 4
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 1016422299}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 0
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1257553971}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1257553971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257553966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.995283, b: 0.995283, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: 4e92f72e610985946b4ac0b10fd1c6ac, type: 3}
+    m_FontSize: 80
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 0
+    m_MaxSize: 100
+    m_Alignment: 3
+    m_AlignByGeometry: 1
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: Options 2
+--- !u!222 &1257553972
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257553966}
+  m_CullTransparentMesh: 0
 --- !u!1001 &1308230732
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2874,6 +3489,7 @@ GameObject:
   - component: {fileID: 1393195145}
   - component: {fileID: 1393195146}
   - component: {fileID: 1393195148}
+  - component: {fileID: 1393195149}
   - component: {fileID: 1393195147}
   m_Layer: 5
   m_Name: Music Slider
@@ -2903,7 +3519,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 20, y: 3.2}
+  m_AnchoredPosition: {x: 27, y: 5.200001}
   m_SizeDelta: {x: 562.2, y: 44.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1393195146
@@ -3019,28 +3635,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _childController: {fileID: 0}
-  _parentController: {fileID: 1437461047}
+  _isCancelOrBackButton: 0
   _justDisplayData: 0
   _colours:
     _images:
-    - {fileID: 1079126282}
     - {fileID: 1861724001}
+    - {fileID: 1079126282}
     _mainText: {fileID: 111718403}
+    _LerpImageColours: 1
+    _LerpTextColours: 1
+    _crossFadeTime: 0.4
     _selectedColour: {r: 0.11012411, g: 0, b: 1, a: 1}
     _highlightedColour: {r: 0.47487617, g: 1, b: 0, a: 1}
-    _normalColour: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    _pressedColour: {r: 0, g: 0, b: 0, a: 1}
     _highlight: 1
-    _pressed: 1
     _selected: 1
-    _invertTextColour:
-      subText: {fileID: 0}
-      invertOnHighlight: 0
-      invertOnPressed: 0
-      invertOnSelected: 0
-      standardColour: {r: 1, g: 1, b: 1, a: 1}
-      inverseColour: {r: 1, g: 1, b: 1, a: 1}
-    _colourLerp: {fileID: 0}
+    _pressFlash: 0
+    _flashColour: {r: 0, g: 0, b: 0, a: 1}
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -3050,11 +3660,37 @@ MonoBehaviour:
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
   _accessories:
-    _pointer: {fileID: 1861724001}
-    _animation: {fileID: 0}
+    _activationList:
+    - {fileID: 1861724001}
   _buttonSize:
-    _changeSize: 0
-    _sizeChange: 0
+    _ChangeSizeOn: 1
+    _highlightedSize: 0.05
+    _onPressed: 1
+    _pressedSize: -0.05
+    _pressedTime: 0.2
+  _invertColourCorrection:
+    subText: {fileID: 0}
+    toggleCheckMark: {fileID: 0}
+    invertOnHighlight: 0
+    invertOnSelected: 0
+    invertedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _mainImage: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToImage: {fileID: 0}
+    _swapToText: 
+--- !u!114 &1393195149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1393195144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1400930522
 GameObject:
   m_ObjectHideFlags: 0
@@ -3225,6 +3861,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 1257553967}
   - {fileID: 1016422298}
   - {fileID: 797151008}
   - {fileID: 372414075}
@@ -3251,7 +3888,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultStartPosition: {fileID: 1016422303}
   _turnOffOnMoveToChild: 0
-  _saveSelectedOnExit: 0
+  _saveSelectedOnExit: 1
+  _lastMovedFrom: {fileID: 1016422303}
 --- !u!223 &1437461048
 Canvas:
   m_ObjectHideFlags: 0
@@ -3511,7 +4149,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.90588236, g: 0.90588236, b: 0.90588236, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3620,8 +4258,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1639830276}
   - component: {fileID: 1639830277}
+  - component: {fileID: 1639830280}
   - component: {fileID: 1639830279}
   - component: {fileID: 1639830278}
+  - component: {fileID: 1639830282}
   m_Layer: 5
   m_Name: Hard Level Toggle
   m_TagString: Untagged
@@ -3648,7 +4288,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 20, y: 50}
+  m_AnchoredPosition: {x: 27, y: 52}
   m_SizeDelta: {x: 562.2, y: 49.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1639830277
@@ -3665,7 +4305,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 4
-    m_SelectOnUp: {fileID: 0}
+    m_SelectOnUp: {fileID: 1185435597}
     m_SelectOnDown: {fileID: 1393195146}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
@@ -3691,7 +4331,7 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 1452562447}
-  toggleTransition: 1
+  toggleTransition: 0
   graphic: {fileID: 1503424773}
   m_Group: {fileID: 0}
   onValueChanged:
@@ -3708,7 +4348,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!114 &1639830278
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3750,28 +4390,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _childController: {fileID: 0}
-  _parentController: {fileID: 1437461047}
+  _isCancelOrBackButton: 0
   _justDisplayData: 0
   _colours:
     _images:
     - {fileID: 1400930524}
     - {fileID: 1452562447}
     _mainText: {fileID: 134444927}
+    _LerpImageColours: 1
+    _LerpTextColours: 1
+    _crossFadeTime: 0.4
     _selectedColour: {r: 0.11012411, g: 0, b: 1, a: 1}
-    _highlightedColour: {r: 0.47487617, g: 1, b: 0, a: 1}
-    _normalColour: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    _pressedColour: {r: 0, g: 0, b: 0, a: 1}
+    _highlightedColour: {r: 0.3333335, g: 1, b: 0, a: 1}
     _highlight: 1
-    _pressed: 1
     _selected: 1
-    _invertTextColour:
-      subText: {fileID: 0}
-      invertOnHighlight: 0
-      invertOnPressed: 0
-      invertOnSelected: 0
-      standardColour: {r: 1, g: 1, b: 1, a: 1}
-      inverseColour: {r: 1, g: 1, b: 1, a: 1}
-    _colourLerp: {fileID: 0}
+    _pressFlash: 0
+    _flashColour: {r: 0, g: 0, b: 0, a: 1}
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -3781,11 +4415,45 @@ MonoBehaviour:
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
   _accessories:
-    _pointer: {fileID: 1400930524}
-    _animation: {fileID: 0}
+    _activationList:
+    - {fileID: 1400930524}
   _buttonSize:
-    _changeSize: 0
-    _sizeChange: 0
+    _ChangeSizeOn: 1
+    _highlightedSize: 0.05
+    _onPressed: 1
+    _pressedSize: -0.05
+    _pressedTime: 0.2
+  _invertColourCorrection:
+    subText: {fileID: 0}
+    toggleCheckMark: {fileID: 1503424773}
+    invertOnHighlight: 0
+    invertOnSelected: 1
+    invertedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _mainImage: {fileID: 1400930524}
+    _textToSwap: {fileID: 0}
+    _swapToImage: {fileID: 21300000, guid: a49c4e5858c20b94fa2e9e3814ef3e55, type: 3}
+    _swapToText: 
+--- !u!114 &1639830280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1639830275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!222 &1639830282
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1639830275}
+  m_CullTransparentMesh: 0
 --- !u!1 &1645568833
 GameObject:
   m_ObjectHideFlags: 0
@@ -3873,8 +4541,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiTopLevel: {fileID: 1437461047}
-  _gameObject: {fileID: 0}
-  _openList: []
 --- !u!1 &1667055434
 GameObject:
   m_ObjectHideFlags: 0
@@ -4033,6 +4699,193 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1673181090}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1740218056
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1740218057}
+  - component: {fileID: 1740218062}
+  - component: {fileID: 1740218061}
+  - component: {fileID: 1740218060}
+  - component: {fileID: 1740218059}
+  - component: {fileID: 1740218058}
+  m_Layer: 5
+  m_Name: Cancel Button
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1740218057
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740218056}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 666460721}
+  m_Father: {fileID: 999603837}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -379, y: -373}
+  m_SizeDelta: {x: 60, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1740218058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740218056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 739d0ea009571764893e3ada5d446660, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _childController: {fileID: 0}
+  _isCancelOrBackButton: 1
+  _justDisplayData: 0
+  _colours:
+    _images:
+    - {fileID: 1740218061}
+    _mainText: {fileID: 0}
+    _LerpImageColours: 0
+    _LerpTextColours: 0
+    _crossFadeTime: 0.4
+    _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
+    _highlightedColour: {r: 0.47589064, g: 1, b: 0, a: 1}
+    _highlight: 1
+    _selected: 0
+    _pressFlash: 0
+    _flashColour: {r: 0, g: 0, b: 0, a: 1}
+  _audio:
+    _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
+      type: 3}
+    _volume_Highlighted: 0.1
+    _sound_Select: {fileID: 8300000, guid: 8683ee9a71e6d7444bb4f800f5ac6b75, type: 3}
+    _volume_Select: 0.2
+    _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
+    _volume_Cancel: 0.1
+  _accessories:
+    _activationList: []
+  _buttonSize:
+    _ChangeSizeOn: 0
+    _highlightedSize: 0.05
+    _onPressed: 0
+    _pressedSize: 0.05
+    _pressedTime: 0.05
+  _invertColourCorrection:
+    subText: {fileID: 0}
+    toggleCheckMark: {fileID: 0}
+    invertOnHighlight: 0
+    invertOnSelected: 0
+    invertedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _mainImage: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToImage: {fileID: 0}
+    _swapToText: 
+--- !u!114 &1740218059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740218056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1740218060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740218056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 4
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 0
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1740218061}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1740218061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740218056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 07f1e02adb9e8514197c37a68f6368b9, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1740218062
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740218056}
+  m_CullTransparentMesh: 0
 --- !u!1 &1764196424
 GameObject:
   m_ObjectHideFlags: 0
@@ -4133,7 +4986,7 @@ RectTransform:
   m_GameObject: {fileID: 1803071285}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.8, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
   m_Children: []
   m_Father: {fileID: 2064273160}
   m_RootOrder: 0
@@ -4198,26 +5051,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _childController: {fileID: 0}
-  _parentController: {fileID: 1437461047}
+  _isCancelOrBackButton: 0
   _justDisplayData: 1
   _colours:
     _images: []
     _mainText: {fileID: 0}
+    _LerpImageColours: 0
+    _LerpTextColours: 0
+    _crossFadeTime: 0
     _selectedColour: {r: 1, g: 1, b: 1, a: 1}
     _highlightedColour: {r: 1, g: 1, b: 1, a: 1}
-    _normalColour: {r: 1, g: 1, b: 1, a: 1}
-    _pressedColour: {r: 1, g: 1, b: 1, a: 1}
     _highlight: 0
-    _pressed: 0
     _selected: 0
-    _invertTextColour:
-      subText: {fileID: 0}
-      invertOnHighlight: 0
-      invertOnPressed: 0
-      invertOnSelected: 0
-      standardColour: {r: 1, g: 1, b: 1, a: 1}
-      inverseColour: {r: 1, g: 1, b: 1, a: 1}
-    _colourLerp: {fileID: 0}
+    _pressFlash: 0
+    _flashColour: {r: 1, g: 1, b: 1, a: 1}
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -4227,11 +5074,24 @@ MonoBehaviour:
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
   _accessories:
-    _pointer: {fileID: 0}
-    _animation: {fileID: 0}
+    _activationList: []
   _buttonSize:
-    _changeSize: 0
-    _sizeChange: 0
+    _ChangeSizeOn: 0
+    _highlightedSize: 0.05
+    _onPressed: 0
+    _pressedSize: -0.05
+    _pressedTime: 0.05
+  _invertColourCorrection:
+    subText: {fileID: 0}
+    toggleCheckMark: {fileID: 0}
+    invertOnHighlight: 0
+    invertOnSelected: 0
+    invertedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _mainImage: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToImage: {fileID: 0}
+    _swapToText: 
 --- !u!1 &1861723999
 GameObject:
   m_ObjectHideFlags: 0

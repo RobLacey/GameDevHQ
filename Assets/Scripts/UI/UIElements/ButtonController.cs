@@ -4,39 +4,50 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(ColourLerp))]
 public class ButtonController : MonoBehaviour, IEndDragHandler, IPointerEnterHandler, IPointerDownHandler,
-                                               IPointerUpHandler, ISelectHandler, ISubmitHandler, IPointerExitHandler,
+                                                ISelectHandler, ISubmitHandler, IPointerExitHandler,
                                                IMoveHandler, IBeginDragHandler, ICancelHandler
 {
     [SerializeField] ButtonMaster _childController;
-    [SerializeField] ButtonMaster _parentController;
+    [SerializeField] bool _isCancelOrBackButton;
     [SerializeField] bool _justDisplayData;
     [SerializeField] ButtonColour _colours;
     [SerializeField] public ButtonAudio _audio;
     [SerializeField] ButtonAccessories _accessories;
     [SerializeField] ButtonSize _buttonSize;
+    [SerializeField] InvertColours _invertColourCorrection;
+    [SerializeField] Swapper _swapImageOrText;
 
     //Variables
     bool _selected = false;
     UICancelStopper _UICancelStopper;
     ButtonMaster _masterController;
+    Slider _amSlider;
 
-    public Canvas MyCanvas { get; set; }
+    public ButtonMaster MyParentController { get; set; }
 
     private void Awake()//color
     {
+        if(TryGetComponent(out _amSlider))
+        {
+            _amSlider.interactable = false;
+        }
+        _colours.MyColourLerper = GetComponent<ColourLerp>();
         _masterController = GetComponentInParent<ButtonMaster>();
-        MyCanvas = _masterController.MyCanvas;
         _UICancelStopper = FindObjectOfType<UICancelStopper>();
         _colours.OnAwake();
         _audio.OnAwake();
         _accessories.OnAwake();
         _buttonSize.OnAwake(transform);
+        _invertColourCorrection.OnAwake();
+        _swapImageOrText.OnAwake();
+        _audio.MyAudiosource = GetComponentInParent<AudioSource>();
     }
-
 
     public void OnPointerEnter(PointerEventData eventData) //Mouse highlight
     {
+        if (_justDisplayData) return;
         if (eventData.pointerDrag) return; //Enables drag on slider to have pressed colour
         _audio.Play(UIEventTypes.Highlighted);
         SetHighlighted();
@@ -44,56 +55,71 @@ public class ButtonController : MonoBehaviour, IEndDragHandler, IPointerEnterHan
 
     public void OnSelect(BaseEventData eventData) //KB/Ctrl highlight
     {
+        if (_justDisplayData) return;
         SetHighlighted();
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (_justDisplayData) return;
         if (eventData.pointerDrag) return; //Enables drag on slider to have pressed colour
+        HandleSliderOff();
         NotHighlighted();
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (!_selected)
-        {
-            _audio.Play(UIEventTypes.Pressed);
-        }
-        _colours.SetColour(UIEventTypes.Pressed);
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
+        if (_justDisplayData) return;
+        if (_isCancelOrBackButton) { Cancel(); return; }
+        HandleSliderOn();
         SwitchUIDisplay();
     }
 
     public void OnSubmit(BaseEventData eventData) //KB/Ctrl
     {
-        _audio.Play(UIEventTypes.Pressed);
+        if (_justDisplayData) return;
+        if (_isCancelOrBackButton) { Cancel(); return; }
+
+        if (_amSlider)
+        {
+            if (_amSlider.interactable == true)
+            {
+                HandleSliderOff();
+            }
+            else
+            {
+                HandleSliderOn();
+            }
+        }
         SwitchUIDisplay();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        _audio.Play(UIEventTypes.Pressed);
-        _colours.SetColour(UIEventTypes.Pressed);
+        if (_justDisplayData) return;
+        _colours.SetUIColour(UIEventTypes.Selected);
+        _invertColourCorrection.InvertColour(UIEventTypes.Selected);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (_justDisplayData) return;
         _audio.Play(UIEventTypes.Pressed);
-        _colours.SetColour(UIEventTypes.Highlighted);
+        _colours.SetUIColour(UIEventTypes.Highlighted);
+        _invertColourCorrection.InvertColour(UIEventTypes.Highlighted);
     }
 
     public void OnMove(AxisEventData eventData)
     {
         if (_justDisplayData) return;
-        if (eventData.selectedObject.GetComponent<Slider>())
+        if (_amSlider)
         {
-            if (eventData.moveDir == MoveDirection.Left || eventData.moveDir == MoveDirection.Right)
+            if (_amSlider.interactable == true)
             {
-                _audio.Play(UIEventTypes.Pressed);
-                _colours.SetColour(UIEventTypes.Pressed);
+                if (eventData.moveDir == MoveDirection.Left || eventData.moveDir == MoveDirection.Right)
+                {
+                    _audio.Play(UIEventTypes.Pressed);
+                }
             }
 
             if (eventData.moveDir == MoveDirection.Up || eventData.moveDir == MoveDirection.Down)
@@ -109,7 +135,7 @@ public class ButtonController : MonoBehaviour, IEndDragHandler, IPointerEnterHan
 
     public void OnCancel(BaseEventData eventData)
     {
-        if (_parentController)
+        if (MyParentController)
         {
             Cancel();
         }
@@ -117,27 +143,35 @@ public class ButtonController : MonoBehaviour, IEndDragHandler, IPointerEnterHan
 
     public void SetHighlight_Nothing_Selected()//color
     {
-        if (_childController)
-        {
-            _childController.MyCanvas.enabled = false;
-        }
         _selected = false;
-        SetHighlighted();
+        _colours.SetUIColour(UIEventTypes.Normal);
+        _colours.SetUIColour(UIEventTypes.Highlighted);
     }
 
     public void SetHighlighted()
     {
         _UICancelStopper.SetLastUIObject(gameObject);
-        _colours.SetColour(UIEventTypes.Highlighted);
+        _colours.SetUIColour(UIEventTypes.Highlighted);
+        _invertColourCorrection.InvertColour(UIEventTypes.Highlighted);
         _masterController.OnHoverOver(gameObject);
         _accessories.ActivatePointer(true);
-        _buttonSize.ScaleUp(transform);
+        _buttonSize.HighlightedScaleUp();
     }
 
     private void SwitchUIDisplay()
     {
         _UICancelStopper.SetLastUIObject(gameObject);
+        _masterController.SetLastSelected(this);
         _masterController.ClearOtherSelections(gameObject);
+        _audio.Play(UIEventTypes.Pressed);
+        _buttonSize.SelectedScaleUp();
+        //Added a selected tracker to presever selected status on move off
+        //Added a selected tracker to presever selected status on move off
+        //Added a selected tracker to presever selected status on move off
+
+
+        _swapImageOrText.Swap();
+        StartCoroutine(_buttonSize.PressedSequence());
 
         if (_childController)
         {
@@ -152,27 +186,34 @@ public class ButtonController : MonoBehaviour, IEndDragHandler, IPointerEnterHan
         }
         else
         {
-            _colours.SetColour(UIEventTypes.Pressed);
+            if (!_amSlider)
+            {
+                _colours.OnSelectedColourChange(UIEventTypes.Selected);
+                _invertColourCorrection.InvertColour(UIEventTypes.Selected);
+            }
         }
     }
 
     private void DisableUIElement()
     {
-        _childController.DefaultStartPosition.Cancel();
+        _buttonSize.SelectedScaleDown();
+        _selected = false;
+        _colours.OnSelectedColourChange(UIEventTypes.Highlighted);
+        _UICancelStopper.RemoveFromTrackedList(_masterController);
     }
 
     private void ActivateUIElement()
     {
-        _colours.SetColour(UIEventTypes.Selected);
-        _childController.MyCanvas.enabled = true;
         _selected = true;
+        _colours.OnSelectedColourChange(UIEventTypes.Selected);
+        _invertColourCorrection.InvertColour(UIEventTypes.Selected);
 
         if (_childController)
         {
-            _UICancelStopper.TrackOpenMenus(_masterController);
-            _UICancelStopper.TrackOpenMenus(_childController);
-            _masterController.MoveToChildLevel(this);
-            _childController.FirstSelected();
+            _UICancelStopper.AddToTrackedList(_masterController);
+            _UICancelStopper.AddToTrackedList(_childController);
+            _masterController.MoveToChildLevel();
+            _childController.FirstSelected(_masterController);
         }
     }
 
@@ -180,40 +221,69 @@ public class ButtonController : MonoBehaviour, IEndDragHandler, IPointerEnterHan
     {
         if (_selected)
         {
-            _colours.SetColour(UIEventTypes.Selected);
-
+            _colours.SetUIColour(UIEventTypes.Selected);
+            _invertColourCorrection.InvertColour(UIEventTypes.Selected);
         }
         else
         {
-            _colours.SetColour(UIEventTypes.Normal);
+            _buttonSize.SelectedScaleDown();
+            _colours.SetUIColour(UIEventTypes.Normal);
+            _invertColourCorrection.InvertColour(UIEventTypes.Normal);
         }
-        _buttonSize.ScaleDown(transform);
+        if(_amSlider) _amSlider.interactable = false;
+        _buttonSize.HighlightedScaleDown();
+        _swapImageOrText.Default();
+
         _accessories.ActivatePointer(false);
     }
 
     public void ClearUISelection()
     {
-        _selected = false;
-        _colours.SetColour(UIEventTypes.Normal);
+        _colours.SetUIColour(UIEventTypes.Normal);
+        _invertColourCorrection.InvertColour(UIEventTypes.Normal);
 
-        if (_childController)
+        if (_childController && _selected)
         {
             _childController.MyCanvas.enabled = false;
         }
+        _selected = false;
         _accessories.ActivatePointer(false);
+        _buttonSize.SelectedScaleDown();
+        _swapImageOrText.Default();
     }
 
     public void Cancel()
     {
-        _UICancelStopper.TrackOpenMenus(_masterController);
-
         _audio.Play(UIEventTypes.Cancelled);
+        _UICancelStopper.RemoveFromTrackedList(MyParentController);
+        _buttonSize.SelectedScaleDown();
+        _swapImageOrText.Default();
 
-        if (_parentController)
+        if (MyParentController)
         {
-            _masterController.MoveToParentLevel(this);
-            _parentController.FirstSelected();
+            MyParentController.FirstSelected();
         }    
+    }
+
+    private void HandleSliderOn()
+    {
+        if (_amSlider)
+        {
+            _colours.SetUIColour(UIEventTypes.Selected);
+            _invertColourCorrection.InvertColour(UIEventTypes.Selected);
+            _amSlider.interactable = true;
+        }
+    }
+
+    private void HandleSliderOff()
+    {
+        if (_amSlider)
+        {
+            _colours.SetUIColour(UIEventTypes.Highlighted);
+            _invertColourCorrection.InvertColour(UIEventTypes.Highlighted);
+            _amSlider.interactable = false;
+            EventSystem.current.SetSelectedGameObject(gameObject);
+        }
     }
 }
 
