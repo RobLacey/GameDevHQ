@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class ButtonAudio
+public class UIAudio
 {
     public AudioClip _sound_Highlighted;
     public float _volume_Highlighted;

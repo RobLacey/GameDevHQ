@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class ButtonSize
+public class UISize
 {
     [SerializeField] Choose _ChangeSizeOn;
     [SerializeField] [Range(0.01f, 0.1f)] float _highlightedSize = 0.05f;

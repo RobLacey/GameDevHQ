@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [System.Serializable]
-public class InvertColours
+public class UIInvertColours
 {
     public Text subText;
     public Image toggleCheckMark;
     public bool invertOnHighlight;
     public bool invertOnSelected;
-    public Color invertedColour = Color.white;
+    public Color invertedHighlightColour = Color.white;
+    public Color invertedSelectedColour = Color.white;
 
     bool canInvert;
     Color standardColour = Color.white;
@@ -46,13 +47,21 @@ public class InvertColours
                 case UIEventTypes.Highlighted:
                     if (invertOnHighlight)
                     {
-                        ChangeColour(invertedColour);
+                        ChangeColour(invertedHighlightColour);
+                    }
+                    else
+                    {
+                        ChangeColour(standardColour);
                     }
                     break;
                 case UIEventTypes.Selected:
                     if (invertOnSelected)
                     {
-                        ChangeColour(invertedColour);
+                        ChangeColour(invertedSelectedColour);
+                    }
+                    else
+                    {
+                        ChangeColour(standardColour);
                     }
                     break;
                 case UIEventTypes.Cancelled:

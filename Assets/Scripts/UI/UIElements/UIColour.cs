@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [System.Serializable]
-public class ButtonColour
+public class UIColour
 {
     public Image[] _images;
     public Text _mainText;
@@ -30,6 +30,7 @@ public class ButtonColour
         if (_images.Length > 0) _normalColour = _images[0].color;
         if (_mainText) _normalColour = _mainText.color;
         if(MyColourLerper != null) MyColourLerper.StartColour = _normalColour;
+
     }
 
     public void OnSelectedColourChange(UIEventTypes uIEventTypes)
@@ -104,10 +105,7 @@ public class ButtonColour
 
     private void ColourChangesProcesses(Color newColour)
     {
-        if (_LerpTextColours || _LerpImageColours)
-        {
-            MyColourLerper.NewLerp();
-        }
+        if (_LerpTextColours || _LerpImageColours) { MyColourLerper.NewLerp(); }
 
         if (_images.Length > 0)
         {

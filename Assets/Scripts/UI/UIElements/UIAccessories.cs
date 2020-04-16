@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [System.Serializable]
-public class ButtonAccessories 
+public class UIAccessories 
 {
     [SerializeField] Image[] _activationList;
 

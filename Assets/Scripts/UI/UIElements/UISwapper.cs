@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [System.Serializable]
-public class Swapper
+public class UISwapper
 {
     [SerializeField] Image _mainImage;
     [SerializeField] Text _textToSwap;
