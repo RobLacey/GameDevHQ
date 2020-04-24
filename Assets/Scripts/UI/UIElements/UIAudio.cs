@@ -15,11 +15,9 @@ public class UIAudio
     //Properties
     public AudioSource MyAudiosource { get; set; }
 
-    public bool CanPlayAudio { get; set; }
-
-    public void OnAwake()
+    public void OnAwake(AudioSource audioSource)
     {
-        CanPlayAudio = false;
+        MyAudiosource = audioSource;
     }
 
     public void Play(UIEventTypes uIEventTypes)
@@ -27,19 +25,16 @@ public class UIAudio
         switch (uIEventTypes)
         {
             case UIEventTypes.Normal:
+                PlayClip(_sound_Cancel, _volume_Cancel);
                 break;
             case UIEventTypes.Highlighted:
                 PlayClip(_sound_Highlighted, _volume_Highlighted);
                 break;
-            case UIEventTypes.Selected:
-                break;
-            case UIEventTypes.Pressed:
-                PlayClip(_sound_Select, _volume_Select);
-                break;
             case UIEventTypes.Cancelled:
                 PlayClip(_sound_Cancel, _volume_Cancel);
                 break;
-            default:
+            case UIEventTypes.Selected:
+                PlayClip(_sound_Select, _volume_Select);
                 break;
         }
     }

@@ -1,79 +1,121 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
 public class UISize
 {
-    [SerializeField] Choose _ChangeSizeOn;
-    [SerializeField] [Range(0.01f, 0.1f)] float _highlightedSize = 0.05f;
-    [SerializeField] bool _onPressed;
-    [SerializeField] [Range(-0.1f, 0.1f)] float _pressedSize = 0.05f;
-    [SerializeField] [Range(0f, 0.3f)] float _pressedTime = 0.05f;
+    [SerializeField] Choose _ChangeSizeOn = Choose.None;
+    [SerializeField] ScaleType _scaledType = ScaleType.ScaleDown;
+    [SerializeField] [Range(0.01f, 0.3f)] float _scaleChangeBy = 0.05f;
+    [SerializeField] [Range(0f, 0.3f)] float _pressedHoldTime = 0.05f;
 
     //Variables
     Transform _myTransform;
     Vector3 _startSize;
-    enum Choose { None, Highlighted, Selected };
+    enum ScaleType { ScaleUp, ScaleDown }
 
-    public void OnAwake(Transform newTransform)
+    enum Choose { None, Highlighted, Selected, Pressed };
+
+    public Action<UIEventTypes, bool> OnAwake(Transform newTransform)
     {
         _myTransform = newTransform;
         _startSize = newTransform.localScale;
+        return ProcessChangeOfSize;
     }
 
-    public void HighlightedScaleUp()
+    public Action<UIEventTypes, bool> OnDisable()
     {
-        if (_ChangeSizeOn == Choose.Highlighted)
+        return ProcessChangeOfSize;
+    }
+
+    private void ProcessChangeOfSize(UIEventTypes uIEventTypes, bool active)
+    {
+        if (_ChangeSizeOn == Choose.Pressed) return;
+
+        if (uIEventTypes == UIEventTypes.Highlighted)
         {
-            ChangeSize();
+            if (_ChangeSizeOn == Choose.Highlighted)
+            {
+                if (_scaledType == ScaleType.ScaleUp)
+                {
+                    ScaleUp();
+                }
+                else
+                {
+                    ScaleDown();
+                }
+            }        
         }
-    }
 
-    public void SelectedScaleUp()
-    {
-        if (_ChangeSizeOn == Choose.Selected)
-        {
-            ChangeSize();
-        }
-    }
-
-
-    public void HighlightedScaleDown()
-    {
-        if (_ChangeSizeOn == Choose.Highlighted)
-        {
-            _myTransform.localScale = _startSize;
-        }
-    }
-
-    public void SelectedScaleDown()
-    {
-        if (_ChangeSizeOn == Choose.Selected)
+        if (uIEventTypes == UIEventTypes.Normal)
         {
             _myTransform.localScale = _startSize;
         }
+
+        if (uIEventTypes == UIEventTypes.Selected)
+        {
+            if (_ChangeSizeOn == Choose.Selected)
+            {
+                if (active)
+                {
+                    if (_scaledType == ScaleType.ScaleUp)
+                    {
+                        ScaleUp();
+                    }
+                    else
+                    {
+                        ScaleDown();
+                    }
+
+                }
+                else
+                {
+                    if (_scaledType == ScaleType.ScaleUp)
+                    {
+                        ScaleDown();
+                    }
+                    else
+                    {
+                        ScaleUp();
+                    }
+
+                }
+            }
+        }
     }
 
-    private void ChangeSize()
+    private void ScaleUp()
     {
-        float temp = _startSize.x + _highlightedSize;
-        if (_myTransform.localScale.x < temp)
-        {
-            _myTransform.localScale += new Vector3(_highlightedSize, _highlightedSize, 0);
-        }
+        float temp = _startSize.x + _scaleChangeBy;
+        if (_myTransform.localScale.x >= temp) return;
+        _myTransform.localScale += new Vector3(_scaleChangeBy, _scaleChangeBy, 0);
+    }
+
+    private void ScaleDown()
+    {
+        float temp = _startSize.x - _scaleChangeBy;
+        if (_myTransform.localScale.x <= temp) return;
+        _myTransform.localScale -= new Vector3(_scaleChangeBy, _scaleChangeBy, 0);
     }
 
     public IEnumerator PressedSequence()
     {
-        if (_onPressed)
+        if (_ChangeSizeOn == Choose.Pressed)
         {
-            Vector3 difference = _myTransform.localScale - _startSize;
-            _myTransform.localScale -= new Vector3(-_pressedSize, -_pressedSize, 0);
-            yield return new WaitForSeconds(_pressedTime);
+            Vector3 difference = _myTransform.localScale - _startSize; ;
+            float scaleBy = _scaleChangeBy;
+
+            if (_scaledType == ScaleType.ScaleDown)
+            {
+                scaleBy = _scaleChangeBy * -1;
+            }
+
+            _myTransform.localScale += new Vector3(scaleBy, scaleBy, 0);
+            yield return new WaitForSeconds(_pressedHoldTime);
             _myTransform.localScale = _startSize + difference;
         }
-        else
-            { yield return null; }
+        else { yield return null; }
     }
 }

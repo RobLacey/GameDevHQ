@@ -14,92 +14,140 @@ public class UIColour
     public Color _selectedColour = Color.white;
     public Color _highlightedColour = Color.white;
     public bool _highlight;
-    public bool _selected;
+    public bool _whenSelected;
     public bool _pressFlash;
     public Color _flashColour = Color.white;
+    public float _flashTime = 0.1f;
 
     //Variables
-    public bool PressFlash { set { _pressFlash = value; } }
-    public bool Selected { set { _selected = value; } }
     public ColourLerp MyColourLerper { get; set; }
     Color _normalColour = Color.white;
-    float _flashTimer = 0.1f;
+    bool _isCurrentlySelected;
 
     public void OnAwake()
     {
         if (_images.Length > 0) _normalColour = _images[0].color;
         if (_mainText) _normalColour = _mainText.color;
         if(MyColourLerper != null) MyColourLerper.StartColour = _normalColour;
-
     }
 
-    public void OnSelectedColourChange(UIEventTypes uIEventTypes)
+    private void OnPressedColourChange(Color tooColour)
     {
         if (_pressFlash)
         {
             MyColourLerper.NewLerp();
-            if (_images.Length > 0)
+
+            if (_LerpImageColours || _LerpTextColours)
             {
-                MyColourLerper.StartFlash(_flashColour, _flashTimer, (x) => SetImageColour(x), GetColour(uIEventTypes));
+
+                if (_images.Length > 0)
+                {
+                    MyColourLerper.StartFlash_Lerp(_flashColour, _flashTime, (x) => SetImageColour(x), tooColour);
+                }
+
+                if (_mainText)
+                {
+                    MyColourLerper.StartFlash_Lerp(_flashColour, _flashTime, (x) => SetTextColour(x), tooColour);
+                }
+            }
+            else
+            {
+                if (_images.Length > 0)
+                {
+                    MyColourLerper.StartFlash_NonLerp(_flashColour, _flashTime, (x) => SetImageColour(x), tooColour);
+                }
+
+                if (_mainText)
+                {
+                    MyColourLerper.StartFlash_NonLerp(_flashColour, _flashTime, (x) => SetTextColour(x), tooColour);
+                }
+
+            }
+        }
+    }
+
+    public void SetColourOnEnter(bool isSelected)
+    {
+        if (_highlight)
+        {
+            if (_whenSelected && isSelected)
+            {
+                return;
+            }
+            ColourChangesProcesses(_highlightedColour);
+        }    
+    }
+
+    public void SetColourOnExit(bool isSelected)
+    {
+        if (!_whenSelected || !isSelected)
+        {
+            ColourChangesProcesses(_normalColour);
+        }
+    }
+
+    public void ResetToNormal()
+    {
+        ColourChangesProcesses(_normalColour);
+    }
+
+    public void SetAsSelected (bool isSelected)
+    {
+        if (_whenSelected)
+        {
+            if (isSelected)
+            {
+                ColourChangesProcesses(_selectedColour);
             }
 
-            if (_mainText)
+            if (!isSelected)
             {
-                MyColourLerper.StartFlash(_flashColour, _flashTimer, (x) => SetTextColour(x), GetColour(uIEventTypes));
+                if (_highlight)
+                {
+                    ColourChangesProcesses(_highlightedColour);
+                }
+                else
+                {
+                    ColourChangesProcesses(_normalColour);
+                }
+            }
+        }
+    }
+
+    public void ProcessPress(bool isSelected)
+    {
+        if (_pressFlash)
+        {
+            if (isSelected)
+            {
+                if (_whenSelected)
+                {
+                    OnPressedColourChange(_selectedColour);
+                }
+                else if(_highlight)
+                {
+                    OnPressedColourChange(_highlightedColour);
+                }
+                else
+                {
+                    OnPressedColourChange(_normalColour);
+                }
+            }
+            else
+            {
+                if (_highlight)
+                {
+                    OnPressedColourChange(_highlightedColour);
+                }
+                else
+                {
+                    OnPressedColourChange(_normalColour);
+                }
             }
         }
         else
         {
-            SetUIColour(uIEventTypes);
-        }
-    }
-
-    private Color GetColour(UIEventTypes uIEventTypes)
-    {
-        switch (uIEventTypes)
-        {
-            case UIEventTypes.Normal:
-                return _normalColour;
-            case UIEventTypes.Highlighted:
-                if (_highlight)
-                    { return _highlightedColour;}
-                else
-                    { return _normalColour; }
-            case UIEventTypes.Selected:
-                if (_selected)
-                    { return _selectedColour; }
-                else
-                    { return _normalColour; }
-        }
-        return _normalColour;
-    }
-
-    public void SetUIColour(UIEventTypes uIEventTypes)
-    {
-        if (_images.Length > 0 || _mainText)
-        {
-            switch (uIEventTypes)
-            {
-                case UIEventTypes.Normal:
-                    ColourChangesProcesses(_normalColour);
-                    break;
-                case UIEventTypes.Highlighted:
-                    if (_highlight)
-                    {
-                        ColourChangesProcesses(_highlightedColour);
-                    }
-                    break;
-                case UIEventTypes.Selected:
-                    if (_selected)
-                    {
-                        ColourChangesProcesses(_selectedColour);
-                    }
-                    else
-                    {
-                        ColourChangesProcesses(_normalColour);
-                    }
-                    break;
-            }
+            SetAsSelected(isSelected);
         }
     }
 

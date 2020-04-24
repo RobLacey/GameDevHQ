@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,43 +7,48 @@ using UnityEngine.UI;
 [System.Serializable]
 public class UIInvertColours
 {
-    public Text subText;
+    public Text _titleText;
     public Image toggleCheckMark;
     public bool invertOnHighlight;
     public bool invertOnSelected;
     public Color invertedHighlightColour = Color.white;
     public Color invertedSelectedColour = Color.white;
 
-    bool canInvert;
-    Color standardColour = Color.white;
+    bool _canInvert;
+    Color _checkMarkStartColour = Color.white;
+    Color _textStartColour = Color.white;
 
-    public void OnAwake()
+    public Action<UIEventTypes, bool> OnAwake()
     {
-        canInvert = CheckSettings();
-        if (toggleCheckMark != null) standardColour = toggleCheckMark.color;
-        if (subText != null) standardColour = subText.color;
+        //TODO add error or guide text if both filled in
+        _canInvert = CheckSettings();
+        if (toggleCheckMark != null) _checkMarkStartColour = toggleCheckMark.color;
+        if (_titleText != null) _textStartColour = _titleText.color;
+        return InvertColour;
+    }
+
+    public Action<UIEventTypes, bool> OnDisable()
+    {
+        return InvertColour;
     }
 
     private bool CheckSettings()
     {
-        if (subText || toggleCheckMark)
+        if (_titleText || toggleCheckMark)
         {
-            if (invertOnSelected || invertOnHighlight)
-            {
-                return true;
-            }
+            return true;
         }
         return false;
     }
 
-    public void InvertColour(UIEventTypes eventType)
+    public void InvertColour(UIEventTypes eventType, bool selected)
     {
-        if (canInvert)
+        if (_canInvert)
         {
             switch (eventType)
             {
                 case UIEventTypes.Normal:
-                    ChangeColour(standardColour);
+                    StartColour();
                     break;
                 case UIEventTypes.Highlighted:
                     if (invertOnHighlight)
@@ -51,21 +57,25 @@ public class UIInvertColours
                     }
                     else
                     {
-                        ChangeColour(standardColour);
+                        StartColour();
                     }
                     break;
                 case UIEventTypes.Selected:
                     if (invertOnSelected)
                     {
-                        ChangeColour(invertedSelectedColour);
+                        if (selected)
+                        {
+                            ChangeColour(invertedSelectedColour);
+                        }
+                        else
+                        {
+                            InvertColour(UIEventTypes.Highlighted, selected);
+                        }
                     }
                     else
                     {
-                        ChangeColour(standardColour);
+                        StartColour();
                     }
-                    break;
-                case UIEventTypes.Cancelled:
-                    ChangeColour(standardColour);
                     break;
                 default:
                     break;
@@ -76,7 +86,13 @@ public class UIInvertColours
     private void ChangeColour(Color newColour)
     {
         if (toggleCheckMark != null) toggleCheckMark.color = newColour;
-        if (subText != null) subText.color = newColour;
+        if (_titleText != null) _titleText.color = newColour;
+    }
+
+    private void StartColour()
+    {
+        if (toggleCheckMark != null) toggleCheckMark.color = _checkMarkStartColour;
+        if (_titleText != null) _titleText.color = _textStartColour;
     }
 
 }

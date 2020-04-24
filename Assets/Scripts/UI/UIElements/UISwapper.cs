@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,13 +9,15 @@ public class UISwapper
 {
     [SerializeField] Image _mainImage;
     [SerializeField] Text _textToSwap;
-    [SerializeField] Sprite _swapToImage;
+    [SerializeField] Sprite _swapToSprite;
     [SerializeField] string _swapToText;
+    [SerializeField] Canvas[] _toggleList;
 
     Sprite _startImage;
     string _startText;
+    int _index = 0;
 
-    public void OnAwake()
+    public Action<UIEventTypes, bool> OnAwake()
     {
         if (_mainImage)
         {
@@ -24,32 +27,63 @@ public class UISwapper
         {
             _startText = _textToSwap.text;
         }
+        if (_toggleList.Length > 0)
+        {
+            foreach (var item in _toggleList)
+            {
+                item.enabled = false;
+            }
+            _toggleList[_index].enabled = true;
+
+        }
+        return Swap;
     }
 
-    public void Swap()
+    public Action<UIEventTypes, bool> OnDisable()
     {
-            if (_mainImage)
-            {
-                _mainImage.sprite = _swapToImage;
-            }
-
-            if (_textToSwap)
-            {
-                _textToSwap.text = _swapToText;
-            }
+        return Swap;
     }
 
-    public void Default()
+    public void Swap(UIEventTypes uIEventTypes, bool selected)
     {
         if (_mainImage)
         {
-            _mainImage.sprite = _startImage;
+            if (selected)
+            {
+                _mainImage.sprite = _swapToSprite;
+            }
+            else
+            {
+                _mainImage.sprite = _startImage;
+            }
         }
 
         if (_textToSwap)
         {
-            _textToSwap.text = _startText;
+            if (selected)
+            {
+                _textToSwap.text = _swapToText;
+            }
+            else
+            {
+                _textToSwap.text = _startText;
+            }
         }
 
+    }
+
+    public void CycleToggleList()
+    {
+        if (_toggleList.Length > 0)
+        {
+                _toggleList[_index].enabled = false;
+                _index++;
+
+                if (_index == _toggleList.Length)
+                {
+                    _index = 0;
+                }
+                _toggleList[_index].enabled = true;
+        }
     }
 }

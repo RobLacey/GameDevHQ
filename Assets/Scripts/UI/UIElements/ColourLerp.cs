@@ -35,14 +35,27 @@ public class ColourLerp : MonoBehaviour
         yield return null;
     }
 
-    public void StartFlash(Color too, float flashTime, Action<Color> colourToReturn, Color targetColour)
+    public void StartFlash_Lerp(Color too, float flashTime, Action<Color> colourToReturn, Color targetColour)
     {
-        StartCoroutine(OnOffControl(too, flashTime, colourToReturn, targetColour));
+        StartCoroutine(OnOffControl_Lerp(too, flashTime, colourToReturn, targetColour));
     }
 
-    private IEnumerator OnOffControl(Color too, float flashTime, Action<Color> colourToReturn, Color targetColour)
+    private IEnumerator OnOffControl_Lerp(Color flashColour, float flashTime, Action<Color> colourToReturn, Color targetColour)
     {
-        yield return StartCoroutine(LerpColour(too, flashTime, colourToReturn));
+        yield return StartCoroutine(LerpColour(flashColour, flashTime, colourToReturn));
         yield return StartCoroutine(LerpColour(targetColour, flashTime, colourToReturn));
+    }
+
+    public void StartFlash_NonLerp(Color too, float flashTime, Action<Color> colourToReturn, Color targetColour)
+    {
+        StartCoroutine(OnOffControl_NonLerp(too, flashTime, colourToReturn, targetColour));
+    }
+
+    private IEnumerator OnOffControl_NonLerp(Color flashcolour, float flashTime, Action<Color> colourToReturn, Color targetColour)
+    {
+        colourToReturn.Invoke(flashcolour);
+        yield return new WaitForSeconds(flashTime);
+        colourToReturn.Invoke(targetColour);
+        yield return new WaitForSeconds(flashTime);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,12 +9,38 @@ public class UIAccessories
 {
     [SerializeField] Image[] _activationList;
 
-    public void OnAwake()
+    public Action<UIEventTypes, bool> OnAwake()
     {
-        ActivatePointer(false);
+        ActivatePointer(UIEventTypes.Normal, false);
+        return ActivatePointer;
     }
 
-    public void ActivatePointer(bool active)
+    public Action<UIEventTypes, bool> OnDisable()
+    {
+        return ActivatePointer;
+    }
+
+
+    public void ActivatePointer(UIEventTypes uIEventTypes, bool active)
+    {
+        switch (uIEventTypes)
+        {
+            case UIEventTypes.Normal:
+                ActivateAccessories(false);
+                break;
+            case UIEventTypes.Highlighted:
+                ActivateAccessories(true);
+                break;
+            case UIEventTypes.Selected:
+                break;
+            case UIEventTypes.Cancelled:
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void ActivateAccessories(bool active)
     {
         if (_activationList.Length > 0)
         {

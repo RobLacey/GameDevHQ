@@ -64,7 +64,6 @@ public class PlayerSettings : MonoBehaviour
 
     private void SetUpHardLevelSettings()
     {
-
         if (_hardLevel != null)
         {
             _hardLevel.isOn = _playerSettings._hardLevel;
