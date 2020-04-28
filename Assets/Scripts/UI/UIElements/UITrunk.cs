@@ -15,6 +15,7 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
     //Variables
     int _groupIndex = 0;
     UILeaf[] _allButtonControllers;
+    bool hasActiveChild;
 
     public UIGroupID ActiveGroup { get; set; }
     enum InGame { ReturnToLastSelected, Disable, ClearUI }
@@ -38,9 +39,9 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
 
     private void Start()
     {
-        OnHoverOver();
         _uiElement = _uiTopLevel.DefaultStartPosition;
         _uiTopLevel.MoveToNextLevel();
+        _uiTopLevel.MouseOverLast = _uiElement;
     }
 
     private void Update()
@@ -52,17 +53,12 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
 
         if (Input.GetKeyUp(KeyCode.U))
         {
-            OnHoverOver();
-
-            RootCancelProcess();
-
             _groupIndex++;
             if (_groupIndex > _groupList.Length - 1)
             {
                 _groupIndex = 0;
             }
             _groupList[_groupIndex]._GroupTopLevel.MoveToNextLevel();
-            _groupList[_groupIndex]._GroupTopLevel.LastMovedFrom._audio.Play(UIEventTypes.Highlighted);
         }
     }
 
@@ -70,9 +66,13 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
     {
         if (uIGroupID != ActiveGroup)
         {
-            Debug.Log("group Changed");
+            _uiElement.SetNotHighlighted();
             RootCancelProcess();
             ActiveGroup = uIGroupID;
+            if (uiObject.AllowKeys)
+            {
+                _uiElement._audio.Play(UIEventTypes.Selected);
+            }
         }
         _uiElement = uiObject;
     }
@@ -86,18 +86,6 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
                 EventSystem.current.SetSelectedGameObject(_uiElement.gameObject);
             }
         }    
-    }
-
-    public void OnHoverOver(GameObject eventData = null)
-    {
-        //Debug.Log("On Hover");
-        foreach (var item in _allButtonControllers)
-        {
-            if (item.gameObject != eventData)
-            {
-                item.SetNotHighlighted();
-            }
-        }
     }
 
     private void OnCancel()
@@ -114,7 +102,6 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
 
         if (_escapeKeyToCancel == EscapeKey.BackToRootLevel)
         {
-
             UILeaf temp = RootCancelProcess();
             temp.GetComponentInParent<UIBranch>().MoveToNextLevel();
             temp._audio.Play(UIEventTypes.Cancelled);
@@ -136,6 +123,7 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
         {
             if (item._uIGroupID == ActiveGroup)
             {
+                item._GroupTopLevel.MouseOverLast.RootCancel();
                 item._GroupTopLevel.LastMovedFrom.RootCancel();
                 return item._GroupTopLevel.LastMovedFrom;
             }

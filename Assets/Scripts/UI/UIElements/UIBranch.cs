@@ -16,6 +16,8 @@ public class UIBranch : MonoBehaviour
     [SerializeField] bool _turnOffOnMoveToChild;
     [SerializeField] bool _saveExitSelection;
     [SerializeField] bool _killAllOtherUI;
+    [SerializeField] UILeaf _lastMouseOver;
+
 
     //Variables
     UILeaf[] _selectables;
@@ -24,6 +26,8 @@ public class UIBranch : MonoBehaviour
     //Properties
     public UILeaf DefaultStartPosition { get { return _userDefinedStartPosition; } }
     public Canvas MyCanvas { get; set; }
+    public UILeaf MouseOverLast { get { return _lastMouseOver; } set { _lastMouseOver = value; } }
+
     public UILeaf LastMovedFrom { get; set; }
     public UIGroupID MyUIGroup { get; set; }
     public bool CanSaveLastSelection { get { return _saveExitSelection; } }
@@ -48,6 +52,8 @@ public class UIBranch : MonoBehaviour
         }
         LastMovedFrom = _userDefinedStartPosition;
 
+        MouseOverLast = _userDefinedStartPosition;
+
         if (!_isTopLevel)
         {
             MyCanvas.enabled = false;
@@ -70,10 +76,11 @@ public class UIBranch : MonoBehaviour
         {
             if (!_saveExitSelection)
             {
-                LastMovedFrom.SetNotHighlighted();
                 LastMovedFrom = DefaultStartPosition;
+                LastMovedFrom.SetNotHighlighted();
             }
-
+            MouseOverLast.SetNotHighlighted();
+            MouseOverLast = LastMovedFrom;
             LastMovedFrom.AllowKeys = false;
             EventSystem.current.SetSelectedGameObject(LastMovedFrom.gameObject);
             LastMovedFrom.InitialiseStartUp();

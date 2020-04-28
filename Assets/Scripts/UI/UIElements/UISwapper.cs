@@ -76,14 +76,14 @@ public class UISwapper
     {
         if (_toggleList.Length > 0)
         {
-                _toggleList[_index].enabled = false;
-                _index++;
+            _toggleList[_index].enabled = false;
+            _index++;
 
-                if (_index == _toggleList.Length)
-                {
-                    _index = 0;
-                }
-                _toggleList[_index].enabled = true;
+            if (_index == _toggleList.Length)
+            {
+                _index = 0;
+            }
+            _toggleList[_index].enabled = true;
         }
     }
 }

@@ -16,7 +16,7 @@ public class UISize
     Vector3 _startSize;
     enum ScaleType { ScaleUp, ScaleDown }
 
-    enum Choose { None, Highlighted, Selected, Pressed };
+    enum Choose { None, Highlighted, HighlightedAndSelected, Selected, Pressed };
 
     public Action<UIEventTypes, bool> OnAwake(Transform newTransform)
     {
@@ -34,61 +34,97 @@ public class UISize
     {
         if (_ChangeSizeOn == Choose.Pressed) return;
 
-        if (uIEventTypes == UIEventTypes.Highlighted)
+        else if (_ChangeSizeOn == Choose.HighlightedAndSelected)
         {
-            if (_ChangeSizeOn == Choose.Highlighted)
-            {
-                if (_scaledType == ScaleType.ScaleUp)
-                {
-                    ScaleUp();
-                }
-                else
-                {
-                    ScaleDown();
-                }
-            }        
+            ProcessHighlighedAndSelected(uIEventTypes, active);
         }
 
-        if (uIEventTypes == UIEventTypes.Normal)
+        else if (uIEventTypes == UIEventTypes.Highlighted && _ChangeSizeOn == Choose.Highlighted)
+        {
+            SetScaleProcess();
+        }
+
+
+        else if (uIEventTypes == UIEventTypes.Normal)
         {
             _myTransform.localScale = _startSize;
         }
 
-        if (uIEventTypes == UIEventTypes.Selected)
+        else if (uIEventTypes == UIEventTypes.Selected && _ChangeSizeOn == Choose.Selected)
         {
-            if (_ChangeSizeOn == Choose.Selected)
+            ProcessSelected(active);
+        }
+
+        if (_ChangeSizeOn == Choose.Highlighted && active) // Fixes scale not returning to normal when slected with this type
+        {
+            _myTransform.localScale = _startSize;
+        }
+    }
+
+    private void ProcessSelected(bool active)
+    {
+        if (active)
+        {
+            SetScaleProcess();
+        }
+        else
+        {
+            if (_scaledType == ScaleType.ScaleUp)
             {
-                if (active)
-                {
-                    if (_scaledType == ScaleType.ScaleUp)
-                    {
-                        ScaleUp();
-                    }
-                    else
-                    {
-                        ScaleDown();
-                    }
-
-                }
-                else
-                {
-                    if (_scaledType == ScaleType.ScaleUp)
-                    {
-                        ScaleDown();
-                    }
-                    else
-                    {
-                        ScaleUp();
-                    }
-
-                }
+                ScaleDown();
             }
+            else
+            {
+                ScaleUp();
+            }
+        }
+    }
+
+    private void ProcessHighlighedAndSelected(UIEventTypes uIEventTypes, bool active)
+    {
+        if (active)
+        {
+            if (uIEventTypes == UIEventTypes.Highlighted)
+            {
+                SetScaleProcess();
+            }
+
+            if (uIEventTypes == UIEventTypes.Selected)
+            {
+                _myTransform.localScale = _startSize;
+            }
+        }
+        else
+        {
+            if (uIEventTypes == UIEventTypes.Highlighted)
+            {
+                SetScaleProcess();
+            }
+
+            if (uIEventTypes == UIEventTypes.Normal)
+            {
+                _myTransform.localScale = _startSize;
+            }
+
+        }
+    }
+
+    private void SetScaleProcess()
+    {
+        if (_scaledType == ScaleType.ScaleUp)
+        {
+            ScaleUp();
+        }
+        else
+        {
+            ScaleDown();
         }
     }
 
     private void ScaleUp()
     {
         float temp = _startSize.x + _scaleChangeBy;
+
         if (_myTransform.localScale.x >= temp) return;
         _myTransform.localScale += new Vector3(_scaleChangeBy, _scaleChangeBy, 0);
     }
@@ -96,6 +132,7 @@ public class UISize
     private void ScaleDown()
     {
         float temp = _startSize.x - _scaleChangeBy;
+
         if (_myTransform.localScale.x <= temp) return;
         _myTransform.localScale -= new Vector3(_scaleChangeBy, _scaleChangeBy, 0);
     }

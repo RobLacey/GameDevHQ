@@ -68,23 +68,14 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
     {
         if (eventData.pointerDrag) return; //Enables drag on slider to have pressed colour
         if (_amSlider) _amSlider.interactable = true;
-        _UIManager.OnHoverOver();
+        _masterLevelNode.MouseOverLast.SetNotHighlighted();
+        _masterLevelNode.MouseOverLast = this;
         _audio.Play(UIEventTypes.Highlighted);
         _colours.SetColourOnEnter(Selected);
         SetButton(UIEventTypes.Highlighted);
         AllowKeys = false;
-
     }
 
-    public void OnSelect(BaseEventData eventData) //KB/Ctrl highlight
-    {
-        if (!AllowKeys) return;
-        _UIManager.OnHoverOver();
-        _audio.Play(UIEventTypes.Highlighted);
-        _colours.SetColourOnEnter(Selected);
-        SetButton(UIEventTypes.Highlighted);
-        _masterLevelNode.SaveLastSelected(this);
-    }
 
     public void OnPointerExit(PointerEventData eventData)
     {
@@ -110,12 +101,26 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
         if (_amSlider) SwitchUIDisplay();
     }
 
+    public void OnSelect(BaseEventData eventData) //KB/Ctrl highlight
+    {
+        if (!AllowKeys) return;
+        _masterLevelNode.MouseOverLast.SetNotHighlighted();
+        _masterLevelNode.MouseOverLast = this;
+        _audio.Play(UIEventTypes.Highlighted);
+        _colours.SetColourOnEnter(Selected);
+        SetButton(UIEventTypes.Highlighted);
+    }
 
     public void OnSubmit(BaseEventData eventData) //KB/Ctrl
     {
-        if (_isCancelOrBackButton) { OnCancel(); return; }
+        if (_isCancelOrBackButton) 
+        {
+            OnCancel();
+            return; 
+        }
 
         SwitchUIDisplay();
+
         if (_amSlider)
         {
             if (_amSlider.interactable == true)
@@ -147,6 +152,11 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
     public void InitialiseStartUp()
     {
         AllowKeys = true;
+
+        if (_amSlider) 
+        { 
+            _amSlider.interactable = false;
+        }
 
         if (_preseveSelection != PreserveSelection.Always_IsAToggle)
         {
@@ -193,9 +203,9 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
 
     private void TurnOffLastSelected()
     {
-        UILeaf lastElementSelected = _masterLevelNode.LastMovedFrom;
+        UILeaf lastElementSelected;
 
-        if (_preseveSelection == PreserveSelection.Always_IsAToggle) return;
+        lastElementSelected = _masterLevelNode.LastMovedFrom;
 
         if (lastElementSelected != this)
         {
@@ -244,20 +254,44 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
         _colours.ProcessPress(Selected);
     }
 
-    public void RootCancel()
+    public bool HasActivechild()
     {
-        if (_preseveSelection == PreserveSelection.Always_IsAToggle) return;
+        bool withChild = false;
 
         if (_childController)
         {
-            if (_childController.MyCanvas.enabled == false) return;
+            if (_childController.MyCanvas.enabled == true)
+            {
+                withChild = true;
+            }
         }
-        SetButton(UIEventTypes.Normal);
-        DisableChildLevel();
+        return withChild;
+    }
+
+    public void RootCancel()
+    {
+        if (_preseveSelection == PreserveSelection.Always_IsAToggle)
+        {
+            SetButton(UIEventTypes.Selected);
+        }
+        else
+        {
+            SetButton(UIEventTypes.Normal);
+            _colours.ResetToNormal();
+            DisableChildLevel();
+        }
     }
 
     public void OnCancel()
     {
+        if (_amSlider) { _amSlider.interactable = false; }
+
+        if (_isCancelOrBackButton)
+        {
+            SetButton(UIEventTypes.Normal);
+            _colours.ResetToNormal();
+        }
+
         if (_preseveSelection != PreserveSelection.Always_IsAToggle)
         {
             Selected = false;
@@ -276,6 +310,8 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
 
     public void SetNotHighlighted()
     {
+        if (_amSlider) { _amSlider.interactable = false; }
+
         if (_preseveSelection == PreserveSelection.Never)
         {
             DisableChildLevel();

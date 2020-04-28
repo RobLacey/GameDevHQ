@@ -12,6 +12,7 @@ public class UIColour
     public bool _LerpTextColours;
     public float _crossFadeTime = 0.4f;
     public Color _selectedColour = Color.white;
+    [SerializeField] [Range(0.5f, 2f)] float _selectedHighlightPerc = 1f;
     public Color _highlightedColour = Color.white;
     public bool _highlight;
     public bool _whenSelected;
@@ -22,7 +23,6 @@ public class UIColour
     //Variables
     public ColourLerp MyColourLerper { get; set; }
     Color _normalColour = Color.white;
-    bool _isCurrentlySelected;
 
     public void OnAwake()
     {
@@ -72,6 +72,7 @@ public class UIColour
         {
             if (_whenSelected && isSelected)
             {
+                ColourChangesProcesses(SelectedHighlight());
                 return;
             }
             ColourChangesProcesses(_highlightedColour);
@@ -83,6 +84,11 @@ public class UIColour
         if (!_whenSelected || !isSelected)
         {
             ColourChangesProcesses(_normalColour);
+        }
+
+        if (_whenSelected && isSelected)
+        {
+            ColourChangesProcesses(_selectedColour);
         }
     }
 
@@ -193,6 +199,28 @@ public class UIColour
         foreach (var item in _images)
         {
             item.color = newColour;
+        }
+    }
+
+    private Color SelectedHighlight()
+    {
+        float r = ColourCalc(_selectedColour.r);
+        float g = ColourCalc(_selectedColour.g);
+        float b = ColourCalc(_selectedColour.b);
+        return new Color(Mathf.Clamp(r * _selectedHighlightPerc, 0, 1),
+                  Mathf.Clamp(g * _selectedHighlightPerc, 0, 1),
+                  Mathf.Clamp(b * _selectedHighlightPerc, 0, 1));
+    }
+
+    private float ColourCalc(float value)
+    {
+        if (value < 0.1f && _selectedHighlightPerc > 1)
+        {
+            return 0.2f;
+        }
+        else
+        {
+            return value;
         }
     }
 }
