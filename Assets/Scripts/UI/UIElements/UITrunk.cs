@@ -124,8 +124,8 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
             if (item._uIGroupID == ActiveGroup)
             {
                 item._GroupTopLevel.MouseOverLast.RootCancel();
-                item._GroupTopLevel.LastMovedFrom.RootCancel();
-                return item._GroupTopLevel.LastMovedFrom;
+                item._GroupTopLevel.LastSelected.RootCancel();
+                return item._GroupTopLevel.LastSelected;
             }
         }
         return null;

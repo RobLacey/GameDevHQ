@@ -24,7 +24,6 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
 
     //Variables
     UIBranch _masterLevelNode;
-    UITrunk _UIManager;
     Slider _amSlider;
     UIEventTypes _settings = UIEventTypes.Normal;
 
@@ -40,7 +39,6 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
 
     private void Awake()
     {
-        _UIManager = FindObjectOfType<UITrunk>();
         _amSlider = GetComponent<Slider>();
         _colours.MyColourLerper = GetComponent<ColourLerp>();
         _masterLevelNode = GetComponentInParent<UIBranch>();
@@ -205,7 +203,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
     {
         UILeaf lastElementSelected;
 
-        lastElementSelected = _masterLevelNode.LastMovedFrom;
+        lastElementSelected = _masterLevelNode.LastSelected;
 
         if (lastElementSelected != this)
         {
@@ -223,13 +221,13 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
 
         if (_childController)
         {
-            _childController.MyCanvas.enabled = false;
+            _childController.TurnOffBranch();
 
-            if (_childController.LastMovedFrom != null)
+            if (_childController.LastSelected != null)
             {
-                if (_childController.LastMovedFrom._preseveSelection != PreserveSelection.Always_IsAToggle)
+                if (_childController.LastSelected._preseveSelection != PreserveSelection.Always_IsAToggle)
                 {
-                    _childController.LastMovedFrom.DisableChildLevel();
+                    _childController.LastSelected.DisableChildLevel();
                 }
             }
         }
@@ -299,10 +297,10 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
 
         if (MyParentController) 
         {
-            MyParentController.LastMovedFrom.DisableChildLevel();
+            MyParentController.LastSelected.DisableChildLevel();
             _masterLevelNode.MyCanvas.enabled = false;
             _audio.Play(UIEventTypes.Cancelled);
-            MyParentController.LastMovedFrom.SetButton(UIEventTypes.Normal);
+            MyParentController.LastSelected.SetButton(UIEventTypes.Normal);
             MyParentController.MoveToNextLevel();
             SetButton(UIEventTypes.Normal);
         }

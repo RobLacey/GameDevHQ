@@ -940,8 +940,9 @@ GameObject:
   - component: {fileID: 288778491}
   - component: {fileID: 288778488}
   - component: {fileID: 288778490}
-  - component: {fileID: 288778487}
   - component: {fileID: 288778492}
+  - component: {fileID: 288778487}
+  - component: {fileID: 288778493}
   m_Layer: 5
   m_Name: Option Panel
   m_TagString: Untagged
@@ -970,7 +971,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 443.30005, y: -230.60004}
+  m_AnchoredPosition: {x: 436, y: -230}
   m_SizeDelta: {x: 764.5, y: 189.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &288778487
@@ -986,11 +987,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 0}
-  _isTopLevel: 0
+  _onScreenAtStart: 0
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 1
   _killAllOtherUI: 0
-  _lastMouseOver: {fileID: 0}
+  _tweenTransition: 3
 --- !u!114 &288778488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1161,6 +1162,26 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &288778493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 288778485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8a427e419e3a5c458bd440912184959, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _buildArray: []
+  _useCurrentPositionAs: 1
+  _tweenAnchorPosition: {x: 1445, y: -230}
+  _inTime: 1
+  _outTime: 0.5
+  _easeIn: 30
+  _easeOut: 11
+  _pixelSnapping: 1
 --- !u!1 &317169498
 GameObject:
   m_ObjectHideFlags: 0
@@ -4047,6 +4068,7 @@ GameObject:
   - component: {fileID: 853981561}
   - component: {fileID: 853981560}
   - component: {fileID: 853981559}
+  - component: {fileID: 853981565}
   m_Layer: 5
   m_Name: Option Panel (1)
   m_TagString: Untagged
@@ -4186,11 +4208,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 252366156}
-  _isTopLevel: 0
+  _onScreenAtStart: 0
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 0
   _killAllOtherUI: 0
-  _lastMouseOver: {fileID: 0}
+  _tweenTransition: 3
 --- !u!114 &853981561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4265,6 +4287,26 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &853981565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 853981557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8a427e419e3a5c458bd440912184959, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _buildArray: []
+  _useCurrentPositionAs: 1
+  _tweenAnchorPosition: {x: -1337, y: 85}
+  _inTime: 1
+  _outTime: 1
+  _easeIn: 17
+  _easeOut: 18
+  _pixelSnapping: 1
 --- !u!1 &877937777
 GameObject:
   m_ObjectHideFlags: 0
@@ -4644,11 +4686,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 0}
-  _isTopLevel: 0
+  _onScreenAtStart: 0
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 0
   _killAllOtherUI: 0
-  _lastMouseOver: {fileID: 0}
+  _tweenTransition: 0
 --- !u!82 &999603840
 AudioSource:
   m_ObjectHideFlags: 0
@@ -6448,6 +6490,7 @@ GameObject:
   - component: {fileID: 1306221657}
   - component: {fileID: 1306221656}
   - component: {fileID: 1306221655}
+  - component: {fileID: 1306221660}
   m_Layer: 5
   m_Name: Level 1
   m_TagString: Untagged
@@ -6490,11 +6533,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 0}
-  _isTopLevel: 1
+  _onScreenAtStart: 1
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 0
   _killAllOtherUI: 0
-  _lastMouseOver: {fileID: 0}
+  _tweenTransition: 0
 --- !u!82 &1306221656
 AudioSource:
   m_ObjectHideFlags: 0
@@ -6651,6 +6694,26 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1306221660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1306221653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8a427e419e3a5c458bd440912184959, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _buildArray: []
+  _useCurrentPositionAs: 1
+  _tweenAnchorPosition: {x: -1337, y: 85}
+  _inTime: 1
+  _outTime: 1
+  _easeIn: 3
+  _easeOut: 2
+  _pixelSnapping: 1
 --- !u!1001 &1308230732
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7456,10 +7519,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1437461046}
-  - component: {fileID: 1437461047}
   - component: {fileID: 1437461048}
   - component: {fileID: 1437461049}
   - component: {fileID: 1437461050}
+  - component: {fileID: 1437461047}
   m_Layer: 5
   m_Name: Main Menu Buttons
   m_TagString: Untagged
@@ -7504,11 +7567,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 1016422300}
-  _isTopLevel: 1
+  _onScreenAtStart: 1
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 1
   _killAllOtherUI: 0
-  _lastMouseOver: {fileID: 0}
+  _tweenTransition: 0
 --- !u!223 &1437461048
 Canvas:
   m_ObjectHideFlags: 0
@@ -7775,11 +7838,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 1528419474}
-  _isTopLevel: 0
+  _onScreenAtStart: 0
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 1
   _killAllOtherUI: 1
-  _lastMouseOver: {fileID: 0}
+  _tweenTransition: 0
 --- !u!114 &1469429311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12000,11 +12063,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 0}
-  _isTopLevel: 0
+  _onScreenAtStart: 0
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 0
   _killAllOtherUI: 0
-  _lastMouseOver: {fileID: 0}
+  _tweenTransition: 0
 --- !u!82 &2145412966
 AudioSource:
   m_ObjectHideFlags: 0
