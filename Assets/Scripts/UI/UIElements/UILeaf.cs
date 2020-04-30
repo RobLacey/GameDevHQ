@@ -252,20 +252,6 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
         _colours.ProcessPress(Selected);
     }
 
-    public bool HasActivechild()
-    {
-        bool withChild = false;
-
-        if (_childController)
-        {
-            if (_childController.MyCanvas.enabled == true)
-            {
-                withChild = true;
-            }
-        }
-        return withChild;
-    }
-
     public void RootCancel()
     {
         if (_preseveSelection == PreserveSelection.Always_IsAToggle)

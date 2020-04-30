@@ -17,22 +17,20 @@ public class UIBranch : MonoBehaviour
     [SerializeField] bool _turnOffOnMoveToChild;
     [SerializeField] bool _saveExitSelection;
     [SerializeField] bool _killAllOtherUI;
-    [SerializeField] TweenWhen _tweenTransition = TweenWhen.NoTween;
-    //[SerializeField] UILeaf _lastMouseOver;
+    [SerializeField] PositionTween _positionTransition = PositionTween.NoTween;
+    [SerializeField] ScaleTween _scaleTransition = ScaleTween.NoTween;
+    [SerializeField] FadeTween _fadeTransition = FadeTween.NoTween;
 
     //Variables
     UILeaf[] _selectables;
     UITrunk _UICancelStopper;
     UIBranch _currentChildrensParent;
     UITweener _UITweener;
-    Vector2 _startPosition;
-    RectTransform _myRectTransform;
 
     //Properties
     public UILeaf DefaultStartPosition { get { return _userDefinedStartPosition; } }
     public Canvas MyCanvas { get; set; }
     public UILeaf MouseOverLast { get; set; }
-
     public UILeaf LastSelected { get; set; }
     public UIGroupID MyUIGroup { get; set; }
     public bool CanSaveLastSelection { get { return _saveExitSelection; } }
@@ -41,7 +39,6 @@ public class UIBranch : MonoBehaviour
     private void Awake()
     {
         _UITweener = GetComponent<UITweener>();
-        _myRectTransform = GetComponent<RectTransform>();
         _UICancelStopper = FindObjectOfType<UITrunk>();
         MyCanvas = GetComponent<Canvas>();
         _selectables = GetComponentsInChildren<UILeaf>();
@@ -51,7 +48,6 @@ public class UIBranch : MonoBehaviour
     {
         SetStartPositions();
         SetUpTweener();
-        //SetCurrentBranchAsParent(this);
 
         if (!_onScreenAtStart)
         {
@@ -67,15 +63,15 @@ public class UIBranch : MonoBehaviour
     {
         if (_UITweener)
         {
-            if (_tweenTransition == TweenWhen.NoTween)
+            if (_positionTransition != PositionTween.NoTween)
             {
-                _UITweener.CanITween = false;
+                _UITweener.SetUpPositionTweens(_positionTransition);
             }
-            else
-            {
-                _UITweener.CanITween = true;
+
+            if (_scaleTransition != ScaleTween.NoTween)
+            { 
+                _UITweener.SetUpScaleTweens(_scaleTransition);
             }
-            _startPosition = _UITweener.SetUpTween();
         }
     }
 
@@ -105,15 +101,20 @@ public class UIBranch : MonoBehaviour
         SetCurrentBranchAsParent(newParentController); // TODO Review this as might not be needed id everything is parented at start
         _UICancelStopper.SetLastUIObject(LastSelected, MyUIGroup);
 
-        if (_tweenTransition == TweenWhen.OutOnly)
+        if (_positionTransition != PositionTween.NoTween)
         {
-            _UITweener.KillAllTweens(_tweenTransition);
-            _myRectTransform.anchoredPosition = _startPosition;
+            if (_UITweener) //*****loose These when everything setup corretcly
+            {
+                _UITweener.ActivatePositionTweens(_positionTransition, true);
+            } 
         }
 
-        if (_tweenTransition == TweenWhen.InOnly || _tweenTransition == TweenWhen.InAndOut)
+        if (_scaleTransition != ScaleTween.NoTween)
         {
-            _UITweener.MoveIn(_tweenTransition);
+            if (_UITweener) //*****loose These when everything setup corretcly
+            {
+                _UITweener.ActivateScaleTweens(_scaleTransition, true);
+            } 
         }
     }
 
@@ -161,29 +162,16 @@ public class UIBranch : MonoBehaviour
 
     public void TurnOffBranch()
     {
-        switch (_tweenTransition)
+        if (_positionTransition == PositionTween.NoTween && _scaleTransition == ScaleTween.NoTween)
         {
-            case TweenWhen.NoTween:
-                MyCanvas.enabled = false;
-                break;
-            case TweenWhen.InOnly:
-                _UITweener.KillAllTweens(_tweenTransition);
-                MyCanvas.enabled = false;
-                break;
-            case TweenWhen.OutOnly:
-                _UITweener.MoveOut(_tweenTransition, () => EndOutOnly());
-                break;
-            case TweenWhen.InAndOut:
-                _UITweener.MoveOut(_tweenTransition, () => MyCanvas.enabled = false);
-                break;
-            default:
-                break;
+            MyCanvas.enabled = false;
+            return;
         }
-    }
 
-    private void EndOutOnly()
-    {
-        MyCanvas.enabled = false;
-        _myRectTransform.anchoredPosition = _startPosition;
+        if (_UITweener)//***Loose this eventually
+        {
+            _UITweener.ActivateScaleTweens(_scaleTransition, false, () => MyCanvas.enabled = false); //Add bigger method to fix scale issue
+            _UITweener.ActivatePositionTweens(_positionTransition, false, () => MyCanvas.enabled = false); //Add bigger method to fix scale issue
+        }
     }
 }

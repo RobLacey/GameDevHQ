@@ -66,6 +66,7 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
     {
         if (uIGroupID != ActiveGroup)
         {
+            Debug.Log("Group Changed");
             _uiElement.SetNotHighlighted();
             RootCancelProcess();
             ActiveGroup = uIGroupID;
@@ -123,8 +124,12 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
         {
             if (item._uIGroupID == ActiveGroup)
             {
-                item._GroupTopLevel.MouseOverLast.RootCancel();
-                item._GroupTopLevel.LastSelected.RootCancel();
+                //item._GroupTopLevel.MouseOverLast.RootCancel();
+                item._GroupTopLevel.MouseOverLast.SetNotHighlighted();
+                    item._GroupTopLevel.LastSelected.RootCancel();
+                //if (item._GroupTopLevel.MouseOverLast != item._GroupTopLevel.LastSelected)
+                //{
+                //}
                 return item._GroupTopLevel.LastSelected;
             }
         }

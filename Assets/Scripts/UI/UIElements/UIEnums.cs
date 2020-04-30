@@ -9,8 +9,18 @@ public enum UIGroupID
     Group1, Group2, Group3, Group4, Group5
 }
 
-public enum TweenWhen 
+public enum PositionTween 
 { 
-    NoTween, InOnly, OutOnly, InAndOut 
+    NoTween, Build_InOnly, Build_OutOnly, Build_InAndOut, 
+}
+
+public enum ScaleTween 
+{ 
+    NoTween, Scale_InOnly, Scale_OutOnly, Scale_InAndOut, Punch, Shake 
+}
+
+public enum FadeTween 
+{ 
+    NoTween, FadeIn, FadeOut, FadeInAndOut 
 }
 

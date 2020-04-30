@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using NaughtyAttributes;
 
 public class LevelLoader : MonoBehaviour
 {
     [SerializeField] bool _waitOnLoad = false;
     [SerializeField] bool _isLoadingScreen = false;
     [SerializeField] float _loadingScreenLoadDelay = 3f;
-    [SerializeField] int _nextSceneIndex = 1;
+    [SerializeField] [Scene] int _nextSceneIndex = 1;
+    [SerializeField] bool _showEventsOnScript = false;
+    [ShowIf ("_showEventsOnScript")] [BoxGroup ("Events")]
     [SerializeField] EventManager _Event_StartLoading;
+    [ShowIf("_showEventsOnScript")] [BoxGroup("Events")]
     [SerializeField] EventManager _Event_Async_Progress;
+    [ShowIf("_showEventsOnScript")] [BoxGroup("Events")]
     [SerializeField] EventManager _Event_Start_Level_Exit_Process;
 
     //Varibales

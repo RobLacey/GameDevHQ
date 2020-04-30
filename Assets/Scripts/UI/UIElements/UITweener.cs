@@ -3,108 +3,301 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System;
+using NaughtyAttributes;
 
 public class UITweener : MonoBehaviour
 {
-    [SerializeField] RectTransform[] _buildArray;
-    [SerializeField] DestinationAs _useCurrentPositionAs;
-    [SerializeField] Vector2 _tweenAnchorPosition;
+    [SerializeField] [ReorderableList] List<BuildSettings> _buildSettings = new List<BuildSettings>();
+    //[SerializeField] public float _randomness = 45f;
+    //[SerializeField] public float _elasticity = 0.5f;
+    //[SerializeField] public int _vibrato = 5;
+    [SerializeField] DestinationAs _useStartPositionsAs;
     [SerializeField] float _inTime = 1;
     [SerializeField] float _outTime = 1;
     [SerializeField] Ease _easeIn;
     [SerializeField] Ease _easeOut;
     [SerializeField] Snapping _pixelSnapping = Snapping.False;
+    List<Tweener> _inTweeners = new List<Tweener>();
+    List<Tweener> _outTweeners = new List<Tweener>();
 
-    RectTransform myRectTransform;
     enum DestinationAs { Start, End}
     enum Snapping { True, False }
-    Vector2 _startPosition;
-    Vector2 _endPosition;
     bool _snapping;
-    string _inName = "In";
-    string _outName = "Out";
+    Vector3 _startscale;
 
-    public bool CanITween { get; set; }
+    [Serializable]
+    public class BuildSettings
+    {
+        [SerializeField] public RectTransform _element;
+        [SerializeField] public Vector2 _tweenAnchorPosition;
+        [SerializeField] public Vector3 _sizeToTweenTo;
+        [HideInInspector] public Vector2 _startPositionBuild;
+        [HideInInspector] public Vector2 _endPositionBuild;
+        [SerializeField] public float _buildNextAfterDelay;
+    }
 
     private void Awake()
     {
-        myRectTransform = GetComponent<RectTransform>();
-
-        if (_pixelSnapping == Snapping.True)
-        {
-            _snapping = true;
-        }
-
+        if (_pixelSnapping == Snapping.True)    { _snapping = true; }
     }
-    public Vector2 SetUpTween()
+
+    public void SetUpScaleTweens(ScaleTween scaleTween)
     {
-        if (CanITween)
+        ScaleTweens(scaleTween);
+    }
+
+    public void SetUpPositionTweens(PositionTween tweenWhen)
+    {
+        SetStartPositions();
+        PopulateMoveTweenLists(tweenWhen);
+    }
+
+    private void ScaleTweens(ScaleTween tweenWhen)
+    {
+        if (tweenWhen == ScaleTween.Scale_InOnly)
         {
-            if (_useCurrentPositionAs == DestinationAs.Start)
+            foreach (var item in _buildSettings)
             {
-                _endPosition = _tweenAnchorPosition;
-                _startPosition = myRectTransform.anchoredPosition;
+                _startscale = item._sizeToTweenTo;
+                _inTweeners.Add(item._element.transform.DOScale(item._element.transform.localScale, _inTime).SetEase(_easeIn));
+                item._element.transform.localScale = item._sizeToTweenTo;
             }
-
-            if (_useCurrentPositionAs == DestinationAs.End)
+        }
+        if (tweenWhen == ScaleTween.Scale_OutOnly)
+        {
+            foreach (var item in _buildSettings)
             {
-                _endPosition = myRectTransform.anchoredPosition;
-                _startPosition = _tweenAnchorPosition;
-                myRectTransform.anchoredPosition = _startPosition;
+                _startscale = item._element.transform.localScale;
+                _outTweeners.Add(item._element.transform.DOScale(item._sizeToTweenTo, _outTime).SetEase(_easeOut));
             }
         }
-        return _startPosition;
+        if (tweenWhen == ScaleTween.Scale_InAndOut)
+        {
+            foreach (var item in _buildSettings)
+            {
+                _inTweeners.Add(item._element.transform.DOScale(item._element.transform.localScale, _inTime).SetEase(_easeIn));
+                _outTweeners.Add(item._element.transform.DOScale(item._sizeToTweenTo, _outTime).SetEase(_easeOut));
+                item._element.transform.localScale = item._sizeToTweenTo;
+            }
+        }
     }
 
-    public void MoveIn(TweenWhen tweenWhen, TweenCallback action = null)
+    private void PopulateMoveTweenLists(PositionTween tweenWhen)
     {
-        if (tweenWhen == TweenWhen.InOnly)
+        if (tweenWhen == PositionTween.Build_InOnly)
         {
-            myRectTransform.anchoredPosition = _startPosition;
+            foreach (var item in _buildSettings)
+            {
+                _inTweeners.Add(item._element.DOAnchorPos(item._endPositionBuild, _inTime, _snapping).SetEase(_easeIn));
+            }
         }
 
-        if (tweenWhen == TweenWhen.InAndOut)
+        if (tweenWhen == PositionTween.Build_OutOnly)
         {
-            DOTween.Pause(_outName);
+            foreach (var item in _buildSettings)
+            {
+                _outTweeners.Add(item._element.DOAnchorPos(item._endPositionBuild, _outTime, _snapping).SetEase(_easeOut));
+            }
         }
 
-        myRectTransform.DOAnchorPos(_endPosition, _inTime, _snapping)
-                       .SetEase(_easeIn)
-                       .SetId(_inName)
-                       .OnComplete(action)
-                       .Play();
+        if (tweenWhen == PositionTween.Build_InAndOut)
+        {
+            foreach (var item in _buildSettings)
+            {
+                _inTweeners.Add(item._element.DOAnchorPos(item._endPositionBuild, _inTime, _snapping).SetEase(_easeIn));
+                _outTweeners.Add(item._element.DOAnchorPos(item._startPositionBuild, _outTime, _snapping).SetEase(_easeOut));
+            }
+        }
     }
 
-    public void MoveOut(TweenWhen tweenWhen, TweenCallback callback = null)
+    private void SetStartPositions()
     {
-        Vector2 tweenTargetPos = _startPosition;
-
-        if (tweenWhen == TweenWhen.OutOnly)
+        if (_useStartPositionsAs == DestinationAs.Start)
         {
-            tweenTargetPos = _endPosition;
+            foreach (var item in _buildSettings)
+            {
+                item._startPositionBuild = item._element.anchoredPosition;
+                item._endPositionBuild = item._tweenAnchorPosition;
+            }
         }
 
-        if (tweenWhen == TweenWhen.InAndOut)
+        if (_useStartPositionsAs == DestinationAs.End)
         {
-            DOTween.Pause(_inName);
+            foreach (var item in _buildSettings)
+            {
+                item._startPositionBuild = item._tweenAnchorPosition;
+                item._endPositionBuild = item._element.anchoredPosition;
+                item._element.anchoredPosition = item._startPositionBuild;
+            }
         }
-           myRectTransform.DOAnchorPos(tweenTargetPos, _outTime, _snapping)
-                                            .SetEase(_easeOut)
-                                            .SetId(_outName)
-                                            .OnComplete(callback)
-                                            .Play();
     }
 
-    public void KillAllTweens(TweenWhen tweenWhen)
+    public void PauseAllTweens(List<Tweener> tweeners)
     {
-        if (tweenWhen == TweenWhen.InOnly)
+        foreach (var item in tweeners)
         {
-            DOTween.Rewind("In");
+            item.Pause();
+        }
+    }
+    public void RewindAllTweens(List<Tweener> tweeners)
+    {
+        foreach (var item in tweeners)
+        {
+            item.Rewind();
+        }
+    }
+
+    public void ActivatePositionTweens(PositionTween currentTweenType, bool activate, TweenCallback tweenCallback = null)
+    {
+        switch (currentTweenType)
+        {
+            case PositionTween.Build_InOnly:
+                if (activate)
+                {
+                    StartCoroutine(MoveSequence(_inTweeners, currentTweenType, tweenCallback));
+                }
+                else
+                {
+                    StopAllCoroutines();
+                    RewindAllTweens(_inTweeners);
+                    tweenCallback.Invoke();
+                }
+                break;
+            case PositionTween.Build_OutOnly:
+                if (activate)
+                {
+                    StopAllCoroutines();
+                    RewindAllTweens(_outTweeners);
+                }
+                else
+                {
+                    StartCoroutine(MoveSequence(_outTweeners, currentTweenType, tweenCallback));
+                }
+                break;
+            case PositionTween.Build_InAndOut:
+                StopAllCoroutines();
+                if (activate)
+                {
+                    PauseAllTweens(_outTweeners);
+                    StartCoroutine(MoveSequence(_inTweeners, currentTweenType));
+                }
+                else
+                {
+                    PauseAllTweens(_inTweeners);
+                    StartCoroutine(MoveSequence(_outTweeners, currentTweenType, tweenCallback));
+                }
+                break;
+        }
+    }
+    public void ActivateScaleTweens(ScaleTween currentTweenType, bool activate, TweenCallback tweenCallback = null)
+    {
+        switch (currentTweenType)
+        {
+            case ScaleTween.Scale_InOnly:
+                if (activate)
+                {
+                    StartCoroutine(ScaleSequence(_inTweeners, currentTweenType));
+                }
+                else
+                {
+                    StopAllCoroutines();
+                    RewindAllTweens(_inTweeners);
+                    tweenCallback.Invoke();
+                }
+                break;
+            case ScaleTween.Scale_OutOnly:
+                if (activate)
+                {
+                    StopAllCoroutines();
+                    RewindAllTweens(_outTweeners);
+                }
+                else
+                {
+                    StartCoroutine(ScaleSequence(_outTweeners, currentTweenType, tweenCallback));
+                }
+                break;
+            case ScaleTween.Scale_InAndOut:
+                StopAllCoroutines();
+                if (activate)
+                {
+                    PauseAllTweens(_outTweeners);
+                    StartCoroutine(ScaleSequence(_inTweeners, currentTweenType));
+                }
+                else
+                {
+                    PauseAllTweens(_inTweeners);
+                    StartCoroutine(ScaleSequence(_outTweeners, currentTweenType, tweenCallback));
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private IEnumerator MoveSequence(List<Tweener> tweeners, PositionTween tweenWhen, TweenCallback tweenCallback = null)
+    {
+        bool finished = false;
+        int index = 0;
+        while (!finished)
+        {
+            foreach (var item in _buildSettings)
+            {
+                if (tweenWhen == PositionTween.Build_InAndOut) item._startPositionBuild = item._element.anchoredPosition;
+
+                if (index == _buildSettings.Count - 1)
+                {
+                    tweeners[index].ChangeStartValue(item._startPositionBuild).Play().OnComplete(tweenCallback);
+                }
+                else
+                {
+                tweeners[index].ChangeStartValue(item._startPositionBuild).Play();
+                yield return new WaitForSeconds(item._buildNextAfterDelay);
+                index++;
+                }
+            }
+            finished = true;
+        }
+        yield return null;
+    }
+
+    public IEnumerator ScaleSequence(List<Tweener> tweeners, ScaleTween tweenWhen, TweenCallback tweenCallback = null)
+    {
+        bool finished = false;
+        int index = 0;
+        while (!finished)
+        {
+            foreach (var item in _buildSettings)
+            {
+                if (tweenWhen == ScaleTween.Scale_InAndOut) _startscale = item._element.transform.localScale;
+
+                if (index == _buildSettings.Count - 1)
+                {
+                    tweeners[index].ChangeStartValue(_startscale).Play().OnComplete(tweenCallback);
+                }
+                else
+                {
+                    tweeners[index].ChangeStartValue(_startscale).Play();
+                    yield return new WaitForSeconds(item._buildNextAfterDelay);
+                    index++;
+                }
+            }
+            finished = true;
+        }
+        yield return null;
+    }
+
+    public IEnumerator PunchOrShake() //TO Addd
+    {
+        foreach (var item in _buildSettings)
+        {
+            //item._element.transform.DOShakeScale(_inTime, _scaleAmount, _vibrato, _randomness, true)
+            //item._element.transform.DOPunchScale(_scaleAmount, _outTime, _vibrato, _elasticity)
+
+                         //.SetId(_outName)
+                         //.OnComplete(tweenCallback)
+                         //.Play();
         }
 
-        if (tweenWhen == TweenWhen.OutOnly)
-        {
-            DOTween.Rewind("Out");
-        }
+        yield return null;
     }
 }
