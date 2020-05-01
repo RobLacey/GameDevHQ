@@ -1014,6 +1014,7 @@ GameObject:
   - component: {fileID: 288778488}
   - component: {fileID: 288778490}
   - component: {fileID: 288778492}
+  - component: {fileID: 288778494}
   - component: {fileID: 288778487}
   - component: {fileID: 288778493}
   m_Layer: 5
@@ -1064,9 +1065,10 @@ MonoBehaviour:
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 1
   _killAllOtherUI: 0
-  _positionTransition: 0
-  _scaleTransition: 1
-  _fadeTransition: 0
+  _positionInTween: 0
+  _positionOutTween: 0
+  _scaleTransition: 0
+  _canvasGroupFade: 2
 --- !u!114 &288778488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1252,16 +1254,39 @@ MonoBehaviour:
   _buildSettings:
   - _element: {fileID: 288778486}
     _tweenAnchorPosition: {x: 1445, y: -230}
-    _sizeToTweenTo: {x: 0.8, y: 0.8, z: 0}
-    _startPositionBuild: {x: 0, y: 0}
-    _endPositionBuild: {x: 0, y: 0}
     _buildNextAfterDelay: 0
-  _useStartPositionsAs: 1
-  _inTime: 1
-  _outTime: 1
-  _easeIn: 30
-  _easeOut: 29
+    _resetStartPositionStore: {x: 0, y: 0}
+  _tweenInTime: 1
+  _tweenOutTime: 1
+  _punchOrShakeWhen: 0
+  _currentPositionIs: 1
+  _positionEaseIn: 0
+  _positionEaseOut: 0
   _pixelSnapping: 1
+  _scaleEaseIn: 1
+  _scaleEaseOut: 1
+  _scaleToTweenTo: {x: 0.1, y: 0.1, z: 0}
+  _punchStrength: {x: 0.2, y: 0.2, z: 0}
+  _punchDuration: 0.5
+  _elasticity: 0.83
+  _punchVibrato: 7
+  _shakeStrength: {x: 0.2, y: 0.2, z: 0}
+  _shakeDuration: 0.5
+  _shakeVibrato: 7
+  _randomness: 45
+  _fadeOut: 1
+--- !u!225 &288778494
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 288778485}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &317169498
 GameObject:
   m_ObjectHideFlags: 0
@@ -1895,7 +1920,7 @@ PrefabInstance:
     - target: {fileID: 1113622782622365713, guid: b2c5426cb4be30e4baa6227b5b2c816d,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1409934835700318246, guid: b2c5426cb4be30e4baa6227b5b2c816d,
         type: 3}
@@ -2030,7 +2055,7 @@ PrefabInstance:
     - target: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -104
       objectReference: {fileID: 0}
     - target: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
         type: 3}
@@ -4146,6 +4171,7 @@ GameObject:
   - component: {fileID: 853981563}
   - component: {fileID: 853981562}
   - component: {fileID: 853981559}
+  - component: {fileID: 853981561}
   - component: {fileID: 853981560}
   - component: {fileID: 853981565}
   m_Layer: 5
@@ -4292,9 +4318,22 @@ MonoBehaviour:
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 0
   _killAllOtherUI: 0
-  _positionTransition: 2
+  _positionInTween: 0
+  _positionOutTween: 0
   _scaleTransition: 0
-  _fadeTransition: 0
+  _canvasGroupFade: 3
+--- !u!225 &853981561
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 853981557}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &853981562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4356,40 +4395,43 @@ MonoBehaviour:
   _buildSettings:
   - _element: {fileID: 237332919}
     _tweenAnchorPosition: {x: 984, y: 0}
-    _sizeToTweenTo: {x: 0.8, y: 0.8, z: 0}
-    _startPositionBuild: {x: 0, y: 0}
-    _endPositionBuild: {x: 0, y: 0}
     _buildNextAfterDelay: 0.1
+    _resetStartPositionStore: {x: 0, y: 0}
   - _element: {fileID: 1521914608}
     _tweenAnchorPosition: {x: 984, y: 52}
-    _sizeToTweenTo: {x: 0.8, y: 0.8, z: 0}
-    _startPositionBuild: {x: 0, y: 0}
-    _endPositionBuild: {x: 0, y: 0}
     _buildNextAfterDelay: 0.1
+    _resetStartPositionStore: {x: 0, y: 0}
   - _element: {fileID: 252366158}
     _tweenAnchorPosition: {x: 984, y: 5.2}
-    _sizeToTweenTo: {x: 0.8, y: 0.8, z: 0}
-    _startPositionBuild: {x: 0, y: 0}
-    _endPositionBuild: {x: 0, y: 0}
     _buildNextAfterDelay: 0.1
+    _resetStartPositionStore: {x: 0, y: 0}
   - _element: {fileID: 1875375219}
     _tweenAnchorPosition: {x: 984, y: -43}
-    _sizeToTweenTo: {x: 0.8, y: 0.8, z: 0}
-    _startPositionBuild: {x: 0, y: 0}
-    _endPositionBuild: {x: 0, y: 0}
     _buildNextAfterDelay: 0.1
+    _resetStartPositionStore: {x: 0, y: 0}
   - _element: {fileID: 2082249423}
     _tweenAnchorPosition: {x: 984, y: -92}
-    _sizeToTweenTo: {x: 0.8, y: 0.8, z: 0}
-    _startPositionBuild: {x: 0, y: 0}
-    _endPositionBuild: {x: 0, y: 0}
     _buildNextAfterDelay: 0
-  _useStartPositionsAs: 0
-  _inTime: 1
-  _outTime: 0.5
-  _easeIn: 30
-  _easeOut: 17
+    _resetStartPositionStore: {x: 0, y: 0}
+  _tweenInTime: 1
+  _tweenOutTime: 0.5
+  _punchOrShakeWhen: 2
+  _currentPositionIs: 2
+  _positionEaseIn: 15
+  _positionEaseOut: 14
   _pixelSnapping: 1
+  _scaleEaseIn: 0
+  _scaleEaseOut: 0
+  _scaleToTweenTo: {x: 0.1, y: 0.1, z: 0}
+  _punchStrength: {x: 0.1, y: 0.1, z: 0}
+  _punchDuration: 0.5
+  _elasticity: 0.5
+  _punchVibrato: 5
+  _shakeStrength: {x: 0.1, y: 0.1, z: 0}
+  _shakeDuration: 0.5
+  _shakeVibrato: 7
+  _randomness: 90
+  _fadeOut: 1
 --- !u!1 &877937777
 GameObject:
   m_ObjectHideFlags: 0
@@ -4757,9 +4799,10 @@ MonoBehaviour:
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 0
   _killAllOtherUI: 0
-  _positionTransition: 0
+  _positionInTween: 1
+  _positionOutTween: 0
   _scaleTransition: 0
-  _fadeTransition: 0
+  _canvasGroupFade: 1
 --- !u!82 &999603840
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4885,13 +4928,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8a427e419e3a5c458bd440912184959, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buildSettings: []
-  _useStartPositionsAs: 0
-  _inTime: 1
-  _outTime: 1
-  _easeIn: 0
-  _easeOut: 0
+  _buildSettings:
+  - _element: {fileID: 999603837}
+    _tweenAnchorPosition: {x: 917, y: 0}
+    _buildNextAfterDelay: 0
+    _resetStartPositionStore: {x: 0, y: 0}
+  _tweenInTime: 1
+  _tweenOutTime: 1
+  _punchOrShakeWhen: 0
+  _currentPositionIs: 2
+  _positionEaseIn: 15
+  _positionEaseOut: 0
   _pixelSnapping: 1
+  _scaleEaseIn: 0
+  _scaleEaseOut: 0
+  _scaleToTweenTo: {x: 0, y: 0, z: 0}
+  _punchStrength: {x: 0, y: 0, z: 0}
+  _punchDuration: 0.5
+  _elasticity: 0.5
+  _punchVibrato: 5
+  _shakeStrength: {x: 0, y: 0, z: 0}
+  _shakeDuration: 45
+  _shakeVibrato: 5
+  _randomness: 45
+  _fadeOut: 0
+--- !u!225 &999603843
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 999603836}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1016422297
 GameObject:
   m_ObjectHideFlags: 0
@@ -6625,9 +6697,10 @@ MonoBehaviour:
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 0
   _killAllOtherUI: 0
-  _positionTransition: 0
+  _positionInTween: 0
+  _positionOutTween: 0
   _scaleTransition: 0
-  _fadeTransition: 0
+  _canvasGroupFade: 0
 --- !u!82 &1306221656
 AudioSource:
   m_ObjectHideFlags: 0
@@ -6797,12 +6870,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildSettings: []
-  _useStartPositionsAs: 0
-  _inTime: 1
-  _outTime: 1
-  _easeIn: 3
-  _easeOut: 2
+  _tweenInTime: 1
+  _tweenOutTime: 1
+  _punchOrShakeWhen: 0
+  _currentPositionIs: 0
+  _positionEaseIn: 0
+  _positionEaseOut: 0
   _pixelSnapping: 1
+  _scaleEaseIn: 0
+  _scaleEaseOut: 0
+  _scaleToTweenTo: {x: 0, y: 0, z: 0}
+  _punchStrength: {x: 0, y: 0, z: 0}
+  _punchDuration: 0.5
+  _elasticity: 0.5
+  _punchVibrato: 5
+  _shakeStrength: {x: 0, y: 0, z: 0}
+  _shakeDuration: 45
+  _shakeVibrato: 5
+  _randomness: 45
+  _fadeOut: 0
 --- !u!1001 &1308230732
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7611,6 +7697,7 @@ GameObject:
   - component: {fileID: 1437461048}
   - component: {fileID: 1437461049}
   - component: {fileID: 1437461050}
+  - component: {fileID: 1437461052}
   - component: {fileID: 1437461047}
   - component: {fileID: 1437461051}
   m_Layer: 5
@@ -7661,9 +7748,10 @@ MonoBehaviour:
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 1
   _killAllOtherUI: 0
-  _positionTransition: 0
+  _positionInTween: 0
+  _positionOutTween: 0
   _scaleTransition: 0
-  _fadeTransition: 0
+  _canvasGroupFade: 0
 --- !u!223 &1437461048
 Canvas:
   m_ObjectHideFlags: 0
@@ -7811,12 +7899,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildSettings: []
-  _useStartPositionsAs: 0
-  _inTime: 1
-  _outTime: 1
-  _easeIn: 0
-  _easeOut: 0
+  _tweenInTime: 1
+  _tweenOutTime: 1
+  _punchOrShakeWhen: 0
+  _currentPositionIs: 0
+  _positionEaseIn: 0
+  _positionEaseOut: 0
   _pixelSnapping: 1
+  _scaleEaseIn: 0
+  _scaleEaseOut: 0
+  _scaleToTweenTo: {x: 0, y: 0, z: 0}
+  _punchStrength: {x: 0, y: 0, z: 0}
+  _punchDuration: 0.5
+  _elasticity: 0.5
+  _punchVibrato: 5
+  _shakeStrength: {x: 0, y: 0, z: 0}
+  _shakeDuration: 45
+  _shakeVibrato: 5
+  _randomness: 45
+  _fadeOut: 0
+--- !u!225 &1437461052
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1437461045}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1452562445
 GameObject:
   m_ObjectHideFlags: 0
@@ -7953,9 +8066,10 @@ MonoBehaviour:
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 1
   _killAllOtherUI: 1
-  _positionTransition: 0
+  _positionInTween: 0
+  _positionOutTween: 0
   _scaleTransition: 0
-  _fadeTransition: 0
+  _canvasGroupFade: 0
 --- !u!114 &1469429311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12170,9 +12284,10 @@ MonoBehaviour:
   _turnOffOnMoveToChild: 0
   _saveExitSelection: 0
   _killAllOtherUI: 0
-  _positionTransition: 0
+  _positionInTween: 0
+  _positionOutTween: 0
   _scaleTransition: 0
-  _fadeTransition: 0
+  _canvasGroupFade: 0
 --- !u!82 &2145412966
 AudioSource:
   m_ObjectHideFlags: 0

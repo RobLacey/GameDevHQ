@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(Canvas))]
+[RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
@@ -17,9 +18,10 @@ public class UIBranch : MonoBehaviour
     [SerializeField] bool _turnOffOnMoveToChild;
     [SerializeField] bool _saveExitSelection;
     [SerializeField] bool _killAllOtherUI;
-    [SerializeField] PositionTween _positionTransition = PositionTween.NoTween;
+    [SerializeField] PositionInTween _positionInTween = PositionInTween.NoTween;
+    [SerializeField] PositionOutTween _positionOutTween = PositionOutTween.NoTween;
     [SerializeField] ScaleTween _scaleTransition = ScaleTween.NoTween;
-    [SerializeField] FadeTween _fadeTransition = FadeTween.NoTween;
+    [SerializeField] FadeTween _canvasGroupFade = FadeTween.NoTween;
 
     //Variables
     UILeaf[] _selectables;
@@ -63,14 +65,19 @@ public class UIBranch : MonoBehaviour
     {
         if (_UITweener)
         {
-            if (_positionTransition != PositionTween.NoTween)
+            if (_positionOutTween != PositionOutTween.NoTween || _positionInTween != PositionInTween.NoTween)
             {
-                _UITweener.SetUpPositionTweens(_positionTransition);
+                _UITweener.SetUpPositionTweens(_positionOutTween, _positionInTween);
             }
 
             if (_scaleTransition != ScaleTween.NoTween)
             { 
                 _UITweener.SetUpScaleTweens(_scaleTransition);
+            }
+
+            if (_canvasGroupFade != FadeTween.NoTween)
+            {
+                _UITweener.SetUpFadeTweens(_canvasGroupFade);
             }
         }
     }
@@ -101,20 +108,33 @@ public class UIBranch : MonoBehaviour
         SetCurrentBranchAsParent(newParentController); // TODO Review this as might not be needed id everything is parented at start
         _UICancelStopper.SetLastUIObject(LastSelected, MyUIGroup);
 
-        if (_positionTransition != PositionTween.NoTween)
+        if (_UITweener) //*****loose These when everything setup corretcly
         {
-            if (_UITweener) //*****loose These when everything setup corretcly
-            {
-                _UITweener.ActivatePositionTweens(_positionTransition, true);
-            } 
-        }
+            _UITweener.StopAllCoroutines();
 
-        if (_scaleTransition != ScaleTween.NoTween)
-        {
-            if (_UITweener) //*****loose These when everything setup corretcly
+            if (_positionInTween != PositionInTween.NoTween)
             {
-                _UITweener.ActivateScaleTweens(_scaleTransition, true);
-            } 
+                _UITweener.DoInTween(true);
+            }
+            else if (_positionOutTween != PositionOutTween.NoTween)
+            {
+                _UITweener.DoOutTween(true);
+            }
+
+            if (_scaleTransition == ScaleTween.Scale_InOnly || _scaleTransition == ScaleTween.Scale_InAndOut)
+            {
+                _UITweener.ScaleInTween(true);
+            }
+            else if (_scaleTransition == ScaleTween.Scale_OutOnly )
+            {
+                _UITweener.ScaleOutTween(true);
+            }
+            else if (_scaleTransition == ScaleTween.Punch || _scaleTransition == ScaleTween.Shake)
+            {
+                _UITweener.DoPunchOrShake(true);
+            }
+
+            _UITweener.DoCanvasFade(_canvasGroupFade, true);
         }
     }
 
@@ -162,16 +182,40 @@ public class UIBranch : MonoBehaviour
 
     public void TurnOffBranch()
     {
-        if (_positionTransition == PositionTween.NoTween && _scaleTransition == ScaleTween.NoTween)
+        if (_positionOutTween == PositionOutTween.NoTween && _scaleTransition == ScaleTween.NoTween 
+            && _positionInTween == PositionInTween.NoTween && _canvasGroupFade == FadeTween.NoTween)
         {
             MyCanvas.enabled = false;
-            return;
         }
 
         if (_UITweener)//***Loose this eventually
         {
-            _UITweener.ActivateScaleTweens(_scaleTransition, false, () => MyCanvas.enabled = false); //Add bigger method to fix scale issue
-            _UITweener.ActivatePositionTweens(_positionTransition, false, () => MyCanvas.enabled = false); //Add bigger method to fix scale issue
+            _UITweener.StopAllCoroutines();
+
+            if (_scaleTransition == ScaleTween.Scale_OutOnly || _scaleTransition == ScaleTween.Scale_InAndOut)
+            {
+                _UITweener.ScaleOutTween(false); //Add bigger method to fix scale issue
+            }
+            
+            else if(_scaleTransition == ScaleTween.Scale_InOnly)
+            {
+                _UITweener.ScaleInTween(false); //Add bigger method to fix scale issue
+            }
+            else if(_scaleTransition == ScaleTween.Punch || _scaleTransition == ScaleTween.Shake)
+            {
+                _UITweener.DoPunchOrShake(false); //Add bigger method to fix scale issue
+            }
+
+            if (_positionOutTween != PositionOutTween.NoTween)
+            {
+                _UITweener.DoOutTween(false); //Add bigger method to fix scale issue
+            }
+            else if (_positionInTween != PositionInTween.NoTween)
+            {
+                _UITweener.DoInTween(false); //Add bigger method to fix scale issue
+            }
+
+            _UITweener.DoCanvasFade(_canvasGroupFade, false, () => MyCanvas.enabled = false);
         }
     }
 }

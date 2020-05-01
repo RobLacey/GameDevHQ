@@ -9,9 +9,14 @@ public enum UIGroupID
     Group1, Group2, Group3, Group4, Group5
 }
 
-public enum PositionTween 
+public enum PositionOutTween 
 { 
-    NoTween, Build_InOnly, Build_OutOnly, Build_InAndOut, 
+    NoTween, Out 
+}
+
+public enum PositionInTween 
+{ 
+    NoTween, In 
 }
 
 public enum ScaleTween 
