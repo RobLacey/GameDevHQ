@@ -29,3 +29,6 @@ public enum FadeTween
     NoTween, FadeIn, FadeOut, FadeInAndOut 
 }
 
+public enum EffectType { In, Out, Both }
+
+

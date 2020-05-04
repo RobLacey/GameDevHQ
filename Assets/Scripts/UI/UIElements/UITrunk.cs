@@ -3,37 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
+using NaughtyAttributes;
 
 public class UITrunk : MonoBehaviour, IPointerClickHandler
 {
+    [Header("Main Settings")] [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    [Label("UI Starting Level")] [Required("MUST have a starting level")]
     [SerializeField] UIBranch _uiTopLevel;
-    [SerializeField] UILeaf _uiElement;
+    [Label("Clicked Off UI Action")]
     [SerializeField] InGame _clickOff;
-    [SerializeField] EscapeKey _escapeKeyToCancel;
+    [SerializeField] EscapeKey _escapeKeyFunction;
+    [Header("UI Groups")] [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    [Label("List of UI Groups")] [Tooltip("Add a group if keyboard/Controller group switching is needed")] 
     [SerializeField] GroupList[] _groupList;
+    
 
     //Variables
+    UILeaf _uiElement;
     int _groupIndex = 0;
-    UILeaf[] _allButtonControllers;
-    bool hasActiveChild;
+    UIBranch[] _allUIBranches;
 
     public UIGroupID ActiveGroup { get; set; }
-    enum InGame { ReturnToLastSelected, Disable, ClearUI }
-    enum EscapeKey { OneLevel, BackToRootLevel }
+    enum InGame { ReturnToLastSelected, Disabled, ClearUI }
+    enum EscapeKey { BackOneLevel, BackToRootLevel }
 
     [Serializable]
     public class GroupList
     {
-        public UIGroupID _uIGroupID;
-        public UIBranch _GroupTopLevel;
+        public UIGroupID _groupIDNumber;
+        public UIBranch _groupStartLevel;
     }
 
     private void Awake()
     {
-        _allButtonControllers = FindObjectsOfType<UILeaf>();
+        _allUIBranches = FindObjectsOfType<UIBranch>();
         foreach (var item in _groupList)
         {
-            item._GroupTopLevel.MyUIGroup = item._uIGroupID;
+            item._groupStartLevel.MyUIGroup = item._groupIDNumber;
         }
     }
 
@@ -41,6 +47,7 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
     {
         _uiElement = _uiTopLevel.DefaultStartPosition;
         _uiTopLevel.MoveToNextLevel();
+        _uiTopLevel.ActivateEffects();
         _uiTopLevel.MouseOverLast = _uiElement;
     }
 
@@ -58,7 +65,7 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
             {
                 _groupIndex = 0;
             }
-            _groupList[_groupIndex]._GroupTopLevel.MoveToNextLevel();
+            _groupList[_groupIndex]._groupStartLevel.MoveToNextLevel();
         }
     }
 
@@ -96,14 +103,15 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
             RestoreAllOtherUI();
         }
 
-        if (_escapeKeyToCancel == EscapeKey.OneLevel)
+        if (_escapeKeyFunction == EscapeKey.BackOneLevel)
         {
             OneLevelCancelProcess();
         }
 
-        if (_escapeKeyToCancel == EscapeKey.BackToRootLevel)
+        if (_escapeKeyFunction == EscapeKey.BackToRootLevel)
         {
             UILeaf temp = RootCancelProcess();
+            Debug.Log(temp);
             temp.GetComponentInParent<UIBranch>().MoveToNextLevel();
             temp._audio.Play(UIEventTypes.Cancelled);
         }
@@ -122,25 +130,24 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
     {
         foreach (var item in _groupList)
         {
-            if (item._uIGroupID == ActiveGroup)
+            if (item._groupIDNumber == ActiveGroup)
             {
-                //item._GroupTopLevel.MouseOverLast.RootCancel();
-                item._GroupTopLevel.MouseOverLast.SetNotHighlighted();
-                    item._GroupTopLevel.LastSelected.RootCancel();
-                //if (item._GroupTopLevel.MouseOverLast != item._GroupTopLevel.LastSelected)
-                //{
-                //}
-                return item._GroupTopLevel.LastSelected;
+                item._groupStartLevel.MouseOverLast.SetNotHighlighted();
+                item._groupStartLevel.LastSelected.RootCancel();
+                return item._groupStartLevel.LastSelected;
             }
         }
         return null;
     }
 
-    public void KillAllOtherUI()
+    public void ToFullScreen(UIBranch currentBranch)
     {
-        foreach (var item in _groupList)
+        foreach (var item in _allUIBranches)
         {
-            item._GroupTopLevel.MyCanvas.enabled = false;
+            if (currentBranch != item)
+            {
+                item.MyCanvas.enabled = false;
+            }
         }
     }
 
@@ -148,7 +155,7 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
     {
         foreach (var item in _groupList)
         {
-            item._GroupTopLevel.MyCanvas.enabled = true;
+            item._groupStartLevel.MyCanvas.enabled = true;
         }
     }
 }

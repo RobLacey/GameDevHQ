@@ -7,113 +7,97 @@ using NaughtyAttributes;
 
 public class UITweener : MonoBehaviour
 {
-    [SerializeField] [ReorderableList] List<BuildSettings> _buildSettings = new List<BuildSettings>();
-    [SerializeField] float _tweenInTime = 1;
-    [SerializeField] float _tweenOutTime = 1;
-    [SerializeField] [BoxGroup("Punch Or Shake")] EffectType _punchOrShakeWhen = EffectType.In;
-    [SerializeField] [BoxGroup("Position")] DestinationAs _currentPositionIs;
-    [SerializeField] [BoxGroup("Position")] Ease _positionEaseIn = Ease.Unset;
-    [SerializeField] [BoxGroup("Position")] Ease _positionEaseOut = Ease.Unset;
-    [SerializeField] [BoxGroup("Position")] Snapping _pixelSnapping = Snapping.False;
-    [SerializeField] [BoxGroup("Scale")] Ease _scaleEaseIn = Ease.Unset;
-    [SerializeField] [BoxGroup("Scale")] Ease _scaleEaseOut = Ease.Unset;
-    [SerializeField] [BoxGroup("Scale")] public Vector3 _scaleToTweenTo;
-    [SerializeField] [BoxGroup("Punch")] public Vector3 _punchStrength = new Vector3(0.1f, 0.1f, 0.1f);
-    [SerializeField] [BoxGroup("Punch")] [Range(0, 2)] float _punchDuration = 0.5f;
-    [SerializeField] [BoxGroup("Punch")] [Range(0, 1)] float _elasticity = 0.5f;
-    [SerializeField] [BoxGroup("Punch")] [Range(1, 10)] int _punchVibrato = 5;
-    [SerializeField] [BoxGroup("Shake")] public Vector3 _shakeStrength = new Vector3(0.1f, 0.1f, 0.1f);
-    [SerializeField] [BoxGroup("Shake")] [Range(0, 2)] float _shakeDuration = 0.5f;
-    [SerializeField] [BoxGroup("Shake")] [Range(1, 10)] int _shakeVibrato = 5;
-    [SerializeField] [BoxGroup("Shake")] [Range(0, 90)] float _randomness = 45f;
-    [SerializeField] [BoxGroup("Shake")] bool _fadeOut;
+    [SerializeField] [ReorderableList] [Label("List Of Objects To Apply Effects To")] 
+    List<BuildSettings> _applyEffectsTo = new List<BuildSettings>();
+
+    [InfoBox("Add PARENT to apply effects as a whole or add each CHILD for a build effect. List is DRAG & DROP ordable", order = 0)]
+    [Header("Effect Tween Settings", order = 1)] [HorizontalLine(4, color: EColor.Blue, order = 2)]
+    [SerializeField] bool _useGlobalTweenTime = false;
+    [SerializeField] [ShowIf("GlobalTime")] float _globalInTime = 1;
+    [SerializeField] [ShowIf("GlobalTime")] float _globalOutTime = 1;
+    [SerializeField] [Label("Settings")] [ShowIf("InPosition")] [BoxGroup("Position Tween")] PositionTween _posTween = new PositionTween();
+    [SerializeField] [Label("Settings")] [ShowIf("Scale")] [BoxGroup("Scale Tween")] ScaleTweener _scaleTween = new ScaleTweener();
+    [SerializeField] [Label("Settings")] [ShowIf("Punch")] [BoxGroup("Punch Tween")] PunchTweener _punchTween = new PunchTweener();
+    [SerializeField] [Label("Settings")] [ShowIf("Shake")] [BoxGroup("Shake Tween")] ShakeTweener _shakeTween = new ShakeTweener();
+    [SerializeField] [Label("Settings")] [ShowIf("Fade")] [BoxGroup("Fade Tween")] FadeTweener _fadeTween = new FadeTweener();
+
+    //EditorScripts
+    #region Expand Here
+
+    public bool GlobalTime()
+    {
+        if (_useGlobalTweenTime)
+        {
+            _fadeTween.UsingGlobalTime = true;
+            _scaleTween.UsingGlobalTime = true;
+            _posTween.UsingGlobalTime = true;
+            return true;
+        }
+        else
+        {
+            _fadeTween.UsingGlobalTime = false;
+            _scaleTween.UsingGlobalTime = false;
+            _posTween.UsingGlobalTime = false;
+            return false;
+        }
+    }
+
+    public bool InPosition()
+    {
+        PositionInTween inPos = GetComponent<UIBranch>()._positionInTween;
+        PositionOutTween outPos = GetComponent<UIBranch>()._positionOutTween;
+        if (inPos != PositionInTween.NoTween || outPos != PositionOutTween.NoTween) { return true; }
+        return false;
+    }
+    public bool Scale()
+    {
+        ScaleTween scale = GetComponent<UIBranch>()._scaleTransition;
+        if (scale == ScaleTween.Scale_InAndOut || scale == ScaleTween.Scale_InOnly || scale == ScaleTween.Scale_OutOnly)
+        { return true; }
+        return false;
+    }
+
+    public bool Punch()
+    {
+        ScaleTween scale = GetComponent<UIBranch>()._scaleTransition;
+        if (scale == ScaleTween.Punch) { return true; }
+        return false;
+    }
+
+    public bool Shake()
+    {
+        ScaleTween scale = GetComponent<UIBranch>()._scaleTransition;
+        if (scale == ScaleTween.Shake) { return true; }
+        return false;
+    }
+
+    public bool Fade()
+    {
+        FadeTween fade = GetComponent<UIBranch>()._canvasGroupFade;
+        if (fade != FadeTween.NoTween) { return true; }
+        return false;
+    }
+
+    #endregion
 
     //Variables
-    enum DestinationAs { Start, MidPointForInAndOut, End }
-    enum EffectType { In, Out, Both }
-    enum Snapping { True, False }
-    bool _snapping;
-    Vector3 _startscale;
-    bool _inAndOut;
-    CanvasGroup _canvasGroup;
-    Tweener _canvasInTweener;
-    Tweener _canvasOutTweener;
-    List<Tweener> _inTweeners = new List<Tweener>();
-    List<Tweener> _outTweeners = new List<Tweener>();
-    List<Tweener> _scaleInTweeners = new List<Tweener>();
-    List<Tweener> _scaleOutTweeners = new List<Tweener>();
-    List<BuildSettings> _reversedBuildSettings = new List<BuildSettings>();
-
-    [Serializable]
-    public class BuildSettings
-    {
-        [SerializeField] public RectTransform _element;
-        [SerializeField] public Vector2 _tweenAnchorPosition;
-        [SerializeField] public float _buildNextAfterDelay;
-        [HideInInspector] public Vector2 _resetStartPositionStore;
-    }
+    bool _positionInAndOut;
+    bool _scaleInAndOut;
 
     private void Awake()
     {
-        _canvasGroup = GetComponent<CanvasGroup>();
-        if (_pixelSnapping == Snapping.True) { _snapping = true; }
+        _fadeTween.MyCanvasGroup = GetComponent<CanvasGroup>();
     }
 
     public void SetUpFadeTweens(FadeTween fadeTween)
     {
         if (fadeTween == FadeTween.FadeIn || fadeTween == FadeTween.FadeInAndOut)
         {
-            _canvasInTweener = _canvasGroup.DOFade(1, _tweenInTime).SetEase(Ease.Linear);
-            _canvasGroup.alpha = 0;
+            _fadeTween.SetUpFadeInAndOut();
         }
-        if (fadeTween == FadeTween.FadeOut || fadeTween == FadeTween.FadeInAndOut)
+        if (fadeTween == FadeTween.FadeOut)
         {
-            _canvasOutTweener = _canvasGroup.DOFade(0, _tweenOutTime).SetEase(Ease.Linear);
-            _canvasGroup.alpha = 1;
-        }
-    }
-
-    public void SetUpScaleTweens(ScaleTween scaleTweenWType)
-    {
-        if (scaleTweenWType == ScaleTween.Scale_InOnly || scaleTweenWType == ScaleTween.Scale_InAndOut)
-        {
-            foreach (var item in _buildSettings)
-            {
-                _startscale = _scaleToTweenTo;
-                _scaleInTweeners.Add(item._element.transform.DOScale(item._element.transform.localScale, _tweenInTime).SetEase(_scaleEaseIn));
-                _scaleOutTweeners.Add(item._element.transform.DOScale(_scaleToTweenTo, _tweenOutTime).SetEase(_scaleEaseOut));
-                item._element.transform.localScale = _scaleToTweenTo;
-            }
-            _inAndOut = true;
-            _reversedBuildSettings = new List<BuildSettings>(_buildSettings);
-            _reversedBuildSettings.Reverse();
-            _scaleOutTweeners.Reverse();
-        }
-
-        if (scaleTweenWType == ScaleTween.Scale_OutOnly)
-        {
-            foreach (var item in _buildSettings)
-            {
-                _startscale = item._element.transform.localScale;
-                _scaleOutTweeners.Add(item._element.transform.DOScale(_scaleToTweenTo, _tweenOutTime).SetEase(_scaleEaseOut));
-            }
-        }
-        if (scaleTweenWType == ScaleTween.Punch)
-        {
-            foreach (var item in _buildSettings)
-            {
-                _startscale = item._element.transform.localScale;
-                _scaleInTweeners.Add(item._element.transform.DOPunchScale(_punchStrength, _punchDuration, _punchVibrato, _elasticity));
-            }
-        }
-
-        if (scaleTweenWType == ScaleTween.Shake)
-        {
-            foreach (var item in _buildSettings)
-            {
-                _startscale = item._element.transform.localScale;
-                _scaleInTweeners.Add(item._element.transform.DOShakeScale(_shakeDuration, _shakeStrength, _shakeVibrato, _randomness, _fadeOut));
-            }
+            _fadeTween.SetUpOutTween();
         }
     }
 
@@ -121,75 +105,80 @@ public class UITweener : MonoBehaviour
     {
         if (positionInTween == PositionInTween.In)
         {
-            foreach (var item in _buildSettings)
-            {
-                if (_currentPositionIs == DestinationAs.Start)
-                {
-                    item._resetStartPositionStore = item._element.anchoredPosition;
-                    _inTweeners.Add(item._element.DOAnchorPos(item._tweenAnchorPosition, _tweenInTime, _snapping).SetEase(_positionEaseIn));
-                    _outTweeners.Add(item._element.DOAnchorPos(item._element.anchoredPosition, _tweenOutTime, _snapping).SetEase(_positionEaseOut));
-                }
-                else
-                {
-                    item._resetStartPositionStore = item._tweenAnchorPosition;
-                    _inTweeners.Add(item._element.DOAnchorPos(item._element.anchoredPosition, _tweenInTime, _snapping).SetEase(_positionEaseIn));
-                    _outTweeners.Add(item._element.DOAnchorPos(item._tweenAnchorPosition, _tweenOutTime, _snapping).SetEase(_positionEaseOut));
-                    item._element.anchoredPosition = item._tweenAnchorPosition;
-                }
-            }
-            _inAndOut = true;
-            _reversedBuildSettings =new List<BuildSettings>(_buildSettings);
-            _reversedBuildSettings.Reverse();
-            _outTweeners.Reverse();
+            _posTween.SetUpIn(_applyEffectsTo);
+            _positionInAndOut = true;
         }
         else if (positioOutTween == PositionOutTween.Out)
         {
-            foreach (var item in _buildSettings)
+            _posTween.SetUpOut(_applyEffectsTo);
+        }
+    }
+
+    public void SetUpScaleTweens(ScaleTween scaleTweenWType)
+    {
+
+        if (scaleTweenWType == ScaleTween.Scale_InOnly || scaleTweenWType == ScaleTween.Scale_InAndOut)
+        {
+            _scaleTween.SetUpInAndOutTween(_applyEffectsTo);
+            _scaleInAndOut = true;
+        }
+
+        if (scaleTweenWType == ScaleTween.Scale_OutOnly)
+        {
+            _scaleTween.SetUpOutTween(_applyEffectsTo);
+        }
+
+        if (scaleTweenWType == ScaleTween.Punch)
+        {
+            _punchTween.SetUpPunchTween(_applyEffectsTo);
+        }
+
+        if (scaleTweenWType == ScaleTween.Shake)
+        {
+            _shakeTween.SetUpShakeTween(_applyEffectsTo);
+        }
+    }
+
+    public void ScaleInTween(bool activate, TweenCallback tweenCallback = null)
+    {
+        if (activate)
+        {
+            PauseAllTweens(_scaleTween._scaleOutTweeners);
+            _scaleTween.RewindScaleTweens(_applyEffectsTo, _scaleTween._scaleInTweeners, _scaleTween._resetInOutscale);
+
+            StartCoroutine(_scaleTween.ScaleSequence(_applyEffectsTo, _scaleTween._scaleInTweeners, 
+                                         SetInTimeToUse(_scaleTween._InTime), 
+                                         _scaleTween._easeIn, tweenCallback));
+        }
+        else
+        {
+            tweenCallback.Invoke();
+        }
+    }
+
+    public void ScaleOutTween(bool activate, TweenCallback tweenCallback = null)
+    {
+        if (activate)
+        {
+            _scaleTween.RewindScaleTweens(_applyEffectsTo, _scaleTween._scaleOutTweeners, _scaleTween._resetOutscale);
+            tweenCallback.Invoke();
+        }
+        else
+        {
+            PauseAllTweens(_scaleTween._scaleInTweeners);
+
+            if (_scaleInAndOut)
             {
-                if (_currentPositionIs == DestinationAs.Start)
-                {
-                    item._resetStartPositionStore = item._element.anchoredPosition;
-                    _outTweeners.Add(item._element.DOAnchorPos(item._tweenAnchorPosition, _tweenOutTime, _snapping).SetEase(_positionEaseOut));
-                }
-                else
-                {
-                    item._resetStartPositionStore = item._tweenAnchorPosition;
-                    _outTweeners.Add(item._element.DOAnchorPos(item._element.anchoredPosition, _tweenOutTime, _snapping).SetEase(_positionEaseOut));
-                    item._element.anchoredPosition = item._tweenAnchorPosition;
-                }
+                StartCoroutine(_scaleTween.ScaleSequence(_scaleTween._reversedBuildSettings, _scaleTween._scaleOutTweeners, 
+                                             SetOutTimeToUse(_scaleTween._OutTime), 
+                                             _scaleTween._easeOut, tweenCallback));
             }
-        }
-    }
-
-    public void PauseAllTweens(List<Tweener> tweeners)
-    {
-        foreach (var item in tweeners)
-        {
-            item.Pause();
-        }
-    }
-    public void RewindTweens(List<Tweener> tweeners)
-    {
-        foreach (var item in tweeners)
-        {
-            item.Rewind();
-        }
-
-        foreach (var item in _buildSettings)
-        {
-            item._element.anchoredPosition = item._resetStartPositionStore;
-        }
-    }
-
-    public void RewindScaleTweens(List<Tweener> tweeners)
-    {
-        foreach (var item in tweeners)
-        {
-            item.Rewind();
-        }
-        foreach (var item in _buildSettings)
-        {
-            item._element.transform.localScale = _startscale;
+            else
+            {
+                StartCoroutine(_scaleTween.ScaleSequence(_applyEffectsTo, _scaleTween._scaleOutTweeners, 
+                                                         SetOutTimeToUse(_scaleTween._OutTime), _scaleTween._easeOut, 
+                                                         tweenCallback));
+            }
         }
     }
 
@@ -197,9 +186,11 @@ public class UITweener : MonoBehaviour
     {
         if (activate)
         {
-            RewindTweens(_inTweeners);
-            PauseAllTweens(_outTweeners);
-            StartCoroutine(MoveSequence(_buildSettings, _inTweeners, tweenCallback));
+            _posTween.RewindPositionTweens(_applyEffectsTo, _posTween._inTweeners);
+            PauseAllTweens(_posTween._outTweeners);
+            StartCoroutine(_posTween.MoveSequence(_applyEffectsTo, _posTween._inTweeners, 
+                                                        SetInTimeToUse(_posTween._inTime), 
+                                                        _posTween._easeIn, tweenCallback));
         }
         else
         {
@@ -211,163 +202,138 @@ public class UITweener : MonoBehaviour
     {
         if (activate)
         {
-            RewindTweens(_outTweeners);
-        }
-        else
-        {
-            PauseAllTweens(_inTweeners);
-            if (_inAndOut)
-            {
-                StartCoroutine(MoveSequence(_reversedBuildSettings, _outTweeners, tweenCallback));
-
-            }
-            else
-            {
-                StartCoroutine(MoveSequence(_buildSettings, _outTweeners, tweenCallback));
-            }
-        }
-    }
-
-    public void DoPunchOrShake(bool activate, TweenCallback tweenCallback = null)
-    {
-        if (activate)
-        {
-            if (_punchOrShakeWhen == EffectType.In || _punchOrShakeWhen == EffectType.Both)
-            {
-                RewindScaleTweens(_scaleInTweeners);
-                StartCoroutine(ScaleSequence(_buildSettings, _scaleInTweeners));
-            }
-        }
-        else
-        {
-            if (_punchOrShakeWhen == EffectType.Out || _punchOrShakeWhen == EffectType.Both)
-            {
-                RewindScaleTweens(_scaleInTweeners);
-                StartCoroutine(ScaleSequence(_buildSettings, _scaleInTweeners, tweenCallback));
-            }
-            else
-            {
-                tweenCallback.Invoke();
-            }
-        }
-    }
-
-    public void ScaleInTween(bool activate, TweenCallback tweenCallback = null)
-    {
-        if (activate)
-        {
-            PauseAllTweens(_scaleOutTweeners);
-            StartCoroutine(ScaleSequence(_buildSettings, _scaleInTweeners));
-        }
-        else
-        {
-            RewindScaleTweens(_scaleInTweeners);
+            _posTween.RewindPositionTweens(_applyEffectsTo, _posTween._outTweeners);
             tweenCallback.Invoke();
         }
+        else
+        {
+            PauseAllTweens(_posTween._inTweeners);
+
+            if (_positionInAndOut)
+            {
+                StartCoroutine(_posTween.MoveSequence(_posTween._reversedBuild, _posTween._outTweeners,
+                                                           SetOutTimeToUse(_posTween._outTime),
+                                                           _posTween._easeOut, tweenCallback));
+
+            }
+            else
+            {
+                StartCoroutine(_posTween.MoveSequence(_applyEffectsTo, _posTween._outTweeners,
+                                                            SetOutTimeToUse(_posTween._outTime),
+                                                            _posTween._easeOut, tweenCallback));
+            }
+        }
     }
 
-    public void ScaleOutTween(bool activate, TweenCallback tweenCallback = null)
+    public void DoCanvasFadeIn(bool activate, TweenCallback tweenCallback = null)
+    {
+        float time = SetInTimeToUse(_fadeTween._InTime);
+        _fadeTween.FadeIn(time, activate, tweenCallback);
+    }
+
+    public void DoCanvasFadeOut(bool activate, TweenCallback tweenCallback = null)
+    {
+        float time = SetInTimeToUse(_fadeTween._OutTime);
+        _fadeTween.FadeOut(time, activate, tweenCallback);
+    }
+
+    public void DoPunch(bool activate, TweenCallback tweenCallback = null)
     {
         if (activate)
         {
-            RewindScaleTweens(_scaleOutTweeners);
-        }
-        else
-        {
-            PauseAllTweens(_scaleInTweeners);
-            if (_inAndOut)
+            if (_punchTween.CheckInEffectType)
             {
-                StartCoroutine(ScaleSequence(_reversedBuildSettings, _scaleOutTweeners, tweenCallback));
+                _punchTween.RewindScaleTweens(_applyEffectsTo,_punchTween._punchTweeners);
+                StartCoroutine(_punchTween.PunchSequence(_applyEffectsTo,_punchTween._punchTweeners, tweenCallback));
             }
             else
             {
-                StartCoroutine(ScaleSequence(_buildSettings, _scaleOutTweeners, tweenCallback));
-            }
-        }
-    }
-
-    public void DoCanvasFade(FadeTween fadeTween, bool activate, TweenCallback tweenCallback = null)
-    {
-        if (activate)
-        {
-            if (fadeTween == FadeTween.FadeIn || fadeTween == FadeTween.FadeInAndOut)
-            {
-                _canvasGroup.alpha = 0;
-                Debug.Log("on");
-
-                _canvasOutTweener.Rewind();
-                _canvasInTweener.Play();
-            }
-            else
-            {
-                Debug.Log("on");
-
-                _canvasOutTweener.Rewind();
-                _canvasGroup.alpha = 1;
+                _punchTween.RewindScaleTweens(_applyEffectsTo, _punchTween._punchTweeners);
+                tweenCallback.Invoke();
             }
         }
         else
         {
-            if (fadeTween == FadeTween.FadeOut || fadeTween == FadeTween.FadeInAndOut)
+            if (_punchTween.CheckOutEffectType)
             {
-                Debug.Log("off");
-                _canvasGroup.alpha = 1;
-                _canvasInTweener.Rewind();
-                _canvasOutTweener.Play().OnComplete(tweenCallback);
+                _punchTween.RewindScaleTweens(_applyEffectsTo, _punchTween._punchTweeners);
+                StartCoroutine(_punchTween.PunchSequence(_applyEffectsTo,_punchTween._punchTweeners, tweenCallback));
             }
             else
             {
-                _canvasInTweener.Rewind();
                 tweenCallback.Invoke();
             }
         }
     }
 
-    private IEnumerator MoveSequence(List<BuildSettings> buildSettings, List<Tweener> tweeners, TweenCallback tweenCallback = null)
+    public void DoShake(bool activate, TweenCallback tweenCallback = null)
     {
-        bool finished = false;
-        int index = 0;
-        while (!finished)
+        if (activate)
         {
-            foreach (var item in buildSettings)
+            if (_shakeTween.CheckInEffectType)
             {
-                if (index == buildSettings.Count - 1)
-                {
-                    tweeners[index].ChangeStartValue(item._element.anchoredPosition).Play().OnComplete(tweenCallback);
-                }
-                else
-                {
-                tweeners[index].ChangeStartValue(item._element.anchoredPosition).Play();
-                yield return new WaitForSeconds(item._buildNextAfterDelay);
-                index++;
-                }
+                _shakeTween.RewindScaleTweens(_applyEffectsTo,_shakeTween._shakeTweeners);
+                StartCoroutine(_shakeTween.ShakeSequence(_applyEffectsTo,_shakeTween._shakeTweeners, tweenCallback));
             }
-            finished = true;
+            else
+            {
+                _shakeTween.RewindScaleTweens(_applyEffectsTo, _shakeTween._shakeTweeners);
+                tweenCallback.Invoke();
+            }
         }
-        yield return null;
+        else
+        {
+            if (_shakeTween.CheckOutEffectType)
+            {
+                _shakeTween.RewindScaleTweens(_applyEffectsTo, _shakeTween._shakeTweeners);
+                StartCoroutine(_shakeTween.ShakeSequence(_applyEffectsTo,_shakeTween._shakeTweeners, tweenCallback));
+            }
+            else
+            {
+                tweenCallback.Invoke();
+            }
+        }
     }
 
-    public IEnumerator ScaleSequence(List<BuildSettings> buildSettings, List<Tweener> tweeners, TweenCallback tweenCallback = null)
+    public void PauseAllTweens(List<Tweener> tweeners)
     {
-        bool finished = false;
-        int index = 0;
-        while (!finished)
+        foreach (var item in tweeners)
         {
-            foreach (var item in buildSettings)
-            {
-                if (index == buildSettings.Count - 1)
-                {
-                    tweeners[index].ChangeStartValue(item._element.transform.localScale).Play().OnComplete(tweenCallback);
-                }
-                else
-                {
-                    tweeners[index].ChangeStartValue(item._element.transform.localScale).Play();
-                    yield return new WaitForSeconds(item._buildNextAfterDelay);
-                    index++;
-                }
-            }
-            finished = true;
+            item.Pause();
         }
-        yield return null;
+    }
+
+    private float SetOutTimeToUse(float tweenTime)
+    {
+        if (_useGlobalTweenTime)
+        {
+            return _globalOutTime;
+        }
+        else
+        {
+            return tweenTime;
+        }
+    }
+
+    private float SetInTimeToUse(float tweenTime)
+    {
+        if (_useGlobalTweenTime)
+        {
+            return _globalInTime;
+        }
+        else
+        {
+            return tweenTime;
+        }
     }
 }
+
+[Serializable]
+public class BuildSettings
+{
+    [SerializeField] public RectTransform _element;
+    [SerializeField] public Vector2 _tweenAnchorPosition;
+    [SerializeField] public float _buildNextAfterDelay;
+    [HideInInspector] public Vector2 _resetStartPositionStore;
+}
+

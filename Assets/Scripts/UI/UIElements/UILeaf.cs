@@ -4,23 +4,25 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
+using NaughtyAttributes;
 
 [RequireComponent(typeof(ColourLerp))]
 public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,ISelectHandler, 
                                      IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
 {
-    [SerializeField] UIBranch _childController;
-    [SerializeField] bool _toggleTurnedOn = false;
-    [SerializeField] bool _isCancelOrBackButton;
-    [SerializeField] bool _highlightFirstOption = true;
-    [SerializeField] PreserveSelection _preseveSelection;
+    [Header("Main Settings")] [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    [SerializeField] [Label("Move To When Clicked")] UIBranch _childBranch;
+    [SerializeField] [Label("Is Cancel or Back Button")] bool _isCancelOrBackButton;
+    [SerializeField] bool _highlightFirstChoice = true;
+    [SerializeField] [Label("Preserve When Selected")] PreserveSelection _preseveSelection;
     [SerializeField] PreserveColour _preserveColour = PreserveColour.No;
-    [SerializeField] UIColour _colours;
-    [SerializeField] public UIAudio _audio;
-    [SerializeField] UIAccessories _accessories;
-    [SerializeField] UISize _buttonSize;
-    [SerializeField] UIInvertColours _invertColourCorrection;
-    [SerializeField] UISwapper _swapImageOrText;
+    [Header("Settings (Click Arrows To Expand)")] [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    [SerializeField] [Label("Colour Settings")] UIColour _colours;
+    [SerializeField] [Label("Invert Colour Options")] UIInvertColours _invertColourCorrection;
+    [SerializeField] [Label("Change Size Settings")] UISize _buttonSize;
+    [SerializeField] [Label("Audio Settings")] public UIAudio _audio;
+    [SerializeField] [Label("Attached Accessories Settings")] UIAccessories _accessories;
+    [SerializeField] [Label("Swap Image Or Text Settings")] UISwapper _swapImageOrText;
 
     //Variables
     UIBranch _masterLevelNode;
@@ -31,11 +33,11 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
     Action<UIEventTypes, bool> SetUp;
 
     //Properties & Enums
-    enum PreserveSelection { Never, UntilNewSelection, Always_IsAToggle }
+    enum PreserveSelection { Never_OnlyAsAFlickSwitch, UntilNewSelection, Always_IsAToggle }
     enum PreserveColour { Yes, No }
     public UIBranch MyParentController { get; set; }
     public bool AllowKeys { get; set; } = true;
-    public bool Selected { get { return _toggleTurnedOn; } set { _toggleTurnedOn = value; } }
+    public bool Selected { get; set; }
 
     private void Awake()
     {
@@ -161,7 +163,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
             Selected = false;
         }
 
-        if (_highlightFirstOption)
+        if (_highlightFirstChoice)
         {
             _colours.SetColourOnEnter(Selected);
             SetButton(UIEventTypes.Highlighted);
@@ -219,29 +221,29 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
     {
         Selected = false;
 
-        if (_childController)
+        if (_childBranch)
         {
-            _childController.TurnOffBranch();
+            _childBranch.TurnOffBranch();
 
-            if (_childController.LastSelected != null)
+            if (_childBranch.LastSelected != null)
             {
-                if (_childController.LastSelected._preseveSelection != PreserveSelection.Always_IsAToggle)
+                if (_childBranch.LastSelected._preseveSelection != PreserveSelection.Always_IsAToggle)
                 {
-                    _childController.LastSelected.DisableChildLevel();
+                    _childBranch.LastSelected.DisableChildLevel();
+                    _childBranch.LastSelected.SetNotHighlighted();
                 }
             }
         }
-
     }
 
     private void ActivateChildLevel()
     {
         Selected = true;
 
-        if (_childController)
+        if (_childBranch)
         {
             _masterLevelNode.TurnOffOnMoveToChild();
-            _childController.MoveToNextLevel(_masterLevelNode);
+            _childBranch.MoveToNextLevel(_masterLevelNode);
         }
     }
 
@@ -284,7 +286,6 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
         if (MyParentController) 
         {
             MyParentController.LastSelected.DisableChildLevel();
-            _masterLevelNode.MyCanvas.enabled = false;
             _audio.Play(UIEventTypes.Cancelled);
             MyParentController.LastSelected.SetButton(UIEventTypes.Normal);
             MyParentController.MoveToNextLevel();
@@ -296,7 +297,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,I
     {
         if (_amSlider) { _amSlider.interactable = false; }
 
-        if (_preseveSelection == PreserveSelection.Never)
+        if (_preseveSelection == PreserveSelection.Never_OnlyAsAFlickSwitch)
         {
             DisableChildLevel();
         }
