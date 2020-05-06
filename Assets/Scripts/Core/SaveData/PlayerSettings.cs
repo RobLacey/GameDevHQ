@@ -9,14 +9,13 @@ public class PlayerSettings : MonoBehaviour
 {
     [SerializeField] Slider _musicSlider;
     [SerializeField] Slider _sfxSlider;
-    [SerializeField] Toggle _hardLevel;
+    [SerializeField] UILeaf _hardLevel;
     [SerializeField] Settings _playerSettings;
     [SerializeField] EventManager _Event_Save_File;
     [SerializeField] EventManager _Event_Load_File;
     [SerializeField] EventManager _Event_Check_For_File;
     [SerializeField] EventManager _Event_SetMusicVolume;
     [SerializeField] EventManager _Event_SetSfxVolume; // TODO Not attcahed to anything
-
 
     [Serializable]
     public class Settings
@@ -66,7 +65,7 @@ public class PlayerSettings : MonoBehaviour
     {
         if (_hardLevel != null)
         {
-            _hardLevel.isOn = _playerSettings._hardLevel;
+            _hardLevel.IsOn = _playerSettings._hardLevel;
         }
     }
 
@@ -86,7 +85,7 @@ public class PlayerSettings : MonoBehaviour
 
     public void AdjustHardLevel(bool newLevel)
     {
-        _hardLevel.isOn = newLevel;
+        _hardLevel.IsOn = newLevel;
         _playerSettings._hardLevel = newLevel;
     }
 

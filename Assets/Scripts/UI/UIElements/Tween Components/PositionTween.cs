@@ -15,7 +15,7 @@ public class PositionTween
     [SerializeField] bool _snapping = false;
 
     //Variables
-    enum DestinationAs { Start, MidPointForInAndOut, End }
+    enum DestinationAs { StartTweenAt, MidPointForInAndOut, EndTweenAt }
     public List<Tweener> _inTweeners = new List<Tweener>();
     public List<Tweener> _outTweeners = new List<Tweener>();
     [HideInInspector] public List<BuildSettings> _reversedBuild = new List<BuildSettings>();
@@ -25,7 +25,7 @@ public class PositionTween
     {
         foreach (var item in buildSettings)
         {
-            if (_currentPositionIs == DestinationAs.Start)
+            if (_currentPositionIs == DestinationAs.StartTweenAt)
             {
                 item._resetStartPositionStore = item._element.anchoredPosition;
                 _inTweeners.Add(item._element.DOAnchorPos(item._tweenAnchorPosition, _inTime, _snapping));
@@ -49,7 +49,7 @@ public class PositionTween
     {
         foreach (var item in buildSettings)
         {
-            if (_currentPositionIs == DestinationAs.Start)
+            if (_currentPositionIs == DestinationAs.StartTweenAt)
             {
                 item._resetStartPositionStore = item._element.anchoredPosition;
                 _outTweeners.Add(item._element.DOAnchorPos(item._tweenAnchorPosition, _outTime, _snapping));

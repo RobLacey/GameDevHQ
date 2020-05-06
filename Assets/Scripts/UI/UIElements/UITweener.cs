@@ -186,8 +186,8 @@ public class UITweener : MonoBehaviour
     {
         if (activate)
         {
-            _posTween.RewindPositionTweens(_applyEffectsTo, _posTween._inTweeners);
             PauseAllTweens(_posTween._outTweeners);
+            _posTween.RewindPositionTweens(_applyEffectsTo, _posTween._inTweeners);
             StartCoroutine(_posTween.MoveSequence(_applyEffectsTo, _posTween._inTweeners, 
                                                         SetInTimeToUse(_posTween._inTime), 
                                                         _posTween._easeIn, tweenCallback));
@@ -227,12 +227,14 @@ public class UITweener : MonoBehaviour
 
     public void DoCanvasFadeIn(bool activate, TweenCallback tweenCallback = null)
     {
+        _fadeTween._canvasOutTweener.Pause();
         float time = SetInTimeToUse(_fadeTween._InTime);
         _fadeTween.FadeIn(time, activate, tweenCallback);
     }
 
     public void DoCanvasFadeOut(bool activate, TweenCallback tweenCallback = null)
     {
+        _fadeTween._canvasInTweener.Pause();
         float time = SetInTimeToUse(_fadeTween._OutTime);
         _fadeTween.FadeOut(time, activate, tweenCallback);
     }

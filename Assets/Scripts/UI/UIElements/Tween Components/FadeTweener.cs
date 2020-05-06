@@ -13,8 +13,8 @@ public class FadeTweener
 
     public bool UsingGlobalTime { get; set; }
     public CanvasGroup MyCanvasGroup { get; set; }
-    Tweener _canvasInTweener;
-    Tweener _canvasOutTweener;
+    public Tweener _canvasInTweener;
+    public Tweener _canvasOutTweener;
 
 
     public void SetUpFadeInAndOut()
