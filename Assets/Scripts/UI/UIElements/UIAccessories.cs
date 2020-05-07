@@ -3,11 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using NaughtyAttributes;
+
 
 [System.Serializable]
 public class UIAccessories 
 {
-    [SerializeField] Image[] _activationList;
+    [SerializeField] EventType _activateWhen = EventType.Never;
+    [SerializeField] [AllowNesting] [EnableIf("Activate")] Outline _useOutline;
+    [SerializeField] [AllowNesting] [EnableIf("Activate")] Shadow _useShadow;
+    [SerializeField] Image[] _accessoriesList;
+
+    enum EventType { Never, Highlighted, Selected }
+
+    public bool Activate() { if (_activateWhen != EventType.Never) return true; return false; } 
 
     public Action<UIEventTypes, bool> OnAwake()
     {
@@ -29,22 +38,31 @@ public class UIAccessories
                 ActivateAccessories(false);
                 break;
             case UIEventTypes.Highlighted:
-                ActivateAccessories(true);
+                if (_activateWhen == EventType.Highlighted)
+                {
+                    ActivateAccessories(true);
+                }
                 break;
             case UIEventTypes.Selected:
+                if (_activateWhen == EventType.Selected)
+                {
+                    ActivateAccessories(true);
+                }
                 break;
             case UIEventTypes.Cancelled:
-                break;
-            default:
+                ActivateAccessories(false);
                 break;
         }
     }
 
     private void ActivateAccessories(bool active)
     {
-        if (_activationList.Length > 0)
+        if(_useOutline) _useOutline.enabled = active;
+        if(_useShadow) _useShadow.enabled = active;
+
+        if (_accessoriesList.Length > 0)
         {
-            foreach (var item in _activationList)
+            foreach (var item in _accessoriesList)
             {
                 item.enabled = active;
             }

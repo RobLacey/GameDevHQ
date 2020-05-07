@@ -1,7 +1,7 @@
 ﻿
 public enum UIEventTypes
 {
-    Normal, Highlighted, Selected, Pressed, Cancelled,
+    Normal, Highlighted, Selected, Pressed, Cancelled
 }
 
 public enum UIGroupID

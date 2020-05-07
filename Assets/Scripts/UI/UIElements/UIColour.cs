@@ -2,23 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using NaughtyAttributes;
 
 [System.Serializable]
 public class UIColour
 {
-    public Image[] _images;
-    public Text _mainText;
-    public bool _LerpImageColours;
-    public bool _LerpTextColours;
-    public float _crossFadeTime = 0.4f;
-    public Color _selectedColour = Color.white;
+    [SerializeField] bool _whenSelected;
+    [SerializeField] bool _highlight;
+    [SerializeField] bool _flashOnPress;
+    [SerializeField] bool _TweenImageColours;
+    [SerializeField] bool _TweenTextColours;
+    [SerializeField] [AllowNesting] [ShowIf(EConditionOperator.Or, "_TweenTextColours", "_TweenImageColours")] 
+    float _crossFadeTime = 0.4f;
+    [SerializeField] Color _disabled = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+    [SerializeField] Color _selectedColour = Color.white;
     [SerializeField] [Range(0.5f, 2f)] float _selectedHighlightPerc = 1f;
-    public Color _highlightedColour = Color.white;
-    public bool _highlight;
-    public bool _whenSelected;
-    public bool _pressFlash;
-    public Color _flashColour = Color.white;
-    public float _flashTime = 0.1f;
+    [SerializeField] Color _highlightedColour = Color.white;
+    [SerializeField] [AllowNesting] [ShowIf("_flashOnPress")] Color _flashColour = Color.white;
+    [SerializeField] [AllowNesting] [ShowIf("_flashOnPress")] float _flashTime = 0.1f;
+    [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    [SerializeField] [Header("Assign Elements To Use", order = 0)] Image[] _images;
+    [SerializeField] Text _mainText;
 
     //Variables
     public ColourLerp MyColourLerper { get; set; }
@@ -29,41 +33,6 @@ public class UIColour
         if (_images.Length > 0) _normalColour = _images[0].color;
         if (_mainText) _normalColour = _mainText.color;
         if(MyColourLerper != null) MyColourLerper.StartColour = _normalColour;
-    }
-
-    private void OnPressedColourChange(Color tooColour)
-    {
-        if (_pressFlash)
-        {
-            MyColourLerper.NewLerp();
-
-            if (_LerpImageColours || _LerpTextColours)
-            {
-
-                if (_images.Length > 0)
-                {
-                    MyColourLerper.StartFlash_Lerp(_flashColour, _flashTime, (x) => SetImageColour(x), tooColour);
-                }
-
-                if (_mainText)
-                {
-                    MyColourLerper.StartFlash_Lerp(_flashColour, _flashTime, (x) => SetTextColour(x), tooColour);
-                }
-            }
-            else
-            {
-                if (_images.Length > 0)
-                {
-                    MyColourLerper.StartFlash_NonLerp(_flashColour, _flashTime, (x) => SetImageColour(x), tooColour);
-                }
-
-                if (_mainText)
-                {
-                    MyColourLerper.StartFlash_NonLerp(_flashColour, _flashTime, (x) => SetTextColour(x), tooColour);
-                }
-
-            }
-        }
     }
 
     public void SetColourOnEnter(bool isSelected)
@@ -97,7 +66,7 @@ public class UIColour
         ColourChangesProcesses(_normalColour);
     }
 
-    public void SetAsSelected (bool isSelected)
+    private void SetAsSelected (bool isSelected)
     {
         if (_whenSelected)
         {
@@ -122,7 +91,7 @@ public class UIColour
 
     public void ProcessPress(bool isSelected)
     {
-        if (_pressFlash)
+        if (_flashOnPress)
         {
             if (isSelected)
             {
@@ -157,35 +126,80 @@ public class UIColour
         }
     }
 
+    private void OnPressedColourChange(Color tooColour)
+    {
+        if (_flashOnPress)
+        {
+            MyColourLerper.NewLerp();
+
+            if (_TweenImageColours || _TweenTextColours)
+            {
+
+                if (_images.Length > 0)
+                {
+                    MyColourLerper.StartFlash_Lerp(_flashColour, _flashTime, (x) => SetImageColour(x), tooColour);
+                }
+
+                if (_mainText)
+                {
+                    MyColourLerper.StartFlash_Lerp(_flashColour, _flashTime, (x) => SetTextColour(x), tooColour);
+                }
+            }
+            else
+            {
+                if (_images.Length > 0)
+                {
+                    MyColourLerper.StartFlash_NonLerp(_flashColour, _flashTime, (x) => SetImageColour(x), tooColour);
+                }
+
+                if (_mainText)
+                {
+                    MyColourLerper.StartFlash_NonLerp(_flashColour, _flashTime, (x) => SetTextColour(x), tooColour);
+                }
+
+            }
+        }
+    }
+
     private void ColourChangesProcesses(Color newColour)
     {
-        if (_LerpTextColours || _LerpImageColours) { MyColourLerper.NewLerp(); }
+        if (_TweenTextColours || _TweenImageColours) { MyColourLerper.NewLerp(); }
 
         if (_images.Length > 0)
         {
-            if (_LerpImageColours)
+            if (_TweenImageColours)
             {
                 MyColourLerper.StartLerp(newColour, _crossFadeTime, (x) => SetImageColour(x));
             }
             else
             {
-                foreach (var item in _images)
-                {
-                    item.color = newColour;
-                }
+                SetImageColour(newColour);
             }
         }
 
         if (_mainText)
         {
-            if (_LerpTextColours)
+            if (_TweenTextColours)
             {
                 MyColourLerper.StartLerp(newColour, _crossFadeTime, (x) => SetTextColour(x));
             }
             else
             {
-                _mainText.color = newColour;
+                SetTextColour(newColour);
             }
+        }
+    }
+
+    public void SetAsDisabled()
+    {
+        if (_mainText)
+        {
+            SetTextColour(_disabled);
+        }
+
+        if (_images.Length > 0)
+        {
+            SetImageColour(_disabled);
         }
     }
 

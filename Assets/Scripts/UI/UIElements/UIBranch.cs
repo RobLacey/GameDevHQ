@@ -19,7 +19,6 @@ public class UIBranch : MonoBehaviour
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [SerializeField] UILeaf _userDefinedStartPosition;
     [SerializeField] [Label("Home Screen Object")] bool _onScreenAtStart;
-    [SerializeField] bool _tweenAtStart = false;
     [SerializeField] [Label("Full Screen From Home")] [DisableIf("_turnOffOnMoveToChild")] bool _isFullScreen;
     [SerializeField] [DisableIf("_isFullScreen")] bool _turnOffOnMoveToChild;
     [SerializeField] bool _alwaysTweenOnReturn;
@@ -41,12 +40,14 @@ public class UIBranch : MonoBehaviour
     bool _running = false;               //To disable Tween settings as they break when changed during runtime
 
     //Properties
-    public UILeaf DefaultStartPosition { get { return _userDefinedStartPosition; } }
+    public UILeaf DefaultStartPosition { get { return _userDefinedStartPosition; } 
+                                         set { _userDefinedStartPosition = value; } }
     public Canvas MyCanvas { get; set; }
     public UILeaf LastSelected { get; set; }
     public UIGroupID MyUIGroup { get; set; }
     public bool KillAllOtherUI { get { return _isFullScreen; } }
     public bool IsCancelling { get; set; }
+    public bool DontTween { get; set; }   //Set as True to stop a tween on certain transitions
     public UILeaf[] ThisGroupsUILeafs { get { return _childUILeafs; } }
 
     private void Awake()
@@ -55,6 +56,7 @@ public class UIBranch : MonoBehaviour
         IsCancelling = false;
         _myCanvasGroup = GetComponent<CanvasGroup>();
         _UITweener = GetComponent<UITweener>();
+        _UITweener.OnAwake(_myCanvasGroup);
         _UITrunk = FindObjectOfType<UITrunk>();
         MyCanvas = GetComponent<Canvas>();
         SetCurrentBranchAsParent(this);
@@ -67,22 +69,12 @@ public class UIBranch : MonoBehaviour
         {
             MyCanvas.enabled = true;
         }
+        SetUpTweeners();
+        _myCanvasGroup.blocksRaycasts = false;
     }
 
     private void OnEnable() { _running = true; }
     private void OnDisable() { _running = false; }
-
-    private void Start()
-    {
-        SetUpTweeners();
-        if(_tweenAtStart)
-        {
-            _endOfEffectCounter = _counter;
-            _startOfEffectCounter = _counter;
-            _myCanvasGroup.blocksRaycasts = false;
-            ActivateEffects();
-        }
-    }
 
     private void SetUpTweeners()
     {
@@ -123,18 +115,18 @@ public class UIBranch : MonoBehaviour
 
     private void SetStartPositions()
     {
-        if (_userDefinedStartPosition == null)
+        if (DefaultStartPosition == null)
         {
             foreach (Transform item in transform)
             {
                 if (item.GetComponent<UILeaf>())
                 {
-                    _userDefinedStartPosition = item.GetComponent<UILeaf>();
+                    DefaultStartPosition = item.GetComponent<UILeaf>();
                     break;
                 }
             }
         }
-        LastSelected = _userDefinedStartPosition;
+        LastSelected = DefaultStartPosition;
     }
 
     public void MoveBackALevel()
@@ -144,14 +136,13 @@ public class UIBranch : MonoBehaviour
         SetLastHighlighted(LastSelected);
         SetCurrentBranchAsParent(this);
         InitialiseFirstUIElement();
-        if (_alwaysTweenOnReturn)
+
+        if (_alwaysTweenOnReturn && !DontTween)
         {
-            Debug.Log("animate");
-            _endOfEffectCounter = _counter;
-            _startOfEffectCounter = _counter;
-            _myCanvasGroup.blocksRaycasts = false;
             ActivateEffects();
         }
+
+        DontTween = false;
     }
 
     public void MoveToNextLevel(UIBranch newParentController = null)
@@ -159,13 +150,20 @@ public class UIBranch : MonoBehaviour
         MyCanvas.enabled = true;
 
         if (_isFullScreen) { _UITrunk.ToFullScreen(this); }
+
         SetCurrentBranchAsParent(newParentController);
         _UITrunk.SetLastUIObject(LastSelected, MyUIGroup);
         SetLastHighlighted(LastSelected);
-        _endOfEffectCounter = _counter;
-        _startOfEffectCounter = _counter;
-        _myCanvasGroup.blocksRaycasts = false;
-        ActivateEffects();
+
+        if (!DontTween)
+        {
+            ActivateEffects();
+        }
+        else
+        {
+            InitialiseFirstUIElement();
+        }
+        DontTween = false;
     }
 
     private void SetCurrentBranchAsParent(UIBranch newParentController = null) //Needed in case menu is called from different places
@@ -182,7 +180,7 @@ public class UIBranch : MonoBehaviour
 
     private void InitialiseFirstUIElement()
     {
-        if (_userDefinedStartPosition != null)
+        if (DefaultStartPosition != null)
         {
             LastSelected.SetNotHighlighted();
             if (!_saveExitSelection)
@@ -208,6 +206,7 @@ public class UIBranch : MonoBehaviour
 
     public void SetLastHighlighted(UILeaf lastHighlighted)
     {
+        //Debug.Log("Setting Highlight");
         _UITrunk.UIElementLastHighlighted.SetNotHighlighted();
         _UITrunk.UIElementLastHighlighted = lastHighlighted;
     }
@@ -220,14 +219,21 @@ public class UIBranch : MonoBehaviour
         DeactivationEffect();
     }
 
+    public void ReturnFromToHomeScreen()
+    {
+
+    }
+
     public void ActivateEffects()
     {
         _UITweener.StopAllCoroutines();
+        _endOfEffectCounter = _counter;
+        _startOfEffectCounter = _counter;
+        _myCanvasGroup.blocksRaycasts = false;
 
         if (_startOfEffectCounter == 0)
         {
-            InitialiseFirstUIElement();
-            _myCanvasGroup.blocksRaycasts = true;
+            StartEffectsCallback();
         }
 
         if (_positionInTween != PositionInTween.NoTween)
@@ -316,6 +322,7 @@ public class UIBranch : MonoBehaviour
     private void EffectsEndCallback()
     {
         _endOfEffectCounter--;
+        IsCancelling = false;
 
         if (_endOfEffectCounter <= 0)
         {
@@ -330,12 +337,10 @@ public class UIBranch : MonoBehaviour
         if (_startOfEffectCounter <= 0)
         {
             _myCanvasGroup.blocksRaycasts = true;
-            if (!IsCancelling & !_tweenAtStart)
+            if (!IsCancelling)
             {
-                Debug.Log(gameObject);
                 InitialiseFirstUIElement();
             }
-            _tweenAtStart = false;
             IsCancelling = false;
         }
     }

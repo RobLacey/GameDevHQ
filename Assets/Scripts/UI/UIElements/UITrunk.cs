@@ -13,10 +13,11 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
     [Label("Clicked Off UI Action")]
     [SerializeField] InGame _clickOff;
     [SerializeField] EscapeKey _escapeKeyFunction;
+    [SerializeField] bool _canAutoStart = true;
     [Header("UI Groups")]
     [Label("List of UI Groups")] [Tooltip("Add a group if keyboard/Controller group switching is needed")] 
     [SerializeField] GroupList[] _groupList;
-    
+    [Button] private void TestAutoStart() { AutoStart = true; }
 
     //Variables
     int _groupIndex = 0;
@@ -25,6 +26,27 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
 
     public UILeaf UIElementLastHighlighted { get; set; }
     public UIGroupID ActiveGroup { get; set; }
+    public bool AutoStart 
+    {
+        get { return _canAutoStart; }
+        set 
+        {
+            _canAutoStart = value; 
+            if (_canAutoStart)
+            {
+                _uiTopLevel.MoveToNextLevel(_uiTopLevel);
+                foreach (var item in _groupList)
+                {
+                    if (item._groupStartLevel != _uiTopLevel)
+                    {
+                        item._groupStartLevel.IsCancelling = true;
+                        item._groupStartLevel.ActivateEffects();
+                    }
+                }
+            }
+        } 
+    }
+
     enum InGame { ReturnToLastSelected, Disabled, ClearUI }
     enum EscapeKey { BackOneLevel, BackToRootLevel }
 
@@ -48,7 +70,11 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
     {
         _uiElementLastSelected = _uiTopLevel.DefaultStartPosition;
         UIElementLastHighlighted = _uiElementLastSelected;
-        _uiTopLevel.MoveToNextLevel(_uiTopLevel);
+        if (AutoStart)
+        {
+            _uiTopLevel.MoveToNextLevel(_uiTopLevel);
+            AutoStart = true;
+        }
     }
 
     private void Update()
@@ -60,11 +86,16 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
 
         if (Input.GetKeyUp(KeyCode.U))
         {
+            Debug.Log("Issue when I press escape after selecting Press with mouse and pressing U on return");
+            if (_uiElementLastSelected != _groupList[_groupIndex]._groupStartLevel.LastSelected) return;
+            _uiElementLastSelected._audio.Play(UIEventTypes.Selected);
+
             _groupIndex++;
             if (_groupIndex > _groupList.Length - 1)
             {
                 _groupIndex = 0;
             }
+            _groupList[_groupIndex]._groupStartLevel.DontTween = true;
             _groupList[_groupIndex]._groupStartLevel.MoveToNextLevel();
         }
     }
@@ -75,10 +106,6 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
         {
             RootCancelProcess();
             ActiveGroup = uIGroupID;
-            if (uiObject.AllowKeys)
-            {
-                _uiElementLastSelected._audio.Play(UIEventTypes.Selected);
-            }
         }
         _uiElementLastSelected = uiObject;
     }

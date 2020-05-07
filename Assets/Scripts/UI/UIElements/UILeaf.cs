@@ -13,17 +13,20 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     [Header("Main Settings")] [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [SerializeField] [Label("Is Cancel or Back Button")] bool _isCancelOrBackButton;
     [SerializeField] bool _highlightFirstOption = true;
+    [SerializeField] [ReadOnly] bool _isDisabled;
     [SerializeField] [Label("Preserve When Selected")] PreserveSelection _preseveSelection;
-    [SerializeField] ToggleGroup _toggleGroupID = ToggleGroup.None;
+    [SerializeField] [HideIf("GroupSettings")] ToggleGroup _toggleGroupID = ToggleGroup.None;
     [Header("Settings (Click Arrows To Expand)")] [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [SerializeField] [Label("Navigation And On Click Calls")] UINavigation _navigation;
     [SerializeField] [Label("Colour Settings")] UIColour _colours;
-    [SerializeField] [Label("Invert Colour Options")] UIInvertColours _invertColourCorrection;
+    [SerializeField] [Label("Invert Colour when Highlighted or Selected")] UIInvertColours _invertColourCorrection;
+    [SerializeField] [Label("Swap Images, Text or SetUp Toogle Image List")] UISwapper _swapImageOrText;
     [SerializeField] [Label("Change Size Settings")] UISize _buttonSize;
+    [SerializeField] [Label("Accessories, Outline Or Shadow Settings")] UIAccessories _accessories;
     [SerializeField] [Label("Audio Settings")] public UIAudio _audio;
-    [SerializeField] [Label("Attached Accessories Settings")] UIAccessories _accessories;
-    [SerializeField] [Label("Swap Image Or Text Settings")] UISwapper _swapImageOrText;
 
+    [Button] private void DisableObject() { Disabled = true; }
+    [Button] private void EnableObject() { Disabled = false; }
 
     //Variables
     UIBranch _myBranchController;
@@ -35,11 +38,33 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     Action<UIEventTypes, bool> SetUp;
 
     //Properties & Enums
-    enum PreserveSelection { Never, NewSelection_AnyWhere, NewSelection_GroupOnly, Always }
+    enum PreserveSelection { Never, NewSelectionAnyWhere, GroupOnly_AllOff, GroupOnly_OneAlwaysOn, Independent }
     public UIBranch MyParentController { get; set; }
     public bool AllowKeys { get; set; } = true;
     public bool Selected { get; set; }
-    public bool IsOn { get; set; }
+    public bool IsOn { get; set; } //TODO Test I actually Need this
+
+    public bool Disabled 
+    {
+        get { return _isDisabled; }
+        set
+        {
+            HandleIfDisabled(value);
+        }
+    }
+
+    #region Editor Scripts
+
+    public bool GroupSettings()
+    {
+        if (_preseveSelection == PreserveSelection.GroupOnly_OneAlwaysOn || _preseveSelection == PreserveSelection.GroupOnly_AllOff)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    #endregion
 
     private void Awake()
     {
@@ -55,7 +80,8 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         foreach (var leaf in MyParentController.ThisGroupsUILeafs)
         {
-            if (leaf._preseveSelection == PreserveSelection.NewSelection_GroupOnly)
+            if (leaf._preseveSelection == PreserveSelection.GroupOnly_AllOff 
+                || leaf._preseveSelection == PreserveSelection.GroupOnly_OneAlwaysOn)
             {
                 List<UILeaf> temp = new List<UILeaf>();
                 foreach (var item in MyParentController.ThisGroupsUILeafs)
@@ -75,7 +101,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         SetUp += _accessories.OnAwake();
         SetUp += _buttonSize.OnAwake(transform);
         SetUp += _invertColourCorrection.OnAwake();
-        SetUp += _swapImageOrText.OnAwake();
+        SetUp += _swapImageOrText.OnAwake(Selected);
     }
 
     private void OnDisable()
@@ -88,16 +114,17 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void OnPointerEnter(PointerEventData eventData) //Mouse highlight
     {
-        if (eventData.pointerDrag) return; //Enables drag on slider to have pressed colour
+        if (Disabled) return;
+        if (eventData.pointerDrag) return;                  //Enables drag on slider to have pressed colour
         if (_amSlider) _amSlider.interactable = true;
         SetAsHighlighted();
         AllowKeys = false;
     }
 
-
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (eventData.pointerDrag) return; //Enables drag on slider to have pressed colour
+        if (Disabled) return;
+        if (eventData.pointerDrag) return;                      //Enables drag on slider to have pressed colour
         if (_amSlider) 
         { 
             _amSlider.interactable = false; 
@@ -109,6 +136,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (Disabled) return;
         if (_isCancelOrBackButton) { OnCancel(); return; }
         AllowKeys = false;
         SwitchUIDisplay();
@@ -116,6 +144,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (Disabled) return;
         if (_amSlider) SwitchUIDisplay();
         SwitchedOnOrOff();
         _navigation._asButtonEvent?.Invoke();
@@ -125,21 +154,14 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (!AllowKeys) return;
         EventSystem.current.SetSelectedGameObject(gameObject);
-        _myBranchController.LastSelected = this;
+        _myBranchController.SaveLastSelected(this);
         SetAsHighlighted();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        //TODO Add Horizontal Lines
-        if (_navigation._setNavigation == UINavigation.NavigationType.UpAndDown)
-        {
-            _navigation.DrawNavLines(GetComponent<RectTransform>());
-        }
     }
 
     public void OnSubmit(BaseEventData eventData) //KB/Ctrl
     {
+        if (Disabled) return;
+
         if (_isCancelOrBackButton) 
         {
             OnCancel();
@@ -193,6 +215,8 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void InitialiseStartUp()
     {
+        if (Disabled) { HandleIfDisabled(Disabled); return; }
+
         AllowKeys = true;
         EventSystem.current.SetSelectedGameObject(gameObject);
         _myBranchController.LastSelected = this;
@@ -202,7 +226,8 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             _amSlider.interactable = false;
         }
 
-        if (_preseveSelection != PreserveSelection.Always && _preseveSelection != PreserveSelection.NewSelection_GroupOnly)
+        if (_preseveSelection != PreserveSelection.Independent 
+            && _preseveSelection != PreserveSelection.GroupOnly_OneAlwaysOn)
         {
             Selected = false;
             if (_highlightFirstOption)
@@ -219,7 +244,6 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         {
             if (_highlightFirstOption)
             {
-                Debug.Log(gameObject);
                 _colours.SetColourOnEnter(Selected);
                 SetButton(UIEventTypes.Highlighted);
             }
@@ -228,6 +252,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void SetAsHighlighted()
     {
+        if (Disabled) return;
         _myBranchController.SetLastHighlighted(this);
         _myBranchController.LastSelected.SetNotHighlighted();
         _audio.Play(UIEventTypes.Highlighted);
@@ -245,10 +270,13 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         TurnOffLastSelected();
         _myBranchController.SaveLastSelected(this);
-        _swapImageOrText.CycleToggleList();
 
         if (Selected)
         {
+            if (_preseveSelection == PreserveSelection.GroupOnly_OneAlwaysOn)
+            {
+                if (_myBranchController.LastSelected == this) return;
+            }
             DisableChildLevel();
             SetPressed();
             _audio.Play(UIEventTypes.Cancelled);
@@ -265,7 +293,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     private void TurnOffLastSelected()
     {
         UILeaf lastElementSelected = _myBranchController.LastSelected;
-        if(_preseveSelection == PreserveSelection.NewSelection_GroupOnly)
+        if(_preseveSelection == PreserveSelection.GroupOnly_OneAlwaysOn)
         {
             foreach (var item in _toggleGroupMembers)
             {
@@ -275,8 +303,8 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
         if (lastElementSelected != this)
         {
-            if (lastElementSelected._preseveSelection != PreserveSelection.Always 
-                && lastElementSelected._preseveSelection != PreserveSelection.NewSelection_GroupOnly)
+            if (lastElementSelected._preseveSelection != PreserveSelection.Independent 
+                && lastElementSelected._preseveSelection != PreserveSelection.GroupOnly_OneAlwaysOn)
             {
                 lastElementSelected.DisableChildLevel();
                 lastElementSelected.SetNotHighlighted();
@@ -287,6 +315,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     private void DisableChildLevel() 
     {
         Selected = false;
+        _swapImageOrText.CycleToggleList(Selected);
 
         if (_navigation._childBranch)
         {
@@ -294,7 +323,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
             if (_navigation._childBranch.LastSelected != null)
             {
-                if (_navigation._childBranch.LastSelected._preseveSelection != PreserveSelection.Always)
+                if (_navigation._childBranch.LastSelected._preseveSelection != PreserveSelection.Independent)
                 {
                     _navigation._childBranch.LastSelected.DisableChildLevel();
                     _navigation._childBranch.LastSelected.SetNotHighlighted();
@@ -306,6 +335,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     private void ActivateChildLevel()
     {
         Selected = true;
+        _swapImageOrText.CycleToggleList(Selected);
 
         if (_navigation._childBranch)
         {
@@ -323,7 +353,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void RootCancel()
     {
-        if (_preseveSelection != PreserveSelection.Always && _preseveSelection != PreserveSelection.NewSelection_GroupOnly)
+        if (_preseveSelection != PreserveSelection.Independent && _preseveSelection != PreserveSelection.GroupOnly_OneAlwaysOn)
         {
             SetButton(UIEventTypes.Normal);
             _colours.ResetToNormal();
@@ -341,20 +371,23 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             _colours.ResetToNormal();
         }
 
-        if (_preseveSelection != PreserveSelection.Always && _preseveSelection != PreserveSelection.NewSelection_GroupOnly)
+        if (_preseveSelection != PreserveSelection.Independent && _preseveSelection != PreserveSelection.GroupOnly_OneAlwaysOn)
         {
-            MyParentController.LastSelected.DisableChildLevel();
             MyParentController.LastSelected.SetButton(UIEventTypes.Normal);
-            _audio.Play(UIEventTypes.Cancelled);
+            MyParentController.LastSelected.DisableChildLevel();
         }
-
+        else
+        {
+            bool temp = Selected;
+            MyParentController.LastSelected.DisableChildLevel();
+            Selected = temp;
+        }
+        _audio.Play(UIEventTypes.Cancelled);
         MyParentController.MoveBackALevel();
     }
 
     public void SetNotHighlighted()
     {
-        if (_amSlider) { _amSlider.interactable = false; }
-
         if (_preseveSelection == PreserveSelection.Never)
         {
             DisableChildLevel();
@@ -368,6 +401,35 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         else
         {
             SetButton(UIEventTypes.Normal);
+            _colours.ResetToNormal();
+        }
+    }
+
+    private void HandleIfDisabled(bool value)
+    {
+        if (_myBranchController.LastSelected == this)
+        {
+            if (_navigation._setNavigation != UINavigation.NavigationType.None)
+            {
+                if (_navigation.down) { _navigation.down.MoveToNext(); }
+                else if (_navigation.right) { _navigation.right.MoveToNext(); }
+            }
+            else
+            {
+                OnCancel();
+                Debug.Log("No where to go except down");
+            }
+        }
+
+        DisableChildLevel();
+        SetButton(UIEventTypes.Normal);
+        _isDisabled = value;
+        if (_isDisabled)
+        {
+            _colours.SetAsDisabled();  //******Working except when already on something that's disabling. Need to set event data etc
+        }
+        else
+        {
             _colours.ResetToNormal();
         }
     }

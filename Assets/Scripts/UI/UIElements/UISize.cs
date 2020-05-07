@@ -2,14 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NaughtyAttributes;
 
 [System.Serializable]
 public class UISize
 {
     [SerializeField] Choose _ChangeSizeOn = Choose.None;
-    [SerializeField] ScaleType _scaledType = ScaleType.ScaleDown;
-    [SerializeField] [Range(0.01f, 0.3f)] float _scaleChangeBy = 0.05f;
-    [SerializeField] [Range(0f, 0.3f)] float _pressedHoldTime = 0.05f;
+    [SerializeField] [AllowNesting] [ShowIf("Activate")] ScaleType _scaledType = ScaleType.ScaleDown;
+    [SerializeField] [AllowNesting] [ShowIf("Activate")] [Range(0.01f, 0.3f)] float _scaleChangeBy = 0.05f;
+    [SerializeField] [AllowNesting] [ShowIf("Activate")] [Range(0f, 0.3f)] float _pressedHoldTime = 0.05f;
 
     //Variables
     Transform _myTransform;
@@ -17,6 +18,15 @@ public class UISize
     enum ScaleType { ScaleUp, ScaleDown }
 
     enum Choose { None, Highlighted, HighlightedAndSelected, Selected, Pressed };
+
+    public bool Activate()
+    { 
+        if (_ChangeSizeOn != Choose.None)
+        {
+            return true;
+        }
+        return false;
+    }
 
     public Action<UIEventTypes, bool> OnAwake(Transform newTransform)
     {

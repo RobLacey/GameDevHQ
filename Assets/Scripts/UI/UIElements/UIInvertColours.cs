@@ -3,27 +3,43 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using NaughtyAttributes;
 
 [System.Serializable]
 public class UIInvertColours
 {
-    public Text _titleText;
-    public Image toggleCheckMark;
-    public bool invertOnHighlight;
-    public bool invertOnSelected;
-    public Color invertedHighlightColour = Color.white;
-    public Color invertedSelectedColour = Color.white;
+    [InfoBox("CANNOT have Text AND Image set.", EInfoBoxType.Warning)]
+    [SerializeField]  bool invertOnHighlight;
+    [SerializeField] bool invertOnSelected;
+    [SerializeField] [AllowNesting] [ShowIf(EConditionOperator.Or, "invertOnHighlight", "invertOnSelected")] [DisableIf("ImageSet")]
+    Text _text;
+    [SerializeField] [AllowNesting] [ShowIf(EConditionOperator.Or, "invertOnHighlight", "invertOnSelected")] [DisableIf("TextSet")]
+    Image _image;
+    [SerializeField] [AllowNesting] [ShowIf("invertOnHighlight")] Color invertedHighlightColour = Color.white;
+    [SerializeField] [AllowNesting] [ShowIf("invertOnSelected")] Color invertedSelectedColour = Color.white;
 
     bool _canInvert;
     Color _checkMarkStartColour = Color.white;
     Color _textStartColour = Color.white;
 
+    #region Editor Scripts
+    private bool TextSet()
+    {
+        if (_text != null) { return true; }
+        return false;
+    }
+    private bool ImageSet()
+    {
+        if (_image != null) { return true; }
+        return false;
+    }
+
+    #endregion
     public Action<UIEventTypes, bool> OnAwake()
     {
-        //TODO add error or guide text if both filled in
         _canInvert = CheckSettings();
-        if (toggleCheckMark != null) _checkMarkStartColour = toggleCheckMark.color;
-        if (_titleText != null) _textStartColour = _titleText.color;
+        if (_image != null) _checkMarkStartColour = _image.color;
+        if (_text != null) _textStartColour = _text.color;
         return InvertColour;
     }
 
@@ -34,7 +50,7 @@ public class UIInvertColours
 
     private bool CheckSettings()
     {
-        if (_titleText || toggleCheckMark)
+        if (_text || _image)
         {
             return true;
         }
@@ -85,14 +101,14 @@ public class UIInvertColours
 
     private void ChangeColour(Color newColour)
     {
-        if (toggleCheckMark != null) toggleCheckMark.color = newColour;
-        if (_titleText != null) _titleText.color = newColour;
+        if (_image != null) _image.color = newColour;
+        if (_text != null) _text.color = newColour;
     }
 
     private void StartColour()
     {
-        if (toggleCheckMark != null) toggleCheckMark.color = _checkMarkStartColour;
-        if (_titleText != null) _titleText.color = _textStartColour;
+        if (_image != null) _image.color = _checkMarkStartColour;
+        if (_text != null) _text.color = _textStartColour;
     }
 
 }

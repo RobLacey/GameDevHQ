@@ -84,9 +84,9 @@ public class UITweener : MonoBehaviour
     bool _positionInAndOut;
     bool _scaleInAndOut;
 
-    private void Awake()
+    public void OnAwake(CanvasGroup canvasGroup)
     {
-        _fadeTween.MyCanvasGroup = GetComponent<CanvasGroup>();
+        _fadeTween.MyCanvasGroup = canvasGroup;
     }
 
     public void SetUpFadeTweens(FadeTween fadeTween)

@@ -48,12 +48,20 @@ public class UINavigation
         {
             if (eventData.moveDir == MoveDirection.Down)
             {
-                if (down) down.MoveToNext();
+                if (down)
+                {
+                    if (down.Disabled) { down.OnMove(eventData); return; }
+                    down.MoveToNext();
+                }
             }
 
             if (eventData.moveDir == MoveDirection.Up)
             {
-                if (up) up.MoveToNext();
+                if (up)
+                {
+                    if (up.Disabled) { up.OnMove(eventData); return; }
+                    up.MoveToNext();
+                }
             }
         }
 
@@ -61,29 +69,21 @@ public class UINavigation
         {
             if (eventData.moveDir == MoveDirection.Left)
             {
-                if (left) left.MoveToNext();
+                if (left)
+                {
+                    if (left.Disabled) { left.OnMove(eventData); return; }
+                    left.MoveToNext();
+                }
             }
 
             if (eventData.moveDir == MoveDirection.Right)
             {
-                if (right) right.MoveToNext();
+                if (right)
+                {
+                    if (right.Disabled) { right.OnMove(eventData); return; }
+                    right.MoveToNext();
+                }
             }
         }
-    }
-
-    public void DrawNavLines(RectTransform myRect = null)
-    {
-        if (myRect = null) return;
-        Vector3[] array = new Vector3[4];
-        myRect.GetWorldCorners(array);
-        Vector3 start = ((array[0] - array[1]) / 2);
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(array[0] - start, new Vector3(25,25,25));
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(array[0] - start, down.transform.position);
-        Gizmos.DrawSphere(down.transform.position, 15);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(array[0] - start, up.transform.position);
-        Gizmos.DrawSphere(up.transform.position, 15);
     }
 }

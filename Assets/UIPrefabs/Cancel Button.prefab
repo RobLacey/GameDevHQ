@@ -138,7 +138,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 1
   _highlightFirstOption: 0
+  _isDisabled: 0
   _preseveSelection: 1
+  _toggleGroupID: 0
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 3
@@ -153,24 +155,26 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
-    _images: []
-    _mainText: {fileID: 0}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
+    _whenSelected: 0
+    _highlight: 0
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
     _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
     _selectedHighlightPerc: 1
     _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 0
-    _whenSelected: 0
-    _pressFlash: 0
     _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
     _flashTime: 0.1
+    _images:
+    - {fileID: 3688934388826701107}
+    _mainText: {fileID: 0}
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 1, b: 1, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
   _buttonSize:
@@ -186,13 +190,16 @@ MonoBehaviour:
     _sound_Cancel: {fileID: 0}
     _volume_Cancel: 0
   _accessories:
-    _activationList: []
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _swapImageOrText:
-    _mainImage: {fileID: 0}
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
     _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: 
-    _toggleList: []
+    _swapToThisText: 
+    _toggleImageList: []
 --- !u!1 &3688934388826701117
 GameObject:
   m_ObjectHideFlags: 0
