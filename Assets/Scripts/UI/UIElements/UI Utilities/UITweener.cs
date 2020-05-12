@@ -15,7 +15,8 @@ public class UITweener : MonoBehaviour
     [SerializeField] bool _useGlobalTweenTime = false;
     [SerializeField] [ShowIf("GlobalTime")] float _globalInTime = 1;
     [SerializeField] [ShowIf("GlobalTime")] float _globalOutTime = 1;
-    [SerializeField] [Label("Settings")] [ShowIf("InPosition")] [BoxGroup("Position Tween")] PositionTween _posTween = new PositionTween();
+    [SerializeField] [Label("Settings")] [ShowIf("Position")] [BoxGroup("Position Tween")] PositionTween _posTween = new PositionTween();
+    [SerializeField] [Label("Settings")] [ShowIf("Rotation")] [BoxGroup("Rotation Tween")] RotateTween _rotateTween = new RotateTween();
     [SerializeField] [Label("Settings")] [ShowIf("Scale")] [BoxGroup("Scale Tween")] ScaleTweener _scaleTween = new ScaleTweener();
     [SerializeField] [Label("Settings")] [ShowIf("Punch")] [BoxGroup("Punch Tween")] PunchTweener _punchTween = new PunchTweener();
     [SerializeField] [Label("Settings")] [ShowIf("Shake")] [BoxGroup("Shake Tween")] ShakeTweener _shakeTween = new ShakeTweener();
@@ -42,11 +43,16 @@ public class UITweener : MonoBehaviour
         }
     }
 
-    public bool InPosition()
+    public bool Position()
     {
-        PositionInTween inPos = GetComponent<UIBranch>()._positionInTween;
-        PositionOutTween outPos = GetComponent<UIBranch>()._positionOutTween;
-        if (inPos != PositionInTween.NoTween || outPos != PositionOutTween.NoTween) { return true; }
+        PositionTweenType inPos = GetComponent<UIBranch>()._positionTween;
+        if (inPos != PositionTweenType.NoTween) { return true; }
+        return false;
+    }
+    public bool Rotation()
+    {
+        RotationTweenType inPos = GetComponent<UIBranch>()._rotationTween;
+        if (inPos != RotationTweenType.NoTween) { return true; }
         return false;
     }
     public bool Scale()
@@ -82,6 +88,7 @@ public class UITweener : MonoBehaviour
 
     //Variables
     bool _positionInAndOut;
+    bool _rotateInAndOut;
     bool _scaleInAndOut;
 
     public void OnAwake(CanvasGroup canvasGroup)
@@ -101,16 +108,29 @@ public class UITweener : MonoBehaviour
         }
     }
 
-    public void SetUpPositionTweens(PositionOutTween positioOutTween, PositionInTween positionInTween)
+    public void SetUpPositionTweens(PositionTweenType positionTween)
     {
-        if (positionInTween == PositionInTween.In)
+        if (positionTween == PositionTweenType.In || positionTween == PositionTweenType.InAndOut)
         {
             _posTween.SetUpIn(_applyEffectsTo);
-            _positionInAndOut = true;
+            if(positionTween == PositionTweenType.InAndOut) _positionInAndOut = true;
         }
-        else if (positioOutTween == PositionOutTween.Out)
+        else if (positionTween == PositionTweenType.Out)
         {
             _posTween.SetUpOut(_applyEffectsTo);
+        }
+    }
+
+    public void SetUpRotateTweens(RotationTweenType rotateTween)
+    {
+        if (rotateTween == RotationTweenType.In || rotateTween == RotationTweenType.InAndOut)
+        {
+            _rotateTween.SetUpIn(_applyEffectsTo);
+            if (rotateTween == RotationTweenType.InAndOut) _rotateInAndOut = true;
+        }
+        else if (rotateTween == RotationTweenType.Out)
+        {
+            _rotateTween.SetUpOut(_applyEffectsTo);
         }
     }
 
@@ -187,9 +207,14 @@ public class UITweener : MonoBehaviour
         if (activate)
         {
             PauseAllTweens(_posTween._outTweeners);
-            _posTween.RewindPositionTweens(_applyEffectsTo, _posTween._inTweeners);
-            StartCoroutine(_posTween.MoveSequence(_applyEffectsTo, _posTween._inTweeners, 
-                                                        SetInTimeToUse(_posTween._inTime), 
+
+            if (!_positionInAndOut)
+            {
+                _posTween.RewindPositionTweens(_applyEffectsTo, _posTween._inTweeners);
+            }
+
+            StartCoroutine(_posTween.MoveSequence(_applyEffectsTo, _posTween._inTweeners,
+                                                        SetInTimeToUse(_posTween._inTime),
                                                         _posTween._easeIn, tweenCallback));
         }
         else
@@ -221,6 +246,52 @@ public class UITweener : MonoBehaviour
                 StartCoroutine(_posTween.MoveSequence(_applyEffectsTo, _posTween._outTweeners,
                                                             SetOutTimeToUse(_posTween._outTime),
                                                             _posTween._easeOut, tweenCallback));
+            }
+        }
+    }
+    public void DoRotateInTween(bool activate, TweenCallback tweenCallback = null)
+    {
+        if (activate)
+        {
+            if (!_rotateInAndOut)
+            {
+                _rotateTween.RewindRotateTweens(_applyEffectsTo);
+
+            }
+            _rotateTween.KIllRunningTweens();
+
+            StartCoroutine(_rotateTween.MoveSequence(_applyEffectsTo, RotationTweenType.In, 
+                                                        SetInTimeToUse(_rotateTween._inTime),
+                                                        _rotateTween._easeIn, tweenCallback));
+        }
+        else
+        {
+            tweenCallback.Invoke();
+        }
+    }
+
+    public void DoRotateOutTween(bool activate, TweenCallback tweenCallback = null)
+    {
+        if (activate)
+        {
+            _rotateTween.RewindRotateTweens(_applyEffectsTo);
+            _rotateTween.KIllRunningTweens();
+            tweenCallback.Invoke();
+        }
+        else
+        {
+            if (_rotateInAndOut)
+            {
+
+                StartCoroutine(_rotateTween.MoveSequence(_rotateTween._reversedBuild, RotationTweenType.InAndOut,
+                                                           SetOutTimeToUse(_rotateTween._outTime),
+                                                           _rotateTween._easeOut, tweenCallback));
+            }
+            else
+            {
+                StartCoroutine(_rotateTween.MoveSequence(_applyEffectsTo, RotationTweenType.Out,
+                                                            SetOutTimeToUse(_rotateTween._outTime),
+                                                            _rotateTween._easeOut, tweenCallback));
             }
         }
     }
@@ -335,7 +406,12 @@ public class BuildSettings
 {
     [SerializeField] public RectTransform _element;
     [SerializeField] public Vector2 _tweenAnchorPosition;
+    [SerializeField] public Vector3 _tweenRotateAngle;
     [SerializeField] public float _buildNextAfterDelay;
     [HideInInspector] public Vector2 _resetStartPositionStore;
+    public Vector3 _resetStartRotationStore;
+    [HideInInspector] public Vector3 rotateTo;
+    [HideInInspector] public Vector3 rotateFrom;
+
 }
 

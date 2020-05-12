@@ -65,7 +65,7 @@ public class PlayerSettings : MonoBehaviour
     {
         if (_hardLevel != null)
         {
-            _hardLevel.IsOn = _playerSettings._hardLevel;
+            _hardLevel.Selected = _playerSettings._hardLevel;
         }
     }
 
@@ -85,7 +85,7 @@ public class PlayerSettings : MonoBehaviour
 
     public void AdjustHardLevel(bool newLevel)
     {
-        _hardLevel.IsOn = newLevel;
+        _hardLevel.Selected = newLevel;
         _playerSettings._hardLevel = newLevel;
     }
 

@@ -2,53 +2,43 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 using System;
 using NaughtyAttributes;
+using UnityEngine.UI;
 
-public class UITrunk : MonoBehaviour, IPointerClickHandler
+public class UITrunk : MonoBehaviour
 {
     [Header("Main Settings")] 
     [Label("UI Starting Branch")] [Required("MUST have a starting branch")]
     [SerializeField] UIBranch _uiTopLevel;
-    [Label("Clicked Off UI Action")]
-    [SerializeField] InGame _clickOff;
-    [SerializeField] EscapeKey _escapeKeyFunction;
-    [SerializeField] bool _canAutoStart = true;
+    [SerializeField] EscapeKey _GlobalEscapeKeyFunction;
+    [SerializeField] [InputAxis] string _cancelButton;
+    [SerializeField] [InputAxis] string _changeMenuGroupButton;
+    [Header("In-Game Menu Settings")]
+    [SerializeField] bool _inGameMenuSystem = false;
+    [SerializeField] [ShowIf("_inGameMenuSystem")] StartInMenu _startGameWhere = StartInMenu.InGameControl;
+    [SerializeField] [ShowIf("_inGameMenuSystem")] [Label("Switch To/From Game Menus")] [InputAxis] string _switchTOMenusButton;
+    [SerializeField] [ShowIf("_inGameMenuSystem")] InGameOrInMenu _returnToGameControl;
     [Header("UI Groups")]
     [Label("List of UI Groups")] [Tooltip("Add a group if keyboard/Controller group switching is needed")] 
     [SerializeField] GroupList[] _groupList;
-    [Button] private void TestAutoStart() { AutoStart = true; }
+
+    [Serializable]
+    public class InGameOrInMenu : UnityEvent<bool> { }
 
     //Variables
     int _groupIndex = 0;
     UIBranch[] _allUIBranches;
     UILeaf _uiElementLastSelected;
+    Vector3 _mousePos = Vector3.zero;
+    bool _usingMouse = false;
 
-    public UILeaf UIElementLastHighlighted { get; set; }
+    public static bool InMenu { get; set; } = true; //***May not need to be static or even public
+
     public UIGroupID ActiveGroup { get; set; }
-    public bool AutoStart 
-    {
-        get { return _canAutoStart; }
-        set 
-        {
-            _canAutoStart = value; 
-            if (_canAutoStart)
-            {
-                _uiTopLevel.MoveToNextLevel(_uiTopLevel);
-                foreach (var item in _groupList)
-                {
-                    if (item._groupStartLevel != _uiTopLevel)
-                    {
-                        item._groupStartLevel.IsCancelling = true;
-                        item._groupStartLevel.ActivateEffects();
-                    }
-                }
-            }
-        } 
-    }
-
-    enum InGame { ReturnToLastSelected, Disabled, ClearUI }
     enum EscapeKey { BackOneLevel, BackToRootLevel }
+    enum StartInMenu { InMenu, InGameControl }
 
     [Serializable]
     public class GroupList
@@ -64,39 +54,127 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
         {
             item._groupStartLevel.MyUIGroup = item._groupIDNumber;
         }
+
+        if (_inGameMenuSystem)
+        {
+            if (_startGameWhere == StartInMenu.InGameControl)
+            {
+                InMenu = false;
+            }
+        }
+        _returnToGameControl.Invoke(InMenu);
+    }
+
+    private void OnEnable()
+    {
+        UILeaf.Canceller += OnCancel;
+    }
+
+    private void OnDisable()
+    {
+        UILeaf.Canceller -= OnCancel;
     }
 
     private void Start()
     {
         _uiElementLastSelected = _uiTopLevel.DefaultStartPosition;
-        UIElementLastHighlighted = _uiElementLastSelected;
-        if (AutoStart)
+        _mousePos = Input.mousePosition;
+
+        if (InMenu)
         {
-            _uiTopLevel.MoveToNextLevel(_uiTopLevel);
-            AutoStart = true;
+            EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
+            ActivateKeysOrControl();
+            StartMainMenusAnimation();
         }
     }
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Escape))
+        if (Input.GetButtonDown(_switchTOMenusButton) & _inGameMenuSystem)
         {
-            OnCancel();
+            ProcessGameToMenuSwitching();
         }
 
-        if (Input.GetKeyUp(KeyCode.U))
+        if (InMenu)
         {
-            Debug.Log("Issue when I press escape after selecting Press with mouse and pressing U on return");
-            if (_uiElementLastSelected != _groupList[_groupIndex]._groupStartLevel.LastSelected) return;
-            _uiElementLastSelected._audio.Play(UIEventTypes.Selected);
-
-            _groupIndex++;
-            if (_groupIndex > _groupList.Length - 1)
+            if (Input.mousePosition != _mousePos)
             {
-                _groupIndex = 0;
+                ActivateMouse();
             }
-            _groupList[_groupIndex]._groupStartLevel.DontTween = true;
-            _groupList[_groupIndex]._groupStartLevel.MoveToNextLevel();
+
+            if (Input.anyKeyDown)
+            {
+                if (Input.GetButtonDown(_cancelButton))
+                {
+                    OnCancel();
+                }
+                else if (Input.GetButtonDown(_changeMenuGroupButton))
+                {
+                    SwitchControlGroups();
+                }
+                else
+                {
+                    ActivateKeysOrControl();
+                }
+            }
+        }
+    }
+
+    private void StartMainMenusAnimation()
+    {
+        _uiTopLevel.MoveToNextLevel(_uiTopLevel);
+
+        foreach (var item in _groupList)
+        {
+            if (item._groupStartLevel != _uiTopLevel)
+            {
+                item._groupStartLevel.IsCancelling = true;
+                item._groupStartLevel.ActivateEffects();
+            }
+        }
+    }
+
+    private void ActivateMouse()
+    {
+        _mousePos = Input.mousePosition;
+
+        if (_usingMouse == false)
+        {
+            _uiElementLastSelected.SetNotHighlighted();
+            foreach (var item in _allUIBranches)
+            {
+                item.AllowKeys = false;
+                _usingMouse = true;
+            }
+        }
+    }
+
+    private void SwitchControlGroups()
+    {
+        _uiElementLastSelected._audio.Play(UIEventTypes.Selected);
+        _uiElementLastSelected.SetNotHighlighted();
+
+        _groupIndex++;
+        if (_groupIndex > _groupList.Length - 1)
+        {
+            _groupIndex = 0;
+        }
+        _groupList[_groupIndex]._groupStartLevel.DontTweenNow = true;
+        _groupList[_groupIndex]._groupStartLevel.MoveToNextLevel();
+    }
+
+    private void ActivateKeysOrControl()
+    {
+        if (!Input.GetMouseButton(0) & !Input.GetMouseButton(1))
+        {
+            _uiElementLastSelected.SetAsHighlighted();
+            EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
+
+            foreach (var item in _allUIBranches)
+            {
+                item.AllowKeys = true;
+                _usingMouse = false;
+            }
         }
     }
 
@@ -106,31 +184,58 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
         {
             RootCancelProcess();
             ActiveGroup = uIGroupID;
+
+            for (int i = 0; i < _groupList.Length; i++) // sets groupindex to new selected group - Mouse
+            {
+                if(_groupList[i]._groupIDNumber == ActiveGroup)
+                {
+                    _groupIndex = i;
+                    break;
+                }
+            }
         }
         _uiElementLastSelected = uiObject;
+        EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    private void OnCancel(UILeaf uILeaf = null)
     {
-        if (_clickOff == InGame.ReturnToLastSelected)
-        {
-            if (EventSystem.current.IsPointerOverGameObject())
-            {
-                EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
-                _uiElementLastSelected.SetAsHighlighted();
-            }
-        }    
-    }
 
-    private void OnCancel()
-    {
+        //*******Cancel system needs overhaul**********
+        //*******Make cancel one level key and root cancel key
+        //*******need Hierachy cancel to work properly including when clicking on cancel button in level
+        Debug.Log("Cancelling");
+        Debug.Log(_uiElementLastSelected);
         _uiElementLastSelected.GetComponentInParent<UIBranch>().IsCancelling = true;
+
         if (_uiElementLastSelected.GetComponentInParent<UIBranch>().KillAllOtherUI)
         {
-            RestoreAllOtherUI();
+            RestoreFromFullScreen();
         }
 
-        if (_escapeKeyFunction == EscapeKey.BackOneLevel)
+        if (_uiElementLastSelected.EscapeKeyFunction == UILeaf.EscapeKey.BackOneLevel)
+        {
+            if (_uiElementLastSelected.MyParentController)
+            {
+                _uiElementLastSelected.OnCancel();
+            }
+        }
+        else if (_uiElementLastSelected.EscapeKeyFunction == UILeaf.EscapeKey.BackToRootLevel)
+        {
+            UILeaf temp = RootCancelProcess();
+            temp.GetComponentInParent<UIBranch>().MoveBackALevel();
+            temp._audio.Play(UIEventTypes.Cancelled);
+        }
+
+        else if (_uiElementLastSelected.EscapeKeyFunction == UILeaf.EscapeKey.GlobalSetting)
+        {
+            UseGlobalEscapeSettings();
+        }
+    }
+
+    private void UseGlobalEscapeSettings()
+    {
+        if (_GlobalEscapeKeyFunction == EscapeKey.BackOneLevel)
         {
             if (_uiElementLastSelected.MyParentController)
             {
@@ -138,7 +243,7 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
             }
         }
 
-        if (_escapeKeyFunction == EscapeKey.BackToRootLevel)
+        if (_GlobalEscapeKeyFunction == EscapeKey.BackToRootLevel)
         {
             UILeaf temp = RootCancelProcess();
             temp.GetComponentInParent<UIBranch>().MoveBackALevel();
@@ -170,11 +275,31 @@ public class UITrunk : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    private void RestoreAllOtherUI()
+    private void RestoreFromFullScreen()
     {
         foreach (var item in _groupList)
         {
-            item._groupStartLevel.MoveBackALevel();
+            if (item._groupStartLevel == _uiElementLastSelected)
+            {
+                item._groupStartLevel.MoveBackALevel();
+            }
+            else
+            {
+                item._groupStartLevel.MyCanvas.enabled = true;
+            }
+        }
+    }
+
+    private void ProcessGameToMenuSwitching()
+    {
+        InMenu = !InMenu;
+        _uiElementLastSelected.SetNotHighlighted();
+        EventSystem.current.SetSelectedGameObject(null);
+        _returnToGameControl.Invoke(InMenu);
+
+        foreach (var item in _allUIBranches)
+        {
+            item.InteractiveAndVisability.blocksRaycasts = InMenu;
         }
     }
 }

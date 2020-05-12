@@ -576,13 +576,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 0}
   _onScreenAtStart: 0
-  _turnOffOnMoveToChild: 0
-  _saveExitSelection: 1
   _isFullScreen: 0
-  _positionInTween: 1
-  _positionOutTween: 0
+  _turnOffOnMoveToChild: 0
+  _alwaysTweenOnReturn: 0
+  _saveExitSelection: 1
+  _positionTween: 0
+  _rotationTween: 3
   _scaleTransition: 0
-  _canvasGroupFade: 2
+  _canvasGroupFade: 0
+  _endOfTweenAction:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &288778488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -766,10 +770,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _applyEffectsTo:
-  - _element: {fileID: 288778486}
+  - _element: {fileID: 1639830276}
     _tweenAnchorPosition: {x: 1460, y: -230}
-    _buildNextAfterDelay: 0
+    _tweenRotateAngle: {x: 0, y: 90, z: 0}
+    _buildNextAfterDelay: 0.2
     _resetStartPositionStore: {x: 0, y: 0}
+    _resetStartRotationStore: {x: 0, y: 0, z: 0}
+    rotateTo: {x: 0, y: 0, z: 0}
+    rotateFrom: {x: 0, y: 0, z: 0}
+  - _element: {fileID: 1393195145}
+    _tweenAnchorPosition: {x: 1460, y: -230}
+    _tweenRotateAngle: {x: 0, y: 90, z: 0}
+    _buildNextAfterDelay: 0.2
+    _resetStartPositionStore: {x: 0, y: 0}
+    _resetStartRotationStore: {x: 0, y: 0, z: 0}
+    rotateTo: {x: 0, y: 0, z: 0}
+    rotateFrom: {x: 0, y: 0, z: 0}
+  - _element: {fileID: 496156075}
+    _tweenAnchorPosition: {x: 1460, y: -230}
+    _tweenRotateAngle: {x: 0, y: 90, z: 0}
+    _buildNextAfterDelay: 0.2
+    _resetStartPositionStore: {x: 0, y: 0}
+    _resetStartRotationStore: {x: 0, y: 0, z: 0}
+    rotateTo: {x: 0, y: 0, z: 0}
+    rotateFrom: {x: 0, y: 0, z: 0}
   _useGlobalTweenTime: 0
   _globalInTime: 1
   _globalOutTime: 1
@@ -780,6 +804,13 @@ MonoBehaviour:
     _easeIn: 15
     _easeOut: 14
     _snapping: 0
+    _reversedBuild: []
+  _rotateTween:
+    _inTime: 1
+    _outTime: 1
+    _currentRotationIs: 1
+    _easeIn: 0
+    _easeOut: 0
     _reversedBuild: []
   _scaleTween:
     _InTime: 1
@@ -1093,9 +1124,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 0
-  _highlightFirstChoice: 1
+  _highlightFirstOption: 1
+  _isDisabled: 0
   _preseveSelection: 1
-  _preserveColour: 0
+  _toggleGroupID: 0
+  setting: 0
   _navigation:
     _childBranch: {fileID: 999603839}
     _setNavigation: 1
@@ -1110,31 +1143,43 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
-    _images: []
-    _mainText: {fileID: 1721715095}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
+    _whenSelected: 1
+    _highlight: 1
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
     _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
     _selectedHighlightPerc: 1
     _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 1
-    _pressFlash: 0
     _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
     _flashTime: 0.1
+    _images: []
+    _mainText: {fileID: 1721715095}
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 1, b: 1, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToThisText: 
+    _toggleImageList: []
   _buttonSize:
     _ChangeSizeOn: 1
     _scaledType: 0
     _scaleChangeBy: 0.05
     _pressedHoldTime: 0.05
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -1143,14 +1188,6 @@ MonoBehaviour:
     _volume_Select: 0.2
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
-  _accessories:
-    _activationList: []
-  _swapImageOrText:
-    _mainImage: {fileID: 0}
-    _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: 
-    _toggleList: []
 --- !u!114 &372414077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1477,12 +1514,12 @@ PrefabInstance:
     - target: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -90
+      value: -90.000244
       objectReference: {fileID: 0}
     - target: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -14
+      value: -14.000061
       objectReference: {fileID: 0}
     - target: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
         type: 3}
@@ -1493,6 +1530,46 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 787.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7330792740458371029, guid: b2c5426cb4be30e4baa6227b5b2c816d,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7330792740726220102, guid: b2c5426cb4be30e4baa6227b5b2c816d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1.699707
       objectReference: {fileID: 0}
     - target: {fileID: 7351288739566804695, guid: b2c5426cb4be30e4baa6227b5b2c816d,
         type: 3}
@@ -1667,7 +1744,7 @@ GameObject:
   m_Component:
   - component: {fileID: 461111131}
   - component: {fileID: 461111136}
-  - component: {fileID: 461111132}
+  - component: {fileID: 461111135}
   - component: {fileID: 461111134}
   - component: {fileID: 461111133}
   m_Layer: 5
@@ -1698,53 +1775,6 @@ RectTransform:
   m_AnchoredPosition: {x: -127, y: -116}
   m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &461111132
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 461111130}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 4
-    m_SelectOnUp: {fileID: 496156076}
-    m_SelectOnDown: {fileID: 1185435597}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
-  toggleTransition: 0
-  graphic: {fileID: 0}
-  m_Group: {fileID: 0}
-  onValueChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_IsOn: 0
 --- !u!114 &461111133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1758,9 +1788,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 0
-  _highlightFirstChoice: 1
+  _highlightFirstOption: 1
+  _isDisabled: 0
   _preseveSelection: 1
-  _preserveColour: 0
+  _toggleGroupID: 0
+  setting: 0
   _navigation:
     _childBranch: {fileID: 2145412965}
     _setNavigation: 0
@@ -1775,32 +1807,44 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
-    _images:
-    - {fileID: 1283909019}
-    _mainText: {fileID: 0}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
+    _whenSelected: 1
+    _highlight: 1
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
     _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
     _selectedHighlightPerc: 1
     _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 1
-    _pressFlash: 1
     _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
     _flashTime: 0.1
+    _images:
+    - {fileID: 1283909019}
+    _mainText: {fileID: 0}
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 1, b: 1, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToThisText: 
+    _toggleImageList: []
   _buttonSize:
     _ChangeSizeOn: 1
     _scaledType: 1
     _scaleChangeBy: 0.05
     _pressedHoldTime: 0.05
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -1809,14 +1853,6 @@ MonoBehaviour:
     _volume_Select: 0.2
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
-  _accessories:
-    _activationList: []
-  _swapImageOrText:
-    _mainImage: {fileID: 0}
-    _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: 
-    _toggleList: []
 --- !u!114 &461111134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1829,6 +1865,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!223 &461111135
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 461111130}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!222 &461111136
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1959,9 +2016,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 27, y: -43}
+  m_AnchoredPosition: {x: 308.10004, y: -43}
   m_SizeDelta: {x: 562.2, y: 46}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &496156076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1977,7 +2034,7 @@ MonoBehaviour:
   m_Navigation:
     m_Mode: 4
     m_SelectOnUp: {fileID: 1393195146}
-    m_SelectOnDown: {fileID: 461111132}
+    m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 0
@@ -2064,9 +2121,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 0
-  _highlightFirstChoice: 1
+  _highlightFirstOption: 1
+  _isDisabled: 0
   _preseveSelection: 1
-  _preserveColour: 0
+  _toggleGroupID: 0
+  setting: 0
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 0
@@ -2081,33 +2140,45 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
+    _whenSelected: 1
+    _highlight: 1
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
+    _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
+    _selectedHighlightPerc: 1
+    _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
+    _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
+    _flashTime: 0.1
     _images:
     - {fileID: 640582916}
     - {fileID: 1884521448}
     _mainText: {fileID: 1495508363}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
-    _crossFadeTime: 0.4
-    _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
-    _selectedHighlightPerc: 1
-    _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 1
-    _pressFlash: 1
-    _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
-    _flashTime: 0.1
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 1, b: 1, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToThisText: 
+    _toggleImageList: []
   _buttonSize:
     _ChangeSizeOn: 1
     _scaledType: 1
     _scaleChangeBy: 0.05
     _pressedHoldTime: 0.05
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -2116,15 +2187,6 @@ MonoBehaviour:
     _volume_Select: 0.2
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
-  _accessories:
-    _activationList:
-    - {fileID: 1884521448}
-  _swapImageOrText:
-    _mainImage: {fileID: 0}
-    _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: 
-    _toggleList: []
 --- !u!114 &496156079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2553,9 +2615,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 0
-  _highlightFirstChoice: 1
+  _highlightFirstOption: 1
+  _isDisabled: 0
   _preseveSelection: 1
-  _preserveColour: 1
+  _toggleGroupID: 0
+  setting: 0
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 0
@@ -2570,31 +2634,43 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
-    _images: []
-    _mainText: {fileID: 0}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
+    _whenSelected: 0
+    _highlight: 1
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
     _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
     _selectedHighlightPerc: 1
     _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 0
-    _pressFlash: 1
     _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
     _flashTime: 0.1
+    _images: []
+    _mainText: {fileID: 0}
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 1, b: 1, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToThisText: 
+    _toggleImageList: []
   _buttonSize:
     _ChangeSizeOn: 1
     _scaledType: 1
     _scaleChangeBy: 0.05
     _pressedHoldTime: 0.05
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -2603,14 +2679,6 @@ MonoBehaviour:
     _volume_Select: 0.2
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
-  _accessories:
-    _activationList: []
-  _swapImageOrText:
-    _mainImage: {fileID: 0}
-    _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: 
-    _toggleList: []
 --- !u!114 &760316256
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2634,6 +2702,7 @@ GameObject:
   - component: {fileID: 797151008}
   - component: {fileID: 797151010}
   - component: {fileID: 797151009}
+  - component: {fileID: 797151011}
   m_Layer: 5
   m_Name: Options Button
   m_TagString: Untagged
@@ -2674,9 +2743,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 0
-  _highlightFirstChoice: 1
+  _highlightFirstOption: 1
+  _isDisabled: 0
   _preseveSelection: 1
-  _preserveColour: 0
+  _toggleGroupID: 0
+  setting: 1
   _navigation:
     _childBranch: {fileID: 288778487}
     _setNavigation: 1
@@ -2691,31 +2762,43 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
-    _images: []
-    _mainText: {fileID: 425176442}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
+    _whenSelected: 1
+    _highlight: 1
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
     _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
     _selectedHighlightPerc: 1
     _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 1
-    _pressFlash: 0
     _flashColour: {r: 0, g: 0, b: 0, a: 1}
     _flashTime: 0.1
+    _images: []
+    _mainText: {fileID: 425176442}
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 1, b: 1, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToThisText: 
+    _toggleImageList: []
   _buttonSize:
     _ChangeSizeOn: 1
     _scaledType: 0
     _scaleChangeBy: 0.0374
     _pressedHoldTime: 0.05
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -2724,14 +2807,6 @@ MonoBehaviour:
     _volume_Select: 0.2
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
-  _accessories:
-    _activationList: []
-  _swapImageOrText:
-    _mainImage: {fileID: 0}
-    _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: 
-    _toggleList: []
 --- !u!114 &797151010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2744,6 +2819,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &797151011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797151007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 0}
+  toggleTransition: 1
+  graphic: {fileID: 0}
+  m_Group: {fileID: 0}
+  onValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_IsOn: 0
 --- !u!1 &813613910
 GameObject:
   m_ObjectHideFlags: 0
@@ -2874,9 +2996,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 0
-  _highlightFirstChoice: 1
+  _highlightFirstOption: 1
+  _isDisabled: 0
   _preseveSelection: 1
-  _preserveColour: 0
+  _toggleGroupID: 0
+  setting: 0
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 1
@@ -2902,31 +3026,43 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
-    _images: []
-    _mainText: {fileID: 355730701}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
+    _whenSelected: 1
+    _highlight: 1
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
     _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
     _selectedHighlightPerc: 1
     _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 1
-    _pressFlash: 0
     _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
     _flashTime: 0.1
+    _images: []
+    _mainText: {fileID: 355730701}
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 1, b: 1, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToThisText: 
+    _toggleImageList: []
   _buttonSize:
     _ChangeSizeOn: 1
     _scaledType: 0
     _scaleChangeBy: 0.05
     _pressedHoldTime: 0.05
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -2935,14 +3071,6 @@ MonoBehaviour:
     _volume_Select: 0.2
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
-  _accessories:
-    _activationList: []
-  _swapImageOrText:
-    _mainImage: {fileID: 0}
-    _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: 
-    _toggleList: []
 --- !u!114 &843882335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3050,9 +3178,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 0
-  _highlightFirstChoice: 1
+  _highlightFirstOption: 1
+  _isDisabled: 0
   _preseveSelection: 2
-  _preserveColour: 0
+  _toggleGroupID: 0
+  setting: 0
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 0
@@ -3067,32 +3197,44 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
-    _images:
-    - {fileID: 1343053088}
-    _mainText: {fileID: 0}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
+    _whenSelected: 1
+    _highlight: 1
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
     _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
     _selectedHighlightPerc: 1
     _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 1
-    _pressFlash: 1
     _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
     _flashTime: 0.1
+    _images:
+    - {fileID: 1343053088}
+    _mainText: {fileID: 0}
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 1, b: 1, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToThisText: 
+    _toggleImageList: []
   _buttonSize:
     _ChangeSizeOn: 1
     _scaledType: 1
     _scaleChangeBy: 0.05
     _pressedHoldTime: 0.05
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -3101,14 +3243,6 @@ MonoBehaviour:
     _volume_Select: 0.2
     _sound_Cancel: {fileID: 8300000, guid: 8683ee9a71e6d7444bb4f800f5ac6b75, type: 3}
     _volume_Cancel: 0.2
-  _accessories:
-    _activationList: []
-  _swapImageOrText:
-    _mainImage: {fileID: 0}
-    _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: 
-    _toggleList: []
 --- !u!114 &942537274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3137,8 +3271,8 @@ MonoBehaviour:
     m_Mode: 4
     m_SelectOnUp: {fileID: 1257553970}
     m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 1138579638}
-    m_SelectOnRight: {fileID: 1138579638}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
   m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
@@ -3263,13 +3397,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 0}
   _onScreenAtStart: 0
-  _turnOffOnMoveToChild: 0
-  _saveExitSelection: 0
   _isFullScreen: 0
-  _positionInTween: 1
-  _positionOutTween: 1
-  _scaleTransition: 3
-  _canvasGroupFade: 2
+  _turnOffOnMoveToChild: 0
+  _alwaysTweenOnReturn: 0
+  _saveExitSelection: 0
+  _positionTween: 0
+  _rotationTween: 0
+  _scaleTransition: 0
+  _canvasGroupFade: 0
+  _endOfTweenAction:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!82 &999603840
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3397,23 +3535,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _applyEffectsTo:
   - _element: {fileID: 999603837}
-    _tweenAnchorPosition: {x: 377, y: -335}
+    _tweenAnchorPosition: {x: 1315, y: -14}
+    _tweenRotateAngle: {x: 0, y: 90, z: 0}
     _buildNextAfterDelay: 0
     _resetStartPositionStore: {x: 0, y: 0}
+    _resetStartRotationStore: {x: 0, y: 0, z: 0}
+    rotateTo: {x: 0, y: 0, z: 0}
+    rotateFrom: {x: 0, y: 0, z: 0}
   _useGlobalTweenTime: 0
   _globalInTime: 1
   _globalOutTime: 1
   _posTween:
     _inTime: 1
-    _outTime: 0.2
+    _outTime: 1
     _currentPositionIs: 1
-    _easeIn: 15
+    _easeIn: 1
     _easeOut: 1
     _snapping: 0
     _reversedBuild: []
+  _rotateTween:
+    _inTime: 1
+    _outTime: 1
+    _currentRotationIs: 2
+    _easeIn: 1
+    _easeOut: 1
+    _reversedBuild: []
   _scaleTween:
     _InTime: 1
-    _OutTime: 0.2
+    _OutTime: 1
     _easeIn: 15
     _easeOut: 1
     _scaleToTweenTo: {x: 0.8, y: 0.8, z: 0}
@@ -3435,7 +3584,7 @@ MonoBehaviour:
     _fadeOut: 0
   _fadeTween:
     _InTime: 1
-    _OutTime: 0.2
+    _OutTime: 1
     _fadeEase: 1
 --- !u!225 &999603843
 CanvasGroup:
@@ -3552,18 +3701,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7472274105092889051}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1138579638 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7472274104007262573, guid: 889858f9542a04a41801cc9b56665611,
-    type: 3}
-  m_PrefabInstance: {fileID: 7472274105092889051}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1163738742
 GameObject:
   m_ObjectHideFlags: 0
@@ -3682,49 +3819,27 @@ RectTransform:
   m_AnchoredPosition: {x: -371, y: -92}
   m_SizeDelta: {x: 65, y: 35}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1185435597
-MonoBehaviour:
+--- !u!223 &1185435597
+Canvas:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1185435595}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 4
-    m_SelectOnUp: {fileID: 461111132}
-    m_SelectOnDown: {fileID: 1639830277}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!114 &1185435598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3738,9 +3853,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 1
-  _highlightFirstChoice: 1
+  _highlightFirstOption: 1
+  _isDisabled: 0
   _preseveSelection: 0
-  _preserveColour: 1
+  _toggleGroupID: 0
+  setting: 0
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 0
@@ -3755,32 +3872,44 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
-    _images:
-    - {fileID: 334516238}
-    _mainText: {fileID: 0}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
+    _whenSelected: 1
+    _highlight: 1
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
     _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
     _selectedHighlightPerc: 1
     _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 1
-    _pressFlash: 1
     _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
     _flashTime: 0.1
+    _images:
+    - {fileID: 334516238}
+    _mainText: {fileID: 0}
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 1, b: 1, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToThisText: 
+    _toggleImageList: []
   _buttonSize:
     _ChangeSizeOn: 1
     _scaledType: 1
     _scaleChangeBy: 0.05
     _pressedHoldTime: 0.05
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -3789,14 +3918,6 @@ MonoBehaviour:
     _volume_Select: 0.2
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
-  _accessories:
-    _activationList: []
-  _swapImageOrText:
-    _mainImage: {fileID: 0}
-    _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: 
-    _toggleList: []
 --- !u!222 &1185435599
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4054,9 +4175,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 0
-  _highlightFirstChoice: 1
+  _highlightFirstOption: 1
+  _isDisabled: 0
   _preseveSelection: 1
-  _preserveColour: 1
+  _toggleGroupID: 0
+  setting: 0
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 0
@@ -4071,31 +4194,43 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
-    _images: []
-    _mainText: {fileID: 1582840299}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
+    _whenSelected: 0
+    _highlight: 1
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
     _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
     _selectedHighlightPerc: 1
     _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 0
-    _pressFlash: 1
     _flashColour: {r: 0, g: 0, b: 0, a: 1}
     _flashTime: 0.1
+    _images: []
+    _mainText: {fileID: 1582840299}
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 1, b: 1, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToThisText: 
+    _toggleImageList: []
   _buttonSize:
     _ChangeSizeOn: 1
     _scaledType: 1
     _scaleChangeBy: 0.05
     _pressedHoldTime: 0.05
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -4104,14 +4239,6 @@ MonoBehaviour:
     _volume_Select: 0.2
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
-  _accessories:
-    _activationList: []
-  _swapImageOrText:
-    _mainImage: {fileID: 0}
-    _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: 
-    _toggleList: []
 --- !u!114 &1257553969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4139,7 +4266,7 @@ MonoBehaviour:
   m_Navigation:
     m_Mode: 4
     m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 1138579638}
+    m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 0
@@ -4300,13 +4427,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 0}
   _onScreenAtStart: 1
-  _turnOffOnMoveToChild: 0
-  _saveExitSelection: 0
   _isFullScreen: 0
-  _positionInTween: 0
-  _positionOutTween: 0
+  _turnOffOnMoveToChild: 0
+  _alwaysTweenOnReturn: 0
+  _saveExitSelection: 0
+  _positionTween: 0
+  _rotationTween: 0
   _scaleTransition: 0
   _canvasGroupFade: 0
+  _endOfTweenAction:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!82 &1306221656
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4486,6 +4617,13 @@ MonoBehaviour:
     _easeIn: 0
     _easeOut: 0
     _snapping: 0
+    _reversedBuild: []
+  _rotateTween:
+    _inTime: 1
+    _outTime: 1
+    _currentRotationIs: 0
+    _easeIn: 0
+    _easeOut: 0
     _reversedBuild: []
   _scaleTween:
     _InTime: 1
@@ -4713,9 +4851,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 27, y: 5.200001}
+  m_AnchoredPosition: {x: 308.10028, y: 5.200012}
   m_SizeDelta: {x: 562.2, y: 44.7}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1393195146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4818,9 +4956,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 0
-  _highlightFirstChoice: 1
+  _highlightFirstOption: 1
+  _isDisabled: 0
   _preseveSelection: 1
-  _preserveColour: 0
+  _toggleGroupID: 0
+  setting: 0
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 0
@@ -4835,32 +4975,44 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
-    _images:
-    - {fileID: 1861724001}
-    _mainText: {fileID: 111718403}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
+    _whenSelected: 1
+    _highlight: 1
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
     _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
     _selectedHighlightPerc: 1
     _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 1
-    _pressFlash: 1
     _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
     _flashTime: 0.1
+    _images:
+    - {fileID: 1861724001}
+    _mainText: {fileID: 111718403}
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 1, b: 1, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 111718403}
+    _swapToThisText: 
+    _toggleImageList: []
   _buttonSize:
     _ChangeSizeOn: 1
     _scaledType: 1
     _scaleChangeBy: 0.05
     _pressedHoldTime: 0.05
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -4869,15 +5021,6 @@ MonoBehaviour:
     _volume_Select: 0.2
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
-  _accessories:
-    _activationList:
-    - {fileID: 1861724001}
-  _swapImageOrText:
-    _mainImage: {fileID: 1861724001}
-    _textToSwap: {fileID: 111718403}
-    _swapToSprite: {fileID: 21300000, guid: a49c4e5858c20b94fa2e9e3814ef3e55, type: 3}
-    _swapToText: Chnage Value
-    _toggleList: []
 --- !u!114 &1393195149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5089,13 +5232,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 1016422300}
   _onScreenAtStart: 1
-  _turnOffOnMoveToChild: 0
-  _saveExitSelection: 1
   _isFullScreen: 0
-  _positionInTween: 0
-  _positionOutTween: 0
+  _turnOffOnMoveToChild: 0
+  _alwaysTweenOnReturn: 0
+  _saveExitSelection: 1
+  _positionTween: 0
+  _rotationTween: 0
   _scaleTransition: 0
   _canvasGroupFade: 0
+  _endOfTweenAction:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!223 &1437461048
 Canvas:
   m_ObjectHideFlags: 0
@@ -5253,6 +5400,13 @@ MonoBehaviour:
     _easeIn: 1
     _easeOut: 1
     _snapping: 0
+    _reversedBuild: []
+  _rotateTween:
+    _inTime: 1
+    _outTime: 1
+    _currentRotationIs: 0
+    _easeIn: 0
+    _easeOut: 0
     _reversedBuild: []
   _scaleTween:
     _InTime: 1
@@ -5771,9 +5925,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 27, y: 52}
+  m_AnchoredPosition: {x: 308.10004, y: 52}
   m_SizeDelta: {x: 562.2, y: 49.9}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1639830277
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5788,7 +5942,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 4
-    m_SelectOnUp: {fileID: 1185435597}
+    m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 1393195146}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
@@ -5856,9 +6010,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 0
-  _highlightFirstChoice: 1
+  _highlightFirstOption: 1
+  _isDisabled: 0
   _preseveSelection: 0
-  _preserveColour: 1
+  _toggleGroupID: 0
+  setting: 0
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 0
@@ -5895,33 +6051,45 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
   _colours:
+    _whenSelected: 0
+    _highlight: 1
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
+    _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
+    _selectedHighlightPerc: 1
+    _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
+    _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
+    _flashTime: 0.1
     _images:
     - {fileID: 1400930524}
     - {fileID: 1452562447}
     _mainText: {fileID: 134444927}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
-    _crossFadeTime: 0.4
-    _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
-    _selectedHighlightPerc: 1
-    _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 0
-    _pressFlash: 1
-    _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
-    _flashTime: 0.1
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 1
     invertOnSelected: 1
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 0, b: 0, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToThisText: 
+    _toggleImageList: []
   _buttonSize:
     _ChangeSizeOn: 1
     _scaledType: 1
     _scaleChangeBy: 0.05
     _pressedHoldTime: 0.05
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -5930,17 +6098,6 @@ MonoBehaviour:
     _volume_Select: 0.2
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
-  _accessories:
-    _activationList:
-    - {fileID: 1400930524}
-  _swapImageOrText:
-    _mainImage: {fileID: 0}
-    _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: 
-    _toggleList:
-    - {fileID: 1452562449}
-    - {fileID: 1503424775}
 --- !u!114 &1639830280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6050,6 +6207,7 @@ MonoBehaviour:
   _uiTopLevel: {fileID: 1437461047}
   _clickOff: 0
   _escapeKeyFunction: 1
+  _canAutoStart: 1
   _groupList:
   - _groupIDNumber: 0
     _groupStartLevel: {fileID: 1437461047}
@@ -6351,9 +6509,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 1
-  _highlightFirstChoice: 1
+  _highlightFirstOption: 1
+  _isDisabled: 0
   _preseveSelection: 1
-  _preserveColour: 1
+  _toggleGroupID: 0
+  setting: 0
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 0
@@ -6368,32 +6528,44 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
-    _images:
-    - {fileID: 317169500}
-    _mainText: {fileID: 0}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
+    _whenSelected: 0
+    _highlight: 1
+    _flashOnPress: 0
+    _TweenImageColours: 0
+    _TweenTextColours: 0
     _crossFadeTime: 0.4
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     _selectedColour: {r: 0.0073928833, g: 0, b: 1, a: 1}
     _selectedHighlightPerc: 1
     _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 0
-    _pressFlash: 1
     _flashColour: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
     _flashTime: 0.1
+    _images:
+    - {fileID: 317169500}
+    _mainText: {fileID: 0}
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 1, g: 1, b: 1, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToThisText: 
+    _toggleImageList: []
   _buttonSize:
     _ChangeSizeOn: 1
     _scaledType: 1
     _scaleChangeBy: 0.05
     _pressedHoldTime: 0.05
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
       type: 3}
@@ -6402,14 +6574,6 @@ MonoBehaviour:
     _volume_Select: 0.2
     _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
     _volume_Cancel: 0.1
-  _accessories:
-    _activationList: []
-  _swapImageOrText:
-    _mainImage: {fileID: 0}
-    _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: 
-    _toggleList: []
 --- !u!114 &1740218059
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7026,7 +7190,9 @@ GameObject:
   - component: {fileID: 2145412963}
   - component: {fileID: 2145412962}
   - component: {fileID: 2145412966}
+  - component: {fileID: 2145412967}
   - component: {fileID: 2145412965}
+  - component: {fileID: 2145412968}
   m_Layer: 5
   m_Name: LastLevel
   m_TagString: Untagged
@@ -7128,13 +7294,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 0}
   _onScreenAtStart: 0
-  _turnOffOnMoveToChild: 0
-  _saveExitSelection: 0
   _isFullScreen: 0
-  _positionInTween: 0
-  _positionOutTween: 0
+  _turnOffOnMoveToChild: 0
+  _alwaysTweenOnReturn: 0
+  _saveExitSelection: 0
+  _positionTween: 0
+  _rotationTween: 0
   _scaleTransition: 0
   _canvasGroupFade: 0
+  _endOfTweenAction:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!82 &2145412966
 AudioSource:
   m_ObjectHideFlags: 0
@@ -7231,6 +7401,75 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!225 &2145412967
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145412960}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &2145412968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145412960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8a427e419e3a5c458bd440912184959, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _applyEffectsTo: []
+  _useGlobalTweenTime: 0
+  _globalInTime: 1
+  _globalOutTime: 1
+  _posTween:
+    _inTime: 1
+    _outTime: 1
+    _currentPositionIs: 0
+    _easeIn: 0
+    _easeOut: 0
+    _snapping: 0
+    _reversedBuild: []
+  _rotateTween:
+    _inTime: 1
+    _outTime: 1
+    _currentRotationIs: 0
+    _easeIn: 0
+    _easeOut: 0
+    _reversedBuild: []
+  _scaleTween:
+    _InTime: 1
+    _OutTime: 1
+    _easeIn: 0
+    _easeOut: 0
+    _scaleToTweenTo: {x: 0.8, y: 0.8, z: 0}
+    _reversedBuildSettings: []
+    _resetInOutscale: {x: 0, y: 0, z: 0}
+    _resetOutscale: {x: 0, y: 0, z: 0}
+  _punchTween:
+    _punchWhen: 0
+    _strength: {x: 0.1, y: 0.1, z: 0}
+    _duration: 0.5
+    _elasticity: 0.5
+    _vibrato: 5
+  _shakeTween:
+    _shakeWhen: 0
+    _strength: {x: 0.1, y: 0.1, z: 0}
+    _duration: 0.5
+    _vibrato: 5
+    _randomness: 45
+    _fadeOut: 0
+  _fadeTween:
+    _InTime: 1
+    _OutTime: 1
+    _fadeEase: 0
 --- !u!1001 &850220440447376183
 PrefabInstance:
   m_ObjectHideFlags: 0

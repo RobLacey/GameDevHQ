@@ -9,14 +9,14 @@ public enum UIGroupID
     Group1, Group2, Group3, Group4, Group5
 }
 
-public enum PositionOutTween 
+public enum PositionTweenType 
 { 
-    NoTween, Out 
+    NoTween, In, Out, InAndOut
 }
 
-public enum PositionInTween 
+public enum RotationTweenType 
 { 
-    NoTween, In 
+    NoTween, In, Out, InAndOut
 }
 
 public enum ScaleTween 

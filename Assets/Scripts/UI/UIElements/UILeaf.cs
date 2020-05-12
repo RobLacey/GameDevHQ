@@ -7,26 +7,27 @@ using System;
 using NaughtyAttributes;
 
 [RequireComponent(typeof(ColourLerp))]
-public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
+public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
                                      IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
 {
-    [Header("Main Settings")] [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    [Header("Main Settings")]
+    [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    [SerializeField] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] [Label("Is Cancel or Back Button")] bool _isCancelOrBackButton;
     [SerializeField] bool _highlightFirstOption = true;
     [SerializeField] [ReadOnly] bool _isDisabled;
     [SerializeField] [Label("Preserve When Selected")] PreserveSelection _preseveSelection;
     [SerializeField] [HideIf("GroupSettings")] ToggleGroup _toggleGroupID = ToggleGroup.None;
-    [Header("Settings (Click Arrows To Expand)")] [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] [Label("Navigation And On Click Calls")] UINavigation _navigation;
-    [SerializeField] [Label("Colour Settings")] UIColour _colours;
-    [SerializeField] [Label("Invert Colour when Highlighted or Selected")] UIInvertColours _invertColourCorrection;
-    [SerializeField] [Label("Swap Images, Text or SetUp Toogle Image List")] UISwapper _swapImageOrText;
-    [SerializeField] [Label("Change Size Settings")] UISize _buttonSize;
-    [SerializeField] [Label("Accessories, Outline Or Shadow Settings")] UIAccessories _accessories;
-    [SerializeField] [Label("Audio Settings")] public UIAudio _audio;
-
-    [Button] private void DisableObject() { Disabled = true; }
-    [Button] private void EnableObject() { Disabled = false; }
+    [Header("Settings (Click Arrows To Expand)")]
+    [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    [EnumFlags] [SerializeField] Setting setting;
+    [SerializeField] [Label("Navigation And On Click Calls")] [ShowIf("NeedNav")] UINavigation _navigation;
+    [SerializeField] [Label("Colour Settings")] [ShowIf("NeedColour")] UIColour _colours;
+    [SerializeField] [Label("Invert Colour when Highlighted or Selected")] [ShowIf("NeedInvert")] UIInvertColours _invertColourCorrection;
+    [SerializeField] [Label("Swap Images, Text or SetUp Toogle Image List")] [ShowIf("NeedSwap")] UISwapper _swapImageOrText;
+    [SerializeField] [Label("Change Size Settings")] [ShowIf("NeedSize")] UISize _buttonSize;
+    [SerializeField] [Label("Accessories, Outline Or Shadow Settings")] [ShowIf("NeedAccessories")] UIAccessories _accessories;
+    [SerializeField] [Label("Audio Settings")] [ShowIf("NeedAudio")] public UIAudio _audio;
 
     //Variables
     UIBranch _myBranchController;
@@ -36,15 +37,15 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     //Delegates
     Action<UIEventTypes, bool> SetUp;
+    public static event Action<UILeaf> Canceller;
 
     //Properties & Enums
     enum PreserveSelection { Never, NewSelectionAnyWhere, GroupOnly_AllOff, GroupOnly_OneAlwaysOn, Independent }
+    public enum EscapeKey { BackOneLevel, BackToRootLevel, GlobalSetting }
+    public EscapeKey EscapeKeyFunction { get { return _escapeKeyFunction; } }
     public UIBranch MyParentController { get; set; }
-    public bool AllowKeys { get; set; } = true;
     public bool Selected { get; set; }
-    public bool IsOn { get; set; } //TODO Test I actually Need this
-
-    public bool Disabled 
+    public bool Disabled
     {
         get { return _isDisabled; }
         set
@@ -53,7 +54,31 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
+    //Editor Scripts
     #region Editor Scripts
+
+    [Button] private void DisableObject() { Disabled = true; }
+    [Button] private void EnableObject() { Disabled = false; }
+
+    public bool NeedNav { get { return (setting & Setting.Navigation) != 0; } }
+    public bool NeedColour { get { return (setting & Setting.Colours) != 0; } }
+    public bool NeedSize { get { return (setting & Setting.Size) != 0; } }
+    public bool NeedInvert { get { return (setting & Setting.Invert) != 0; } }
+    public bool NeedSwap { get { return (setting & Setting.Swap) != 0; } }
+    public bool NeedAccessories { get { return (setting & Setting.Accessories) != 0; } }
+    public bool NeedAudio { get { return (setting & Setting.Audio) != 0; } }
+
+    public enum Setting
+    {
+        None = 0,
+        Navigation = 1 << 0,
+        Colours = 1 << 1,
+        Size = 1 << 2,
+        Invert = 1 << 3,
+        Swap = 1 << 4,
+        Accessories = 1 << 5,
+        Audio = 1 << 6
+    }
 
     public bool GroupSettings()
     {
@@ -80,7 +105,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         foreach (var leaf in MyParentController.ThisGroupsUILeafs)
         {
-            if (leaf._preseveSelection == PreserveSelection.GroupOnly_AllOff 
+            if (leaf._preseveSelection == PreserveSelection.GroupOnly_AllOff
                 || leaf._preseveSelection == PreserveSelection.GroupOnly_OneAlwaysOn)
             {
                 List<UILeaf> temp = new List<UILeaf>();
@@ -116,124 +141,97 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (Disabled) return;
         if (eventData.pointerDrag) return;                  //Enables drag on slider to have pressed colour
-        if (_amSlider) _amSlider.interactable = true;
+        _audio.Play(UIEventTypes.Highlighted);
         SetAsHighlighted();
-        AllowKeys = false;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (Disabled) return;
         if (eventData.pointerDrag) return;                      //Enables drag on slider to have pressed colour
-        if (_amSlider) 
-        { 
-            _amSlider.interactable = false; 
-            EventSystem.current.SetSelectedGameObject(gameObject); //Needed for Keyboard/Ctrl 
-        }
         SetNotHighlighted();
-        AllowKeys = true;
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
         if (Disabled) return;
-        if (_isCancelOrBackButton) { OnCancel(); return; }
-        AllowKeys = false;
+        if (_isCancelOrBackButton) 
+        { 
+            //_myBranchController.SaveLastSelected(this);
+            Canceller?.Invoke(this);
+            return; 
+        }
         SwitchUIDisplay();
+        if (!_amSlider)
+        {
+            _navigation._asButtonEvent?.Invoke();
+            _navigation._asToggleEvent?.Invoke(Selected);
+        }
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
         if (Disabled) return;
-        if (_amSlider) SwitchUIDisplay();
-        SwitchedOnOrOff();
-        _navigation._asButtonEvent?.Invoke();
+        if (_amSlider) { SwitchUIDisplay(); }
     }
 
     public void MoveToNext() //KB/Ctrl highlight
     {
-        if (!AllowKeys) return;
-        EventSystem.current.SetSelectedGameObject(gameObject);
+        if (!_myBranchController.AllowKeys) return;
+        _audio.Play(UIEventTypes.Highlighted);
+        _myBranchController.LastSelected.SetNotHighlighted();
         _myBranchController.SaveLastSelected(this);
         SetAsHighlighted();
     }
 
-    public void OnSubmit(BaseEventData eventData) //KB/Ctrl
-    {
-        if (Disabled) return;
 
-        if (_isCancelOrBackButton) 
-        {
-            OnCancel();
-            return; 
-        }
-
-        SwitchUIDisplay();
-        _navigation._asButtonEvent?.Invoke();
-
-        if (_amSlider)
-        {
-            if (_amSlider.interactable == true)
-            {
-                if (_amSlider) _amSlider.interactable = false;
-                EventSystem.current.SetSelectedGameObject(gameObject); //Needed for Keyboard/Ctrl 
-            }
-            else
-            {
-                if (_amSlider) _amSlider.interactable = true;
-            }
-        }
-    }
-
-    public void OnMove(AxisEventData eventData) 
+    public void OnMove(AxisEventData eventData)
     {
         if (_amSlider)
         {
-            if (_amSlider.interactable == true)
+            if (Selected)
             {
                 if (eventData.moveDir == MoveDirection.Left || eventData.moveDir == MoveDirection.Right)
                 {
                     _audio.Play(UIEventTypes.Selected);
                 }
             }
-        }
-        _navigation.ProcessMoves(eventData);
-    }
-
-    private void SwitchedOnOrOff()
-    {
-        if (IsOn == true)
-        {
-            IsOn = false;
+            else
+            {
+                _navigation.ProcessMoves(eventData);
+            }
         }
         else
         {
-            IsOn = true;
+            _navigation.ProcessMoves(eventData);
         }
-        _navigation._asToggleEvent?.Invoke(IsOn);
+    }
+
+    public void OnSubmit(BaseEventData eventData) //KB/Ctrl
+    {
+        if (Disabled) return;
+
+        if (_isCancelOrBackButton) { Canceller?.Invoke(this); return; }
+
+        SwitchUIDisplay();
+        _navigation._asButtonEvent?.Invoke();
+
+        if (_amSlider) { _amSlider.interactable = Selected;  }
     }
 
     public void InitialiseStartUp()
     {
         if (Disabled) { HandleIfDisabled(Disabled); return; }
 
-        AllowKeys = true;
-        EventSystem.current.SetSelectedGameObject(gameObject);
         _myBranchController.LastSelected = this;
 
-        if (_amSlider) 
-        { 
-            _amSlider.interactable = false;
-        }
-
-        if (_preseveSelection != PreserveSelection.Independent 
+        if (_preseveSelection != PreserveSelection.Independent
             && _preseveSelection != PreserveSelection.GroupOnly_OneAlwaysOn)
         {
             Selected = false;
-            if (_highlightFirstOption)
+            if (_highlightFirstOption && _myBranchController.AllowKeys)
             {
-                _colours.SetColourOnEnter(Selected);
-                SetButton(UIEventTypes.Highlighted);
+                SetAsHighlighted();
             }
             else
             {
@@ -242,10 +240,9 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
         else
         {
-            if (_highlightFirstOption)
+            if (_highlightFirstOption && _myBranchController.AllowKeys)
             {
-                _colours.SetColourOnEnter(Selected);
-                SetButton(UIEventTypes.Highlighted);
+                SetAsHighlighted();
             }
         }
     }
@@ -253,9 +250,6 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     public void SetAsHighlighted()
     {
         if (Disabled) return;
-        _myBranchController.SetLastHighlighted(this);
-        _myBranchController.LastSelected.SetNotHighlighted();
-        _audio.Play(UIEventTypes.Highlighted);
         _colours.SetColourOnEnter(Selected);
         SetButton(UIEventTypes.Highlighted);
     }
@@ -293,7 +287,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     private void TurnOffLastSelected()
     {
         UILeaf lastElementSelected = _myBranchController.LastSelected;
-        if(_preseveSelection == PreserveSelection.GroupOnly_OneAlwaysOn)
+        if (_preseveSelection == PreserveSelection.GroupOnly_OneAlwaysOn)
         {
             foreach (var item in _toggleGroupMembers)
             {
@@ -303,7 +297,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
         if (lastElementSelected != this)
         {
-            if (lastElementSelected._preseveSelection != PreserveSelection.Independent 
+            if (lastElementSelected._preseveSelection != PreserveSelection.Independent
                 && lastElementSelected._preseveSelection != PreserveSelection.GroupOnly_OneAlwaysOn)
             {
                 lastElementSelected.DisableChildLevel();
@@ -312,9 +306,10 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    private void DisableChildLevel() 
+    private void DisableChildLevel()
     {
         Selected = false;
+        if (_amSlider) { QuitSlider(); }
         _swapImageOrText.CycleToggleList(Selected);
 
         if (_navigation._childBranch)
@@ -325,8 +320,8 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             {
                 if (_navigation._childBranch.LastSelected._preseveSelection != PreserveSelection.Independent)
                 {
-                    _navigation._childBranch.LastSelected.DisableChildLevel();
                     _navigation._childBranch.LastSelected.SetNotHighlighted();
+                    _navigation._childBranch.LastSelected.DisableChildLevel();
                 }
             }
         }
@@ -335,6 +330,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     private void ActivateChildLevel()
     {
         Selected = true;
+        if(_amSlider) { _amSlider.interactable = Selected; }
         _swapImageOrText.CycleToggleList(Selected);
 
         if (_navigation._childBranch)
@@ -353,6 +349,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void RootCancel()
     {
+        Debug.Log("Root " + gameObject.name);
         if (_preseveSelection != PreserveSelection.Independent && _preseveSelection != PreserveSelection.GroupOnly_OneAlwaysOn)
         {
             SetButton(UIEventTypes.Normal);
@@ -363,13 +360,15 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void OnCancel()
     {
-        if (_amSlider) { _amSlider.interactable = false; }
+        Debug.Log("One level " + gameObject.name);
 
         if (_isCancelOrBackButton)
         {
             SetButton(UIEventTypes.Normal);
             _colours.ResetToNormal();
         }
+
+        if (MyParentController.LastSelected == this) { return; }                    //Stops returning past the Home Level menus
 
         if (_preseveSelection != PreserveSelection.Independent && _preseveSelection != PreserveSelection.GroupOnly_OneAlwaysOn)
         {
@@ -405,7 +404,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    private void HandleIfDisabled(bool value)
+    private void HandleIfDisabled(bool value) //TODO Review Code
     {
         if (_myBranchController.LastSelected == this)
         {
@@ -432,6 +431,12 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         {
             _colours.ResetToNormal();
         }
+    }
+
+    private void QuitSlider()
+    {
+        _navigation._asButtonEvent?.Invoke();
+        _amSlider.interactable = Selected;
     }
 }
 

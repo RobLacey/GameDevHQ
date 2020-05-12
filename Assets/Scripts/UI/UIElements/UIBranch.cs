@@ -5,13 +5,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using NaughtyAttributes;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(Canvas))]
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
-
 
 public class UIBranch : MonoBehaviour
 {
@@ -24,10 +24,15 @@ public class UIBranch : MonoBehaviour
     [SerializeField] bool _alwaysTweenOnReturn;
     [SerializeField] [Label("Save Selection On Exit")] bool _saveExitSelection;
     [Header("Tween Settings")]
-    [SerializeField] [DisableIf("_running")] public PositionInTween _positionInTween = PositionInTween.NoTween;
-    [SerializeField] [DisableIf("_running")] public PositionOutTween _positionOutTween = PositionOutTween.NoTween;
+    [SerializeField] [DisableIf("_running")] public PositionTweenType _positionTween = PositionTweenType.NoTween;
+    [SerializeField] [DisableIf("_running")] public RotationTweenType _rotationTween = RotationTweenType.NoTween;
     [SerializeField] [DisableIf("_running")] public ScaleTween _scaleTransition = ScaleTween.NoTween;
     [SerializeField] [DisableIf("_running")] public FadeTween _canvasGroupFade = FadeTween.NoTween;
+    [Header("Tween Trigger Settings")]
+    [SerializeField] [Label("Event At End/Mid-Point of Tween")] TweenTrigger _endOfTweenAction;
+
+    [Serializable]
+    public class TweenTrigger : UnityEvent<bool> { }
 
     //Variables
     UILeaf[] _childUILeafs;
@@ -36,7 +41,6 @@ public class UIBranch : MonoBehaviour
     int _counter = 0;
     int _endOfEffectCounter;
     int _startOfEffectCounter;
-    CanvasGroup _myCanvasGroup;
     bool _running = false;               //To disable Tween settings as they break when changed during runtime
 
     //Properties
@@ -47,16 +51,18 @@ public class UIBranch : MonoBehaviour
     public UIGroupID MyUIGroup { get; set; }
     public bool KillAllOtherUI { get { return _isFullScreen; } }
     public bool IsCancelling { get; set; }
-    public bool DontTween { get; set; }   //Set as True to stop a tween on certain transitions
+    public bool DontTweenNow { get; set; }   //Set as True to stop a tween on certain transitions
     public UILeaf[] ThisGroupsUILeafs { get { return _childUILeafs; } }
+    public bool AllowKeys { get; set; }
+    public CanvasGroup InteractiveAndVisability { get; set; }
 
     private void Awake()
     {
         GetChildUILeafs();
         IsCancelling = false;
-        _myCanvasGroup = GetComponent<CanvasGroup>();
+        InteractiveAndVisability = GetComponent<CanvasGroup>();
         _UITweener = GetComponent<UITweener>();
-        _UITweener.OnAwake(_myCanvasGroup);
+        _UITweener.OnAwake(InteractiveAndVisability);
         _UITrunk = FindObjectOfType<UITrunk>();
         MyCanvas = GetComponent<Canvas>();
         SetCurrentBranchAsParent(this);
@@ -70,7 +76,7 @@ public class UIBranch : MonoBehaviour
             MyCanvas.enabled = true;
         }
         SetUpTweeners();
-        _myCanvasGroup.blocksRaycasts = false;
+        InteractiveAndVisability.blocksRaycasts = false;
     }
 
     private void OnEnable() { _running = true; }
@@ -80,10 +86,16 @@ public class UIBranch : MonoBehaviour
     {
         if (_UITweener)
         {
-            if (_positionOutTween != PositionOutTween.NoTween || _positionInTween != PositionInTween.NoTween)
+            if (_positionTween != PositionTweenType.NoTween)
             {
                 _counter++;
-                _UITweener.SetUpPositionTweens(_positionOutTween, _positionInTween);
+                _UITweener.SetUpPositionTweens(_positionTween);
+            }
+
+            if (_rotationTween != RotationTweenType.NoTween)
+            {
+                _counter++;
+                _UITweener.SetUpRotateTweens(_rotationTween);
             }
 
             if (_scaleTransition != ScaleTween.NoTween)
@@ -133,16 +145,15 @@ public class UIBranch : MonoBehaviour
     {
         MyCanvas.enabled = true;
         _UITrunk.SetLastUIObject(LastSelected, MyUIGroup);
-        SetLastHighlighted(LastSelected);
         SetCurrentBranchAsParent(this);
         InitialiseFirstUIElement();
 
-        if (_alwaysTweenOnReturn && !DontTween)
+        if (_alwaysTweenOnReturn && !DontTweenNow)
         {
             ActivateEffects();
         }
 
-        DontTween = false;
+        DontTweenNow = false;
     }
 
     public void MoveToNextLevel(UIBranch newParentController = null)
@@ -153,9 +164,8 @@ public class UIBranch : MonoBehaviour
 
         SetCurrentBranchAsParent(newParentController);
         _UITrunk.SetLastUIObject(LastSelected, MyUIGroup);
-        SetLastHighlighted(LastSelected);
 
-        if (!DontTween)
+        if (!DontTweenNow)
         {
             ActivateEffects();
         }
@@ -163,7 +173,7 @@ public class UIBranch : MonoBehaviour
         {
             InitialiseFirstUIElement();
         }
-        DontTween = false;
+        DontTweenNow = false;
     }
 
     private void SetCurrentBranchAsParent(UIBranch newParentController = null) //Needed in case menu is called from different places
@@ -187,13 +197,11 @@ public class UIBranch : MonoBehaviour
             {
                 LastSelected = DefaultStartPosition;
             }
-            LastSelected.AllowKeys = false;
-            EventSystem.current.SetSelectedGameObject(LastSelected.gameObject);
             LastSelected.InitialiseStartUp();
         }
     }
 
-    public void TurnOffOnMoveToChild()
+    public void TurnOffOnMoveToChild() //TODO Test
     {
         if (_turnOffOnMoveToChild){ MyCanvas.enabled = false; }
     }
@@ -204,24 +212,11 @@ public class UIBranch : MonoBehaviour
         LastSelected = lastSelected;
     }
 
-    public void SetLastHighlighted(UILeaf lastHighlighted)
-    {
-        //Debug.Log("Setting Highlight");
-        _UITrunk.UIElementLastHighlighted.SetNotHighlighted();
-        _UITrunk.UIElementLastHighlighted = lastHighlighted;
-    }
-
     public void TurnOffBranch()
     {
-        _myCanvasGroup.blocksRaycasts = false;
+        InteractiveAndVisability.blocksRaycasts = false;
         _UITweener.StopAllCoroutines();
-
         DeactivationEffect();
-    }
-
-    public void ReturnFromToHomeScreen()
-    {
-
     }
 
     public void ActivateEffects()
@@ -229,47 +224,55 @@ public class UIBranch : MonoBehaviour
         _UITweener.StopAllCoroutines();
         _endOfEffectCounter = _counter;
         _startOfEffectCounter = _counter;
-        _myCanvasGroup.blocksRaycasts = false;
+        InteractiveAndVisability.blocksRaycasts = false;
 
         if (_startOfEffectCounter == 0)
         {
-            StartEffectsCallback();
+            InTweenCallback();
         }
 
-        if (_positionInTween != PositionInTween.NoTween)
+        if (_positionTween == PositionTweenType.In || _positionTween == PositionTweenType.InAndOut)
         {
-            _UITweener.DoInTween(true, () => StartEffectsCallback());
+            _UITweener.DoInTween(true, () => InTweenCallback());
         }
-        else if (_positionOutTween != PositionOutTween.NoTween)
+        else if (_positionTween == PositionTweenType.Out)
         {
-            _UITweener.DoOutTween(true, () => StartEffectsCallback());
+            _UITweener.DoOutTween(true, () => InTweenCallback());
+        }
+
+        if (_rotationTween == RotationTweenType.In || _rotationTween == RotationTweenType.InAndOut)
+        {
+            _UITweener.DoRotateInTween(true, () => InTweenCallback());
+        }
+        else if (_rotationTween == RotationTweenType.Out)
+        {
+            _UITweener.DoRotateOutTween(true, () => InTweenCallback());
         }
 
         if (_scaleTransition == ScaleTween.Scale_InOnly || _scaleTransition == ScaleTween.Scale_InAndOut)
         {
-            _UITweener.ScaleInTween(true, () => StartEffectsCallback());
+            _UITweener.ScaleInTween(true, () => InTweenCallback());
         }
         else if (_scaleTransition == ScaleTween.Scale_OutOnly)
         {
-            _UITweener.ScaleOutTween(true, () => StartEffectsCallback());
+            _UITweener.ScaleOutTween(true, () => InTweenCallback());
         }
         else if (_scaleTransition == ScaleTween.Punch)
         {
-            _UITweener.DoPunch(true, () => StartEffectsCallback());
-
+            _UITweener.DoPunch(true, () => InTweenCallback());
         }
         else if (_scaleTransition == ScaleTween.Shake)
         {
-            _UITweener.DoShake(true, () => StartEffectsCallback());
+            _UITweener.DoShake(true, () => InTweenCallback());
         }
 
         if (_canvasGroupFade == FadeTween.FadeIn || _canvasGroupFade == FadeTween.FadeInAndOut)
         {
-            _UITweener.DoCanvasFadeIn(true, () => StartEffectsCallback());
+            _UITweener.DoCanvasFadeIn(true, () => InTweenCallback());
         }
         else if (_canvasGroupFade == FadeTween.FadeOut)
         {
-            _UITweener.DoCanvasFadeOut(true, () => StartEffectsCallback());
+            _UITweener.DoCanvasFadeOut(true, () => InTweenCallback());
         }
     }
 
@@ -277,49 +280,59 @@ public class UIBranch : MonoBehaviour
     {
         if (_endOfEffectCounter == 0)
         {
-            EffectsEndCallback();
+            OutTweenCallback();
             return;
         }
 
         if (_scaleTransition == ScaleTween.Scale_OutOnly || _scaleTransition == ScaleTween.Scale_InAndOut)
         {
-            _UITweener.ScaleOutTween(false, () => EffectsEndCallback());
+            _UITweener.ScaleOutTween(false, () => OutTweenCallback());
         }
 
         else if (_scaleTransition == ScaleTween.Scale_InOnly)
         {
-            _UITweener.ScaleInTween(false, () => EffectsEndCallback());
+            _UITweener.ScaleInTween(false, () => OutTweenCallback());
         }
         else if (_scaleTransition == ScaleTween.Punch)
         {
-            _UITweener.DoPunch(false, () => EffectsEndCallback());
-
+            _UITweener.DoPunch(false, () => OutTweenCallback());
         }
         else if (_scaleTransition == ScaleTween.Shake)
         {
-            _UITweener.DoShake(false, () => EffectsEndCallback());
+            _UITweener.DoShake(false, () => OutTweenCallback());
         }
 
-        if (_positionOutTween != PositionOutTween.NoTween)
+        if (_positionTween == PositionTweenType.Out || _positionTween == PositionTweenType.InAndOut)
         {
-            _UITweener.DoOutTween(false, () => EffectsEndCallback());
+            _UITweener.DoOutTween(false, () => OutTweenCallback());
         }
-        else if (_positionInTween != PositionInTween.NoTween)
+        else if (_positionTween == PositionTweenType.In)
         {
-            _UITweener.DoInTween(false, () => EffectsEndCallback());
+            _UITweener.DoInTween(false, () => OutTweenCallback());
+        }
+
+        if (_rotationTween == RotationTweenType.Out || _rotationTween == RotationTweenType.InAndOut)
+        {
+            _UITweener.DoRotateOutTween(false, () => OutTweenCallback());
+        }
+        else if (_rotationTween == RotationTweenType.In)
+        {
+            _UITweener.DoRotateInTween(false, () => OutTweenCallback());
         }
 
         if (_canvasGroupFade == FadeTween.FadeOut || _canvasGroupFade == FadeTween.FadeInAndOut)
         {
-            _UITweener.DoCanvasFadeOut(false, () => EffectsEndCallback());
+            _UITweener.DoCanvasFadeOut(false, () => OutTweenCallback());
         }
         else if (_canvasGroupFade == FadeTween.FadeIn)
         {
-            _UITweener.DoCanvasFadeIn(false, () => EffectsEndCallback());
+            _UITweener.DoCanvasFadeIn(false, () => OutTweenCallback());
         }
+
+        _endOfTweenAction.Invoke(false);
     }
 
-    private void EffectsEndCallback()
+    private void OutTweenCallback()
     {
         _endOfEffectCounter--;
         IsCancelling = false;
@@ -330,17 +343,17 @@ public class UIBranch : MonoBehaviour
         }
     }
 
-    private void StartEffectsCallback()
+    private void InTweenCallback()
     {
         _startOfEffectCounter--;
 
         if (_startOfEffectCounter <= 0)
         {
-            _myCanvasGroup.blocksRaycasts = true;
-            if (!IsCancelling)
-            {
-                InitialiseFirstUIElement();
-            }
+            _endOfTweenAction.Invoke(true);
+            InteractiveAndVisability.blocksRaycasts = true;
+
+            if (!IsCancelling) { InitialiseFirstUIElement(); }
+
             IsCancelling = false;
         }
     }

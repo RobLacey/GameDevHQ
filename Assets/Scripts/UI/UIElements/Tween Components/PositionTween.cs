@@ -14,6 +14,7 @@ public class PositionTween
     [SerializeField] public Ease _easeOut = Ease.Unset;
     [SerializeField] bool _snapping = false;
 
+
     //Variables
     enum DestinationAs { StartTweenAt, MidPointForInAndOut, EndTweenAt }
     public List<Tweener> _inTweeners = new List<Tweener>();
@@ -34,7 +35,7 @@ public class PositionTween
             else
             {
                 item._resetStartPositionStore = item._tweenAnchorPosition;
-                _inTweeners.Add(item._element.DOAnchorPos(item._element.anchoredPosition, _outTime, _snapping));
+                _inTweeners.Add(item._element.DOAnchorPos(item._element.anchoredPosition, _inTime, _snapping));
                 _outTweeners.Add(item._element.DOAnchorPos(item._tweenAnchorPosition, _outTime, _snapping));
                 item._element.anchoredPosition = item._tweenAnchorPosition;
             }
@@ -72,7 +73,7 @@ public class PositionTween
 
         foreach (var item in buildSettings)
         {
-            item._element.anchoredPosition = item._resetStartPositionStore;
+            //item._element.anchoredPosition = item._resetStartPositionStore;
         }
     }
 
