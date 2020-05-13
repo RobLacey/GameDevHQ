@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 
-[System.Serializable]
+[Serializable]
 public class UISwapper
 {
     [SerializeField] [Header("Swapping UI Image Settings")] Image _imageToSwap;
@@ -20,6 +20,7 @@ public class UISwapper
     Sprite _startImage;
     string _startText;
     int _currentIndex = 0;
+    Setting _mySetting = Setting.Swap;
 
     public int ToggleImageIndex // TODO Used to set Image. NOT Tested
     { 
@@ -32,7 +33,7 @@ public class UISwapper
         }
     } 
 
-    public Action<UIEventTypes, bool> OnAwake(bool selected)
+    public Action<UIEventTypes, bool, Setting> OnAwake(bool selected)
     {
         if (_toggleImageList.Length == 1)
         {
@@ -59,13 +60,15 @@ public class UISwapper
         return Swap;
     }
 
-    public Action<UIEventTypes, bool> OnDisable()
+    public Action<UIEventTypes, bool, Setting> OnDisable()
     {
         return Swap;
     }
 
-    public void Swap(UIEventTypes uIEventTypes, bool selected)
+    private void Swap(UIEventTypes uIEventTypes, bool selected, Setting setting)
     {
+        if (!((setting & _mySetting) != 0)) return;
+
         if (_imageToSwap)
         {
             if (selected)
@@ -92,8 +95,10 @@ public class UISwapper
 
     }
 
-    public void CycleToggleList(bool selected)
+    public void CycleToggleList(bool selected, Setting setting)
     {
+        if (!((setting & _mySetting) != 0)) return;
+
         if (_toggleImageList.Length == 1)
         {
             _toggleImageList[0].enabled = selected;

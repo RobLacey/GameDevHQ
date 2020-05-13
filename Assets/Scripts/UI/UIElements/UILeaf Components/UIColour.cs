@@ -27,6 +27,7 @@ public class UIColour
     //Variables
     public ColourLerp MyColourLerper { get; set; }
     Color _normalColour = Color.white;
+    Setting _mySetting = Setting.Colours;
 
     public void OnAwake()
     {
@@ -35,8 +36,10 @@ public class UIColour
         if(MyColourLerper != null) MyColourLerper.StartColour = _normalColour;
     }
 
-    public void SetColourOnEnter(bool isSelected)
+    public void SetColourOnEnter(bool isSelected, Setting setting)
     {
+        if (!((setting & _mySetting) != 0)) return;
+
         if (_highlight)
         {
             if (_whenSelected && isSelected)
@@ -48,8 +51,10 @@ public class UIColour
         }    
     }
 
-    public void SetColourOnExit(bool isSelected)
+    public void SetColourOnExit(bool isSelected, Setting setting)
     {
+        if (!((setting & _mySetting) != 0)) return;
+
         if (!_whenSelected || !isSelected)
         {
             ColourChangesProcesses(_normalColour);
@@ -61,8 +66,9 @@ public class UIColour
         }
     }
 
-    public void ResetToNormal()
+    public void ResetToNormal(Setting setting)
     {
+        if (!((setting & _mySetting) != 0)) return;
         ColourChangesProcesses(_normalColour);
     }
 
@@ -89,8 +95,10 @@ public class UIColour
         }
     }
 
-    public void ProcessPress(bool isSelected)
+    public void ProcessPress(bool isSelected, Setting setting)
     {
+        if (!((setting & _mySetting) != 0)) return;
+
         if (_flashOnPress)
         {
             if (isSelected)
@@ -190,8 +198,10 @@ public class UIColour
         }
     }
 
-    public void SetAsDisabled()
+    public void SetAsDisabled(Setting setting)
     {
+        if (!((setting & _mySetting) != 0)) return;
+
         if (_mainText)
         {
             SetTextColour(_disabled);

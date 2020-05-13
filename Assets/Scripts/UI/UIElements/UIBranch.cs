@@ -23,6 +23,7 @@ public class UIBranch : MonoBehaviour
     [SerializeField] [DisableIf("_isFullScreen")] bool _turnOffOnMoveToChild;
     [SerializeField] bool _alwaysTweenOnReturn;
     [SerializeField] [Label("Save Selection On Exit")] bool _saveExitSelection;
+    [SerializeField] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [Header("Tween Settings")]
     [SerializeField] [DisableIf("_running")] public PositionTweenType _positionTween = PositionTweenType.NoTween;
     [SerializeField] [DisableIf("_running")] public RotationTweenType _rotationTween = RotationTweenType.NoTween;
@@ -55,6 +56,7 @@ public class UIBranch : MonoBehaviour
     public UILeaf[] ThisGroupsUILeafs { get { return _childUILeafs; } }
     public bool AllowKeys { get; set; }
     public CanvasGroup InteractiveAndVisability { get; set; }
+    public EscapeKey EscapeKeySetting { get { return _escapeKeyFunction; } }
 
     private void Awake()
     {
@@ -112,7 +114,7 @@ public class UIBranch : MonoBehaviour
         }
     }
 
-    private void GetChildUILeafs()
+    private void GetChildUILeafs() //Only gets Childrenn directly below. Ingnore ones inside other game objects
     {
         List<UILeaf> temp = new List<UILeaf>();
         for (int i = 0; i < transform.childCount; i++)
@@ -145,7 +147,7 @@ public class UIBranch : MonoBehaviour
     {
         MyCanvas.enabled = true;
         _UITrunk.SetLastUIObject(LastSelected, MyUIGroup);
-        SetCurrentBranchAsParent(this);
+        SetCurrentBranchAsParent();
         InitialiseFirstUIElement();
 
         if (_alwaysTweenOnReturn && !DontTweenNow)

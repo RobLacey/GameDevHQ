@@ -33,11 +33,12 @@ public class UITrunk : MonoBehaviour
     UILeaf _uiElementLastSelected;
     Vector3 _mousePos = Vector3.zero;
     bool _usingMouse = false;
+    bool _usingKeysOrCtrl = false;
 
     public static bool InMenu { get; set; } = true; //***May not need to be static or even public
 
     public UIGroupID ActiveGroup { get; set; }
-    enum EscapeKey { BackOneLevel, BackToRootLevel }
+    //enum EscapeKey { BackOneLevel, BackToRootLevel }
     enum StartInMenu { InMenu, InGameControl }
 
     [Serializable]
@@ -106,7 +107,7 @@ public class UITrunk : MonoBehaviour
             {
                 if (Input.GetButtonDown(_cancelButton))
                 {
-                    OnCancel();
+                    OnCancel(_uiElementLastSelected.GetComponentInParent<UIBranch>().EscapeKeySetting);
                 }
                 else if (Input.GetButtonDown(_changeMenuGroupButton))
                 {
@@ -140,18 +141,20 @@ public class UITrunk : MonoBehaviour
 
         if (_usingMouse == false)
         {
+            _usingMouse = true;
+            _usingKeysOrCtrl = false;
             _uiElementLastSelected.SetNotHighlighted();
+
             foreach (var item in _allUIBranches)
             {
                 item.AllowKeys = false;
-                _usingMouse = true;
             }
         }
     }
 
     private void SwitchControlGroups()
     {
-        _uiElementLastSelected._audio.Play(UIEventTypes.Selected);
+        _uiElementLastSelected._audio.Play(UIEventTypes.Selected, _uiElementLastSelected.setting);
         _uiElementLastSelected.SetNotHighlighted();
 
         _groupIndex++;
@@ -167,13 +170,18 @@ public class UITrunk : MonoBehaviour
     {
         if (!Input.GetMouseButton(0) & !Input.GetMouseButton(1))
         {
-            _uiElementLastSelected.SetAsHighlighted();
             EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
 
-            foreach (var item in _allUIBranches)
+            if (_usingKeysOrCtrl == false)
             {
-                item.AllowKeys = true;
+                _usingKeysOrCtrl = true;
                 _usingMouse = false;
+                _uiElementLastSelected.SetAsHighlighted();
+
+                foreach (var item in _allUIBranches)
+                {
+                    item.AllowKeys = true;
+                }
             }
         }
     }
@@ -198,36 +206,31 @@ public class UITrunk : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
     }
 
-    private void OnCancel(UILeaf uILeaf = null)
+    private void OnCancel(EscapeKey escapeKey)
     {
+        UIBranch uIBranch = _uiElementLastSelected.GetComponentInParent<UIBranch>();
+        uIBranch.IsCancelling = true;
 
-        //*******Cancel system needs overhaul**********
-        //*******Make cancel one level key and root cancel key
-        //*******need Hierachy cancel to work properly including when clicking on cancel button in level
-        Debug.Log("Cancelling");
-        Debug.Log(_uiElementLastSelected);
-        _uiElementLastSelected.GetComponentInParent<UIBranch>().IsCancelling = true;
-
-        if (_uiElementLastSelected.GetComponentInParent<UIBranch>().KillAllOtherUI)
+        if (uIBranch.KillAllOtherUI)
         {
             RestoreFromFullScreen();
         }
 
-        if (_uiElementLastSelected.EscapeKeyFunction == UILeaf.EscapeKey.BackOneLevel)
+        if (escapeKey == EscapeKey.BackOneLevel)
         {
             if (_uiElementLastSelected.MyParentController)
             {
                 _uiElementLastSelected.OnCancel();
             }
         }
-        else if (_uiElementLastSelected.EscapeKeyFunction == UILeaf.EscapeKey.BackToRootLevel)
+        else if (escapeKey == EscapeKey.BackToRootLevel)
         {
             UILeaf temp = RootCancelProcess();
             temp.GetComponentInParent<UIBranch>().MoveBackALevel();
-            temp._audio.Play(UIEventTypes.Cancelled);
+            temp._audio.Play(UIEventTypes.Cancelled, temp.setting);
         }
 
-        else if (_uiElementLastSelected.EscapeKeyFunction == UILeaf.EscapeKey.GlobalSetting)
+        else if (escapeKey == EscapeKey.GlobalSetting)
         {
             UseGlobalEscapeSettings();
         }
@@ -247,7 +250,7 @@ public class UITrunk : MonoBehaviour
         {
             UILeaf temp = RootCancelProcess();
             temp.GetComponentInParent<UIBranch>().MoveBackALevel();
-            temp._audio.Play(UIEventTypes.Cancelled);
+            temp._audio.Play(UIEventTypes.Cancelled, temp.setting);
         }
     }
 

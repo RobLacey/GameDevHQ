@@ -12,16 +12,26 @@ public class UIAudio
     public AudioClip _sound_Cancel;
     public float _volume_Cancel;
 
+    Setting _mySetting = Setting.Audio;
+
     //Properties
     public AudioSource MyAudiosource { get; set; }
+    public bool IsActive { get; set; } = false;
+
+    public void SetActive(bool active)
+    {
+        IsActive = active;
+    }
 
     public void OnAwake(AudioSource audioSource)
     {
         MyAudiosource = audioSource;
     }
 
-    public void Play(UIEventTypes uIEventTypes)
+    public void Play(UIEventTypes uIEventTypes, Setting settingToCheck)
     {
+        if (!((settingToCheck & Setting.Audio) != 0)) return;
+
         switch (uIEventTypes)
         {
             case UIEventTypes.Normal:

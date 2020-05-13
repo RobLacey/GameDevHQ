@@ -5,33 +5,42 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 
-
-[System.Serializable]
-public class UIAccessories 
+[Serializable]
+public class UIAccessories
 {
     [SerializeField] EventType _activateWhen = EventType.Never;
     [SerializeField] [AllowNesting] [EnableIf("Activate")] Outline _useOutline;
     [SerializeField] [AllowNesting] [EnableIf("Activate")] Shadow _useShadow;
     [SerializeField] Image[] _accessoriesList;
 
-    enum EventType { Never, Highlighted, Selected }
+    //Variables
+    Setting _mySettings = Setting.Accessories;
 
-    public bool Activate() { if (_activateWhen != EventType.Never) return true; return false; } 
-
-    public Action<UIEventTypes, bool> OnAwake()
+    //Editor Script
+    public bool Activate()
     {
-        ActivatePointer(UIEventTypes.Normal, false);
+        if (_activateWhen != EventType.Never)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public Action<UIEventTypes, bool, Setting> OnAwake()
+    {
+        ActivatePointer(UIEventTypes.Normal, false, _mySettings);
         return ActivatePointer;
     }
 
-    public Action<UIEventTypes, bool> OnDisable()
+    public Action<UIEventTypes, bool, Setting> OnDisable()
     {
         return ActivatePointer;
     }
 
-
-    public void ActivatePointer(UIEventTypes uIEventTypes, bool active)
+    private void ActivatePointer(UIEventTypes uIEventTypes, bool active, Setting setting)
     {
+        if (!((setting & _mySettings) != 0)) { ActivateAccessories(false); return; }
+
         switch (uIEventTypes)
         {
             case UIEventTypes.Normal:

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 
-[System.Serializable]
+[Serializable]
 public class UIInvertColours
 {
     [InfoBox("CANNOT have Text AND Image set.", EInfoBoxType.Warning)]
@@ -18,9 +18,11 @@ public class UIInvertColours
     [SerializeField] [AllowNesting] [ShowIf("invertOnHighlight")] Color invertedHighlightColour = Color.white;
     [SerializeField] [AllowNesting] [ShowIf("invertOnSelected")] Color invertedSelectedColour = Color.white;
 
+    //Variables
     bool _canInvert;
     Color _checkMarkStartColour = Color.white;
     Color _textStartColour = Color.white;
+    Setting _mySetting = Setting.Invert;
 
     #region Editor Scripts
     private bool TextSet()
@@ -35,7 +37,7 @@ public class UIInvertColours
     }
 
     #endregion
-    public Action<UIEventTypes, bool> OnAwake()
+    public Action<UIEventTypes, bool, Setting> OnAwake()
     {
         _canInvert = CheckSettings();
         if (_image != null) _checkMarkStartColour = _image.color;
@@ -43,7 +45,7 @@ public class UIInvertColours
         return InvertColour;
     }
 
-    public Action<UIEventTypes, bool> OnDisable()
+    public Action<UIEventTypes, bool, Setting> OnDisable()
     {
         return InvertColour;
     }
@@ -57,8 +59,10 @@ public class UIInvertColours
         return false;
     }
 
-    public void InvertColour(UIEventTypes eventType, bool selected)
+    private void InvertColour(UIEventTypes eventType, bool selected, Setting setting)
     {
+        if (!((setting & _mySetting) != 0)) return;
+
         if (_canInvert)
         {
             switch (eventType)
@@ -85,7 +89,7 @@ public class UIInvertColours
                         }
                         else
                         {
-                            InvertColour(UIEventTypes.Highlighted, selected);
+                            InvertColour(UIEventTypes.Highlighted, selected, _mySetting);
                         }
                     }
                     else

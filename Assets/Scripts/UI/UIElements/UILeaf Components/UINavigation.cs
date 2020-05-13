@@ -17,10 +17,10 @@ public class UINavigation
     public UnityEvent _asButtonEvent;
     public OnToggleEvent _asToggleEvent;
 
+    Setting _mySettings = Setting.Navigation;
+
     [System.Serializable]
     public class OnToggleEvent : UnityEvent<bool> { }
-
-    public enum NavigationType { RightAndLeft, UpAndDown, AllDirections, None }
 
     public bool UpDownNav()
     {
@@ -40,9 +40,9 @@ public class UINavigation
         return false;
     }
 
-    public void ProcessMoves(AxisEventData eventData)
+    public void ProcessMoves(AxisEventData eventData, Setting setting)
     {
-        if (_setNavigation == NavigationType.None) return;
+        if (_setNavigation == NavigationType.None || ((setting & _mySettings) != 0) == false) return;
 
         if (_setNavigation != NavigationType.RightAndLeft)
         {
