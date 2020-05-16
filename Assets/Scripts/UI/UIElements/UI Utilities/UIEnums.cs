@@ -46,7 +46,8 @@ public enum Setting
     Invert = 1 << 3,
     Swap = 1 << 4,
     Accessories = 1 << 5,
-    Audio = 1 << 6
+    Audio = 1 << 6,
+    TooplTip = 1 << 7
 }
 
 public enum NavigationType { RightAndLeft, UpAndDown, AllDirections, None }
@@ -56,6 +57,15 @@ public enum EventType { Never, Highlighted, Selected }
 public enum ScaleType { ScaleUp, ScaleDown, Punch, Shake }
 
 public enum Choose { None, Highlighted, HighlightedAndSelected, Selected, Pressed };
+
+public enum ToolTipAnchor
+{
+    Centre, middleLeft, middleRight, MiddleTop,
+    MiddleBottom, TopLeft, TopRight, BottomLeft, BottomRight
+}
+
+public enum TooltipType { Fixed, Follow }
+
 
 
 

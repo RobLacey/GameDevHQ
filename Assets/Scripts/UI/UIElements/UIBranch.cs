@@ -32,6 +32,7 @@ public class UIBranch : MonoBehaviour
     [Header("Tween Trigger Settings")]
     [SerializeField] [Label("Event At End/Mid-Point of Tween")] TweenTrigger _endOfTweenAction;
 
+    //Classes
     [Serializable]
     public class TweenTrigger : UnityEvent<bool> { }
 
@@ -55,16 +56,16 @@ public class UIBranch : MonoBehaviour
     public bool DontTweenNow { get; set; }   //Set as True to stop a tween on certain transitions
     public UILeaf[] ThisGroupsUILeafs { get { return _childUILeafs; } }
     public bool AllowKeys { get; set; }
-    public CanvasGroup InteractiveAndVisability { get; set; }
+    public CanvasGroup _myCanvasGroup { get; set; }
     public EscapeKey EscapeKeySetting { get { return _escapeKeyFunction; } }
 
     private void Awake()
     {
         GetChildUILeafs();
         IsCancelling = false;
-        InteractiveAndVisability = GetComponent<CanvasGroup>();
+        _myCanvasGroup = GetComponent<CanvasGroup>();
         _UITweener = GetComponent<UITweener>();
-        _UITweener.OnAwake(InteractiveAndVisability);
+        _UITweener.OnAwake(_myCanvasGroup);
         _UITrunk = FindObjectOfType<UITrunk>();
         MyCanvas = GetComponent<Canvas>();
         SetCurrentBranchAsParent(this);
@@ -78,7 +79,7 @@ public class UIBranch : MonoBehaviour
             MyCanvas.enabled = true;
         }
         SetUpTweeners();
-        InteractiveAndVisability.blocksRaycasts = false;
+        _myCanvasGroup.blocksRaycasts = false;
     }
 
     private void OnEnable() { _running = true; }
@@ -203,7 +204,7 @@ public class UIBranch : MonoBehaviour
         }
     }
 
-    public void TurnOffOnMoveToChild() //TODO Test
+    public void TurnOffOnMoveToChild() 
     {
         if (_turnOffOnMoveToChild){ MyCanvas.enabled = false; }
     }
@@ -216,7 +217,7 @@ public class UIBranch : MonoBehaviour
 
     public void TurnOffBranch()
     {
-        InteractiveAndVisability.blocksRaycasts = false;
+        _myCanvasGroup.blocksRaycasts = false;
         _UITweener.StopAllCoroutines();
         DeactivationEffect();
     }
@@ -226,7 +227,7 @@ public class UIBranch : MonoBehaviour
         _UITweener.StopAllCoroutines();
         _endOfEffectCounter = _counter;
         _startOfEffectCounter = _counter;
-        InteractiveAndVisability.blocksRaycasts = false;
+        _myCanvasGroup.blocksRaycasts = false;
 
         if (_startOfEffectCounter == 0)
         {
@@ -352,7 +353,7 @@ public class UIBranch : MonoBehaviour
         if (_startOfEffectCounter <= 0)
         {
             _endOfTweenAction.Invoke(true);
-            InteractiveAndVisability.blocksRaycasts = true;
+            _myCanvasGroup.blocksRaycasts = true;
 
             if (!IsCancelling) { InitialiseFirstUIElement(); }
 

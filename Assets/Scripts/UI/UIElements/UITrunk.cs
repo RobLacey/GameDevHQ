@@ -302,7 +302,7 @@ public class UITrunk : MonoBehaviour
 
         foreach (var item in _allUIBranches)
         {
-            item.InteractiveAndVisability.blocksRaycasts = InMenu;
+            item._myCanvasGroup.blocksRaycasts = InMenu;
         }
     }
 }

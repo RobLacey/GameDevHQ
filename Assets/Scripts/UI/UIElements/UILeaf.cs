@@ -15,12 +15,13 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     [SerializeField] [Label("Is Cancel or Back Button")] bool _isCancelOrBackButton;
     [SerializeField] [ShowIf("_isCancelOrBackButton")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] [HideIf("_isCancelOrBackButton")] bool _highlightFirstOption = true;
-    [SerializeField] [HideIf("_isCancelOrBackButton")] [ReadOnly] bool _isDisabled;
+    [SerializeField] [ReadOnly] bool _isDisabled;
     [SerializeField] [HideIf("_isCancelOrBackButton")] [Label("Preserve When Selected")] PreserveSelection _preseveSelection;
     [SerializeField] [HideIf(EConditionOperator.Or, "GroupSettings", "_isCancelOrBackButton")] ToggleGroup _toggleGroupID = ToggleGroup.None;
     [Header("Settings (Click Arrows To Expand)")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [EnumFlags] [SerializeField] public Setting setting;
+    [EnumFlags] [Label("UI Functions To Use")] [SerializeField] public Setting setting;
+    [HorizontalLine(1, color: EColor.Blue, order = 1)]
     [SerializeField] [Label("Navigation And On Click Calls")] [ShowIf("NeedNav")] UINavigation _navigation;
     [SerializeField] [Label("Colour Settings")] [ShowIf("NeedColour")] UIColour _colours;
     [SerializeField] [Label("Invert Colour when Highlighted or Selected")] [ShowIf("NeedInvert")] UIInvertColours _invertColourCorrection;
@@ -28,12 +29,15 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     [SerializeField] [Label("Change Size Settings")] [ShowIf("NeedSize")] UISize _buttonSize;
     [SerializeField] [Label("Accessories, Outline Or Shadow Settings")] [ShowIf("NeedAccessories")] UIAccessories _accessories;
     [SerializeField] [Label("Audio Settings")] [ShowIf("NeedAudio")] public UIAudio _audio;
+    [SerializeField] [Label("Tooltip Settings")] [ShowIf("NeedTooltip")] UITooltip _tooltips;
 
     //Variables
     UIBranch _myBranchController;
     Slider _amSlider;
-    UIEventTypes _settings = UIEventTypes.Normal;
+    UIEventTypes _eventType = UIEventTypes.Normal;
     UILeaf[] _toggleGroupMembers;
+    Vector3[] _myCorners = new Vector3[4];
+
 
     //Delegates
     Action<UIEventTypes, bool, Setting> SetUp;
@@ -63,8 +67,9 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     public bool NeedSize { get { return (setting & Setting.Size) != 0; } }
     public bool NeedInvert { get { return (setting & Setting.Invert) != 0; } }
     public bool NeedSwap { get { return (setting & Setting.Swap) != 0; } }
-    public bool NeedAccessories {get{  return (setting & Setting.Accessories ) != 0; } }
+    public bool NeedAccessories { get { return (setting & Setting.Accessories) != 0; } }
     public bool NeedAudio { get { return (setting & Setting.Audio) != 0; } }
+    public bool NeedTooltip { get { return (setting & Setting.TooplTip) != 0; } }
 
     public bool GroupSettings()
     {
@@ -79,11 +84,13 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     private void Awake()
     {
+        GetComponent<RectTransform>().GetWorldCorners(_myCorners);
         _amSlider = GetComponent<Slider>();
         _colours.MyColourLerper = GetComponent<ColourLerp>();
         _myBranchController = GetComponentInParent<UIBranch>();
         _colours.OnAwake();
         _audio.OnAwake(GetComponentInParent<AudioSource>());
+        _tooltips.OnAwake(setting, _myCorners);
         if (_amSlider) _amSlider.interactable = false;
     }
 
@@ -128,7 +135,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    public void OnPointerEnter(PointerEventData eventData) 
+    public void OnPointerEnter(PointerEventData eventData)
     {
         if (Disabled) return;
         if (eventData.pointerDrag) return;                  //Enables drag on slider to have pressed colour
@@ -146,11 +153,11 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     public void OnPointerDown(PointerEventData eventData)
     {
         if (Disabled) return;
-        if (_isCancelOrBackButton) 
+        if (_isCancelOrBackButton)
         {
             _myBranchController.SaveLastSelected(_myBranchController.LastSelected);
             Canceller?.Invoke(_escapeKeyFunction);
-            return; 
+            return;
         }
         SwitchUIDisplay();
         if (!_amSlider)
@@ -210,7 +217,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         SwitchUIDisplay();
         _navigation._asButtonEvent?.Invoke();
 
-        if (_amSlider) { _amSlider.interactable = Selected;  }
+        if (_amSlider) { _amSlider.interactable = Selected; }
     }
 
     public void InitialiseStartUp()
@@ -246,12 +253,13 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         if (Disabled) return;
         _colours.SetColourOnEnter(Selected, setting);
         SetButton(UIEventTypes.Highlighted);
+        StartCoroutine(StartToopTip());
     }
 
     private void SetButton(UIEventTypes uIEventTypes)
     {
-        _settings = uIEventTypes;
-        SetUp.Invoke(_settings, Selected, setting);
+        _eventType = uIEventTypes;
+        SetUp.Invoke(_eventType, Selected, setting);
     }
 
     private void SwitchUIDisplay()
@@ -324,7 +332,7 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     private void ActivateChildLevel()
     {
         Selected = true;
-        if(_amSlider) { _amSlider.interactable = Selected; }
+        if (_amSlider) { _amSlider.interactable = Selected; }
         _swapImageOrText.CycleToggleList(Selected, setting);
 
         if (_navigation._childBranch && ((setting & Setting.Navigation) != 0) == true)
@@ -378,6 +386,9 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void SetNotHighlighted()
     {
+        StopAllCoroutines();
+        _tooltips.HideToolTip(setting);
+
         if (_preseveSelection == PreserveSelection.Never_TempSwitch)
         {
             DisableChildLevel();
@@ -435,6 +446,18 @@ public class UILeaf : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         _navigation._asButtonEvent?.Invoke();
         _amSlider.interactable = Selected;
+    }
+
+    private IEnumerator StartToopTip()
+    {
+        if ((setting & Setting.TooplTip) != 0)
+        {
+            yield return new WaitForSeconds(_tooltips._delay);
+            _tooltips.IsActive = true;
+            StartCoroutine(_tooltips.ToolTipBuild());
+            StartCoroutine(_tooltips.StartTooltip(_myBranchController.AllowKeys));
+        }
+        yield return null;
     }
 }
 

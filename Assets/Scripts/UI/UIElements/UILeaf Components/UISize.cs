@@ -32,56 +32,25 @@ public class UISize
     //Editor Script
     #region Editor Scripts
 
-    public bool Activate()
-    {
-        if (_ChangeSizeOn != Choose.None)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    public bool IsStandard()
-    {
-        if (_ChangeSizeOn != Choose.None && _scaledType != ScaleType.Punch && _scaledType != ScaleType.Shake)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    public bool IsPunch()
-    {
-        if (_scaledType == ScaleType.Punch && _ChangeSizeOn != Choose.None)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    public bool IsShake()
-    {
-        if (_scaledType == ScaleType.Shake && _ChangeSizeOn != Choose.None)
-        {
-            return true;
-        }
-        return false;
-    }
+    public bool Activate() { return _ChangeSizeOn != Choose.None ;  }
+    public bool IsStandard() { return _ChangeSizeOn != Choose.None && _scaledType != ScaleType.Punch && _scaledType != ScaleType.Shake; }
+    public bool IsPunch() { return _scaledType == ScaleType.Punch && _ChangeSizeOn != Choose.None;  }
+    public bool IsShake() {  return _scaledType == ScaleType.Shake && _ChangeSizeOn != Choose.None; }
     #endregion
 
     public Action<UIEventTypes, bool, Setting> OnAwake(Transform newTransform)
     {
         _myTransform = newTransform;
         _startSize = newTransform.localScale;
-        return ProcessChangeOfSize;
+        return HowToChangeSize;
     }
 
     public Action<UIEventTypes, bool, Setting> OnDisable()
     {
-        return ProcessChangeOfSize;
+        return HowToChangeSize;
     }
 
-    private void ProcessChangeOfSize(UIEventTypes uIEventTypes, bool Selected, Setting setting)
+    private void HowToChangeSize(UIEventTypes uIEventTypes, bool Selected, Setting setting)
     {
         if (!((setting & _mySettings) != 0)) return;
 
@@ -91,7 +60,6 @@ public class UISize
         {
             ProcessHighlighedAndSelected(uIEventTypes, Selected);
         }
-
         else if (uIEventTypes == UIEventTypes.Highlighted && _ChangeSizeOn == Choose.Highlighted)
         {
             if (_scaledType == ScaleType.Punch || _scaledType == ScaleType.Shake)
@@ -100,7 +68,7 @@ public class UISize
             }
             else
             {
-                SetScaleProcess();
+                SetSelectedScale();
             }
         }
         else if (uIEventTypes == UIEventTypes.Selected && _ChangeSizeOn == Choose.Selected)
@@ -118,18 +86,11 @@ public class UISize
     {
         if (Selected)
         {
-            SetScaleProcess();
+            SetSelectedScale();
         }
         else
         {
-            if (_scaledType == ScaleType.ScaleUp)
-            {
-                ScaleDown();
-            }
-            else
-            {
-                ScaleUp();
-            }
+            ResetSelectedScale();
         }
     }
 
@@ -150,7 +111,7 @@ public class UISize
                 }
                 else
                 {
-                    SetScaleProcess();
+                    SetSelectedScale();
                 }
             }
         }
@@ -164,7 +125,7 @@ public class UISize
                 }
                 else
                 {
-                    SetScaleProcess();
+                    SetSelectedScale();
                 }
             }
 
@@ -175,7 +136,7 @@ public class UISize
         }
     }
 
-    private void SetScaleProcess()
+    private void SetSelectedScale()
     {
         if (_scaledType == ScaleType.ScaleUp)
         {
@@ -184,6 +145,18 @@ public class UISize
         else
         {
             ScaleDown();
+        }
+    }
+
+    private void ResetSelectedScale()
+    {
+        if (_scaledType == ScaleType.ScaleUp)
+        {
+            ScaleDown();
+        }
+        else
+        {
+            ScaleUp();
         }
     }
 
