@@ -9,7 +9,7 @@ public class PlayerSettings : MonoBehaviour
 {
     [SerializeField] Slider _musicSlider;
     [SerializeField] Slider _sfxSlider;
-    [SerializeField] UILeaf _hardLevel;
+    [SerializeField] UINode _hardLevel;
     [SerializeField] Settings _playerSettings;
     [SerializeField] EventManager _Event_Save_File;
     [SerializeField] EventManager _Event_Load_File;

@@ -10,77 +10,63 @@ public class ShakeTweener
 {
     [SerializeField]
     [InfoBox("DOESN'T use Gloabal Tween Time. Changing settings DOESN'T work in RUNTIME")]
-    EffectType _shakeWhen = EffectType.In;
-    [SerializeField] public Vector3 _strength = new Vector3(0.1f, 0.1f, 0f);
-    [SerializeField] [Range(0, 2)] float _duration = 0.5f;
-    [SerializeField] [Range(1, 10)] int _vibrato = 5;
-    [SerializeField] [Range(0, 90)] float _randomness = 45f;
-    [SerializeField] bool _fadeOut;
+    [AllowNesting] [DisableIf("_running")] EffectType _shakeWhen = EffectType.In;
+    [SerializeField] [AllowNesting] [DisableIf("_running")] Vector3 _strength = new Vector3(0.1f, 0.1f, 0f);
+    [SerializeField] [AllowNesting] [DisableIf("_running")] [Range(0, 2)] float _duration = 0.5f;
+    [SerializeField] [AllowNesting] [DisableIf("_running")] [Range(1, 10)] int _vibrato = 5;
+    [SerializeField] [AllowNesting] [DisableIf("_running")] [Range(0, 90)] float _randomness = 45f;
+    [SerializeField] [AllowNesting] [DisableIf("_running")] bool _fadeOut;
 
     //Variables
-    public List<Tweener> _shakeTweeners = new List<Tweener>();
     Vector3 _startscale;
+    bool _running = false;
 
-    public bool CheckInEffectType
-    {
-        get
-        {
-            if (_shakeWhen == EffectType.In || _shakeWhen == EffectType.Both)
-            {
-                return true;
-            }
-            return false;
-        }
-    }
+    List<Tweener> _shakeTweeners = new List<Tweener>();
+    List<BuildSettings> _buildList = new List<BuildSettings>();
 
-    public bool CheckOutEffectType
-    {
-        get
-        {
-            if (_shakeWhen == EffectType.Out || _shakeWhen == EffectType.Both)
-            {
-                return true;
-            }
-            return false;
-        }
-    }
+    public bool CheckInEffectType() { return _shakeWhen == EffectType.In || _shakeWhen == EffectType.Both; }
+
+    public bool CheckOutEffectType() { return _shakeWhen == EffectType.Out || _shakeWhen == EffectType.Both;  }
 
     public void SetUpShakeTween(List<BuildSettings> buildSettings)
     {
-        foreach (var item in buildSettings)
+        _running = true;
+        _buildList = buildSettings;
+
+        foreach (var item in _buildList)
         {
             _startscale = item._element.transform.localScale;
             _shakeTweeners.Add(item._element.transform.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut));
         }
     }
 
-    public void RewindScaleTweens(List<BuildSettings> buildSettings, List<Tweener> tweeners)
+    public void RewindScaleTweens()
     {
-        foreach (var item in tweeners)
+        foreach (var item in _shakeTweeners)
         {
             item.Rewind();
         }
-        foreach (var item in buildSettings)
+        foreach (var item in _buildList)
         {
             item._element.transform.localScale = _startscale;
         }
     }
 
-    public IEnumerator ShakeSequence(List<BuildSettings> buildSettings, List<Tweener> tweeners, TweenCallback tweenCallback = null)
+    public IEnumerator ShakeSequence(TweenCallback tweenCallback = null)
     {
         bool finished = false;
         int index = 0;
         while (!finished)
         {
-            foreach (var item in buildSettings)
+            foreach (var item in _buildList)
             {
-                if (index == buildSettings.Count - 1)
+                if (index == _buildList.Count - 1)
                 {
-                    tweeners[index].ChangeStartValue(item._element.transform.localScale).Play().OnComplete(tweenCallback);
+                    _shakeTweeners[index].ChangeStartValue(item._element.transform.localScale).Play().OnComplete(tweenCallback);
                 }
                 else
                 {
-                    tweeners[index].ChangeStartValue(item._element.transform.localScale).Play();
+                    _shakeTweeners[index].ChangeStartValue(item._element.transform.localScale).Play();
                     yield return new WaitForSeconds(item._buildNextAfterDelay);
                     index++;
                 }

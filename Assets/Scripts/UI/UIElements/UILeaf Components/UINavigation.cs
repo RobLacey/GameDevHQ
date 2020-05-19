@@ -10,14 +10,14 @@ public class UINavigation
 {
     [AllowNesting] [Label("Move To When Clicked")] public UIBranch _childBranch;
     public NavigationType _setNavigation = NavigationType.UpAndDown;
-    [AllowNesting] [ShowIf("UpDownNav")] public UILeaf up;
-    [AllowNesting] [ShowIf("UpDownNav")] public UILeaf down;
-    [AllowNesting] [ShowIf("RightLeftNav")] public UILeaf left;
-    [AllowNesting] [ShowIf("RightLeftNav")] public UILeaf right;
+    [AllowNesting] [ShowIf("UpDownNav")] public UINode up;
+    [AllowNesting] [ShowIf("UpDownNav")] public UINode down;
+    [AllowNesting] [ShowIf("RightLeftNav")] public UINode left;
+    [AllowNesting] [ShowIf("RightLeftNav")] public UINode right;
     public UnityEvent _asButtonEvent;
     public OnToggleEvent _asToggleEvent;
 
-    Setting _mySettings = Setting.Navigation;
+    Setting _mySettings = Setting.NavigationAndOnClick;
 
     [System.Serializable]
     public class OnToggleEvent : UnityEvent<bool> { }
@@ -42,7 +42,7 @@ public class UINavigation
 
     public void ProcessMoves(AxisEventData eventData, Setting setting)
     {
-        if (_setNavigation == NavigationType.None || ((setting & _mySettings) != 0) == false) return;
+        if (_setNavigation == NavigationType.None || (setting & _mySettings) == 0) return;
 
         if (_setNavigation != NavigationType.RightAndLeft)
         {

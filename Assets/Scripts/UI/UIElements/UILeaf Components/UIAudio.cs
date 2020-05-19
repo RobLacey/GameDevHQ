@@ -30,7 +30,7 @@ public class UIAudio
 
     public void Play(UIEventTypes uIEventTypes, Setting settingToCheck)
     {
-        if (!((settingToCheck & Setting.Audio) != 0)) return;
+        if (!((settingToCheck & _mySetting) != 0)) return;
 
         switch (uIEventTypes)
         {

@@ -5,9 +5,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using System;
 using NaughtyAttributes;
-using UnityEngine.UI;
 
-public class UITrunk : MonoBehaviour
+public class UIMasterController : MonoBehaviour
 {
     [Header("Main Settings")] 
     [Label("UI Starting Branch")] [Required("MUST have a starting branch")]
@@ -30,7 +29,7 @@ public class UITrunk : MonoBehaviour
     //Variables
     int _groupIndex = 0;
     UIBranch[] _allUIBranches;
-    UILeaf _uiElementLastSelected;
+    UINode _uiElementLastSelected;
     Vector3 _mousePos = Vector3.zero;
     bool _usingMouse = false;
     bool _usingKeysOrCtrl = false;
@@ -38,7 +37,6 @@ public class UITrunk : MonoBehaviour
     public static bool InMenu { get; set; } = true; //***May not need to be static or even public
 
     public UIGroupID ActiveGroup { get; set; }
-    //enum EscapeKey { BackOneLevel, BackToRootLevel }
     enum StartInMenu { InMenu, InGameControl }
 
     [Serializable]
@@ -68,12 +66,12 @@ public class UITrunk : MonoBehaviour
 
     private void OnEnable()
     {
-        UILeaf.Canceller += OnCancel;
+        UINode.Canceller += OnCancel;
     }
 
     private void OnDisable()
     {
-        UILeaf.Canceller -= OnCancel;
+        UINode.Canceller -= OnCancel;
     }
 
     private void Start()
@@ -154,7 +152,7 @@ public class UITrunk : MonoBehaviour
 
     private void SwitchControlGroups()
     {
-        _uiElementLastSelected._audio.Play(UIEventTypes.Selected, _uiElementLastSelected.setting);
+        _uiElementLastSelected._audio.Play(UIEventTypes.Selected, _uiElementLastSelected._functionToUse);
         _uiElementLastSelected.SetNotHighlighted();
 
         _groupIndex++;
@@ -186,7 +184,7 @@ public class UITrunk : MonoBehaviour
         }
     }
 
-    public void SetLastUIObject(UILeaf uiObject, UIGroupID uIGroupID) 
+    public void SetLastUIObject(UINode uiObject, UIGroupID uIGroupID) 
     {
         if (uIGroupID != ActiveGroup)
         {
@@ -225,9 +223,9 @@ public class UITrunk : MonoBehaviour
         }
         else if (escapeKey == EscapeKey.BackToRootLevel)
         {
-            UILeaf temp = RootCancelProcess();
+            UINode temp = RootCancelProcess();
             temp.GetComponentInParent<UIBranch>().MoveBackALevel();
-            temp._audio.Play(UIEventTypes.Cancelled, temp.setting);
+            temp._audio.Play(UIEventTypes.Cancelled, temp._functionToUse);
         }
 
         else if (escapeKey == EscapeKey.GlobalSetting)
@@ -248,13 +246,13 @@ public class UITrunk : MonoBehaviour
 
         if (_GlobalEscapeKeyFunction == EscapeKey.BackToRootLevel)
         {
-            UILeaf temp = RootCancelProcess();
+            UINode temp = RootCancelProcess();
             temp.GetComponentInParent<UIBranch>().MoveBackALevel();
-            temp._audio.Play(UIEventTypes.Cancelled, temp.setting);
+            temp._audio.Play(UIEventTypes.Cancelled, temp._functionToUse);
         }
     }
 
-    private UILeaf RootCancelProcess()
+    private UINode RootCancelProcess()
     {
         foreach (var item in _groupList)
         {

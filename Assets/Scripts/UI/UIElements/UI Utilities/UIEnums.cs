@@ -40,7 +40,7 @@ public enum PreserveSelection { Never_TempSwitch, Standard, ToggleGroup_AllOff, 
 public enum Setting
 {
     None = 0,
-    Navigation = 1 << 0,
+    NavigationAndOnClick = 1 << 0,
     Colours = 1 << 1,
     Size = 1 << 2,
     Invert = 1 << 3,
@@ -54,7 +54,7 @@ public enum NavigationType { RightAndLeft, UpAndDown, AllDirections, None }
 
 public enum EventType { Never, Highlighted, Selected }
 
-public enum ScaleType { ScaleUp, ScaleDown, Punch, Shake }
+public enum ScaleType { PositionTween, ScaleTween, ScalePunch, ScaleShake }
 
 public enum Choose { None, Highlighted, HighlightedAndSelected, Selected, Pressed };
 
@@ -65,6 +65,24 @@ public enum ToolTipAnchor
 }
 
 public enum TooltipType { Fixed, Follow }
+
+public enum ColourSettings
+{
+    None = 0,
+    Highlighted = 1 << 0,
+    Selected = 1 << 1,
+    Pressed = 1 << 2,
+}
+
+public enum TweenColours
+{
+    None = 0,
+    Images = 1 << 0,
+    Text = 1 << 1,
+}
+
+public enum DestinationAs { StartTweenAt, MidPointForInAndOut, EndTweenAt }
+public enum CurrentRoatationIs { StartRotateAt, MidPointForInAndOut, EndRotateAt }
 
 
 
