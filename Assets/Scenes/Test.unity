@@ -4080,7 +4080,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _functionToUse
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -13182,7 +13182,7 @@ MonoBehaviour:
     _textToSwap: {fileID: 0}
     _swapToThisText: 
     _toggleImageList: []
-  _buttonSize:
+  _sizeAndPos:
     _ChangeSizeOn: 0
     _scaledType: 1
     _punchTime: 0.5
@@ -14095,7 +14095,7 @@ MonoBehaviour:
     _swapToThisText: 
     _toggleImageList:
     - {fileID: 6446246269124665236}
-  _buttonSize:
+  _sizeAndPos:
     _ChangeSizeOn: 0
     _scaledType: 1
     _punchTime: 0.5

@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7472274104007262574}
-  - component: {fileID: 7472274104007262563}
   - component: {fileID: 7472274104007262572}
   m_Layer: 5
   m_Name: Standard Button
@@ -39,18 +38,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &7472274104007262563
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7472274104007262575}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 694e8326df0b4a743a1b7bd95696150a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7472274104007262572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,8 +51,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isCancelOrBackButton: 0
+  _escapeKeyFunction: 2
   _highlightFirstOption: 1
-  _preseveSelection: 0
+  _isDisabled: 0
+  _preseveSelection: 1
+  _toggleGroupID: 0
+  _functionToUse: 0
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 3
@@ -80,32 +71,54 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   _colours:
-    _images:
-    - {fileID: 7472274105214194845}
-    _mainText: {fileID: 0}
-    _LerpImageColours: 0
-    _LerpTextColours: 0
-    _crossFadeTime: 0.4
-    _selectedColour: {r: 0.15686275, g: 0, b: 1, a: 1}
+    _coloursToUse: 0
+    _addTweenTo: 0
+    _tweenTime: 0.4
     _selectedHighlightPerc: 1
-    _highlightedColour: {r: 0.30847597, g: 1, b: 0, a: 1}
-    _highlight: 1
-    _whenSelected: 0
-    _pressFlash: 0
-    _flashColour: {r: 0, g: 0, b: 0, a: 1}
     _flashTime: 0.1
+    _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    _selected: {r: 1, g: 1, b: 1, a: 1}
+    _highlighted: {r: 1, g: 1, b: 1, a: 1}
+    _pressedFlash: {r: 1, g: 1, b: 1, a: 1}
+    _textElements: {fileID: 0}
+    _imageElements: []
   _invertColourCorrection:
-    _titleText: {fileID: 0}
-    toggleCheckMark: {fileID: 0}
     invertOnHighlight: 0
     invertOnSelected: 0
+    _text: {fileID: 0}
+    _image: {fileID: 0}
     invertedHighlightColour: {r: 0, g: 0, b: 0, a: 1}
     invertedSelectedColour: {r: 1, g: 1, b: 1, a: 1}
-  _buttonSize:
+  _swapImageOrText:
+    _imageToSwap: {fileID: 0}
+    _swapToThisSprite: {fileID: 0}
+    _textToSwap: {fileID: 0}
+    _swapToThisText: 
+    _toggleImageList: []
+  _sizeAndPos:
     _ChangeSizeOn: 0
     _scaledType: 1
-    _scaleChangeBy: 0.05
-    _pressedHoldTime: 0.05
+    _punchTime: 0.5
+    _punchScaleByX: 0.1
+    _punchScaleByY: 0.2
+    _punchvibrato: 6
+    _elastisity: 0.5
+    _shakeScaleByX: 0.1
+    _shakeScaleByY: 0.2
+    _shakeTime: 0.5
+    _shakeRandomness: 45
+    _shakeVibrato: 6
+    _fadeOut: 1
+    _pixelsToMoveBy: {x: 0, y: 0, z: 0}
+    _scaleBy: {x: 0, y: 0, z: 0}
+    _time: 0
+    _ease: 0
+    _snapping: 0
+  _accessories:
+    _activateWhen: 0
+    _useOutline: {fileID: 0}
+    _useShadow: {fileID: 0}
+    _accessoriesList: []
   _audio:
     _sound_Highlighted: {fileID: 0}
     _volume_Highlighted: 0
@@ -113,14 +126,23 @@ MonoBehaviour:
     _volume_Select: 0
     _sound_Cancel: {fileID: 0}
     _volume_Cancel: 0
-  _accessories:
-    _activationList: []
-  _swapImageOrText:
-    _mainImage: {fileID: 0}
-    _textToSwap: {fileID: 0}
-    _swapToSprite: {fileID: 0}
-    _swapToText: Here
-    _toggleList: []
+  _tooltips:
+    _mainCanvas: {fileID: 0}
+    _UICamera: {fileID: 0}
+    _tooltipType: 1
+    _toolTipPosition: 0
+    _groupFixedPosition: {fileID: 0}
+    _mousePaddingX: 0
+    _mousePaddingY: 0
+    _positionToUse: 0
+    _keyboardPosition: 0
+    _fixedPosition: {fileID: 0}
+    _keyboardPaddingX: 0
+    _keyboardPaddingY: 0
+    _screenSafeZone: 10
+    _delay: 1
+    _buildDelay: 1
+    _listOfTooltips: []
 --- !u!1 &7472274104923999169
 GameObject:
   m_ObjectHideFlags: 0

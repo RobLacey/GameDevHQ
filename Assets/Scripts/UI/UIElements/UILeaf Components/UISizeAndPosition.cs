@@ -6,7 +6,7 @@ using NaughtyAttributes;
 using DG.Tweening;
 
 [Serializable]
-public class UISize
+public class UISizeAndPosition
 {
     [SerializeField] Choose _ChangeSizeOn = Choose.None;
     [SerializeField] [AllowNesting] [ShowIf("Activate")] ScaleType _scaledType = ScaleType.ScaleTween;
@@ -32,7 +32,7 @@ public class UISize
     RectTransform _myRect;
     Vector3 _startSize;
     Vector3 _startPosition;
-    Setting _mySettings = Setting.Size;
+    Setting _mySettings = Setting.SizeAndPosition;
     Tween _currentTween;
     int _id;
 

@@ -26,12 +26,24 @@ public class UIColour
     Color _normalColour = Color.white;
     Setting _mySetting = Setting.Colours;
     int _id;
+    public bool NoSettings { get; set; } 
 
     public void OnAwake(int objectId)
     {
         _id = objectId;
-        if (_imageElements.Length > 0) _normalColour = _imageElements[0].color;
+        if (_imageElements.Length > 0)
+        { 
+            if(_imageElements[0] == null)
+            {
+                _imageElements = new Image[0];
+            }
+            else
+            {
+                _normalColour = _imageElements[0].color; 
+            }
+        }
         if (_textElements) _normalColour = _textElements.color;
+        if (_imageElements.Length == 0 && !_textElements) { NoSettings = true; }
     }
 
     public void SetColourOnEnter(bool isSelected, Setting setting)

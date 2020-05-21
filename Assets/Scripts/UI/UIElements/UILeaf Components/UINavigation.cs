@@ -9,6 +9,7 @@ using UnityEngine.Events;
 public class UINavigation
 {
     [AllowNesting] [Label("Move To When Clicked")] public UIBranch _childBranch;
+    public MoveType _moveType = MoveType.MoveToExternalBranch;
     public NavigationType _setNavigation = NavigationType.UpAndDown;
     [AllowNesting] [ShowIf("UpDownNav")] public UINode up;
     [AllowNesting] [ShowIf("UpDownNav")] public UINode down;
@@ -17,6 +18,7 @@ public class UINavigation
     public UnityEvent _asButtonEvent;
     public OnToggleEvent _asToggleEvent;
 
+    //Variables
     Setting _mySettings = Setting.NavigationAndOnClick;
 
     [System.Serializable]

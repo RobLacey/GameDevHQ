@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 997165033627275139}
   - component: {fileID: 997165033627275143}
   - component: {fileID: 997165033627275256}
-  - component: {fileID: 997165033627275140}
   - component: {fileID: 997165033627275138}
   m_Layer: 5
   m_Name: Full Screen
@@ -211,41 +210,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _userDefinedStartPosition: {fileID: 0}
   _onScreenAtStart: 0
+  _isFullScreen: 0
   _turnOffOnMoveToChild: 0
+  _alwaysTweenOnReturn: 0
   _saveExitSelection: 0
-  _isFullScreen: 1
-  _positionInTween: 0
-  _positionOutTween: 0
-  _scaleTransition: 0
-  _canvasGroupFade: 0
---- !u!114 &997165033627275140
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 997165033627275258}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.04445076, b: 1, a: 0.5254902}
-  m_RaycastTarget: 0
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  _escapeKeyFunction: 2
+  _groupList: []
 --- !u!114 &997165033627275138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,31 +228,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8a427e419e3a5c458bd440912184959, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _applyEffectsTo:
-  - _element: {fileID: 997165033627275259}
-    _tweenAnchorPosition: {x: 1870, y: 0}
-    _buildNextAfterDelay: 0
-    _resetStartPositionStore: {x: 0, y: 0}
+  _buildObjectsList: []
   _useGlobalTweenTime: 0
   _globalInTime: 1
   _globalOutTime: 1
+  _positionTween: 0
+  _rotationTween: 0
+  _scaleTransition: 0
+  _canvasGroupFade: 0
+  _endOfTweenAction:
+    m_PersistentCalls:
+      m_Calls: []
   _posTween:
-    _inTime: 0.2
+    _inTime: 1
     _outTime: 1
-    _currentPositionIs: 2
-    _easeIn: 6
+    _currentPositionIs: 0
+    _easeIn: 0
     _easeOut: 0
-    _snapping: 0
-    _reversedBuild: []
+    _pixelSnapping: 0
+  _rotateTween:
+    _inTime: 1
+    _outTime: 1
+    _currentRotationIs: 0
+    _easeIn: 0
+    _easeOut: 0
   _scaleTween:
-    _InTime: 1
-    _OutTime: 1
+    _inTime: 1
+    _outTime: 1
     _easeIn: 0
     _easeOut: 0
     _scaleToTweenTo: {x: 0.8, y: 0.8, z: 0}
-    _reversedBuildSettings: []
-    _resetInOutscale: {x: 0, y: 0, z: 0}
-    _resetOutscale: {x: 0, y: 0, z: 0}
   _punchTween:
     _punchWhen: 0
     _strength: {x: 0.1, y: 0.1, z: 0}
@@ -297,6 +272,6 @@ MonoBehaviour:
     _randomness: 45
     _fadeOut: 0
   _fadeTween:
-    _InTime: 1
-    _OutTime: 0.2
-    _fadeEase: 1
+    _inTime: 1
+    _outTime: 1
+    _fadeEase: 0

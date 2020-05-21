@@ -22,7 +22,7 @@ public class UIInvertColours
     bool _canInvert;
     Color _checkMarkStartColour = Color.white;
     Color _textStartColour = Color.white;
-    Setting _mySetting = Setting.Invert;
+    Setting _mySetting = Setting.InvertColourCorrection;
 
     #region Editor Scripts
     private bool TextSet()

@@ -42,9 +42,9 @@ public enum Setting
     None = 0,
     NavigationAndOnClick = 1 << 0,
     Colours = 1 << 1,
-    Size = 1 << 2,
-    Invert = 1 << 3,
-    Swap = 1 << 4,
+    SizeAndPosition = 1 << 2,
+    InvertColourCorrection = 1 << 3,
+    SwapImageOrText = 1 << 4,
     Accessories = 1 << 5,
     Audio = 1 << 6,
     TooplTip = 1 << 7
@@ -84,7 +84,9 @@ public enum TweenColours
 public enum DestinationAs { StartTweenAt, MidPointForInAndOut, EndTweenAt }
 public enum CurrentRoatationIs { StartRotateAt, MidPointForInAndOut, EndRotateAt }
 
+public enum MoveType { MoveToInternalBranch, MoveToExternalBranch }
 
+public enum StartInMenu { InMenu, InGameControl }
 
 
 

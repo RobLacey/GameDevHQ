@@ -28,7 +28,7 @@ public class UITooltip
     [SerializeField] [AllowNesting] [Label("Display Tooltip Delay")] public float _delay = 1f;
     [SerializeField] [AllowNesting] [EnableIf("BuildTips")] [Label("Delay Unitl Next..")] float _buildDelay = 1f;
     [InfoBox("Add more than ONE tooltip to enable build delay time settings")]
-    [SerializeField] LayoutGroup[] _listOfTooltips;
+    [SerializeField] LayoutGroup[] _listOfTooltips = new LayoutGroup[0];
 
     //Variables
     GameObject _tooltipsParent;
@@ -56,9 +56,14 @@ public class UITooltip
 
     //TODO Change size calcs to work from camera size rather than canvas so still works when aspect changes
 
-    public void OnAwake(Setting setting, Vector3[] corners) //Make OnAwake
+    public void OnAwake(Setting setting, Vector3[] corners, string parent) //Make OnAwake
     {
         if (!((setting & _mySetting) != 0)) return;
+        if (_listOfTooltips.Length == 0) 
+        { 
+            Debug.Log("No tooltips set on " + parent); 
+            return; 
+        }
         _myCorners = corners;
         IsActive = false;
         CreateBucket();
@@ -71,8 +76,8 @@ public class UITooltip
 
         if (_listOfTooltips.Length <= 1) _buildDelay = 0;
 
-        Debug.Log(Camera.main.pixelWidth + "Camera");
-        Debug.Log(_mainCanvas.rect.width + "Canvas");
+        //Debug.Log(Camera.main.pixelWidth + "Camera");
+        //Debug.Log(_mainCanvas.rect.width + "Canvas");
 
         _canvasWidth = (_mainCanvas.rect.width / 2) - _screenSafeZone;
         _canvasHeight = (_mainCanvas.rect.height / 2) - _screenSafeZone;
@@ -94,7 +99,7 @@ public class UITooltip
     public void HideToolTip(Setting setting)
     {
         if (!((setting & _mySetting) != 0)) return;
-
+        
         _toolTipCanvas.enabled = false;
         IsActive = false;
     }

@@ -8,38 +8,27 @@ using NaughtyAttributes;
 [Serializable]
 public class UISwapper
 {
+    [Header("Toggle Settings")]
+    [InfoBox(" Toggle Text is OPTIONAL!!", order = 0)]
+    [SerializeField] Image _toggleIsOff;
+    [SerializeField] Image _toggleIsOn;
+    [SerializeField] Text _toggleText;
+    [SerializeField] string _changeToggleTextTo;
     [SerializeField] [Header("Swapping UI Image Settings")] Image _imageToSwap;
     [SerializeField] Sprite _swapToThisSprite;
-    [SerializeField] [Header("Swapping UI Text Settings")] Text _textToSwap;
     [SerializeField] string _swapToThisText;
-    [InfoBox("Use ToggleImageIndex property to Get/Set the currentIndex. Can have as many images as needed. Use this to assign a Checkmarks, " +
-     "custom toggles or make a multi select button (e.g different Button Images for Easy, Medium & Hard)")]
-    [SerializeField] [Header("Toogle UI Image Settings")] Image[] _toggleImageList;
+    [SerializeField] [Header("Swapping UI Text Settings")] Text _textToSwap;
 
     //Variables
     Sprite _startImage;
     string _startText;
-    int _currentIndex = 0;
-    Setting _mySetting = Setting.Swap;
+    string _startToggleText;
+    Setting _mySetting = Setting.SwapImageOrText;
 
-    public int ToggleImageIndex // TODO Used to set Image. NOT Tested
-    { 
-        get { return _currentIndex; } 
-        set 
-        {
-            _toggleImageList[_currentIndex].enabled = false;
-            _currentIndex = value;
-            _toggleImageList[_currentIndex].enabled = true;
-        }
-    } 
+    //TODO Add Multi Select Toggle - Will need to be a new UIElement type so a lot of work
 
     public Action<UIEventTypes, bool, Setting> OnAwake(bool selected)
     {
-        if (_toggleImageList.Length == 1)
-        {
-            _toggleImageList[0].enabled = selected;
-        }
-
         if (_imageToSwap)
         {
             _startImage = _imageToSwap.sprite;
@@ -48,15 +37,13 @@ public class UISwapper
         {
             _startText = _textToSwap.text;
         }
-        if (_toggleImageList.Length > 1)
-        {
-            foreach (var item in _toggleImageList)
-            {
-                item.enabled = false;
-            }
-            _toggleImageList[_currentIndex].enabled = true;
 
+        if (_toggleText)
+        {
+            _startToggleText = _toggleText.text;
         }
+
+        CycleToggle(selected, Setting.SwapImageOrText);
         return Swap;
     }
 
@@ -92,28 +79,24 @@ public class UISwapper
                 _textToSwap.text = _startText;
             }
         }
-
     }
 
-    public void CycleToggleList(bool selected, Setting setting)
+    public void CycleToggle(bool selected, Setting setting)
     {
         if (!((setting & _mySetting) != 0)) return;
+        if (_toggleIsOff == null) return;
 
-        if (_toggleImageList.Length == 1)
+        if (selected)
         {
-            _toggleImageList[0].enabled = selected;
+            _toggleIsOff.enabled = false;
+            _toggleIsOn.enabled = true;
+            if(_toggleText) _toggleText.text = _changeToggleTextTo;
         }
-
-        if (_toggleImageList.Length > 1)
+        else
         {
-            _toggleImageList[_currentIndex].enabled = false;
-            _currentIndex++;
-
-            if (_currentIndex == _toggleImageList.Length)
-            {
-                _currentIndex = 0;
-            }
-            _toggleImageList[_currentIndex].enabled = true;
+           _toggleIsOff.enabled = true;
+           _toggleIsOn.enabled = false;
+            if (_toggleText) _toggleText.text = _startToggleText;
         }
     }
 }
