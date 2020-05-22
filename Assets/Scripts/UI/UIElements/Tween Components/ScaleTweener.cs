@@ -3,70 +3,92 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using NaughtyAttributes;
+using System;
 
 [System.Serializable]
 public class ScaleTweener 
 {
     [SerializeField] [AllowNesting] [HideIf("UsingGlobalTime")] float _inTime = 1;
     [SerializeField] [AllowNesting] [HideIf("UsingGlobalTime")] float _outTime = 1;
-    [SerializeField] Ease _easeIn = Ease.Unset;
-    [SerializeField] Ease _easeOut = Ease.Unset;
-    [SerializeField] [AllowNesting] [DisableIf("_running")] Vector3 _scaleToTweenTo = new Vector3(0.8f,0.8f,0f);
+    [SerializeField] Ease _easeIn = Ease.Linear;
+    [SerializeField] Ease _easeOut = Ease.Linear;
 
     //Varibales
-    bool _running = false;
     float _tweenTime;
     Ease _tweenEase;
-    List<Tweener> _tweensToUse;
     List<BuildSettings> _listToUse;
-    Vector3 _resetInOutscale;
-    Vector3 _resetOutscale;
-    List<Tweener> _scaleInTweeners = new List<Tweener>();
-    List<Tweener> _scaleOutTweeners = new List<Tweener>();
     List<BuildSettings> _reversedBuildSettings = new List<BuildSettings>();
     List<BuildSettings> _buildList = new List<BuildSettings>();
+    int _id;
+    Action<IEnumerator> _startCoroutine;
 
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public void SetUpScaleTweens(ScaleTween scaleTweenWType, List<BuildSettings> buildObjectsList)
+    public void SetUpScaleTweens(List<BuildSettings> buildObjectsList, Action<IEnumerator> startCoroutine)
     {
-        _running = true;
+        _startCoroutine = startCoroutine;
         _buildList = buildObjectsList;
 
-        if (scaleTweenWType == ScaleTween.Scale_InOnly || scaleTweenWType == ScaleTween.Scale_InAndOut)
+        foreach (var item in _buildList)
         {
-            SetUpInAndOutTween(_buildList);
+            item._element.transform.localScale = item._startScale;
         }
-
-        if (scaleTweenWType == ScaleTween.Scale_OutOnly)
-        {
-            SetUpOutTween(_buildList);
-        }
-    }
-
-    private void SetUpInAndOutTween(List<BuildSettings> buildSettings)
-    {
-        foreach (var item in buildSettings)
-        {
-            _resetInOutscale = _scaleToTweenTo;
-            _scaleInTweeners.Add(item._element.transform.DOScale(item._element.transform.localScale, _inTime));
-            _scaleOutTweeners.Add(item._element.transform.DOScale(_scaleToTweenTo, _outTime));
-            item._element.transform.localScale = _scaleToTweenTo;
-        }
-        _reversedBuildSettings = new List<BuildSettings>(buildSettings);
+        _reversedBuildSettings = new List<BuildSettings>(_buildList);
         _reversedBuildSettings.Reverse();
-        _scaleOutTweeners.Reverse();
     }
 
-    private void SetUpOutTween(List<BuildSettings> buildSettings)
+    public void ScaleTween(ScaleTween scaleTweenType, float globalTime, bool isIn, TweenCallback tweenCallback = null)
     {
-        foreach (var item in buildSettings)
+        if (scaleTweenType == global::ScaleTween.NoTween) return;
+
+        StopRunningTweens();
+
+        if (scaleTweenType == global::ScaleTween.Scale_InOnly)
         {
-            _resetInOutscale = _scaleToTweenTo;
-            _resetOutscale = item._element.transform.localScale;
-            _scaleInTweeners.Add(item._element.transform.DOScale(item._element.transform.localScale, _inTime));
-            _scaleOutTweeners.Add(item._element.transform.DOScale(_scaleToTweenTo, _outTime));
+            if (isIn)
+            {
+                ResetScaleTweens();
+                SetInTime(globalTime);
+                InSettings();
+                _startCoroutine.Invoke(ScaleSequence(tweenCallback));
+            }
+            else
+            {
+                tweenCallback.Invoke();
+            }
+        }
+
+        if (scaleTweenType == global::ScaleTween.Scale_OutOnly)
+        {
+            if (isIn)
+            {
+                ResetScaleTweens();
+                tweenCallback.Invoke();
+            }
+            else
+            {
+                SetOutTime(globalTime);
+                OutSettings();
+                _startCoroutine.Invoke(ScaleSequence(tweenCallback));
+            }
+        }
+
+        if (scaleTweenType == global::ScaleTween.Scale_InAndOut)
+        {
+            if (isIn)
+            {
+                SetInTime(globalTime);
+                InSettings();
+                _startCoroutine.Invoke(ScaleSequence(tweenCallback));
+
+            }
+            else
+            {
+                SetOutTime(globalTime);
+                InOutSettings();
+                _startCoroutine.Invoke(ScaleSequence(tweenCallback));
+            }
         }
     }
 
@@ -80,13 +102,19 @@ public class ScaleTweener
             {
                 if (index == _listToUse.Count - 1)
                 {
-                    _tweensToUse[index].ChangeStartValue(item._element.transform.localScale, _tweenTime).SetEase(_tweenEase)
-                                                                                              .Play()
-                                                                                              .OnComplete(tweenCallback);
+                    item._element.DOScale(item._scaleTo, _tweenTime)
+                            .SetId("scale" + item._element.GetInstanceID())
+                            .SetEase(_tweenEase).SetAutoKill(true)
+                            .Play()
+                            .OnComplete(tweenCallback);
+
                 }
                 else
                 {
-                    _tweensToUse[index].ChangeStartValue(item._element.transform.localScale, _tweenTime).SetEase(_tweenEase).Play();
+                    item._element.DOScale(item._scaleTo, _tweenTime)
+                                .SetId("scale" + item._element.GetInstanceID())
+                                .SetEase(_tweenEase).SetAutoKill(true)
+                                .Play();
                     yield return new WaitForSeconds(item._buildNextAfterDelay);
                     index++;
                 }
@@ -96,50 +124,54 @@ public class ScaleTweener
         yield return null;
     }
 
-    public void PauseInTweens()
+    private void StopRunningTweens()
     {
-        foreach (var item in _scaleInTweeners)
+        foreach (var item in _buildList)
         {
-            item.Pause();
-        }
-    }
-    public void PauseOutTweens()
-    {
-        foreach (var item in _scaleOutTweeners)
-        {
-            item.Pause();
+            DOTween.Kill("scale" + item._element.GetInstanceID());
         }
     }
 
-    public void RewindScaleInTweens()
+    private void ResetScaleTweens()
     {
-        foreach (var item in _scaleInTweeners)
-        {
-            item.Rewind();
-        }
         foreach (var item in _buildList) 
         {
-            item._element.transform.localScale = _resetInOutscale;
+            item._element.transform.localScale = item._startScale;
         }
     }
 
-    public void RewindScaleOutTweens()
-    {
-        foreach (var item in _scaleOutTweeners)
-        {
-            item.Rewind();
-        }
-        foreach (var item in _buildList) 
-        {
-            item._element.transform.localScale = _resetOutscale;
-        }
-    }
-
-    public void InSettings(float globalTime)
+    private void InSettings()
     {
         _tweenEase = _easeIn;
-        _tweensToUse = _scaleInTweeners;
         _listToUse = _buildList;
+        foreach (var item in _listToUse)
+        {
+            item._scaleTo = item._targetScale;
+        }
+
+    }
+    private void OutSettings()
+    {
+        _tweenEase = _easeOut;
+        _listToUse = _buildList;
+        foreach (var item in _listToUse)
+        {
+            item._scaleTo = item._targetScale;
+        }
+    }
+    private void InOutSettings()
+    {
+        _tweenEase = _easeOut;
+        _listToUse = _reversedBuildSettings;
+
+        foreach (var item in _listToUse)
+        {
+            item._scaleTo = item._startScale;
+        }
+    }
+
+    private void SetInTime(float globalTime) 
+    {
         if (globalTime > 0)
         {
             _tweenTime = globalTime;
@@ -149,12 +181,9 @@ public class ScaleTweener
             _tweenTime = _inTime;
         }
     }
-    public void OutSettings(float globalTime)
-    {
-        _tweenEase = _easeOut;
-        _tweensToUse = _scaleOutTweeners;
-        _listToUse = _buildList;
 
+    private void SetOutTime(float globalTime) 
+    {
         if (globalTime > 0)
         {
             _tweenTime = globalTime;
@@ -164,19 +193,4 @@ public class ScaleTweener
             _tweenTime = _outTime;
         }
     }
-    public void InOutSettings(float globalTime)
-    {
-        _tweenEase = _easeOut;
-        _tweensToUse = _scaleOutTweeners;
-        _listToUse = _reversedBuildSettings;
-        if (globalTime > 0)
-        {
-            _tweenTime = globalTime;
-        }
-        else
-        {
-            _tweenTime = _outTime;
-        }
-    }
-
 }

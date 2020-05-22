@@ -17,10 +17,10 @@ public class UITweener : MonoBehaviour
     [SerializeField] [ShowIf("GlobalTime")] float _globalInTime = 1;
     [SerializeField] [ShowIf("GlobalTime")] float _globalOutTime = 1;
     [Header("Tween Settings")]
-    [SerializeField] [DisableIf("IsRunning")] public PositionTweenType _positionTween = PositionTweenType.NoTween;
-    [SerializeField] [DisableIf("IsRunning")] public RotationTweenType _rotationTween = RotationTweenType.NoTween;
-    [SerializeField] [DisableIf("IsRunning")] public ScaleTween _scaleTransition = ScaleTween.NoTween;
-    [SerializeField] [DisableIf("IsRunning")] public FadeTween _canvasGroupFade = FadeTween.NoTween;
+    [SerializeField] public PositionTweenType _positionTween = PositionTweenType.NoTween;
+    [SerializeField] public RotationTweenType _rotationTween = RotationTweenType.NoTween;
+    [SerializeField] public ScaleTween _scaleTransition = ScaleTween.NoTween;
+    [SerializeField] public FadeTween _canvasGroupFade = FadeTween.NoTween;
     [Header("Tween Trigger Settings")]
     [SerializeField] [Label("Event At End/Mid-Point of Tween")] TweenTrigger _endOfTweenAction;
     [SerializeField] [Label("Settings")] [ShowIf("Position")] [BoxGroup("Position Tween")] PositionTween _posTween = new PositionTween();
@@ -52,10 +52,32 @@ public class UITweener : MonoBehaviour
         }
         return _useGlobalTweenTime; 
     }
-    public bool Position() { return _positionTween != PositionTweenType.NoTween; }
-    public bool Rotation() { return _rotationTween != RotationTweenType.NoTween; }
-    public bool Scale() { return _scaleTransition != ScaleTween.Punch && _scaleTransition != ScaleTween.Shake 
-                          && _scaleTransition != ScaleTween.NoTween; }
+    public bool Position() 
+    {
+        foreach (var item in _buildObjectsList)
+        {
+            item.PositionTween = _positionTween != PositionTweenType.NoTween;
+        }
+        return _positionTween != PositionTweenType.NoTween; 
+    }
+    public bool Rotation() 
+    {
+        foreach (var item in _buildObjectsList)
+        {
+            item.RotationTween = _rotationTween != RotationTweenType.NoTween;
+        }
+        return _rotationTween != RotationTweenType.NoTween; 
+    }
+    public bool Scale() 
+    {
+        bool active = _scaleTransition != ScaleTween.Punch && _scaleTransition != ScaleTween.Shake
+                          && _scaleTransition != ScaleTween.NoTween;
+        foreach (var item in _buildObjectsList)
+        {
+            item.ScaleTween = active;
+        }
+        return active; 
+    }
     public bool Punch()  { return _scaleTransition == ScaleTween.Punch; }
     public bool Shake() { return _scaleTransition == ScaleTween.Shake; }
     public bool Fade() {  return _canvasGroupFade != FadeTween.NoTween; }
@@ -63,13 +85,10 @@ public class UITweener : MonoBehaviour
     #endregion
 
     //Variables
-    bool _positionInAndOut;
-    bool _rotateInAndOut;
-    bool _scaleInAndOut;
     int _counter = 0;
     int _endOfEffectCounter;
     int _startOfEffectCounter;
-    public bool IsRunning { get; set; } = false;              //To disable Tween settings as they break when changed during runtime
+    public bool IsRunning { get; set; } = false;              //Use To disable Tween settings as they break when changed during runtime
 
     Action _InTweensCallback;
     Action _OutTweensCallback;
@@ -84,21 +103,18 @@ public class UITweener : MonoBehaviour
         SetUpTweeners();
     }
 
-    //Expand for Detail
     private void SetUpTweeners()
     {
         if (_positionTween != PositionTweenType.NoTween)
         {
             _counter++;
-            _posTween.SetUpPositionTweens(_positionTween, _buildObjectsList);
-            if (_positionTween == PositionTweenType.InAndOut) _positionInAndOut = true;
+            _posTween.SetUpPositionTweens( _buildObjectsList, (x) => StartCoroutines(x));
         }
 
         if (_rotationTween != RotationTweenType.NoTween)
         {
             _counter++;
-            _rotateTween.SetUpRotateTweens(_rotationTween, _buildObjectsList);
-            if (_rotationTween == RotationTweenType.InAndOut) _rotateInAndOut = true;
+            _rotateTween.SetUpRotateTweens(_buildObjectsList, (x) => StartCoroutines(x));
         }
 
         if (_scaleTransition != ScaleTween.NoTween)
@@ -106,22 +122,21 @@ public class UITweener : MonoBehaviour
             if (_scaleTransition == ScaleTween.Punch)
             {
                 _counter++;
-                _punchTween.SetUpPunchTween(_buildObjectsList);
+                _punchTween.SetUpPunchTween(_buildObjectsList, (x) => StartCoroutines(x));
             }
 
             else if (_scaleTransition == ScaleTween.Shake)
             {
                 _counter++;
-                _shakeTween.SetUpShakeTween(_buildObjectsList);
+                _shakeTween.SetUpShakeTween(_buildObjectsList, (x) => StartCoroutines(x));
             }
             else
             {
                 _counter++;
-                _scaleTween.SetUpScaleTweens(_scaleTransition, _buildObjectsList);
-                if(_scaleTransition == ScaleTween.Scale_InAndOut) _scaleInAndOut = true;
+                _scaleTween.SetUpScaleTweens(_buildObjectsList, (x) => StartCoroutines(x));
             }
-        }
 
+        }
         if (_canvasGroupFade != FadeTween.NoTween)
         {
             _counter++;
@@ -129,10 +144,8 @@ public class UITweener : MonoBehaviour
         }
     }
 
-    //Expand for Detail
     public void ActivateTweens(Action callBack)
     {
-        StopAllCoroutines();
         _endOfEffectCounter = _counter;
         _startOfEffectCounter = _counter;
         _InTweensCallback = callBack;
@@ -142,331 +155,45 @@ public class UITweener : MonoBehaviour
             InTweenEndAction();
         }
 
-        if (_positionTween == PositionTweenType.In || _positionTween == PositionTweenType.InAndOut)
-        {
-            DoInTween(true, () => InTweenEndAction());
-        }
-        else if (_positionTween == PositionTweenType.Out)
-        {
-            DoOutTween(true, () => InTweenEndAction());
-        }
-
-        if (_rotationTween == RotationTweenType.In || _rotationTween == RotationTweenType.InAndOut)
-        {
-            DoRotateInTween(true, () => InTweenEndAction());
-        }
-        else if (_rotationTween == RotationTweenType.Out)
-        {
-            DoRotateOutTween(true, () => InTweenEndAction());
-        }
-
-        if (_scaleTransition == ScaleTween.Scale_InOnly || _scaleTransition == ScaleTween.Scale_InAndOut)
-        {
-            ScaleInTween(true, () => InTweenEndAction());
-        }
-        else if (_scaleTransition == ScaleTween.Scale_OutOnly)
-        {
-            ScaleOutTween(true, () => InTweenEndAction());
-        }
-        else if (_scaleTransition == ScaleTween.Punch)
-        {
-            DoPunch(true, () => InTweenEndAction());
-        }
-        else if (_scaleTransition == ScaleTween.Shake)
-        {
-            DoShake(true, () => InTweenEndAction());
-        }
-
-        if (_canvasGroupFade == FadeTween.FadeIn || _canvasGroupFade == FadeTween.FadeInAndOut)
-        {
-            DoCanvasFadeIn(true, () => InTweenEndAction());
-        }
-        else if (_canvasGroupFade == FadeTween.FadeOut)
-        {
-            DoCanvasFadeOut(true, () => InTweenEndAction());
-        }
+         _posTween.DoPositionTween(_positionTween, SetInTimeToUse(), true, () => InTweenEndAction());
+        _scaleTween.ScaleTween(_scaleTransition, SetInTimeToUse(), true, () => InTweenEndAction());
+        _rotateTween.RotationTween(_rotationTween, SetInTimeToUse(), true, () => InTweenEndAction());
+        _fadeTween.DoCanvasFade(_canvasGroupFade, SetOutTimeToUse(), true, () => InTweenEndAction());
+        _punchTween.DoPunch(_scaleTransition, true, () => InTweenEndAction());
+        _shakeTween.DoShake(_scaleTransition, true, () => InTweenEndAction());
     }
 
-    //Expand for Detail
     public void StartOutTweens(Action callBack)
-    {
-
+    { 
         _OutTweensCallback = callBack;
 
         if (_endOfEffectCounter == 0)
         {
             OutTweenEndAction();
+            _endOfTweenAction.Invoke(false);
             return;
         }
 
-        if (_scaleTransition == ScaleTween.Scale_OutOnly || _scaleTransition == ScaleTween.Scale_InAndOut)
-        {
-            ScaleOutTween(false, () => OutTweenEndAction());
-        }
-        else if (_scaleTransition == ScaleTween.Scale_InOnly)
-        {
-            ScaleInTween(false, () => OutTweenEndAction());
-        }
-        else if (_scaleTransition == ScaleTween.Punch)
-        {
-            DoPunch(false, () => OutTweenEndAction());
-        }
-        else if (_scaleTransition == ScaleTween.Shake)
-        {
-
-            DoShake(false, () => OutTweenEndAction());
-        }
-
-        if (_positionTween == PositionTweenType.Out || _positionTween == PositionTweenType.InAndOut)
-        {
-            DoOutTween(false, () => OutTweenEndAction());
-        }
-        else if (_positionTween == PositionTweenType.In)
-        {
-            DoInTween(false, () => OutTweenEndAction());
-        }
-
-        if (_rotationTween == RotationTweenType.Out || _rotationTween == RotationTweenType.InAndOut)
-        {
-            DoRotateOutTween(false, () => OutTweenEndAction());
-        }
-        else if (_rotationTween == RotationTweenType.In)
-        {
-            DoRotateInTween(false, () => OutTweenEndAction());
-        }
-
-        if (_canvasGroupFade == FadeTween.FadeOut || _canvasGroupFade == FadeTween.FadeInAndOut)
-        {
-            DoCanvasFadeOut(false, () => OutTweenEndAction());
-        }
-        else if (_canvasGroupFade == FadeTween.FadeIn)
-        {
-            DoCanvasFadeIn(false, () => OutTweenEndAction());
-        }
-
-        _endOfTweenAction.Invoke(false);
-
+        _posTween.DoPositionTween(_positionTween, SetOutTimeToUse(), false, () => OutTweenEndAction());
+        _scaleTween.ScaleTween(_scaleTransition, SetOutTimeToUse(), false, () => OutTweenEndAction());
+        _rotateTween.RotationTween(_rotationTween, SetOutTimeToUse(), false, () => OutTweenEndAction());
+        _fadeTween.DoCanvasFade(_canvasGroupFade, SetOutTimeToUse(), false, () => OutTweenEndAction());
+        _punchTween.DoPunch(_scaleTransition, false, () => OutTweenEndAction());
+        _shakeTween.DoShake(_scaleTransition, false, () => OutTweenEndAction());
     }
 
-    //Scale Tween
-    #region ScaleTween
-
-    private void ScaleInTween(bool isIn, TweenCallback tweenCallback = null)
+    private void StartCoroutines(IEnumerator enumerator)
     {
-        if (isIn)
-        {
-            _scaleTween.PauseOutTweens();
-            _scaleTween.RewindScaleInTweens();
-            _scaleTween.InSettings(SetInTimeToUse());
-            StartCoroutine(_scaleTween.ScaleSequence(tweenCallback));
-        }
-        else
-        {
-            tweenCallback.Invoke();
-        }
+        StopAllCoroutines();
+        StartCoroutine(enumerator);
     }
-
-    private void ScaleOutTween(bool isOut, TweenCallback tweenCallback = null)
-    {
-        if (isOut)
-        {
-            _scaleTween.RewindScaleOutTweens();
-            tweenCallback.Invoke();
-        }
-        else
-        {
-            _scaleTween.PauseInTweens();
-
-            if (_scaleInAndOut)
-            {
-                _scaleTween.InOutSettings(SetOutTimeToUse());
-                StartCoroutine(_scaleTween.ScaleSequence(tweenCallback));
-            }
-            else
-            {
-                _scaleTween.OutSettings(SetOutTimeToUse());
-                StartCoroutine(_scaleTween.ScaleSequence(tweenCallback));
-            }
-        }
-    } 
-    #endregion
-
-    //Position Tween
-    #region PositionTween
-
-    private void DoInTween(bool isIn, TweenCallback tweenCallback = null)
-    {
-        if (isIn)
-        {
-            _posTween.PauseOutTweens();
-
-            if (!_positionInAndOut) 
-            { 
-                _posTween.RewindInTweens(); 
-            }
-            _posTween.InSettings(SetInTimeToUse());
-            StartCoroutine(_posTween.MoveSequence(tweenCallback));
-        }
-        else
-        {
-            tweenCallback.Invoke();
-        }
-    }
-
-    private void DoOutTween(bool isOut, TweenCallback tweenCallback = null)
-    {
-        if (isOut)
-        {
-            _posTween.RewindOutTweens();
-            tweenCallback.Invoke();
-        }
-        else
-        {
-            _posTween.PauseInTweens();
-
-            if (_positionInAndOut)
-            {
-                _posTween.InOutSettings(SetOutTimeToUse());
-                StartCoroutine(_posTween.MoveSequence(tweenCallback));
-
-            }
-            else
-            {
-                _posTween.OutSettings(SetOutTimeToUse());
-                StartCoroutine(_posTween.MoveSequence(tweenCallback));
-            }
-        }
-    }
-    #endregion
-
-    //Rotation Tweens
-    #region Rotation Tweens
-    private void DoRotateInTween(bool isIn, TweenCallback tweenCallback = null)
-    {
-        if (isIn)
-        {
-            if (!_rotateInAndOut)
-            {
-                _rotateTween.RewindRotateTweens();
-
-            }
-            _rotateTween.KIllRunningTweens();
-            _rotateTween.InSettings(SetInTimeToUse());
-            StartCoroutine(_rotateTween.MoveSequence(RotationTweenType.In, tweenCallback));
-        }
-        else
-        {
-            tweenCallback.Invoke();
-        }
-    }
-
-    private void DoRotateOutTween(bool isOut, TweenCallback tweenCallback = null)
-    {
-        if (isOut)
-        {
-            _rotateTween.RewindRotateTweens();
-            _rotateTween.KIllRunningTweens();
-            tweenCallback.Invoke();
-        }
-        else
-        {
-            if (_rotateInAndOut)
-            {
-                _rotateTween.InOutSettings(SetOutTimeToUse());
-                StartCoroutine(_rotateTween.MoveSequence(RotationTweenType.InAndOut, tweenCallback));
-            }
-            else
-            {
-                _rotateTween.OutSettings(SetOutTimeToUse());
-                StartCoroutine(_rotateTween.MoveSequence(RotationTweenType.Out, tweenCallback));
-            }
-        }
-    }
-    #endregion
-
-    //Fade Tweens
-    #region Fade Tweens
-    private void DoCanvasFadeIn(bool isIn, TweenCallback tweenCallback = null)
-    {
-        _fadeTween._canvasOutTweener.Pause();
-        _fadeTween.InSettings(SetInTimeToUse());
-        _fadeTween.FadeIn(isIn, tweenCallback);
-    }
-
-    private void DoCanvasFadeOut(bool isOut, TweenCallback tweenCallback = null)
-    {
-        _fadeTween._canvasInTweener.Pause();
-        _fadeTween.OutSettings(SetOutTimeToUse());
-        _fadeTween.FadeOut(isOut, tweenCallback);
-    }
-    #endregion
-
-    //Punch & Shake Tweens
-    #region Punch & Shake Tweens
-    private void DoPunch(bool isIn, TweenCallback tweenCallback = null)
-    {
-        if (isIn)
-        {
-            if (_punchTween.CheckInEffectType())
-            {
-                _punchTween.RewindTweens();
-                StartCoroutine(_punchTween.PunchSequence(tweenCallback));
-            }
-            else
-            {
-                _punchTween.RewindTweens();
-                tweenCallback.Invoke();
-            }
-        }
-        else
-        {
-            if (_punchTween.CheckOutEffectType())
-            {
-                _punchTween.RewindTweens();
-                StartCoroutine(_punchTween.PunchSequence(tweenCallback));
-            }
-            else
-            {
-                tweenCallback.Invoke();
-            }
-        }
-    }
-
-    private void DoShake(bool isOut, TweenCallback tweenCallback = null)
-    {
-        if (isOut)
-        {
-            if (_shakeTween.CheckInEffectType())
-            {
-                _shakeTween.RewindScaleTweens();
-                StartCoroutine(_shakeTween.ShakeSequence(tweenCallback));
-            }
-            else
-            {
-                _shakeTween.RewindScaleTweens();
-                tweenCallback.Invoke();
-            }
-        }
-        else
-        {
-            if (_shakeTween.CheckOutEffectType())
-            {
-                _shakeTween.RewindScaleTweens();
-                StartCoroutine(_shakeTween.ShakeSequence(tweenCallback));
-            }
-            else
-            {
-                tweenCallback.Invoke();
-            }
-        }
-    }
-    #endregion
 
     private void OutTweenEndAction()
     {
         _endOfEffectCounter--;
         if (_endOfEffectCounter <= 0)
         {
+            _endOfTweenAction.Invoke(false);
             _OutTweensCallback.Invoke();
         }
     }

@@ -81,7 +81,6 @@ public enum TweenColours
     Text = 1 << 1,
 }
 
-public enum DestinationAs { StartTweenAt, MidPointForInAndOut, EndTweenAt }
 public enum CurrentRoatationIs { StartRotateAt, MidPointForInAndOut, EndRotateAt }
 
 public enum MoveType { MoveToInternalBranch, MoveToExternalBranch }

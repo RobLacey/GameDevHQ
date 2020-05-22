@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using NaughtyAttributes;
@@ -11,98 +12,104 @@ public class RotateTween
     [InfoBox("Remeber to set your pivot point in the Inspector i.e Pivot X = 1 for left side hinge, 0 for right side etc.")]
     [SerializeField] [AllowNesting] [HideIf("UsingGlobalTime")] float _inTime = 1;
     [SerializeField] [AllowNesting] [HideIf("UsingGlobalTime")] float _outTime = 1;
-    [SerializeField] [AllowNesting] [DisableIf("_running")] CurrentRoatationIs _currentRotationIs;
-    [SerializeField] public Ease _easeIn = Ease.Unset;
-    [SerializeField] public Ease _easeOut = Ease.Unset;
+    [SerializeField] public Ease _easeIn = Ease.Linear;
+    [SerializeField] public Ease _easeOut = Ease.Linear;
 
     //Variables
-    bool _running = false;
     float _tweenTime;
     Ease _tweenEase;
-    Vector3 _tweenTarget = Vector3.zero;
     List<BuildSettings> _listToUse;
-    List<Tweener> _runningTweens = new List<Tweener>();
     List<BuildSettings> _reversedBuild = new List<BuildSettings>();
     List<BuildSettings> _buildList = new List<BuildSettings>();
+    int _id;
+    Action<IEnumerator> _startCoroutine;
+
 
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public void SetUpRotateTweens(RotationTweenType rotateTween, List<BuildSettings> buildObjectsList)
+    public void SetUpRotateTweens(List<BuildSettings> buildObjectsList, Action<IEnumerator> startCoroutine)
     {
-        _running = true;
         _buildList = buildObjectsList;
-
-        if (rotateTween == RotationTweenType.In || rotateTween == RotationTweenType.InAndOut)
+        _startCoroutine = startCoroutine;
+        foreach (var item in _buildList)
         {
-            SetUpIn(_buildList);
+            item._element.localRotation = Quaternion.Euler(item._rotateFrom);
         }
-        else if (rotateTween == RotationTweenType.Out)
-        {
-            SetUpOut(_buildList);
-        }
-    }
-
-    private void SetUpIn(List<BuildSettings> buildSettings)
-    {
-        foreach (var item in buildSettings)
-        {
-            if (_currentRotationIs == CurrentRoatationIs.StartRotateAt)
-            {
-                item.rotateFrom = item._element.localRotation.eulerAngles;
-                item.rotateTo = item._tweenRotateAngle;
-                item._resetStartRotationStore = item._element.localRotation.eulerAngles; ;
-                item._element.localRotation = Quaternion.Euler(item.rotateFrom);
-            }
-            else
-            {
-                item.rotateFrom = item._tweenRotateAngle;
-                item.rotateTo = item._element.localRotation.eulerAngles;
-                item._resetStartRotationStore = item._tweenRotateAngle;
-                item._element.localRotation = Quaternion.Euler(item.rotateFrom);
-            }
-        }
-        _reversedBuild = new List<BuildSettings>(buildSettings);
+        _reversedBuild = new List<BuildSettings>(_buildList);
         _reversedBuild.Reverse();
     }
 
-    private void SetUpOut(List<BuildSettings> buildSettings)
+    public void RotationTween(RotationTweenType rotationTweenType, float globalTime, bool isIn, TweenCallback tweenCallback = null)
     {
-        foreach (var item in buildSettings)
+        if (rotationTweenType == RotationTweenType.NoTween) return;
+
+        StopRunningTweens();
+
+        if (rotationTweenType == RotationTweenType.In)
         {
-            if (_currentRotationIs == CurrentRoatationIs.StartRotateAt)
+            if (isIn)
             {
-                item.rotateTo = item._tweenRotateAngle;
-                item._resetStartPositionStore = item._element.localRotation.eulerAngles; ;
+                RewindTweens();
+                SetInTime(globalTime);
+                InSettings();
+                _startCoroutine.Invoke(MoveSequence(tweenCallback));
             }
             else
             {
-                item.rotateTo = item._element.localRotation.eulerAngles;
-                item._resetStartPositionStore = item._tweenRotateAngle;
-                item._element.anchoredPosition = item._tweenRotateAngle;
+                tweenCallback.Invoke();
+            }
+        }
+
+        if (rotationTweenType == RotationTweenType.Out)
+        {
+            if (isIn)
+            {
+                RewindTweens();
+                SetOutTime(globalTime);
+                tweenCallback.Invoke();
+            }
+            else
+            {
+                OutSettings();
+                _startCoroutine.Invoke(MoveSequence(tweenCallback));
+            }
+        }
+
+        if (rotationTweenType == RotationTweenType.InAndOut)
+        {
+            if (isIn)
+            {
+                SetInTime(globalTime);
+                InSettings();
+                _startCoroutine.Invoke(MoveSequence(tweenCallback));
+            }
+            else
+            {
+                SetOutTime(globalTime);
+                InOutSettings();
+                _startCoroutine.Invoke(MoveSequence(tweenCallback));
             }
         }
     }
 
-    public void KIllRunningTweens()
-    {
-        for (int i = 0; i < _runningTweens.Count; i++)
-        {
-            _runningTweens[i].Kill();
-        }
-        _runningTweens.Clear();
-
-    }
-
-    public void RewindRotateTweens()
+    public void StopRunningTweens()
     {
         foreach (var item in _buildList)
         {
-            item._element.localRotation = Quaternion.Euler(item._resetStartRotationStore);
+            DOTween.Kill("rotation" + item._element.GetInstanceID());
         }
     }
 
-    public IEnumerator MoveSequence(RotationTweenType tweenType, TweenCallback tweenCallback = null)
+    public void RewindTweens()
+    {
+        foreach (var item in _buildList)
+        {
+            item._element.localRotation = Quaternion.Euler(item._rotateFrom);
+        }
+    }
+
+    public IEnumerator MoveSequence(TweenCallback tweenCallback = null)
     {
         bool finished = false;
         int index = 0;
@@ -111,28 +118,21 @@ public class RotateTween
         {
             foreach (var item in _listToUse)
             {
-                if (tweenType == RotationTweenType.InAndOut)
-                {
-                    _tweenTarget = item.rotateFrom;
-                }
-                else
-                {
-                    _tweenTarget = item.rotateTo;
-                }
-
                 if (index == _listToUse.Count - 1)
                 {
-                    _runningTweens.Add (item._element.DOLocalRotate(_tweenTarget, _tweenTime).SetEase(_tweenEase)
-                                                               .Play()
-                                                               .SetAutoKill(true)
-                                                               .OnComplete(tweenCallback));
+                    item._element.DOLocalRotate(item._targetRotation, _tweenTime)
+                            .SetId("rotation" + item._element.GetInstanceID())
+                            .SetEase(_tweenEase).SetAutoKill(true)
+                            .Play()
+                            .OnComplete(tweenCallback);
+
                 }
                 else
                 {
-
-                    _runningTweens.Add(item._element.DOLocalRotate(_tweenTarget, _tweenTime).SetEase(_tweenEase)
-                                                              .SetAutoKill(true)
-                                                              .Play());
+                    item._element.DOLocalRotate(item._targetRotation, _tweenTime)
+                                                .SetId("rotation" + item._element.GetInstanceID())
+                                                .SetEase(_tweenEase).SetAutoKill(true)
+                                                .Play();
                     yield return new WaitForSeconds(item._buildNextAfterDelay);
                     index++;
                 }
@@ -142,10 +142,38 @@ public class RotateTween
         yield return null;
     }
 
-    public void InSettings(float globalTime)
+    public void InSettings()
     {
         _tweenEase = _easeIn;
         _listToUse = _buildList;
+        foreach (var item in _listToUse)
+        {
+            item._targetRotation = item._rotateToo;
+        }
+    }
+
+    public void OutSettings()
+    {
+        _tweenEase = _easeOut;
+        _listToUse = _buildList;
+        foreach (var item in _listToUse)
+        {
+            item._targetRotation = item._rotateToo;
+        }
+    }
+
+    public void InOutSettings()
+    {
+        _tweenEase = _easeOut;
+        _listToUse = _reversedBuild;
+        foreach (var item in _listToUse)
+        {
+            item._targetRotation = item._rotateFrom;
+        }
+    }
+
+    private void SetInTime(float globalTime)
+    {
         if (globalTime > 0)
         {
             _tweenTime = globalTime;
@@ -155,31 +183,16 @@ public class RotateTween
             _tweenTime = _inTime;
         }
     }
-    public void OutSettings(float globalTime)
-    {
-        _tweenEase = _easeOut;
-        _listToUse = _buildList;
-        if (globalTime > 0)
-        {
-            _tweenTime = globalTime;
-        }
-        else
-        {
-            _tweenTime = _outTime;
-        }
-    }
-    public void InOutSettings(float globalTime)
-    {
-        _tweenEase = _easeOut;
-        _listToUse = _reversedBuild;
-        if (globalTime > 0)
-        {
-            _tweenTime = globalTime;
-        }
-        else
-        {
-            _tweenTime = _outTime;
-        }
-    }
 
+    private void SetOutTime(float globalTime)
+    {
+        if (globalTime > 0)
+        {
+            _tweenTime = globalTime;
+        }
+        else
+        {
+            _tweenTime = _outTime;
+        }
+    }
 }
