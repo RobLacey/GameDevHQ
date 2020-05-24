@@ -8,8 +8,8 @@ using UnityEngine.Events;
 [System.Serializable]
 public class UINavigation
 {
-    [AllowNesting] [Label("Move To When Clicked")] public UIBranch _childBranch;
-    public MoveType _moveType = MoveType.MoveToExternalBranch;
+    [AllowNesting] [Label("Move To When Clicked")] [HideIf("NotAToggle")] public UIBranch _childBranch;
+    [AllowNesting] [HideIf("NotAToggle")] public MoveType _moveType = MoveType.MoveToExternalBranch;
     public NavigationType _setNavigation = NavigationType.UpAndDown;
     [AllowNesting] [ShowIf("UpDownNav")] public UINode up;
     [AllowNesting] [ShowIf("UpDownNav")] public UINode down;
@@ -17,6 +17,8 @@ public class UINavigation
     [AllowNesting] [ShowIf("RightLeftNav")] public UINode right;
     public UnityEvent _asButtonEvent;
     public OnToggleEvent _asToggleEvent;
+
+    public bool NotAToggle { get; set; }
 
     //Variables
     Setting _mySettings = Setting.NavigationAndOnClick;

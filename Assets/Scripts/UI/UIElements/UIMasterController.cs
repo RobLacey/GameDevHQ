@@ -9,20 +9,19 @@ using NaughtyAttributes;
 public class UIMasterController : MonoBehaviour
 {
     [Header("Main Settings")] 
-    [Label("UI Starting Branch")] [Required("MUST have a starting branch")]
-    [SerializeField] UIBranch _uiTopLevel;
+    //[Label("UI Starting Branch")] [Required("MUST have a starting branch")]
+    //[SerializeField] UIBranch _uiTopLevel;
     [SerializeField] [ValidateInput("ProtectEscapekeySetting")] EscapeKey _GlobalEscapeKeyFunction;
     [SerializeField] [InputAxis] string _cancelButton;
-    [SerializeField] [InputAxis] string _changeMenuGroupButton;
-    [SerializeField] float _atStartDelay = 0;
+    [SerializeField] [InputAxis] string _branchSwitchButton;
+    [SerializeField] [InputAxis] string _pauseButton;
+    [SerializeField] [Label("Enable Controls After..")] float _atStartDelay = 0;
     [Header("In-Game Menu Settings")]
     [SerializeField] bool _inGameMenuSystem = false;
     [SerializeField] [ShowIf("_inGameMenuSystem")] StartInMenu _startGameWhere = StartInMenu.InGameControl;
     [SerializeField] [ShowIf("_inGameMenuSystem")] [Label("Switch To/From Game Menus")] [InputAxis] string _switchTOMenusButton;
     [SerializeField] [ShowIf("_inGameMenuSystem")] InGameOrInMenu _returnToGameControl;
-    [Header("Root UI Groups")]
-    [Label("List of Root UI Groups")] [Tooltip("Add a group if keyboard/Controller group switching is needed")] 
-    [SerializeField] GroupList[] _groupList;
+    [SerializeField] [ReorderableList] [Label("Home Screen Branches. Top Branch is Start Position")] List<UIBranch> _homeBranches;
 
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
@@ -52,12 +51,29 @@ public class UIMasterController : MonoBehaviour
         }
         return escapeKey != EscapeKey.GlobalSetting; }
 
-    #endregion    
-    
+    [Button("Add a New Home Branch Folder")]
+    private void MakeFolder()
+    {
+        var newTree = new GameObject();
+        newTree.transform.parent = transform;
+        newTree.name = "New Tree Folder";
+        newTree.AddComponent<RectTransform>();
+        var newBranch = new GameObject();
+        newBranch.transform.parent = newTree.transform;
+        newBranch.name = "New Branch";
+        newBranch.AddComponent<UIBranch>();
+        var newNode = new GameObject();
+        newNode.transform.parent = newBranch.transform;
+        newNode.name = "New Node";
+        newNode.AddComponent<UINode>();
+
+    }
+
+    #endregion
+
     [Serializable]
     public class GroupList
     {
-        public UIGroupID _groupIDNumber;
         public UIBranch _groupStartLevel;
     }
 
@@ -87,8 +103,8 @@ public class UIMasterController : MonoBehaviour
 
     private void Start()
     {
-        _uiElementLastSelected = _uiTopLevel.DefaultStartPosition;
-        _activeBranch = _uiTopLevel;
+        _uiElementLastSelected = _homeBranches[0].DefaultStartPosition;
+        _activeBranch = _homeBranches[0];
         _mousePos = Input.mousePosition;
         _onHomeScreen = true;
 
@@ -130,7 +146,7 @@ public class UIMasterController : MonoBehaviour
                 {
                     OnCancel(_uiElementLastSelected.GetComponentInParent<UIBranch>().EscapeKeySetting);
                 }
-                else if (Input.GetButtonDown(_changeMenuGroupButton))
+                else if (Input.GetButtonDown(_branchSwitchButton))
                 {
                     if (_onHomeScreen)
                     {
@@ -151,16 +167,16 @@ public class UIMasterController : MonoBehaviour
 
     private void IntroAnimations()
     {
-        foreach (var item in _groupList)
+        foreach (var item in _homeBranches)
         {
-            if (item._groupStartLevel != _uiTopLevel)
+            if (item != _homeBranches[0])
             {
-                item._groupStartLevel.DontSetAsActive = true;
-                item._groupStartLevel.ActivateINTweens();
+                item.DontSetAsActive = true;
+                item.ActivateINTweens();
             }
             else
             {
-                _uiTopLevel.MoveToNextLevel(_uiTopLevel);
+                _homeBranches[0].MoveToNextLevel(_homeBranches[0]);
             }
         }
     }
@@ -197,8 +213,8 @@ public class UIMasterController : MonoBehaviour
         int tempIndexStore = _groupIndex;
         if (SetRootGroup(uiObject.MyBranchController))
         {
-            _groupList[tempIndexStore]._groupStartLevel.LastSelected.DisableLevel();
-            _groupList[tempIndexStore]._groupStartLevel.LastSelected.SetNotHighlighted();
+            _homeBranches[tempIndexStore].LastSelected.DisableLevel();
+            _homeBranches[tempIndexStore].LastSelected.SetNotHighlighted();
         }
     }
 
@@ -207,14 +223,14 @@ public class UIMasterController : MonoBehaviour
         _uiElementLastSelected._audio.Play(UIEventTypes.Selected, _uiElementLastSelected._functionToUse);
         _uiElementLastSelected.SetNotHighlighted();
 
-        _groupList[_groupIndex]._groupStartLevel.LastSelected.DisableLevel();
+        _homeBranches[_groupIndex].LastSelected.DisableLevel();
         _groupIndex++;
-        if (_groupIndex > _groupList.Length - 1)
+        if (_groupIndex > _homeBranches.Count - 1)
         {
             _groupIndex = 0;
         }
-        _groupList[_groupIndex]._groupStartLevel.DontAnimateOnChange = true;
-        _groupList[_groupIndex]._groupStartLevel.MoveToNextLevel();
+        _homeBranches[_groupIndex].DontAnimateOnChange = true;
+        _homeBranches[_groupIndex].MoveToNextLevel();
     }
 
     private void ActivateKeysOrControl()
@@ -272,16 +288,16 @@ public class UIMasterController : MonoBehaviour
     {
         _uiElementLastSelected.MyBranchController.StartOutTweens();
         _uiElementLastSelected._audio.Play(UIEventTypes.Cancelled, _uiElementLastSelected._functionToUse);
-        RestoreFromFullScreen();
-        _groupList[_groupIndex]._groupStartLevel.LastSelected.DisableLevel();
-        _groupList[_groupIndex]._groupStartLevel.MoveBackALevel();
+        RestoreHomeScreen();
+        _homeBranches[_groupIndex].LastSelected.DisableLevel();
+        _homeBranches[_groupIndex].MoveBackALevel();
     }
 
     private void BackOneLevel()
     {
         if (!_onHomeScreen && IsItPartOfRootMenu(_uiElementLastSelected.MyParentController))
         {
-            RestoreFromFullScreen();
+            RestoreHomeScreen();
         }
 
         if (_uiElementLastSelected.MyParentController)
@@ -290,26 +306,23 @@ public class UIMasterController : MonoBehaviour
         }
     }
 
-    public void ToFullScreen(UIBranch currentBranch)
+    public void ClearHomeScreen()
     {
         if (!_onHomeScreen) return;
 
-        foreach (var item in _allUIBranches)
+        foreach (var item in _homeBranches)
         {
-            if (currentBranch != item)
-            {
-                item.MyCanvas.enabled = false;
-                _onHomeScreen = false;
-            }
+            _onHomeScreen = false;
+            item.MyCanvas.enabled = false;
         }
     }
 
-    private void RestoreFromFullScreen()
+    private void RestoreHomeScreen()
     {
-        foreach (var item in _groupList)
+        foreach (var item in _homeBranches)
         {
             _onHomeScreen = true;
-            item._groupStartLevel.RestoreFromFullscreen();
+            item.RestoreFromFullscreen();
         }
     }
 
@@ -322,15 +335,15 @@ public class UIMasterController : MonoBehaviour
 
         foreach (var item in _allUIBranches)
         {
-            item._myCanvasGroup.blocksRaycasts = InMenu;
+            item.MyCanvasGroup.blocksRaycasts = InMenu;
         }
     }
 
-    private bool IsItPartOfRootMenu(UIBranch uIBranch)
+    private bool IsItPartOfRootMenu(UIBranch uIBranch) //Check that I'm on the homescreen when mving back levels
     {
-        foreach (var item in _groupList)
+        foreach (var item in _homeBranches)
         {
-            if (item._groupStartLevel == uIBranch)
+            if (item == uIBranch)
             {
                 return true;
             }
@@ -340,9 +353,9 @@ public class UIMasterController : MonoBehaviour
 
     private bool SetRootGroup(UIBranch uIBranch)
     {
-        for (int i = 0; i < _groupList.Length; i++)
+        for (int i = 0; i < _homeBranches.Count; i++)
         {
-            if (_groupList[i]._groupStartLevel == uIBranch)
+            if (_homeBranches[i] == uIBranch)
             {
                 if (i != _groupIndex)
                 {

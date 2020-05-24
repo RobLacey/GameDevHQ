@@ -150,7 +150,7 @@ public class UITweener : MonoBehaviour
         _startOfEffectCounter = _counter;
         _InTweensCallback = callBack;
 
-        if (_startOfEffectCounter == 0)
+        if (_startOfEffectCounter <= 0)
         {
             InTweenEndAction();
         }
@@ -163,11 +163,11 @@ public class UITweener : MonoBehaviour
         _shakeTween.DoShake(_scaleTransition, true, () => InTweenEndAction());
     }
 
-    public void StartOutTweens(Action callBack)
+    public void DeactivateTweens(Action callBack)
     { 
         _OutTweensCallback = callBack;
 
-        if (_endOfEffectCounter == 0)
+        if (_endOfEffectCounter <= 0)
         {
             OutTweenEndAction();
             _endOfTweenAction.Invoke(false);

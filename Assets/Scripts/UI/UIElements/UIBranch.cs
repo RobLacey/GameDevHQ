@@ -8,6 +8,7 @@ using NaughtyAttributes;
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(Canvas))]
 [RequireComponent(typeof(CanvasGroup))]
+[RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
@@ -15,10 +16,10 @@ public class UIBranch : MonoBehaviour
 {
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] [Label("Home Screen Object")] bool _onScreenAtStart;
-    [SerializeField] [Label("Full Screen")] bool _isFullScreen;
-    [SerializeField] bool _turnOffOnMoveToChild;
-    [SerializeField] bool _alwaysTweenOnReturn;
+    [SerializeField] [Label("Home Screen Object")] bool _onHomeScreen;
+    [SerializeField] [HideIf("_onHomeScreen")] bool _clearHomeScreen;
+    [SerializeField] bool _neverTweenOnReturn;
+    [SerializeField] [HideIf("_onHomeScreen")] bool _turnOff_MoveToChild;
     [SerializeField] [Label("Save Selection On Exit")] bool _saveExitSelection;
     [SerializeField] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] [ValidateInput("IsEmpty", "If left Blank it will Auto-assign first UINode in hierarchy/Group")] 
@@ -32,15 +33,6 @@ public class UIBranch : MonoBehaviour
     {
         public UINode _startNode;
         public UINode[] _nodes;
-    }
-
-    [Button("Add a New Branch Group Folder")]
-    private void MakeFolder()
-    {
-        var newObject = new GameObject();
-        newObject.transform.parent = transform;
-        _groupList.Add(new GroupList());
-        newObject.name = "New Branch Group " + _groupList.Count;
     }
 
     private bool IsEmpty(UINode uINode) { return uINode != null; }
@@ -58,24 +50,24 @@ public class UIBranch : MonoBehaviour
                                          set { _userDefinedStartPosition = value; } }
     public Canvas MyCanvas { get; set; }
     public UINode LastSelected { get; set; }
-    public bool KillAllOtherUI { get { return _isFullScreen; } }
     public bool DontSetAsActive { get; set; } = false;
     public UINode[] ThisGroupsUILeafs { get { return _childUILeafs; } }
     public bool AllowKeys { get; set; }
-    public CanvasGroup _myCanvasGroup { get; set; }
+    public CanvasGroup MyCanvasGroup { get; set; }
     public EscapeKey EscapeKeySetting { get { return _escapeKeyFunction; } }
     public bool DontAnimateOnChange { get; set; } = false;
+    public bool ClearHomeScreen { get { return _clearHomeScreen; } }
 
     private void Awake()
     {
         GetChildUILeafs();
-        _myCanvasGroup = GetComponent<CanvasGroup>();
+        MyCanvasGroup = GetComponent<CanvasGroup>();
         _UITweener = GetComponent<UITweener>();
         _UITrunk = FindObjectOfType<UIMasterController>();
         MyCanvas = GetComponent<Canvas>();
         SetCurrentBranchAsParent(this);
         SetStartPositions();
-        if (!_onScreenAtStart)
+        if (!_onHomeScreen)
         {
             MyCanvas.enabled = false;
         }
@@ -83,8 +75,8 @@ public class UIBranch : MonoBehaviour
         {
             MyCanvas.enabled = true;
         }
-        _UITweener.OnAwake(_myCanvasGroup);
-        _myCanvasGroup.blocksRaycasts = false;
+        _UITweener.OnAwake(MyCanvasGroup);
+        MyCanvasGroup.blocksRaycasts = false;
         _UITweener.IsRunning = true;
     }
 
@@ -155,14 +147,13 @@ public class UIBranch : MonoBehaviour
         _UITrunk.SetLastUIObject(LastSelected);
         SetCurrentBranchAsParent();
 
-        if (_alwaysTweenOnReturn)
+        if (_neverTweenOnReturn)
         {
-            Debug.Log(gameObject);
-            ActivateINTweens();
+            InitialiseFirstUIElement();
         }
         else
         {
-            InitialiseFirstUIElement();
+            ActivateINTweens();
         }
     }
 
@@ -171,7 +162,6 @@ public class UIBranch : MonoBehaviour
         MyCanvas.enabled = true;
         _UITrunk.SetLastUIObject(LastSelected);
         SetCurrentBranchAsParent(newParentController);
-        if (_isFullScreen) { _UITrunk.ToFullScreen(this); }
 
         if (!DontAnimateOnChange)
         {
@@ -188,7 +178,7 @@ public class UIBranch : MonoBehaviour
     {
         MyCanvas.enabled = true;
         DontSetAsActive = true;
-        if (_alwaysTweenOnReturn)
+        if (!_neverTweenOnReturn)
         {
             ActivateINTweens();
         }
@@ -226,11 +216,16 @@ public class UIBranch : MonoBehaviour
         }
     }
 
-    public void TurnOffOnMoveToChild(MoveType moveType) 
+    public void TurnOffOnMoveToChild(bool clearHomeScreen) 
     {
-        if (_turnOffOnMoveToChild && moveType == MoveType.MoveToExternalBranch)
-        { 
-            MyCanvas.enabled = false; 
+        if (_onHomeScreen && clearHomeScreen)
+        {
+            _UITrunk.ClearHomeScreen();
+        }
+
+        if (_turnOff_MoveToChild)
+        {
+            MyCanvas.enabled = false;
         }
     }
 
@@ -243,24 +238,28 @@ public class UIBranch : MonoBehaviour
     public void StartOutTweens()
     {
         _UITweener.StopAllCoroutines();
-        _myCanvasGroup.blocksRaycasts = false;
-        _UITweener.StartOutTweens(() => OutTweenCallback());
+        MyCanvasGroup.blocksRaycasts = false;
+        _UITweener.DeactivateTweens(() => OutTweenCallback());
     }
 
-    private void OutTweenCallback()
+    private void OutTweenCallback() 
     {
-        MyCanvas.enabled = false;
+        if (!_onHomeScreen)
+        {
+            MyCanvas.enabled = false;
+        }
+        MyCanvasGroup.blocksRaycasts = true;
     }
 
     public void ActivateINTweens()
     {
-        _myCanvasGroup.blocksRaycasts = false;
+        MyCanvasGroup.blocksRaycasts = false;
         _UITweener.ActivateTweens(()=> InTweenCallback());
     }
 
     private void InTweenCallback()
     {
-        _myCanvasGroup.blocksRaycasts = true;
+        MyCanvasGroup.blocksRaycasts = true;
         if (!DontSetAsActive) { InitialiseFirstUIElement(); }
         DontSetAsActive = false;
     }

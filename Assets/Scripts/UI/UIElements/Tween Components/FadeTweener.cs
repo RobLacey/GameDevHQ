@@ -47,12 +47,12 @@ public class FadeTweener
         {
             if (isIn)
             {
+                MyCanvasGroup.alpha = _startAlpha;
                 SetInTime(globalTime);
                 Tween(1, tweenCallback);
             }
             else
             {
-                MyCanvasGroup.alpha = _startAlpha;
                 tweenCallback.Invoke();
             }
 

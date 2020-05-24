@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 using System;
 using NaughtyAttributes;
 
+[RequireComponent(typeof(RectTransform))]
+
 public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
                                      IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
 {
@@ -15,8 +17,10 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     [SerializeField] [ShowIf("_isCancelOrBackButton")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] [HideIf("_isCancelOrBackButton")] bool _highlightFirstOption = true;
     [SerializeField] [ReadOnly] bool _isDisabled;
-    [SerializeField] [HideIf("_isCancelOrBackButton")] [Label("Preserve When Selected")] PreserveSelection _preseveSelection;
-    [SerializeField] [HideIf(EConditionOperator.Or, "GroupSettings", "_isCancelOrBackButton")] ToggleGroup _toggleGroupID = ToggleGroup.None;
+    [SerializeField] [HideIf("_isCancelOrBackButton")] [ValidateInput("SetChildBranch")] [Label("Preserve When Selected")] 
+    PreserveSelection _preseveSelection;
+    [SerializeField] [HideIf(EConditionOperator.Or, "GroupSettings", "_isCancelOrBackButton")] 
+    ToggleGroup _toggleGroupID = ToggleGroup.None;
     [SerializeField] [HideIf(EConditionOperator.Or, "GroupSettings", "_isCancelOrBackButton")] bool _startAsSelected;
     [Header("Settings (Click Arrows To Expand)")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
@@ -36,7 +40,6 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     UIEventTypes _eventType = UIEventTypes.Normal;
     UINode[] _toggleGroupMembers;
     Vector3[] _myCorners = new Vector3[4];
-
 
     //Delegates
     Action<UIEventTypes, bool, Setting> SetUp;
@@ -62,7 +65,20 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     [Button] private void DisableObject() { Disabled = true; }
     [Button] private void EnableObject() { Disabled = false; }
 
-    public bool UseNavigation()  {  return (_functionToUse & Setting.NavigationAndOnClick) != 0; }
+    private bool SetChildBranch(PreserveSelection preserveSelection) 
+    {
+        if (preserveSelection == PreserveSelection.ToggleGroup_AllOff || preserveSelection == PreserveSelection.ToggleGroup_OneAlwaysOn
+            || preserveSelection == PreserveSelection.Toggle_NotLinked)
+        {
+            _navigation.NotAToggle = true; 
+        }
+        else
+        {
+            _navigation.NotAToggle = false;
+        }
+        return true;
+    }
+    public bool UseNavigation() { return (_functionToUse & Setting.NavigationAndOnClick) != 0; }
     public bool NeedColour() { return (_functionToUse & Setting.Colours) != 0;  }
     public bool NeedSize(){ return (_functionToUse & Setting.SizeAndPosition) != 0; } 
     public bool NeedInvert(){ return (_functionToUse & Setting.InvertColourCorrection) != 0; } 
@@ -321,7 +337,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
                 item.SetNotHighlighted();
             }
         }
-        if (lastElementSelected != this) // Review it's use
+        if (lastElementSelected != this)
         {
             if (lastElementSelected._preseveSelection != PreserveSelection.Toggle_NotLinked
                 && lastElementSelected._preseveSelection != PreserveSelection.ToggleGroup_OneAlwaysOn)
@@ -337,8 +353,10 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         Selected = false;
         if (_amSlider) { QuitSlider(); }
         _swapImageOrText.CycleToggle(Selected, _functionToUse);
-
-        TurnOffChildren();
+        if (_preseveSelection == PreserveSelection.Never_TempSwitch || _preseveSelection == PreserveSelection.Standard)
+        {
+            TurnOffChildren();
+        }
     }
 
 
@@ -349,7 +367,10 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         _swapImageOrText.CycleToggle(Selected, _functionToUse);
         _tooltips.HideToolTip(_functionToUse);
         StopAllCoroutines();
-        TurnOnChildren();
+        if (_preseveSelection == PreserveSelection.Never_TempSwitch || _preseveSelection == PreserveSelection.Standard)
+        {
+            TurnOnChildren();
+        }
     }
 
     private void TurnOffChildren()
@@ -360,11 +381,8 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
             if (_navigation._childBranch.LastSelected != null)
             {
-                if (_navigation._childBranch.LastSelected._preseveSelection != PreserveSelection.Toggle_NotLinked)
-                {
-                    _navigation._childBranch.LastSelected.SetNotHighlighted();
-                    _navigation._childBranch.LastSelected.DisableLevel();
-                }
+                _navigation._childBranch.LastSelected.SetNotHighlighted();
+                _navigation._childBranch.LastSelected.DisableLevel();
             }
         }
     }
@@ -373,7 +391,11 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (_navigation._childBranch && (_functionToUse & Setting.NavigationAndOnClick) != 0)
         {
-            MyBranchController.TurnOffOnMoveToChild(_navigation._moveType);
+            if (_navigation._moveType != MoveType.MoveToInternalBranch)
+            {
+                MyBranchController.StartOutTweens();
+                MyBranchController.TurnOffOnMoveToChild(_navigation._childBranch.ClearHomeScreen);
+            }
             _navigation._childBranch.MoveToNextLevel(MyBranchController);
         }
     }
@@ -394,20 +416,19 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
 
         if (MyParentController.LastSelected == this) { return; }                    //Stops returning past the Home Level menus
+        MyParentController.LastSelected.DisableLevel();
 
-        if (_preseveSelection != PreserveSelection.Toggle_NotLinked && _preseveSelection != PreserveSelection.ToggleGroup_OneAlwaysOn)
+        if (MyParentController.LastSelected._navigation._moveType == MoveType.MoveToInternalBranch)
         {
-            MyParentController.LastSelected.SetButton(UIEventTypes.Normal);
-            MyParentController.LastSelected.DisableLevel();
+            MyParentController.LastSelected.SetNotHighlighted();
+            MyParentController.SaveLastSelected(MyParentController.LastSelected);
+            MyParentController.LastSelected.InitialiseStartUp();
         }
         else
         {
-            bool temp = Selected;
-            MyParentController.LastSelected.DisableLevel();
-            Selected = temp;
+            MyParentController.MoveBackALevel();
         }
         _audio.Play(UIEventTypes.Cancelled, _functionToUse);
-        MyParentController.MoveBackALevel();
     }
 
     public void SetSelected_NoEffects()
