@@ -35,7 +35,7 @@ public enum ToggleGroup { None, TG1, TG2, TG3, TG4, TG5 }
 
 public enum EscapeKey { BackOneLevel, BackToRootLevel, GlobalSetting, None }
 
-public enum PreserveSelection { Never_TempSwitch, Standard, ToggleGroup_AllOff, ToggleGroup_OneAlwaysOn, Toggle_NotLinked }
+public enum ButtonFunction { Switch_NeverHold, Standard_Hold, ToggleGroup, Toggle_NotLinked }
 
 public enum Setting
 {

@@ -19,7 +19,7 @@ public class UIColour
     [SerializeField] Color _highlighted = Color.white;
     [SerializeField] Color _pressedFlash = Color.white;
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] [Header("Assign Elements To Use", order = 0)] Text _textElements;
+    [SerializeField] [Header("UI Elements To Use (MUST Assign at Least One)", order = 0)] Text _textElements;
     [SerializeField] Image[] _imageElements;
 
     //Variables

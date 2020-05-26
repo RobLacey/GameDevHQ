@@ -10,7 +10,7 @@ public class PunchTweener
 {
     [SerializeField]
     [InfoBox("DOESN'T use Gloabal Tween Time. Changing settings DOESN'T work in RUNTIME")]
-    [AllowNesting] EffectType _punchWhen = EffectType.In;
+    [AllowNesting] public EffectType _punchWhen = EffectType.In;
     [SerializeField] [AllowNesting] Vector3 _strength = new Vector3(0.1f, 0.1f, 0f);
     [SerializeField] [AllowNesting] [Range(0, 2)] float _duration = 0.5f;
     [SerializeField] [AllowNesting] [Range(0, 1)] float _elasticity = 0.5f;

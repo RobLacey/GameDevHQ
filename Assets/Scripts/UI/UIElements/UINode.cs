@@ -17,8 +17,8 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     [SerializeField] [ShowIf("_isCancelOrBackButton")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] [HideIf("_isCancelOrBackButton")] bool _highlightFirstOption = true;
     [SerializeField] [ReadOnly] bool _isDisabled;
-    [SerializeField] [HideIf("_isCancelOrBackButton")] [ValidateInput("SetChildBranch")] [Label("Preserve When Selected")] 
-    PreserveSelection _preseveSelection;
+    [SerializeField] [HideIf("_isCancelOrBackButton")] [ValidateInput("SetChildBranch")] [Label("Button/Toggle Function")] 
+    ButtonFunction _buttonFunction;
     [SerializeField] [HideIf(EConditionOperator.Or, "GroupSettings", "_isCancelOrBackButton")] 
     ToggleGroup _toggleGroupID = ToggleGroup.None;
     [SerializeField] [HideIf(EConditionOperator.Or, "GroupSettings", "_isCancelOrBackButton")] bool _startAsSelected;
@@ -38,7 +38,8 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     //UIBranch _myBranchController;
     Slider _amSlider;
     UIEventTypes _eventType = UIEventTypes.Normal;
-    UINode[] _toggleGroupMembers;
+    //UINode[] _toggleGroupMembers;
+    List<UINode> _toggleGroupMembers = new List<UINode>();
     Vector3[] _myCorners = new Vector3[4];
 
     //Delegates
@@ -64,11 +65,12 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     [Button] private void DisableObject() { Disabled = true; }
     [Button] private void EnableObject() { Disabled = false; }
+    [Button] private void NotSelected() { SetNotSelected_NoEffects(); }
 
-    private bool SetChildBranch(PreserveSelection preserveSelection) 
+    private bool SetChildBranch(ButtonFunction buttonFunction) 
     {
-        if (preserveSelection == PreserveSelection.ToggleGroup_AllOff || preserveSelection == PreserveSelection.ToggleGroup_OneAlwaysOn
-            || preserveSelection == PreserveSelection.Toggle_NotLinked)
+        if (buttonFunction == ButtonFunction.ToggleGroup
+            || buttonFunction == ButtonFunction.Toggle_NotLinked)
         {
             _navigation.NotAToggle = true; 
         }
@@ -89,7 +91,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public bool GroupSettings()
     {
-        if (_preseveSelection == PreserveSelection.ToggleGroup_OneAlwaysOn || _preseveSelection == PreserveSelection.ToggleGroup_AllOff)
+        if (_buttonFunction == ButtonFunction.ToggleGroup)
         {
             return false;
         }
@@ -136,24 +138,21 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     private void SetUpToggleGroup()
     {
-        foreach (var leaf in MyParentController.ThisGroupsUILeafs)
+        if (_buttonFunction != ButtonFunction.ToggleGroup) return;
+
+        foreach (var node in MyParentController.ThisGroupsUINodes)
         {
-            if (leaf._preseveSelection == PreserveSelection.ToggleGroup_AllOff
-                || leaf._preseveSelection == PreserveSelection.ToggleGroup_OneAlwaysOn)
+            if (node._buttonFunction == ButtonFunction.ToggleGroup)
             {
-                List<UINode> temp = new List<UINode>();
-                foreach (var item in MyParentController.ThisGroupsUILeafs)
+                if (node != this && _toggleGroupID == node._toggleGroupID)
                 {
-                    if (item != leaf && item._toggleGroupID == leaf._toggleGroupID)
-                    {
-                        temp.Add(item);
-                    }
+                    _toggleGroupMembers.Add(node);
                 }
+
                 if (_startAsSelected)
                 {
                     SetSelected_NoEffects();
                 }
-                leaf._toggleGroupMembers = temp.ToArray();
             }
         }
     }
@@ -201,15 +200,6 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    public void MoveToNext() //KB/Ctrl highlight
-    {
-        if (!MyBranchController.AllowKeys) return;
-        MyBranchController.LastSelected.SetNotHighlighted();
-        MyBranchController.SaveLastSelected(this);
-        _audio.Play(UIEventTypes.Highlighted, _functionToUse);
-        SetAsHighlighted();
-    }
-
     public void OnMove(AxisEventData eventData)
     {
         if (_amSlider)
@@ -232,7 +222,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    public void OnSubmit(BaseEventData eventData) //KB/Ctrl
+    public void OnSubmit(BaseEventData eventData)
     {
         if (Disabled) return;
 
@@ -266,8 +256,8 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
         MyBranchController.LastSelected = this;
 
-        if (_preseveSelection != PreserveSelection.Toggle_NotLinked
-            && _preseveSelection != PreserveSelection.ToggleGroup_OneAlwaysOn)
+        if (_buttonFunction != ButtonFunction.Toggle_NotLinked
+            && _buttonFunction != ButtonFunction.ToggleGroup)
         {
             Selected = false;
             if (_highlightFirstOption && MyBranchController.AllowKeys)
@@ -288,6 +278,15 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
+    public void MoveToNext() //Review if can be combined with above or vise versa
+    {
+        if (!MyBranchController.AllowKeys) return;
+        MyBranchController.LastSelected.SetNotHighlighted();
+        MyBranchController.SaveLastSelected(this);
+        _audio.Play(UIEventTypes.Highlighted, _functionToUse);
+        SetAsHighlighted();
+    }
+
     public void SetAsHighlighted()
     {
         if (Disabled) return;
@@ -302,16 +301,22 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         SetUp.Invoke(_eventType, Selected, _functionToUse);
     }
 
+
     private void SwitchUIDisplay()
     {
         TurnOffBranchLastSelected();
+        ToggleGroupElements();
         MyBranchController.SaveLastSelected(this);
 
         if (Selected)
         {
-            if (_preseveSelection == PreserveSelection.ToggleGroup_OneAlwaysOn)
+            if (_buttonFunction == ButtonFunction.ToggleGroup)
             {
                 if (MyBranchController.LastSelected == this) return;
+            }
+            if (_buttonFunction == ButtonFunction.Toggle_NotLinked)
+            {
+                Selected = false;
             }
             DisableLevel();
             SetPressed();
@@ -326,21 +331,14 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    private void TurnOffBranchLastSelected() // Review may need to check mastercontrollers last selected
+    private void TurnOffBranchLastSelected() 
     {
         UINode lastElementSelected = MyBranchController.LastSelected;
-        if (_preseveSelection == PreserveSelection.ToggleGroup_OneAlwaysOn)
-        {
-            foreach (var item in _toggleGroupMembers)
-            {
-                item.DisableLevel();
-                item.SetNotHighlighted();
-            }
-        }
+
         if (lastElementSelected != this)
         {
-            if (lastElementSelected._preseveSelection != PreserveSelection.Toggle_NotLinked
-                && lastElementSelected._preseveSelection != PreserveSelection.ToggleGroup_OneAlwaysOn)
+            if (lastElementSelected._buttonFunction != ButtonFunction.Toggle_NotLinked
+                && lastElementSelected._buttonFunction != ButtonFunction.ToggleGroup)
             {
                 lastElementSelected.DisableLevel();
                 lastElementSelected.SetNotHighlighted();
@@ -348,26 +346,39 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
+    private void ToggleGroupElements()
+    {
+        if (_buttonFunction == ButtonFunction.ToggleGroup)
+        {
+            foreach (var item in _toggleGroupMembers)
+            {
+                item.Selected = false;
+                item.DisableLevel();
+                item.SetNotHighlighted();
+            }
+        }
+    }
+
     public void DisableLevel()
     {
-        Selected = false;
-        if (_amSlider) { QuitSlider(); }
-        _swapImageOrText.CycleToggle(Selected, _functionToUse);
-        if (_preseveSelection == PreserveSelection.Never_TempSwitch || _preseveSelection == PreserveSelection.Standard)
+        if (_buttonFunction == ButtonFunction.Switch_NeverHold || _buttonFunction == ButtonFunction.Standard_Hold)
         {
+            Selected = false;
             TurnOffChildren();
         }
+        if (_amSlider) { QuitSlider(); }
+        _swapImageOrText.CycleToggle(Selected, _functionToUse);
     }
 
 
     private void ActivateLevel()
     {
-        if(_preseveSelection != PreserveSelection.Never_TempSwitch) Selected = true;
+        if(_buttonFunction != ButtonFunction.Switch_NeverHold) Selected = true;
         if (_amSlider) { _amSlider.interactable = Selected; }
         _swapImageOrText.CycleToggle(Selected, _functionToUse);
         _tooltips.HideToolTip(_functionToUse);
         StopAllCoroutines();
-        if (_preseveSelection == PreserveSelection.Never_TempSwitch || _preseveSelection == PreserveSelection.Standard)
+        if (_buttonFunction == ButtonFunction.Switch_NeverHold || _buttonFunction == ButtonFunction.Standard_Hold)
         {
             TurnOnChildren();
         }
@@ -434,6 +445,12 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     public void SetSelected_NoEffects()
     {
         Selected = true;
+        SetNotHighlighted();
+    }
+
+    public void SetNotSelected_NoEffects()
+    {
+        Selected = false;
         SetNotHighlighted();
     }
 

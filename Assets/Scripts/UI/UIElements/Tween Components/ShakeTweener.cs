@@ -10,12 +10,12 @@ public class ShakeTweener
 {
     [SerializeField]
     [InfoBox("DOESN'T use Gloabal Tween Time. Changing settings DOESN'T work in RUNTIME")]
-    [AllowNesting] EffectType _shakeWhen = EffectType.In;
-    [SerializeField] [AllowNesting] Vector3 _strength = new Vector3(0.1f, 0.1f, 0f);
+    [AllowNesting] public EffectType _shakeWhen = EffectType.In;
+    [SerializeField] [AllowNesting] Vector3 _strength = new Vector3(0.2f, 0.2f, 0.2f);
     [SerializeField] [AllowNesting] [Range(0, 2)] float _duration = 0.5f;
-    [SerializeField] [AllowNesting] [Range(1, 10)] int _vibrato = 5;
+    [SerializeField] [AllowNesting] [Range(1, 10)] int _vibrato = 10;
     [SerializeField] [AllowNesting] [Range(0, 90)] float _randomness = 45f;
-    [SerializeField] [AllowNesting] bool _fadeOut;
+    [SerializeField] [AllowNesting] bool _fadeOut = true;
 
     //Variables
     List<BuildSettings> _buildList = new List<BuildSettings>();
@@ -116,4 +116,14 @@ public class ShakeTweener
         }
         yield return null;
     }
+
+    public void EndEffect(RectTransform rectTransform)
+    {
+        rectTransform.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut)
+                                .SetId("shake" + rectTransform.gameObject.GetInstanceID())
+                                .SetAutoKill(true)
+                                .Play();
+
+    }
+
 }

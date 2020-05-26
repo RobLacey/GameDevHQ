@@ -22,12 +22,14 @@ public class PositionTween
     List<BuildSettings> _buildList = new List<BuildSettings>();
     int _id;
     Action<IEnumerator> _startCoroutine;
+    Action<RectTransform> _endEffect;
 
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public void SetUpPositionTweens(List<BuildSettings> buildObjectsList, Action<IEnumerator> startCoroutine)
+    public void SetUpPositionTweens(List<BuildSettings> buildObjectsList, Action<IEnumerator> startCoroutine, Action<RectTransform> endCall)
     {
+        _endEffect = endCall;
         _startCoroutine = startCoroutine;
         _buildList = buildObjectsList;
         foreach (var item in _buildList)
@@ -50,7 +52,7 @@ public class PositionTween
             {
                 ResetStartPosition();
                 SetInTime(globalTime);
-                InSettings();
+                InSettings(positionTween);
                 _startCoroutine.Invoke(MoveSequence(tweenCallback));
             }
             else
@@ -79,8 +81,9 @@ public class PositionTween
         {
             if (isIn)
             {
+                ResetStartPosition();
                 SetInTime(globalTime);
-                InSettings();
+                InSettings(positionTween);
                 _startCoroutine.Invoke(MoveSequence(tweenCallback));
             }
             else
@@ -106,15 +109,17 @@ public class PositionTween
                                                 .SetId("position" + item._element.GetInstanceID())
                                                 .SetEase(_tweenEase).SetAutoKill(true)
                                                 .Play()
-                                                .OnComplete(tweenCallback);
+                                                .OnComplete(tweenCallback)
+                                                .OnComplete(() => _endEffect?.Invoke(item._element));
                 }
                 else
                 {
                     item._element.DOAnchorPos3D(item._moveTo, _tweenTime, _pixelSnapping)
                                         .SetId("position" + item._element.GetInstanceID())
                                         .SetEase(_tweenEase).SetAutoKill(true)
-                                        .Play();
-
+                                        .Play()
+                                        .OnComplete(()=> _endEffect?.Invoke(item._element));
+                    
                     yield return new WaitForSeconds(item._buildNextAfterDelay);
                     index++;
                 }
@@ -140,14 +145,24 @@ public class PositionTween
         }
     }
 
-    private void InSettings()
+    private void InSettings(PositionTweenType positionTween)
     {
         _tweenEase = _easeIn;
         _listToUse = _buildList;
 
-        foreach (var item in _listToUse)
+        if (positionTween == PositionTweenType.InAndOut)
         {
-            item._moveTo = item._tweenTargetPosition;
+            foreach (var item in _listToUse)
+            {
+                item._moveTo = item._tweenMiddlePosition;
+            }
+        }
+        else
+        {
+            foreach (var item in _listToUse)
+            {
+                item._moveTo = item._tweenTargetPosition;
+            }
         }
     }
     private void OutSettings()
@@ -168,7 +183,7 @@ public class PositionTween
 
         foreach (var item in _listToUse)
         {
-            item._moveTo = item._tweenStartPosition;
+            item._moveTo = item._tweenTargetPosition;
         }
     }
 

@@ -24,7 +24,7 @@ public class UIBranch : MonoBehaviour
     [SerializeField] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] [ValidateInput("IsEmpty", "If left Blank it will Auto-assign first UINode in hierarchy/Group")] 
     UINode _userDefinedStartPosition;
-    [SerializeField] [Label("Branch Group List (Leave blank if NO groups needed)")] [ReorderableList] List<GroupList> _groupList;
+    [SerializeField] [Label("Branch Group List (Leave blank if NO groups needed)")] [ReorderableList] List<GroupList> _groupsList;
 
     //Internal Callses & Editor Scripts
     #region Internal Classes & Editor Scripts
@@ -51,7 +51,7 @@ public class UIBranch : MonoBehaviour
     public Canvas MyCanvas { get; set; }
     public UINode LastSelected { get; set; }
     public bool DontSetAsActive { get; set; } = false;
-    public UINode[] ThisGroupsUILeafs { get { return _childUILeafs; } }
+    public UINode[] ThisGroupsUINodes { get { return _childUILeafs; } }
     public bool AllowKeys { get; set; }
     public CanvasGroup MyCanvasGroup { get; set; }
     public EscapeKey EscapeKeySetting { get { return _escapeKeyFunction; } }
@@ -60,7 +60,7 @@ public class UIBranch : MonoBehaviour
 
     private void Awake()
     {
-        GetChildUILeafs();
+        _childUILeafs = gameObject.GetComponentsInChildren<UINode>();
         MyCanvasGroup = GetComponent<CanvasGroup>();
         _UITweener = GetComponent<UITweener>();
         _UITrunk = FindObjectOfType<UIMasterController>();
@@ -83,29 +83,15 @@ public class UIBranch : MonoBehaviour
     private void OnEnable() { _UITweener.IsRunning = true; }
     private void OnDisable() { _UITweener.IsRunning = false; }
 
-    private void GetChildUILeafs() //Only gets Childrenn directly below. Ingnore ones inside other game objects
-    {
-        List<UINode> temp = new List<UINode>();
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            if (transform.GetChild(i).GetComponent<UINode>())
-            {
-                temp.Add(transform.GetChild(i).GetComponent<UINode>());
-            }
-        }
-        _childUILeafs = temp.ToArray();
-    }
-
     private void SetStartPositions()
     {
         SetGroupIndex();
 
-        if (_groupList.Count != 0 && DefaultStartPosition == null)
+        if (_groupsList.Count != 0 && DefaultStartPosition == null)
         {
-            Debug.Log(gameObject);
-            DefaultStartPosition = _groupList[0]._startNode;
+            DefaultStartPosition = _groupsList[0]._startNode;
         }
-        else if(_groupList.Count == 0 && DefaultStartPosition == null)
+        else if(_groupsList.Count == 0 && DefaultStartPosition == null)
         {
             foreach (Transform item in transform)
             {
@@ -123,12 +109,12 @@ public class UIBranch : MonoBehaviour
 
     private void SetGroupIndex()
     {
-        if (DefaultStartPosition && _groupList.Count > 0)
+        if (DefaultStartPosition && _groupsList.Count > 0)
         {
             int index = 0;
-            for (int i = 0; i < _groupList.Count; i++)
+            for (int i = 0; i < _groupsList.Count; i++)
             {
-                foreach (var item in _groupList[i]._nodes)
+                foreach (var item in _groupsList[i]._nodes)
                 {
                     if (item == DefaultStartPosition)
                     {
@@ -192,7 +178,7 @@ public class UIBranch : MonoBehaviour
             {
                 item.MyParentController = newParentController;
             }
-            foreach (var groups in _groupList)
+            foreach (var groups in _groupsList)
             {
                 foreach (var item in groups._nodes)
                 {
@@ -204,16 +190,13 @@ public class UIBranch : MonoBehaviour
 
     private void InitialiseFirstUIElement()
     {
-        if (DefaultStartPosition != null)
+        if (!_saveExitSelection)
         {
-            if (!_saveExitSelection)
-            {
-                SetGroupIndex();
-                LastSelected.SetNotHighlighted();
-                LastSelected = DefaultStartPosition;
-            }
-            LastSelected.InitialiseStartUp();
+            SetGroupIndex();
+            LastSelected.SetNotHighlighted();
+            LastSelected = DefaultStartPosition;
         }
+        LastSelected.InitialiseStartUp();
     }
 
     public void TurnOffOnMoveToChild(bool clearHomeScreen) 
@@ -266,8 +249,8 @@ public class UIBranch : MonoBehaviour
 
     public void SwitchGroup()
     {
-        _groupList[_groupIndex]._startNode.SetNotHighlighted();
-        if (_groupIndex == _groupList.Count - 1)
+        _groupsList[_groupIndex]._startNode.SetNotHighlighted();
+        if (_groupIndex == _groupsList.Count - 1)
         {
             _groupIndex = 0;
         }
@@ -275,6 +258,11 @@ public class UIBranch : MonoBehaviour
         {
             _groupIndex++;
         }
-        _groupList[_groupIndex]._startNode.MoveToNext();
+        _groupsList[_groupIndex]._startNode.MoveToNext();
+    }
+
+    public void Tester()
+    {
+        Debug.Log("BOOOM");
     }
 }

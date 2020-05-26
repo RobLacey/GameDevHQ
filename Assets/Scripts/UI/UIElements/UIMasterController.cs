@@ -21,7 +21,7 @@ public class UIMasterController : MonoBehaviour
     [SerializeField] [ShowIf("_inGameMenuSystem")] StartInMenu _startGameWhere = StartInMenu.InGameControl;
     [SerializeField] [ShowIf("_inGameMenuSystem")] [Label("Switch To/From Game Menus")] [InputAxis] string _switchTOMenusButton;
     [SerializeField] [ShowIf("_inGameMenuSystem")] InGameOrInMenu _returnToGameControl;
-    [SerializeField] [ReorderableList] [Label("Home Screen Branches. Top Branch is Start Position")] List<UIBranch> _homeBranches;
+    [SerializeField] [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")] List<UIBranch> _homeBranches;
 
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
@@ -80,14 +80,6 @@ public class UIMasterController : MonoBehaviour
     private void Awake()
     {
         _allUIBranches = FindObjectsOfType<UIBranch>();
-
-        if (_inGameMenuSystem)
-        {
-            if (_startGameWhere == StartInMenu.InGameControl)
-            {
-                InMenu = false;
-            }
-        }
         _returnToGameControl.Invoke(InMenu);
     }
 
@@ -107,12 +99,17 @@ public class UIMasterController : MonoBehaviour
         _activeBranch = _homeBranches[0];
         _mousePos = Input.mousePosition;
         _onHomeScreen = true;
+        IntroAnimations();
 
-        if (InMenu)
+        if (_inGameMenuSystem && _startGameWhere == StartInMenu.InGameControl)
+        {
+            _canStart = true;
+            ProcessGameToMenuSwitching();
+        }
+        else
         {
             EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
             StartCoroutine(StartDelay());
-            IntroAnimations();
         }
     }
 
@@ -183,8 +180,6 @@ public class UIMasterController : MonoBehaviour
 
     private void ActivateMouse()
     {
-        if (!_canStart) return;
-
         _mousePos = Input.mousePosition;
 
         if (_usingMouse == false)
@@ -202,13 +197,13 @@ public class UIMasterController : MonoBehaviour
 
     public void SetLastUIObject(UINode uiObject)
     {
-        CleaAndSetRootGroup(uiObject);
+        ClearAndSetRootGroup(uiObject);
         _uiElementLastSelected = uiObject;
         _activeBranch = _uiElementLastSelected.MyBranchController;
         EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
     }
 
-    private void CleaAndSetRootGroup(UINode uiObject)
+    public void ClearAndSetRootGroup(UINode uiObject)
     {
         int tempIndexStore = _groupIndex;
         if (SetRootGroup(uiObject.MyBranchController))
@@ -328,15 +323,28 @@ public class UIMasterController : MonoBehaviour
 
     private void ProcessGameToMenuSwitching()
     {
-        InMenu = !InMenu;
-        _uiElementLastSelected.SetNotHighlighted();
-        EventSystem.current.SetSelectedGameObject(null);
-        _returnToGameControl.Invoke(InMenu);
-
-        foreach (var item in _allUIBranches)
+        if (!_usingMouse)
         {
-            item.MyCanvasGroup.blocksRaycasts = InMenu;
-        }
+            if (InMenu)
+            {
+                InMenu = false;
+                _uiElementLastSelected.SetNotHighlighted();
+                EventSystem.current.SetSelectedGameObject(null);
+            }
+            else
+            {
+                InMenu = true;
+                _uiElementLastSelected.SetAsHighlighted();
+                EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
+            }
+
+            _returnToGameControl.Invoke(InMenu);
+
+            foreach (var item in _allUIBranches)
+            {
+                item.MyCanvasGroup.blocksRaycasts = InMenu;
+            }
+        }    
     }
 
     private bool IsItPartOfRootMenu(UIBranch uIBranch) //Check that I'm on the homescreen when mving back levels

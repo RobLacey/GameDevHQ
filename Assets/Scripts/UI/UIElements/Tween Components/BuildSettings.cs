@@ -8,8 +8,9 @@ using NaughtyAttributes;
 public class BuildSettings
 {
     [SerializeField] public RectTransform _element;
-    [SerializeField] [AllowNesting] [ShowIf("PositionTween")] public Vector3 _tweenStartPosition;
-    [SerializeField] [AllowNesting] [ShowIf("PositionTween")] [Label("End/Mid Position")] public Vector3 _tweenTargetPosition;
+    [SerializeField] [AllowNesting] [ShowIf("PositionTween")] [Label("Start Position")] public Vector3 _tweenStartPosition;
+    [SerializeField] [AllowNesting] [ShowIf("MiddleTween")] [Label("Mid Position")] public Vector3 _tweenMiddlePosition;
+    [SerializeField] [AllowNesting] [ShowIf("PositionTween")] [Label("End Position")] public Vector3 _tweenTargetPosition;
     [SerializeField] [AllowNesting] [ShowIf("ScaleTween")] public Vector3 _startScale;
     [SerializeField] [AllowNesting] [ShowIf("ScaleTween")] [Label("End/Mid Scale")] public Vector3 _targetScale;
     [SerializeField] [AllowNesting] [ShowIf("RotationTween")] public Vector3 _rotateFrom;
@@ -22,7 +23,31 @@ public class BuildSettings
     [HideInInspector] public Vector3 _shakeStartScale;
 
     public bool PositionTween { get; set; }
+    public bool MiddleTween { get; set; }
     public bool ScaleTween { get; set; }
     public bool RotationTween { get; set; }
+
+    public void SetPositionTween(PositionTweenType positionTween)
+    {
+        if (positionTween != PositionTweenType.NoTween)
+        {
+            PositionTween = true;
+        }
+        else
+        {
+            PositionTween = false;
+        }
+
+        if (positionTween == PositionTweenType.InAndOut)
+        {
+            MiddleTween = true;
+        }
+        else
+        {
+            MiddleTween = false;
+        }
+        
+
+    }
 }
 
