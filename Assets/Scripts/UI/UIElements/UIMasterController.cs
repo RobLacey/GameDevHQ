@@ -281,7 +281,7 @@ public class UIMasterController : MonoBehaviour
     }
     private void BackToRoot()
     {
-        _uiElementLastSelected.MyBranchController.StartOutTweens();
+        _uiElementLastSelected.MyBranchController.StartOutTweens(false);
         _uiElementLastSelected._audio.Play(UIEventTypes.Cancelled, _uiElementLastSelected._functionToUse);
         RestoreHomeScreen();
         _homeBranches[_groupIndex].LastSelected.DisableLevel();
@@ -309,10 +309,12 @@ public class UIMasterController : MonoBehaviour
         {
             _onHomeScreen = false;
             item.MyCanvas.enabled = false;
+            _homeBranches[_groupIndex].LastSelected.DisableLevel();
+            _homeBranches[_groupIndex].LastSelected.SetNotHighlighted();
         }
     }
 
-    private void RestoreHomeScreen()
+    public void RestoreHomeScreen()
     {
         foreach (var item in _homeBranches)
         {
@@ -339,11 +341,6 @@ public class UIMasterController : MonoBehaviour
             }
 
             _returnToGameControl.Invoke(InMenu);
-
-            foreach (var item in _allUIBranches)
-            {
-                item.MyCanvasGroup.blocksRaycasts = InMenu;
-            }
         }    
     }
 

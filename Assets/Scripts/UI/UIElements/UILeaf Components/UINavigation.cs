@@ -54,7 +54,7 @@ public class UINavigation
             {
                 if (down)
                 {
-                    if (down.Disabled) { down.OnMove(eventData); return; }
+                    if (down.IsDisabled) { down.OnMove(eventData); return; }
                     down.MoveToNext();
                 }
             }
@@ -63,7 +63,7 @@ public class UINavigation
             {
                 if (up)
                 {
-                    if (up.Disabled) { up.OnMove(eventData); return; }
+                    if (up.IsDisabled) { up.OnMove(eventData); return; }
                     up.MoveToNext();
                 }
             }
@@ -75,7 +75,7 @@ public class UINavigation
             {
                 if (left)
                 {
-                    if (left.Disabled) { left.OnMove(eventData); return; }
+                    if (left.IsDisabled) { left.OnMove(eventData); return; }
                     left.MoveToNext();
                 }
             }
@@ -84,7 +84,7 @@ public class UINavigation
             {
                 if (right)
                 {
-                    if (right.Disabled) { right.OnMove(eventData); return; }
+                    if (right.IsDisabled) { right.OnMove(eventData); return; }
                     right.MoveToNext();
                 }
             }

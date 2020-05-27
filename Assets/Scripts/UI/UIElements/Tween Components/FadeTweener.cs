@@ -23,6 +23,8 @@ public class FadeTweener
     public CanvasGroup MyCanvasGroup { get; set; }
     public bool UsingGlobalTime { get; set; }
 
+    public CanvasRenderer[] MyCanvases { get; set; }
+
     public void SetUpFadeTweens(FadeTween fadeTween)
     {
         if (fadeTween == FadeTween.FadeIn || fadeTween == FadeTween.FadeInAndOut)
@@ -98,7 +100,6 @@ public class FadeTweener
                                 .SetEase(_fadeEase).SetAutoKill(true)
                                 .Play()
                                 .OnComplete(tweenCallback);
-
     }
 
     private void SetInTime(float globalTime) 

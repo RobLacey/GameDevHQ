@@ -36,9 +36,9 @@ public class PunchTweener
         }
     }
 
-    public void DoPunch(ScaleTween scaleTween, bool isIn, TweenCallback tweenCallback = null)
+    public void DoPunch(PunchShakeTween scaleTween, bool isIn, TweenCallback tweenCallback = null)
     {
-        if (scaleTween == ScaleTween.NoTween || scaleTween != ScaleTween.Punch) return;
+        if (scaleTween == PunchShakeTween.NoTween || scaleTween != PunchShakeTween.Punch) return;
 
         StopRunningTweens();
 
@@ -115,4 +115,35 @@ public class PunchTweener
         }
         yield return null;
     }
+
+    public void EndEffect(RectTransform rectTransform, bool isIn)
+    {
+        if (isIn)
+        {
+            if (CheckInEffectType())
+            {
+                Debug.Log("Punch In or InOut");
+
+                RewindTweens();
+                rectTransform.DOPunchScale(_strength, _duration, _vibrato, _elasticity)
+                                        .SetId("punch" + rectTransform.gameObject.GetInstanceID())
+                                        .SetAutoKill(true)
+                                        .Play();
+            }
+        }
+        else
+        {
+            if (CheckOutEffectType())
+            {
+                Debug.Log("Punch Out");
+
+                RewindTweens();
+                rectTransform.DOPunchScale(_strength, _duration, _vibrato, _elasticity)
+                                        .SetId("punch" + rectTransform.gameObject.GetInstanceID())
+                                        .SetAutoKill(true)
+                                        .Play();
+            }
+        }
+    }
+
 }

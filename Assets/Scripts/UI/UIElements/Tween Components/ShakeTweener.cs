@@ -37,9 +37,9 @@ public class ShakeTweener
         }
     }
 
-    public void DoShake(ScaleTween scaleTween, bool isIn, TweenCallback tweenCallback = null)
+    public void DoShake(PunchShakeTween scaleTween, bool isIn, TweenCallback tweenCallback = null)
     {
-        if (scaleTween == ScaleTween.NoTween || scaleTween != ScaleTween.Shake) return;
+        if (scaleTween == PunchShakeTween.NoTween || scaleTween != PunchShakeTween.Shake) return;
 
         StopRunningTweens();
 
@@ -117,13 +117,29 @@ public class ShakeTweener
         yield return null;
     }
 
-    public void EndEffect(RectTransform rectTransform)
+    public void EndEffect(RectTransform rectTransform, bool isIn)
     {
-        rectTransform.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut)
-                                .SetId("shake" + rectTransform.gameObject.GetInstanceID())
-                                .SetAutoKill(true)
-                                .Play();
-
+        if (isIn)
+        {
+            if (CheckInEffectType())
+            {
+                RewindTweens();
+                rectTransform.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut)
+                                        .SetId("shake" + rectTransform.gameObject.GetInstanceID())
+                                        .SetAutoKill(true)
+                                        .Play();
+            }
+        }
+        else
+        {
+            if (CheckOutEffectType())
+            {
+                RewindTweens();
+                rectTransform.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut)
+                                        .SetId("shake" + rectTransform.gameObject.GetInstanceID())
+                                        .SetAutoKill(true)
+                                        .Play();
+            }
+        }
     }
-
 }

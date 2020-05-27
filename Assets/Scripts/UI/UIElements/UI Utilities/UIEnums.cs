@@ -21,7 +21,12 @@ public enum RotationTweenType
 
 public enum ScaleTween 
 { 
-    NoTween, Scale_InOnly, Scale_OutOnly, Scale_InAndOut, Punch, Shake 
+    NoTween, Scale_InOnly, Scale_OutOnly, Scale_InAndOut 
+}
+
+public enum PunchShakeTween 
+{ 
+    NoTween, Punch, Shake 
 }
 
 public enum FadeTween 
@@ -33,7 +38,7 @@ public enum EffectType { In, Out, Both }
 
 public enum ToggleGroup { None, TG1, TG2, TG3, TG4, TG5 }
 
-public enum EscapeKey { BackOneLevel, BackToRootLevel, GlobalSetting, None }
+public enum EscapeKey { None, BackOneLevel, BackToRootLevel, GlobalSetting, Event }
 
 public enum ButtonFunction { Switch_NeverHold, Standard_Hold, ToggleGroup, Toggle_NotLinked }
 
@@ -86,6 +91,7 @@ public enum CurrentRoatationIs { StartRotateAt, MidPointForInAndOut, EndRotateAt
 public enum MoveType { MoveToInternalBranch, MoveToExternalBranch }
 
 public enum StartInMenu { InMenu, InGameControl }
+public enum BranchType { HomeScreenUI, StandardUI ,Independent }
 
 
 

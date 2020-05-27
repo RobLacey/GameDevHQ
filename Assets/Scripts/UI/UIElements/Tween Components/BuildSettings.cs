@@ -22,8 +22,8 @@ public class BuildSettings
     [HideInInspector] public Vector3 _punchStartscale;
     [HideInInspector] public Vector3 _shakeStartScale;
 
-    public bool PositionTween { get; set; }
-    public bool MiddleTween { get; set; }
+    private bool PositionTween { get; set; }
+    private bool MiddleTween { get; set; }
     public bool ScaleTween { get; set; }
     public bool RotationTween { get; set; }
 
@@ -46,8 +46,6 @@ public class BuildSettings
         {
             MiddleTween = false;
         }
-        
-
     }
 }
 

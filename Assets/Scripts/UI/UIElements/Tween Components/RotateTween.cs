@@ -23,13 +23,16 @@ public class RotateTween
     List<BuildSettings> _buildList = new List<BuildSettings>();
     int _id;
     Action<IEnumerator> _startCoroutine;
+    Action<RectTransform> _effectCallback;
 
 
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public void SetUpRotateTweens(List<BuildSettings> buildObjectsList, Action<IEnumerator> startCoroutine)
+    public void SetUpRotateTweens(List<BuildSettings> buildObjectsList, 
+                                  Action<IEnumerator> startCoroutine, Action<RectTransform> effectCall)
     {
+        _effectCallback = effectCall;
         _buildList = buildObjectsList;
         _startCoroutine = startCoroutine;
         foreach (var item in _buildList)
@@ -109,7 +112,7 @@ public class RotateTween
         }
     }
 
-    public IEnumerator MoveSequence(TweenCallback tweenCallback = null)
+    public IEnumerator MoveSequence(TweenCallback callback = null)
     {
         bool finished = false;
         int index = 0;
@@ -120,19 +123,22 @@ public class RotateTween
             {
                 if (index == _listToUse.Count - 1)
                 {
-                    item._element.DOLocalRotate(item._targetRotation, _tweenTime)
-                            .SetId("rotation" + item._element.GetInstanceID())
-                            .SetEase(_tweenEase).SetAutoKill(true)
-                            .Play()
-                            .OnComplete(tweenCallback);
-
+                    Tween tween = item._element.DOLocalRotate(item._targetRotation, _tweenTime)
+                                                .SetId("rotation" + item._element.GetInstanceID())
+                                                .SetEase(_tweenEase).SetAutoKill(true)
+                                                .Play()
+                                                .OnComplete(callback);
+                    yield return tween.WaitForCompletion();
+                    _effectCallback?.Invoke(item._element);
                 }
                 else
                 {
                     item._element.DOLocalRotate(item._targetRotation, _tweenTime)
                                                 .SetId("rotation" + item._element.GetInstanceID())
                                                 .SetEase(_tweenEase).SetAutoKill(true)
-                                                .Play();
+                                                .Play()
+                                                .OnComplete(() => _effectCallback?.Invoke(item._element));
+
                     yield return new WaitForSeconds(item._buildNextAfterDelay);
                     index++;
                 }

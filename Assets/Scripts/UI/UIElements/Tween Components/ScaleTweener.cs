@@ -21,12 +21,16 @@ public class ScaleTweener
     List<BuildSettings> _buildList = new List<BuildSettings>();
     int _id;
     Action<IEnumerator> _startCoroutine;
+    Action<RectTransform> _effectCallback;
+
 
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public void SetUpScaleTweens(List<BuildSettings> buildObjectsList, Action<IEnumerator> startCoroutine)
+    public void SetUpScaleTweens(List<BuildSettings> buildObjectsList, 
+                                 Action<IEnumerator> startCoroutine, Action<RectTransform> effectCall)
     {
+        _effectCallback = effectCall;
         _startCoroutine = startCoroutine;
         _buildList = buildObjectsList;
 
@@ -38,13 +42,13 @@ public class ScaleTweener
         _reversedBuildSettings.Reverse();
     }
 
-    public void ScaleTween(ScaleTween scaleTweenType, float globalTime, bool isIn, TweenCallback tweenCallback = null)
+    public void DoScaleTween(ScaleTween scaleTweenType, float globalTime, bool isIn, TweenCallback tweenCallback = null)
     {
-        if (scaleTweenType == global::ScaleTween.NoTween) return;
+        if (scaleTweenType == ScaleTween.NoTween) return;
 
         StopRunningTweens();
 
-        if (scaleTweenType == global::ScaleTween.Scale_InOnly)
+        if (scaleTweenType == ScaleTween.Scale_InOnly)
         {
             if (isIn)
             {
@@ -59,7 +63,7 @@ public class ScaleTweener
             }
         }
 
-        if (scaleTweenType == global::ScaleTween.Scale_OutOnly)
+        if (scaleTweenType == ScaleTween.Scale_OutOnly)
         {
             if (isIn)
             {
@@ -74,7 +78,7 @@ public class ScaleTweener
             }
         }
 
-        if (scaleTweenType == global::ScaleTween.Scale_InAndOut)
+        if (scaleTweenType == ScaleTween.Scale_InAndOut)
         {
             if (isIn)
             {
@@ -102,19 +106,22 @@ public class ScaleTweener
             {
                 if (index == _listToUse.Count - 1)
                 {
-                    item._element.DOScale(item._scaleTo, _tweenTime)
-                            .SetId("scale" + item._element.GetInstanceID())
-                            .SetEase(_tweenEase).SetAutoKill(true)
-                            .Play()
-                            .OnComplete(tweenCallback);
-
+                    Tween tween = item._element.DOScale(item._scaleTo, _tweenTime)
+                                                .SetId("scale" + item._element.GetInstanceID())
+                                                .SetEase(_tweenEase).SetAutoKill(true)
+                                                .Play()
+                                                .OnComplete(tweenCallback);
+                    yield return tween.WaitForCompletion();
+                    _effectCallback?.Invoke(item._element);
                 }
                 else
                 {
                     item._element.DOScale(item._scaleTo, _tweenTime)
-                                .SetId("scale" + item._element.GetInstanceID())
-                                .SetEase(_tweenEase).SetAutoKill(true)
-                                .Play();
+                                                .SetId("scale" + item._element.GetInstanceID())
+                                                .SetEase(_tweenEase).SetAutoKill(true)
+                                                .Play()
+                                                .OnComplete(() => _effectCallback?.Invoke(item._element));
+
                     yield return new WaitForSeconds(item._buildNextAfterDelay);
                     index++;
                 }

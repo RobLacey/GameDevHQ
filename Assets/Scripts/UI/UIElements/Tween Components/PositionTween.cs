@@ -22,14 +22,16 @@ public class PositionTween
     List<BuildSettings> _buildList = new List<BuildSettings>();
     int _id;
     Action<IEnumerator> _startCoroutine;
-    Action<RectTransform> _endEffect;
+    Action<RectTransform> _effectCallback;
 
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public void SetUpPositionTweens(List<BuildSettings> buildObjectsList, Action<IEnumerator> startCoroutine, Action<RectTransform> endCall)
+    public void SetUpPositionTweens(List<BuildSettings> buildObjectsList, 
+                                    Action<IEnumerator> startCoroutine, 
+                                    Action<RectTransform> effectCall)
     {
-        _endEffect = endCall;
+        _effectCallback = effectCall;
         _startCoroutine = startCoroutine;
         _buildList = buildObjectsList;
         foreach (var item in _buildList)
@@ -95,7 +97,7 @@ public class PositionTween
         }
     }
 
-    public IEnumerator MoveSequence(TweenCallback tweenCallback = null)
+    public IEnumerator MoveSequence(TweenCallback callback)
     {
         bool finished = false;
         int index = 0;
@@ -105,20 +107,21 @@ public class PositionTween
             {
                 if (index == _listToUse.Count - 1)
                 {
-                    item._element.DOAnchorPos3D(item._moveTo, _tweenTime, _pixelSnapping)
+                    Tween tween = item._element.DOAnchorPos3D(item._moveTo, _tweenTime, _pixelSnapping)
                                                 .SetId("position" + item._element.GetInstanceID())
                                                 .SetEase(_tweenEase).SetAutoKill(true)
                                                 .Play()
-                                                .OnComplete(tweenCallback)
-                                                .OnComplete(() => _endEffect?.Invoke(item._element));
+                                                .OnComplete(callback);
+                    yield return tween.WaitForCompletion();
+                    _effectCallback?.Invoke(item._element);
                 }
                 else
                 {
                     item._element.DOAnchorPos3D(item._moveTo, _tweenTime, _pixelSnapping)
-                                        .SetId("position" + item._element.GetInstanceID())
-                                        .SetEase(_tweenEase).SetAutoKill(true)
-                                        .Play()
-                                        .OnComplete(()=> _endEffect?.Invoke(item._element));
+                                                .SetId("position" + item._element.GetInstanceID())
+                                                .SetEase(_tweenEase).SetAutoKill(true)
+                                                .Play()
+                                                .OnComplete(() => _effectCallback?.Invoke(item._element));
                     
                     yield return new WaitForSeconds(item._buildNextAfterDelay);
                     index++;
