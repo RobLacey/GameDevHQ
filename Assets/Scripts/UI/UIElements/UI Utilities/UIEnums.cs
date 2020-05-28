@@ -38,7 +38,7 @@ public enum EffectType { In, Out, Both }
 
 public enum ToggleGroup { None, TG1, TG2, TG3, TG4, TG5 }
 
-public enum EscapeKey { None, BackOneLevel, BackToRootLevel, GlobalSetting, Event }
+public enum EscapeKey { None, BackOneLevel, BackToRootLevel, GlobalSetting }
 
 public enum ButtonFunction { Switch_NeverHold, Standard_Hold, ToggleGroup, Toggle_NotLinked }
 
@@ -57,7 +57,12 @@ public enum Setting
 
 public enum NavigationType { RightAndLeft, UpAndDown, AllDirections, None }
 
-public enum EventType { Never, Highlighted, Selected }
+public enum AccessoryEventType
+{
+    None = 0,
+    Highlighted = 1 << 0,
+    Selected = 1 << 1
+}
 
 public enum ScaleType { PositionTween, ScaleTween, ScalePunch, ScaleShake }
 
@@ -71,7 +76,7 @@ public enum ToolTipAnchor
 
 public enum TooltipType { Fixed, Follow }
 
-public enum ColourSettings
+public enum EventType
 {
     None = 0,
     Highlighted = 1 << 0,
@@ -93,7 +98,7 @@ public enum MoveType { MoveToInternalBranch, MoveToExternalBranch }
 public enum StartInMenu { InMenu, InGameControl }
 public enum BranchType { HomeScreenUI, StandardUI ,Independent }
 
-
+public enum MoveNext { OnClick, AtTweenEnd }
 
 
 

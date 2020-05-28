@@ -18,7 +18,11 @@ public class UINavigation
     public UnityEvent _asButtonEvent;
     public OnToggleEvent _asToggleEvent;
 
+    //Editor Scripts & Internal Classes
+    #region Editor Scripts & Internal Classes
     public bool NotAToggle { get; set; }
+
+    #endregion
 
     //Variables
     Setting _mySettings = Setting.NavigationAndOnClick;

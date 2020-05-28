@@ -8,7 +8,7 @@ using NaughtyAttributes;
 [Serializable]
 public class UIAccessories
 {
-    [SerializeField] EventType _activateWhen = EventType.Never;
+    [SerializeField] [EnumFlags] AccessoryEventType _activateWhen = AccessoryEventType.None;
     [SerializeField] [AllowNesting] [EnableIf("Activate")] Outline _useOutline;
     [SerializeField] [AllowNesting] [EnableIf("Activate")] Shadow _useShadow;
     [SerializeField] Image[] _accessoriesList;
@@ -19,11 +19,11 @@ public class UIAccessories
     //Editor Script
     public bool Activate()
     {
-        if (_activateWhen != EventType.Never)
+        if ((_activateWhen == AccessoryEventType.None))
         {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     public Action<UIEventTypes, bool, Setting> OnAwake()
@@ -47,13 +47,13 @@ public class UIAccessories
                 ActivateAccessories(false);
                 break;
             case UIEventTypes.Highlighted:
-                if (_activateWhen == EventType.Highlighted)
+                if ((_activateWhen & AccessoryEventType.Highlighted) != 0)
                 {
                     ActivateAccessories(true);
                 }
                 break;
             case UIEventTypes.Selected:
-                if (_activateWhen == EventType.Selected)
+                if ((_activateWhen & AccessoryEventType.Selected) != 0)
                 {
                     ActivateAccessories(true);
                 }

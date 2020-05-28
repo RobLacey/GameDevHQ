@@ -16,16 +16,16 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     [SerializeField] [Label("Is Cancel or Back Button")] bool _isCancelOrBackButton;
     [SerializeField] [ShowIf("_isCancelOrBackButton")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] [HideIf("_isCancelOrBackButton")] bool _highlightFirstOption = true;
-    [SerializeField] [ReadOnly] bool _isDisabled;
     [SerializeField] [HideIf("_isCancelOrBackButton")] [ValidateInput("SetChildBranch")] [Label("Button/Toggle Function")] 
     ButtonFunction _buttonFunction;
     [SerializeField] [HideIf(EConditionOperator.Or, "GroupSettings", "_isCancelOrBackButton")] 
     ToggleGroup _toggleGroupID = ToggleGroup.None;
     [SerializeField] [HideIf(EConditionOperator.Or, "GroupSettings", "_isCancelOrBackButton")] bool _startAsSelected;
+
     [Header("Settings (Click Arrows To Expand)")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [EnumFlags] [Label("UI Functions To Use")] [SerializeField] public Setting _functionToUse;
-    [SerializeField] [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")] UINavigation _navigation;
+    [SerializeField] [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")] public UINavigation _navigation;
     [SerializeField] [Label("Colour Settings")] [ShowIf("NeedColour")] UIColour _colours;
     [SerializeField] [Label("Invert Colour when Highlighted or Selected")] [ShowIf("NeedInvert")] UIInvertColours _invertColourCorrection;
     [SerializeField] [Label("Swap Images, Text or SetUp Toogle Image List")] [ShowIf("NeedSwap")] UISwapper _swapImageOrText;
@@ -39,6 +39,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     UIEventTypes _eventType = UIEventTypes.Normal;
     List<UINode> _toggleGroupMembers = new List<UINode>();
     Vector3[] _myCorners = new Vector3[4];
+    bool _isDisabled;
 
     //Delegates
     Action<UIEventTypes, bool, Setting> SetUp;
@@ -79,16 +80,16 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
         return true;
     }
-    public bool UseNavigation() { return (_functionToUse & Setting.NavigationAndOnClick) != 0; }
-    public bool NeedColour() { return (_functionToUse & Setting.Colours) != 0;  }
-    public bool NeedSize(){ return (_functionToUse & Setting.SizeAndPosition) != 0; } 
-    public bool NeedInvert(){ return (_functionToUse & Setting.InvertColourCorrection) != 0; } 
-    public bool NeedSwap() { return (_functionToUse & Setting.SwapImageOrText) != 0; } 
-    public bool NeedAccessories(){ return (_functionToUse & Setting.Accessories) != 0; } 
-    public bool NeedAudio(){ return (_functionToUse & Setting.Audio) != 0; } 
-    public bool NeedTooltip(){ return (_functionToUse & Setting.TooplTip) != 0; } 
+    private bool UseNavigation() { return (_functionToUse & Setting.NavigationAndOnClick) != 0; }
+    private bool NeedColour() { return (_functionToUse & Setting.Colours) != 0;  }
+    private bool NeedSize(){ return (_functionToUse & Setting.SizeAndPosition) != 0; } 
+    private bool NeedInvert(){ return (_functionToUse & Setting.InvertColourCorrection) != 0; } 
+    private bool NeedSwap() { return (_functionToUse & Setting.SwapImageOrText) != 0; } 
+    private bool NeedAccessories(){ return (_functionToUse & Setting.Accessories) != 0; } 
+    private bool NeedAudio(){ return (_functionToUse & Setting.Audio) != 0; } 
+    private bool NeedTooltip(){ return (_functionToUse & Setting.TooplTip) != 0; } 
 
-    public bool GroupSettings()
+    private bool GroupSettings()
     {
         if (_buttonFunction == ButtonFunction.ToggleGroup)
         {
@@ -112,6 +113,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     private void Start()
     {
+        SetChildsParentBranch();
         SetUpToggleGroup();
         if ((_functionToUse & Setting.Colours) != 0 && _colours.NoSettings)
         {
@@ -157,6 +159,16 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
+    private void SetChildsParentBranch()
+    {
+        if (MyBranchController.MyBranchType == BranchType.Independent) return;
+
+        if (_navigation._childBranch)
+        {
+            _navigation._childBranch.SetCurrentBranchAsParent(MyBranchController);
+        }
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (IsDisabled) return;
@@ -177,7 +189,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         if (IsDisabled) return;
         if (_isCancelOrBackButton)
         {
-            MyBranchController.SaveLastSelected(MyBranchController.LastSelected);
+            MyBranchController.SetLastSelected(MyBranchController.LastSelected);
             Canceller?.Invoke(_escapeKeyFunction);
             return;
         }
@@ -228,7 +240,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
         if (_isCancelOrBackButton)
         {
-            MyBranchController.SaveLastSelected(MyBranchController.LastSelected);
+            MyBranchController.SetLastSelected(MyBranchController.LastSelected);
             Canceller?.Invoke(_escapeKeyFunction);
             return;
         }
@@ -282,7 +294,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (!MyBranchController.AllowKeys) return;
         MyBranchController.LastSelected.SetNotHighlighted();
-        MyBranchController.SaveLastSelected(this);
+        MyBranchController.SetLastSelected(this);
         _audio.Play(UIEventTypes.Highlighted, _functionToUse);
         SetAsHighlighted();
     }
@@ -291,7 +303,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         TurnOffLastSelectedBranchNode();
         ToggleGroupElements();
-        MyBranchController.SaveLastSelected(this);
+        MyBranchController.SetLastSelected(this);
 
         if (IsSelected)
         {
@@ -303,13 +315,13 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             {
                 IsSelected = false;
             }
-            DisableLevel();
+            Disable();
             DoPressedAction(UIEventTypes.Cancelled);
 
         }
         else
         {
-            ActivateLevel();
+            Activate();
             DoPressedAction(UIEventTypes.Selected);
         }
     }
@@ -323,7 +335,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             if (lastElementSelected._buttonFunction != ButtonFunction.Toggle_NotLinked
                 && lastElementSelected._buttonFunction != ButtonFunction.ToggleGroup)
             {
-                lastElementSelected.DisableLevel();
+                lastElementSelected.Disable();
                 lastElementSelected.SetNotHighlighted();
             }
         }
@@ -336,13 +348,13 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             foreach (var item in _toggleGroupMembers)
             {
                 item.IsSelected = false;
-                item.DisableLevel();
+                item.Disable();
                 item.SetNotHighlighted();
             }
         }
     }
 
-    public void DisableLevel()
+    public void Disable()
     {
         if (_buttonFunction == ButtonFunction.Switch_NeverHold || _buttonFunction == ButtonFunction.Standard_Hold)
         {
@@ -353,7 +365,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         _swapImageOrText.CycleToggle(IsSelected, _functionToUse);
     }
 
-    private void ActivateLevel()
+    private void Activate()
     {
         if(_buttonFunction != ButtonFunction.Switch_NeverHold) IsSelected = true;
         if (_amSlider) { _amSlider.interactable = IsSelected; }
@@ -370,12 +382,15 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (_navigation._childBranch && (_functionToUse & Setting.NavigationAndOnClick) != 0)
         {
-            _navigation._childBranch.StartOutTweens(false);
+            if (_navigation._childBranch.MoveToNext == MoveNext.OnClick)
+            {
+                _navigation._childBranch.StartOutTweens(false);
+            }
 
             if (_navigation._childBranch.LastSelected != null)
             {
                 _navigation._childBranch.LastSelected.SetNotHighlighted();
-                _navigation._childBranch.LastSelected.DisableLevel();
+                _navigation._childBranch.LastSelected.Disable();
             }
         }
     }
@@ -386,23 +401,52 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         {
             if (_navigation._moveType != MoveType.MoveToInternalBranch)
             {
-                MyBranchController.StartOutTweens(true);
                 MyBranchController.TurnOffOnMoveToChild(_navigation._childBranch.ClearHomeScreen);
             }
+
             if (MyBranchController.IsIndie())
             {
-                MyBranchController.LeaveIndieScreen();
-                _navigation._childBranch.MoveBackALevel();
+                MoveToIndieBranch();
             }
             else
             {
-                _navigation._childBranch.MoveToNextLevel(MyBranchController);
+                MoveToBranch();
             }
         }
-        else if(MyBranchController.IsIndie())
+    }
+
+    private void MoveToBranch()
+    {
+        if (MyBranchController.MoveToNext == MoveNext.AtTweenEnd)
         {
-            MyBranchController.LeaveIndieScreen();
+            MyBranchController.StartOutTweens
+                        (true, () => _navigation._childBranch.MoveToNextLevel(MyBranchController));
         }
+        else
+        {
+            if (_navigation._moveType != MoveType.MoveToInternalBranch) MyBranchController.StartOutTweens(true);
+            _navigation._childBranch.MoveToNextLevel(MyBranchController);
+        }
+    }
+
+    private void MoveToIndieBranch()
+    {
+        if (MyBranchController.MoveToNext == MoveNext.AtTweenEnd)
+        {
+            MyBranchController.StartOutTweens(false, () => ToIndieWithDelay());
+        }
+        else
+        {
+            MyBranchController.StartOutTweens(false);
+            MyBranchController.LeaveIndieScreen(_navigation._childBranch);
+            _navigation._childBranch.MoveBackALevel();
+        }
+    }
+
+    private void ToIndieWithDelay()
+    {
+        MyBranchController.LeaveIndieScreen(_navigation._childBranch);
+        _navigation._childBranch.MoveBackALevel();
     }
 
     public void OnCancel()
@@ -414,18 +458,33 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
 
         if (MyParentController.LastSelected == this) { return; }                    //Stops returning past the Home Level menus
-        MyParentController.LastSelected.DisableLevel();
 
+        _audio.Play(UIEventTypes.Cancelled, _functionToUse);
+        UINode lastSelected = MyParentController.LastSelected;
+        lastSelected.Disable();
+
+        if (lastSelected._navigation._childBranch.MoveToNext == MoveNext.AtTweenEnd)
+        {
+            lastSelected._navigation._childBranch.StartOutTweens(false, () => MoveBackALevel());
+        }
+        else
+        {
+            MoveBackALevel();
+        }
+    }
+
+    private void MoveBackALevel()
+    {
         if (MyParentController.LastSelected._navigation._moveType == MoveType.MoveToInternalBranch)
         {
-            MyParentController.SaveLastSelected(MyParentController.LastSelected);
+            MyParentController.SetLastSelected(MyParentController.LastSelected);
             MyParentController.LastSelected.InitialiseStartUp();
         }
         else
         {
+            MyBranchController.RestoreHomeScreen(MyParentController);
             MyParentController.MoveBackALevel();
         }
-        _audio.Play(UIEventTypes.Cancelled, _functionToUse);
     }
 
     public void SetAsHighlighted()
@@ -467,22 +526,34 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         _audio.Play(uIEventTypes, _functionToUse);
     }
 
+    public void HotKeyActivation()
+    {
+        if (_navigation._childBranch)
+        {
+            _navigation._childBranch.MoveToNextLevel(MyBranchController);
+        }
+        SetSelected_NoEffects();
+        DoPressedAction(UIEventTypes.Selected);
+    }
+
     public void SetSelected_NoEffects()
     {
         IsSelected = true;
         SetNotHighlighted();
+        _swapImageOrText.CycleToggle(IsSelected, _functionToUse);
     }
 
     public void SetNotSelected_NoEffects()
     {
         IsSelected = false;
         SetNotHighlighted();
+        _swapImageOrText.CycleToggle(IsSelected, _functionToUse);
     }
 
     private void HandleIfDisabled(bool value) //TODO Review Code
     {
         MoveCursorToNextFree();
-        DisableLevel();
+        Disable();
         ActivateFunctions(UIEventTypes.Normal);
         _isDisabled = value;
 

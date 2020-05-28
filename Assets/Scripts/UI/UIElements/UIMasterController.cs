@@ -9,8 +9,6 @@ using NaughtyAttributes;
 public class UIMasterController : MonoBehaviour
 {
     [Header("Main Settings")] 
-    //[Label("UI Starting Branch")] [Required("MUST have a starting branch")]
-    //[SerializeField] UIBranch _uiTopLevel;
     [SerializeField] [ValidateInput("ProtectEscapekeySetting")] EscapeKey _GlobalEscapeKeyFunction;
     [SerializeField] [InputAxis] string _cancelButton;
     [SerializeField] [InputAxis] string _branchSwitchButton;
@@ -22,6 +20,7 @@ public class UIMasterController : MonoBehaviour
     [SerializeField] [ShowIf("_inGameMenuSystem")] [Label("Switch To/From Game Menus")] [InputAxis] string _switchTOMenusButton;
     [SerializeField] [ShowIf("_inGameMenuSystem")] InGameOrInMenu _returnToGameControl;
     [SerializeField] [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")] List<UIBranch> _homeBranches;
+    [SerializeField] [ReorderableList] List<HotKeys> _hotKeySettings;
 
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
@@ -39,6 +38,13 @@ public class UIMasterController : MonoBehaviour
 
     //Properties
     bool InMenu { get; set; } = true; 
+
+    [Serializable]
+    public class GroupList
+    {
+        public UIBranch _groupStartLevel;
+    }
+
 
     //Editor Scripts
     #region Editor Scripts
@@ -71,11 +77,6 @@ public class UIMasterController : MonoBehaviour
 
     #endregion
 
-    [Serializable]
-    public class GroupList
-    {
-        public UIBranch _groupStartLevel;
-    }
 
     private void Awake()
     {
@@ -128,6 +129,11 @@ public class UIMasterController : MonoBehaviour
         if (Input.GetButtonDown(_switchTOMenusButton) & _inGameMenuSystem)
         {
             ProcessGameToMenuSwitching();
+        }
+
+        foreach (var item in _hotKeySettings)
+        {
+            item.CheckHotkeys();
         }
 
         if (InMenu)
@@ -208,7 +214,7 @@ public class UIMasterController : MonoBehaviour
         int tempIndexStore = _groupIndex;
         if (SetRootGroup(uiObject.MyBranchController))
         {
-            _homeBranches[tempIndexStore].LastSelected.DisableLevel();
+            _homeBranches[tempIndexStore].LastSelected.Disable();
             _homeBranches[tempIndexStore].LastSelected.SetNotHighlighted();
         }
     }
@@ -218,7 +224,7 @@ public class UIMasterController : MonoBehaviour
         _uiElementLastSelected._audio.Play(UIEventTypes.Selected, _uiElementLastSelected._functionToUse);
         _uiElementLastSelected.SetNotHighlighted();
 
-        _homeBranches[_groupIndex].LastSelected.DisableLevel();
+        _homeBranches[_groupIndex].LastSelected.Disable();
         _groupIndex++;
         if (_groupIndex > _homeBranches.Count - 1)
         {
@@ -283,18 +289,13 @@ public class UIMasterController : MonoBehaviour
     {
         _uiElementLastSelected.MyBranchController.StartOutTweens(false);
         _uiElementLastSelected._audio.Play(UIEventTypes.Cancelled, _uiElementLastSelected._functionToUse);
-        RestoreHomeScreen();
-        _homeBranches[_groupIndex].LastSelected.DisableLevel();
+        RestoreHomeNoChecks();
+        _homeBranches[_groupIndex].LastSelected.Disable();
         _homeBranches[_groupIndex].MoveBackALevel();
     }
 
     private void BackOneLevel()
     {
-        if (!_onHomeScreen && IsItPartOfRootMenu(_uiElementLastSelected.MyParentController))
-        {
-            RestoreHomeScreen();
-        }
-
         if (_uiElementLastSelected.MyParentController)
         {
             _uiElementLastSelected.OnCancel();
@@ -309,17 +310,36 @@ public class UIMasterController : MonoBehaviour
         {
             _onHomeScreen = false;
             item.MyCanvas.enabled = false;
-            _homeBranches[_groupIndex].LastSelected.DisableLevel();
+            if (item == _activeBranch)
+            {
+                _homeBranches[_groupIndex].LastSelected.IsSelected = false;
+            }
+            else
+            {
+                _homeBranches[_groupIndex].LastSelected.Disable();
+            }
             _homeBranches[_groupIndex].LastSelected.SetNotHighlighted();
         }
     }
 
-    public void RestoreHomeScreen()
+    public void RestoreHomeNoChecks()
     {
         foreach (var item in _homeBranches)
         {
             _onHomeScreen = true;
             item.RestoreFromFullscreen();
+        }
+    }
+
+    public void RestoreHomeWithChecks()
+    {
+        if (!_onHomeScreen)
+        {
+            foreach (var item in _homeBranches)
+            {
+                _onHomeScreen = true;
+                item.RestoreFromFullscreen();
+            }
         }
     }
 
@@ -344,7 +364,7 @@ public class UIMasterController : MonoBehaviour
         }    
     }
 
-    private bool IsItPartOfRootMenu(UIBranch uIBranch) //Check that I'm on the homescreen when mving back levels
+    public bool IsItPartOfRootMenu(UIBranch uIBranch) //Check that I'm on the homescreen when mving back levels
     {
         foreach (var item in _homeBranches)
         {

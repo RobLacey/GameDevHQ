@@ -8,7 +8,7 @@ using DG.Tweening;
 [System.Serializable]
 public class UIColour
 {
-    [SerializeField] [EnumFlags] ColourSettings _coloursToUse;
+    [SerializeField] [EnumFlags] EventType _coloursToUse;
     [SerializeField] [EnumFlags] TweenColours _addTweenTo;
     [SerializeField] [Range(0,2)] float _tweenTime = 0.4f;
     [SerializeField] [Range(0.5f, 2f)] float _selectedHighlightPerc = 1f;
@@ -50,9 +50,9 @@ public class UIColour
     {
         if (!((setting & _mySetting) != 0)) return;
 
-        if ((_coloursToUse & ColourSettings.Highlighted) !=0)
+        if ((_coloursToUse & EventType.Highlighted) !=0)
         {
-            if ((_coloursToUse & ColourSettings.Selected) != 0 && isSelected)
+            if ((_coloursToUse & EventType.Selected) != 0 && isSelected)
             {
                 ColourChangesProcesses(SelectedHighlight(), _tweenTime);
             }
@@ -67,12 +67,12 @@ public class UIColour
     {
         if (!((setting & _mySetting) != 0)) return;
 
-        if ((_coloursToUse & ColourSettings.Selected) == 0 || !isSelected)
+        if ((_coloursToUse & EventType.Selected) == 0 || !isSelected)
         {
             ColourChangesProcesses(_normalColour, _tweenTime);
         }
 
-        if ((_coloursToUse & ColourSettings.Selected) != 0 && isSelected)
+        if ((_coloursToUse & EventType.Selected) != 0 && isSelected)
         {
             ColourChangesProcesses(_selected, _tweenTime);
         }
@@ -88,15 +88,15 @@ public class UIColour
     {
         if (!((setting & _mySetting) != 0)) return;
 
-        if ((_coloursToUse & ColourSettings.Pressed) != 0)
+        if ((_coloursToUse & EventType.Pressed) != 0)
         {
             if (isSelected)
             {
-                if ((_coloursToUse & ColourSettings.Selected) != 0)
+                if ((_coloursToUse & EventType.Selected) != 0)
                 {
                     ColourChangesProcesses(_pressedFlash, _flashTime, ()=> ColourChangesProcesses(_selected, _flashTime));
                 }
-                else if((_coloursToUse & ColourSettings.Highlighted) != 0)
+                else if((_coloursToUse & EventType.Highlighted) != 0)
                 {
                     ColourChangesProcesses(_pressedFlash, _flashTime, () => ColourChangesProcesses(_highlighted, _flashTime));
                 }
@@ -107,7 +107,7 @@ public class UIColour
             }
             else
             {
-                if ((_coloursToUse & ColourSettings.Highlighted) != 0)
+                if ((_coloursToUse & EventType.Highlighted) != 0)
                 {
                     ColourChangesProcesses(_pressedFlash, _flashTime, () => ColourChangesProcesses(_highlighted, _flashTime));
                 }
@@ -125,7 +125,7 @@ public class UIColour
 
     private void SetAsSelected(bool isSelected)
     {
-        if ((_coloursToUse & ColourSettings.Selected) != 0)
+        if ((_coloursToUse & EventType.Selected) != 0)
         {
             if (isSelected)
             {
@@ -134,7 +134,7 @@ public class UIColour
 
             if (!isSelected)
             {
-                if ((_coloursToUse & ColourSettings.Highlighted) != 0)
+                if ((_coloursToUse & EventType.Highlighted) != 0)
                 {
                     ColourChangesProcesses(_highlighted, _tweenTime);
                 }

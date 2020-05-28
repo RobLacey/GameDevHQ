@@ -18,10 +18,11 @@ public class UIBranch : MonoBehaviour
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [SerializeField] BranchType _branchType = BranchType.StandardUI;
     [SerializeField] [HideIf("IsHome")] bool _clearHomeScreen;
-    [SerializeField] [HideIf("IsHome")] bool _restoreHomeScreen;
+    [SerializeField] [ShowIf("IsIndie")] bool _restoreHomeScreen;
     [SerializeField] [HideIf("IsIndie")] bool _neverTweenOnReturn;
     [SerializeField] [HideIf(EConditionOperator.Or, "IsHome", "IsIndie")] bool _turnOff_MoveToChild;
     [SerializeField] [Label("Save Selection On Exit")] [HideIf("IsIndie")] bool _saveExitSelection;
+    [SerializeField] [Label("Move To Next Branch...")] MoveNext _moveType = MoveNext.OnClick;
     [SerializeField] [HideIf("IsIndie")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] [ValidateInput("IsEmpty", "If left Blank it will Auto-assign first UINode in hierarchy/Group")] 
     UINode _userDefinedStartPosition;
@@ -50,6 +51,9 @@ public class UIBranch : MonoBehaviour
     UITweener _UITweener;
     int _groupIndex = 0;
     bool _moveToChild = false;
+    Action _onFinishedTrigger;
+
+    
 
     //Properties
     public UINode DefaultStartPosition { get { return _userDefinedStartPosition; } 
@@ -63,6 +67,8 @@ public class UIBranch : MonoBehaviour
     public EscapeKey EscapeKeySetting { get { return _escapeKeyFunction; } }
     public bool DontAnimateOnChange { get; set; } = false;
     public bool ClearHomeScreen { get { return _clearHomeScreen; } }
+    public BranchType MyBranchType { get { return _branchType; } }
+    public MoveNext MoveToNext { get { return _moveType;  } }
 
     private void Awake()
     {
@@ -192,7 +198,7 @@ public class UIBranch : MonoBehaviour
         }
     }
 
-    private void SetCurrentBranchAsParent(UIBranch newParentController = null) //Needed in case menu is called from different places
+    public void SetCurrentBranchAsParent(UIBranch newParentController = null) //Needed in case menu is called from different places
     {
         if (newParentController != null)
         {
@@ -216,21 +222,18 @@ public class UIBranch : MonoBehaviour
         {
             _UiMasterController.ClearHomeScreen();
         }
-
-        if (_turnOff_MoveToChild)
-        {
-            MyCanvas.enabled = false;
-        }
     }
 
-    public void SaveLastSelected(UINode lastSelected)
+    public void SetLastSelected(UINode lastSelected)
     {
         _UiMasterController.SetLastUIObject(lastSelected);
         LastSelected = lastSelected;
     }
 
-    public void StartOutTweens(bool toChild)
+    public void StartOutTweens(bool toChild, Action action = null) 
     {
+        _onFinishedTrigger = action;
+
         if (toChild)
         {
             _moveToChild = _turnOff_MoveToChild;
@@ -250,6 +253,7 @@ public class UIBranch : MonoBehaviour
         {
             MyCanvas.enabled = false;
         }
+        _onFinishedTrigger?.Invoke();
         MyCanvasGroup.blocksRaycasts = true;
     }
 
@@ -280,6 +284,30 @@ public class UIBranch : MonoBehaviour
         _groupsList[_groupIndex]._startNode.MoveToNext();
     }
 
+    public void HotKeyTrigger()
+    {
+        if (_branchType == BranchType.Independent)
+        {
+            EnterIndieScreen();
+        }
+        else
+        {
+            foreach (var item in LastSelected.MyParentController.ThisGroupsUINodes)
+            {
+                if(item._navigation._childBranch == this)
+                {
+                    if (_clearHomeScreen)
+                    {
+                        _UiMasterController.ClearHomeScreen();
+                    }
+                    item.MyBranchController.LastSelected.SetNotHighlighted();
+                    item.MyBranchController.SetLastSelected(item);
+                    item.HotKeyActivation();
+                }
+            }
+        }
+    }
+
     [Button]
     public void EnterIndieScreen()
     {
@@ -290,12 +318,16 @@ public class UIBranch : MonoBehaviour
         MoveToNextLevel();
     }
 
-    public void LeaveIndieScreen()
+    public void LeaveIndieScreen(UIBranch goingTo)
     {
-        if (_restoreHomeScreen)
+        RestoreHomeScreen(goingTo);
+    }
+
+    public void RestoreHomeScreen(UIBranch goingTo)
+    {
+        if (_UiMasterController.IsItPartOfRootMenu(goingTo))
         {
-            _UiMasterController.RestoreHomeScreen();
+            _UiMasterController.RestoreHomeWithChecks();
         }
-        StartOutTweens(false);
     }
 }

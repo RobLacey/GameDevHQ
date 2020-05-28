@@ -153,14 +153,11 @@ public class UITweener : MonoBehaviour
             _counter++;
             _fadeTween.SetUpFadeTweens(_canvasGroupFade);
         }
-        _endOfEffectCounter = _counter;
-        _startOfEffectCounter = _counter;
     }
 
     public void ActivateTweens(Action callBack)
-    { 
+    {
         StopAllCoroutines();
-        _endOfEffectCounter = _counter;
         _startOfEffectCounter = _counter;
         _InTweensCallback = callBack;
 
@@ -184,6 +181,7 @@ public class UITweener : MonoBehaviour
     public void DeactivateTweens(Action callBack)
     {
         StopAllCoroutines();
+        _endOfEffectCounter = _counter;
         _OutTweensCallback = callBack;
 
         if (_endOfEffectCounter <= 0)
