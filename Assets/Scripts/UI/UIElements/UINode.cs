@@ -399,19 +399,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (_navigation._childBranch && (_functionToUse & Setting.NavigationAndOnClick) != 0)
         {
-            if (_navigation._moveType != MoveType.MoveToInternalBranch)
-            {
-                MyBranchController.TurnOffOnMoveToChild(_navigation._childBranch.ClearHomeScreen);
-            }
-
-            if (MyBranchController.IsIndie())
-            {
-                MoveToIndieBranch();
-            }
-            else
-            {
-                MoveToBranch();
-            }
+            MoveToBranch();
         }
     }
 
@@ -419,34 +407,34 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (MyBranchController.MoveToNext == MoveNext.AtTweenEnd)
         {
-            MyBranchController.StartOutTweens
-                        (true, () => _navigation._childBranch.MoveToNextLevel(MyBranchController));
+            if (_navigation._moveType != MoveType.MoveToInternalBranch)
+            {
+                MyBranchController.StartOutTweens(true, () => MoveToStandardBranch());
+            }
+            else
+            {
+                _navigation._childBranch.MoveToNextLevel(MyBranchController);
+            }
         }
         else
         {
-            if (_navigation._moveType != MoveType.MoveToInternalBranch) MyBranchController.StartOutTweens(true);
+            if (_navigation._moveType != MoveType.MoveToInternalBranch)
+            {
+                MyBranchController.StartOutTweens(true, ()=> MoveToBranchNoDelay());
+            }
             _navigation._childBranch.MoveToNextLevel(MyBranchController);
         }
     }
 
-    private void MoveToIndieBranch()
+    private void MoveToStandardBranch()
     {
-        if (MyBranchController.MoveToNext == MoveNext.AtTweenEnd)
-        {
-            MyBranchController.StartOutTweens(false, () => ToIndieWithDelay());
-        }
-        else
-        {
-            MyBranchController.StartOutTweens(false);
-            MyBranchController.LeaveIndieScreen(_navigation._childBranch);
-            _navigation._childBranch.MoveBackALevel();
-        }
+        _navigation._childBranch.TurnOffOnMoveToChild(_navigation._childBranch);
+        _navigation._childBranch.MoveToNextLevel(MyBranchController);
     }
 
-    private void ToIndieWithDelay()
+    private void MoveToBranchNoDelay()
     {
-        MyBranchController.LeaveIndieScreen(_navigation._childBranch);
-        _navigation._childBranch.MoveBackALevel();
+        _navigation._childBranch.TurnOffOnMoveToChild(_navigation._childBranch);
     }
 
     public void OnCancel()
@@ -460,15 +448,14 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         if (MyParentController.LastSelected == this) { return; }                    //Stops returning past the Home Level menus
 
         _audio.Play(UIEventTypes.Cancelled, _functionToUse);
-        UINode lastSelected = MyParentController.LastSelected;
-        lastSelected.Disable();
 
-        if (lastSelected._navigation._childBranch.MoveToNext == MoveNext.AtTweenEnd)
+        if (MyBranchController.MoveToNext == MoveNext.AtTweenEnd)
         {
-            lastSelected._navigation._childBranch.StartOutTweens(false, () => MoveBackALevel());
+            MyBranchController.StartOutTweens(false, () => MoveBackALevel());
         }
         else
         {
+            MyBranchController.StartOutTweens(false);
             MoveBackALevel();
         }
     }
@@ -477,12 +464,13 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (MyParentController.LastSelected._navigation._moveType == MoveType.MoveToInternalBranch)
         {
-            MyParentController.SetLastSelected(MyParentController.LastSelected);
-            MyParentController.LastSelected.InitialiseStartUp();
+            MyParentController.LastSelected.Disable();
+            MyParentController.DontAnimateOnChange = true;
+            MyParentController.MoveToNextLevel();
         }
         else
         {
-            MyBranchController.RestoreHomeScreen(MyParentController);
+            MyBranchController.TurnOnMoveToParent();
             MyParentController.MoveBackALevel();
         }
     }

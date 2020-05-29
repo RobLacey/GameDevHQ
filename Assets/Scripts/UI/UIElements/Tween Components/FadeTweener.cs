@@ -25,7 +25,7 @@ public class FadeTweener
 
     public CanvasRenderer[] MyCanvases { get; set; }
 
-    public void SetUpFadeTweens(FadeTween fadeTween)
+    public Action SetUpFadeTweens(FadeTween fadeTween)
     {
         if (fadeTween == FadeTween.FadeIn || fadeTween == FadeTween.FadeInAndOut)
         {
@@ -37,6 +37,7 @@ public class FadeTweener
             MyCanvasGroup.alpha = 1;
             _startAlpha = 1;
         }
+        return Reset;
     }
 
     public void DoCanvasFade(FadeTween fadeTween, float globalTime, bool isIn, TweenCallback tweenCallback = null)
@@ -126,4 +127,8 @@ public class FadeTweener
         }
     }
 
+    private void Reset()
+    {
+        MyCanvasGroup.alpha = 1;
+    }
 }

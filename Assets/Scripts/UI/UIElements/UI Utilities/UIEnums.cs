@@ -100,6 +100,3 @@ public enum BranchType { HomeScreenUI, StandardUI ,Independent }
 
 public enum MoveNext { OnClick, AtTweenEnd }
 
-
-
-

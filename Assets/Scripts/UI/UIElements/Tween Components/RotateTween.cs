@@ -25,11 +25,10 @@ public class RotateTween
     Action<IEnumerator> _startCoroutine;
     Action<RectTransform> _effectCallback;
 
-
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public void SetUpRotateTweens(List<BuildSettings> buildObjectsList, 
+    public Action SetUpRotateTweens(List<BuildSettings> buildObjectsList, 
                                   Action<IEnumerator> startCoroutine, Action<RectTransform> effectCall)
     {
         _effectCallback = effectCall;
@@ -41,6 +40,7 @@ public class RotateTween
         }
         _reversedBuild = new List<BuildSettings>(_buildList);
         _reversedBuild.Reverse();
+        return Reset;
     }
 
     public void RotationTween(RotationTweenType rotationTweenType, float globalTime, bool isIn, TweenCallback tweenCallback = null)
@@ -199,6 +199,14 @@ public class RotateTween
         else
         {
             _tweenTime = _outTime;
+        }
+    }
+
+    private void Reset()
+    {
+        foreach (var item in _buildList)
+        {
+            item._element.localRotation = Quaternion.Euler(item._rotateToo);
         }
     }
 }

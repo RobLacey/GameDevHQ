@@ -23,11 +23,12 @@ public class PositionTween
     int _id;
     Action<IEnumerator> _startCoroutine;
     Action<RectTransform> _effectCallback;
+    PositionTweenType _tweenTypeStore;
 
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public void SetUpPositionTweens(List<BuildSettings> buildObjectsList, 
+    public Action SetUpPositionTweens(List<BuildSettings> buildObjectsList, 
                                     Action<IEnumerator> startCoroutine, 
                                     Action<RectTransform> effectCall)
     {
@@ -40,10 +41,13 @@ public class PositionTween
         }
         _reversedBuild = new List<BuildSettings>(_buildList);
         _reversedBuild.Reverse();
+        return Reset;
     }
 
     public void DoPositionTween(PositionTweenType positionTween, float globalTime, bool isIn, TweenCallback tweenCallback = null)
     {
+        _tweenTypeStore = positionTween;
+
         if (positionTween == PositionTweenType.NoTween) return;
 
         StopRunningTweens();
@@ -211,6 +215,24 @@ public class PositionTween
         else
         {
             _tweenTime = _outTime;
+        }
+    }
+
+    private void Reset()
+    {
+        if (_tweenTypeStore == PositionTweenType.In)
+        {
+            foreach (var item in _buildList)
+            {
+                item._element.anchoredPosition3D = item._tweenTargetPosition;
+            }
+        }
+        if (_tweenTypeStore == PositionTweenType.InAndOut)
+        {
+            foreach (var item in _buildList)
+            {
+                item._element.anchoredPosition3D = item._tweenMiddlePosition;
+            }
         }
     }
 }

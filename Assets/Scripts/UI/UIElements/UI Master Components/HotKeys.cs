@@ -10,11 +10,13 @@ public class HotKeys
     public UIBranch _UIBranch;
 
 
-    public void CheckHotkeys()
+    public bool CheckHotkeys()
     {
         if (Input.GetButtonDown(_hotkeyAxis))
         {
             _UIBranch.HotKeyTrigger();
+            return true;
         }
+        return false;
     }
 }

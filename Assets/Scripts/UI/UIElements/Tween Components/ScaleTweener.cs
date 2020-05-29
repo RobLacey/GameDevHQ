@@ -27,7 +27,7 @@ public class ScaleTweener
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public void SetUpScaleTweens(List<BuildSettings> buildObjectsList, 
+    public Action SetUpScaleTweens(List<BuildSettings> buildObjectsList, 
                                  Action<IEnumerator> startCoroutine, Action<RectTransform> effectCall)
     {
         _effectCallback = effectCall;
@@ -40,6 +40,7 @@ public class ScaleTweener
         }
         _reversedBuildSettings = new List<BuildSettings>(_buildList);
         _reversedBuildSettings.Reverse();
+        return Reset;
     }
 
     public void DoScaleTween(ScaleTween scaleTweenType, float globalTime, bool isIn, TweenCallback tweenCallback = null)
@@ -200,4 +201,13 @@ public class ScaleTweener
             _tweenTime = _outTime;
         }
     }
+
+    private void Reset()
+    {
+        foreach (var item in _buildList)
+        {
+            item._element.transform.localScale = Vector3.one;
+        }
+    }
+
 }

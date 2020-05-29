@@ -21,7 +21,7 @@ public class UITweener : MonoBehaviour
     [SerializeField] public RotationTweenType _rotationTween = RotationTweenType.NoTween;
     [SerializeField] [Label("Fade (Canvas Group Only)")] public FadeTween _canvasGroupFade = FadeTween.NoTween;
     [SerializeField] [Label("Scale Tween")] public ScaleTween _scaleTransition = ScaleTween.NoTween;
-    [SerializeField] public PunchShakeTween _punchShakeTween = PunchShakeTween.NoTween;
+    [SerializeField] [Label("Shake or Punch Tween")] public PunchShakeTween _punchShakeTween = PunchShakeTween.NoTween;
     [SerializeField] [Label("Shake/Punch As End Effect")] bool _shakeOrPunchAtEnd;
     [SerializeField] bool _addTweenEventTriggers = false;
     [SerializeField] [ShowIf("_addTweenEventTriggers")] [Label("Event At After Start/Mid-Point of Tween")] TweenTrigger _middleOfTweenAction;
@@ -95,6 +95,7 @@ public class UITweener : MonoBehaviour
 
     Action _InTweensCallback;
     Action _OutTweensCallback;
+    Action _resetTweens;
 
     //Classes
     [Serializable]
@@ -112,13 +113,13 @@ public class UITweener : MonoBehaviour
         if (_positionTween != PositionTweenType.NoTween)
         {
             _counter++;
-            _posTween.SetUpPositionTweens( _buildObjectsList, (x) => StartCoroutines(x), (x)=> EndEffectProcess(x));
+            _resetTweens += _posTween.SetUpPositionTweens( _buildObjectsList, (x) => StartCoroutines(x), (x)=> EndEffectProcess(x));
         }
 
         if (_rotationTween != RotationTweenType.NoTween)
         {
             _counter++;
-            _rotateTween.SetUpRotateTweens(_buildObjectsList, (x) => StartCoroutines(x), (x) => EndEffectProcess(x));
+            _resetTweens += _rotateTween.SetUpRotateTweens(_buildObjectsList, (x) => StartCoroutines(x), (x) => EndEffectProcess(x));
         }
 
         if (_punchShakeTween != PunchShakeTween.NoTween)
@@ -145,13 +146,13 @@ public class UITweener : MonoBehaviour
         if (_scaleTransition != ScaleTween.NoTween)
         {
             _counter++;
-            _scaleTween.SetUpScaleTweens(_buildObjectsList, (x) => StartCoroutines(x), (x) => EndEffectProcess(x));
+            _resetTweens += _scaleTween.SetUpScaleTweens(_buildObjectsList, (x) => StartCoroutines(x), (x) => EndEffectProcess(x));
         }
 
         if (_canvasGroupFade != FadeTween.NoTween)
         {
             _counter++;
-            _fadeTween.SetUpFadeTweens(_canvasGroupFade);
+            _resetTweens += _fadeTween.SetUpFadeTweens(_canvasGroupFade);
         }
     }
 
@@ -260,6 +261,11 @@ public class UITweener : MonoBehaviour
                 _punchTween.EndEffect(uiObject, _effectOnInTween);
             }
         }
+    }
+
+    public void Reset()
+    {
+        _resetTweens?.Invoke();
     }
 }
 

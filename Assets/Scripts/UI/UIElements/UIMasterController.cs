@@ -29,7 +29,6 @@ public class UIMasterController : MonoBehaviour
     int _groupIndex = 0;
     UIBranch[] _allUIBranches;
     UINode _uiElementLastSelected;
-    UIBranch _activeBranch;
     Vector3 _mousePos = Vector3.zero;
     bool _usingMouse = false;
     bool _usingKeysOrCtrl = false;
@@ -37,7 +36,8 @@ public class UIMasterController : MonoBehaviour
     bool _canStart = false;
 
     //Properties
-    bool InMenu { get; set; } = true; 
+    bool InMenu { get; set; } = true;
+    public UIBranch ActiveBranch { get; set; }
 
     [Serializable]
     public class GroupList
@@ -97,7 +97,7 @@ public class UIMasterController : MonoBehaviour
     private void Start()
     {
         _uiElementLastSelected = _homeBranches[0].DefaultStartPosition;
-        _activeBranch = _homeBranches[0];
+        ActiveBranch = _homeBranches[0];
         _mousePos = Input.mousePosition;
         _onHomeScreen = true;
         IntroAnimations();
@@ -133,11 +133,16 @@ public class UIMasterController : MonoBehaviour
 
         foreach (var item in _hotKeySettings)
         {
-            item.CheckHotkeys();
+            if(item.CheckHotkeys())
+            {
+                InMenu = false;
+                ProcessGameToMenuSwitching();
+            }
         }
 
         if (InMenu)
         {
+
             if (Input.mousePosition != _mousePos)
             {
                 ActivateMouse();
@@ -157,7 +162,7 @@ public class UIMasterController : MonoBehaviour
                     }
                     else
                     {
-                        _activeBranch.SwitchGroup();
+                        ActiveBranch.SwitchGroup();
                     }
                 }
                 else
@@ -205,7 +210,7 @@ public class UIMasterController : MonoBehaviour
     {
         ClearAndSetRootGroup(uiObject);
         _uiElementLastSelected = uiObject;
-        _activeBranch = _uiElementLastSelected.MyBranchController;
+        ActiveBranch = _uiElementLastSelected.MyBranchController;
         EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
     }
 
@@ -302,23 +307,31 @@ public class UIMasterController : MonoBehaviour
         }
     }
 
-    public void ClearHomeScreen()
+    public List<UIBranch> ClearScreen(UIBranch ignoreCurrent = null)
     {
-        if (!_onHomeScreen) return;
+        List<UIBranch> _clearedItems = new List<UIBranch>();
 
-        foreach (var item in _homeBranches)
+        foreach (var branch in _allUIBranches)
         {
-            _onHomeScreen = false;
-            item.MyCanvas.enabled = false;
-            if (item == _activeBranch)
+            if (ignoreCurrent != branch)
             {
-                _homeBranches[_groupIndex].LastSelected.IsSelected = false;
-            }
-            else
-            {
-                _homeBranches[_groupIndex].LastSelected.Disable();
-            }
-            _homeBranches[_groupIndex].LastSelected.SetNotHighlighted();
+                if (branch.IsHome()) _onHomeScreen = false;
+                if (branch.MyCanvas.enabled == true)
+                {
+                    _clearedItems.Add(branch);
+                    branch.MyCanvas.enabled = false;
+                }
+            }        
+        }
+        return _clearedItems;
+    }
+
+    public void RestoreScreen(List<UIBranch> branchesToRestore)
+    {
+        foreach (var branch in branchesToRestore)
+        {
+            if (branch.IsHome()) _onHomeScreen = true;
+            branch.MyCanvas.enabled = true;
         }
     }
 
@@ -327,21 +340,21 @@ public class UIMasterController : MonoBehaviour
         foreach (var item in _homeBranches)
         {
             _onHomeScreen = true;
-            item.RestoreFromFullscreen();
+            item.ResetHomeScreen();
         }
     }
 
-    public void RestoreHomeWithChecks()
-    {
-        if (!_onHomeScreen)
-        {
-            foreach (var item in _homeBranches)
-            {
-                _onHomeScreen = true;
-                item.RestoreFromFullscreen();
-            }
-        }
-    }
+    //public void RestoreHomeWithChecks()//
+    //{
+    //    if (!_onHomeScreen)
+    //    {
+    //        foreach (var item in _homeBranches)
+    //        {
+    //            _onHomeScreen = true;
+    //            item.RestoreHomeScreen();
+    //        }
+    //    }
+    //}
 
     private void ProcessGameToMenuSwitching()
     {
