@@ -28,16 +28,19 @@ public class UIMasterController : MonoBehaviour
     //Variables
     int _groupIndex = 0;
     UIBranch[] _allUIBranches;
-    UINode _uiElementLastSelected;
+    UINode _lastHighlighted;
+    UINode _lastSelected;
     Vector3 _mousePos = Vector3.zero;
     bool _usingMouse = false;
     bool _usingKeysOrCtrl = false;
     bool _onHomeScreen = false;
     bool _canStart = false;
+    [SerializeField] UINode _storedRoot;
 
     //Properties
     bool InMenu { get; set; } = true;
     public UIBranch ActiveBranch { get; set; }
+    public UINode LastSelected { get { return _lastSelected; } }
 
     [Serializable]
     public class GroupList
@@ -96,7 +99,9 @@ public class UIMasterController : MonoBehaviour
 
     private void Start()
     {
-        _uiElementLastSelected = _homeBranches[0].DefaultStartPosition;
+        _lastHighlighted = _homeBranches[0].DefaultStartPosition;
+        _lastSelected = _homeBranches[0].DefaultStartPosition;
+        _storedRoot = _homeBranches[0].DefaultStartPosition;
         ActiveBranch = _homeBranches[0];
         _mousePos = Input.mousePosition;
         _onHomeScreen = true;
@@ -109,7 +114,7 @@ public class UIMasterController : MonoBehaviour
         }
         else
         {
-            EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
+            EventSystem.current.SetSelectedGameObject(_lastHighlighted.gameObject);
             StartCoroutine(StartDelay());
         }
     }
@@ -135,8 +140,11 @@ public class UIMasterController : MonoBehaviour
         {
             if(item.CheckHotkeys())
             {
-                InMenu = false;
-                ProcessGameToMenuSwitching();
+                if (_inGameMenuSystem)
+                {
+                    ProcessGameToMenuSwitching();
+                }
+                return;
             }
         }
 
@@ -152,7 +160,10 @@ public class UIMasterController : MonoBehaviour
             {
                 if (Input.GetButtonDown(_cancelButton))
                 {
-                    OnCancel(_uiElementLastSelected.GetComponentInParent<UIBranch>().EscapeKeySetting);
+                    if (_lastSelected != null)
+                    {
+                       OnCancel(_lastSelected._navigation._childBranch.EscapeKeySetting);
+                    }
                 }
                 else if (Input.GetButtonDown(_branchSwitchButton))
                 {
@@ -197,7 +208,7 @@ public class UIMasterController : MonoBehaviour
         {
             _usingMouse = true;
             _usingKeysOrCtrl = false;
-            _uiElementLastSelected.SetNotHighlighted();
+            _lastHighlighted.SetNotHighlighted();
 
             foreach (var item in _allUIBranches)
             {
@@ -206,36 +217,71 @@ public class UIMasterController : MonoBehaviour
         }
     }
 
-    public void SetLastUIObject(UINode uiObject)
+    public void SetLastSelected(UINode node)
     {
-        ClearAndSetRootGroup(uiObject);
-        _uiElementLastSelected = uiObject;
-        ActiveBranch = _uiElementLastSelected.MyBranchController;
-        EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
+        if (node != _lastSelected)
+        {
+            if (_onHomeScreen)
+            {
+                if (node.IsSelected == true)
+                {
+                    UINode temp = node;
+                    while (temp.MyParentController != temp.MyBranchController)
+                    {
+                        temp = _lastSelected.MyParentController.LastSelected;
+                    }
+
+                    if (_storedRoot != temp)
+                    {
+                        _storedRoot.Disable();
+                        _storedRoot.SetNotHighlighted();
+                        _storedRoot = temp;
+                    }
+                }
+            }
+            else
+            {
+                if (_lastSelected != node)
+                {
+                    foreach (var item in node.MyBranchController.ThisGroupsUINodes)
+                    {
+                        if (node != item)
+                        {
+                            item.Disable();
+                            item.SetNotHighlighted();  
+                        }
+                    }
+                }
+            }
+
+        }
+        _lastSelected = node;
     }
 
-    public void ClearAndSetRootGroup(UINode uiObject)
+    public void SetLastHighlighted(UINode node)
     {
-        int tempIndexStore = _groupIndex;
-        if (SetRootGroup(uiObject.MyBranchController))
-        {
-            _homeBranches[tempIndexStore].LastSelected.Disable();
-            _homeBranches[tempIndexStore].LastSelected.SetNotHighlighted();
-        }
+        _lastHighlighted = node;
+        ActiveBranch = _lastHighlighted.MyBranchController;
+        SetRootGroup(node.MyBranchController);
+        EventSystem.current.SetSelectedGameObject(_lastHighlighted.gameObject);
     }
 
     private void SwitchRootGroups()
     {
-        _uiElementLastSelected._audio.Play(UIEventTypes.Selected, _uiElementLastSelected._functionToUse);
-        _uiElementLastSelected.SetNotHighlighted();
+        _lastHighlighted._audio.Play(UIEventTypes.Selected, _lastHighlighted._functionToUse);
+        _lastHighlighted.SetNotHighlighted();
+        if (_lastSelected != null)
+        {
+            _lastSelected.Disable();
+            _lastSelected.SetNotHighlighted();
+        }
 
-        _homeBranches[_groupIndex].LastSelected.Disable();
         _groupIndex++;
         if (_groupIndex > _homeBranches.Count - 1)
         {
             _groupIndex = 0;
         }
-        _homeBranches[_groupIndex].DontAnimateOnChange = true;
+        _homeBranches[_groupIndex].TweenOnChange = true;
         _homeBranches[_groupIndex].MoveToNextLevel();
     }
 
@@ -245,13 +291,13 @@ public class UIMasterController : MonoBehaviour
 
         if (!Input.GetMouseButton(0) & !Input.GetMouseButton(1))
         {
-            EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
+            EventSystem.current.SetSelectedGameObject(_lastHighlighted.gameObject);
 
             if (_usingKeysOrCtrl == false)
             {
                 _usingKeysOrCtrl = true;
                 _usingMouse = false;
-                _uiElementLastSelected.SetAsHighlighted();
+                _lastHighlighted.SetAsHighlighted();
 
                 foreach (var item in _allUIBranches)
                 {
@@ -269,7 +315,7 @@ public class UIMasterController : MonoBehaviour
         }
         else if (escapeKey == EscapeKey.BackToRootLevel)
         {
-            BackToRoot();
+            BackToHomeScreen();
         }
 
         else if (escapeKey == EscapeKey.GlobalSetting)
@@ -287,74 +333,82 @@ public class UIMasterController : MonoBehaviour
 
         if (_GlobalEscapeKeyFunction == EscapeKey.BackToRootLevel)
         {
-            BackToRoot();
+            BackToHomeScreen();
         }
     }
-    private void BackToRoot()
+    private void BackToHomeScreen()
     {
-        _uiElementLastSelected.MyBranchController.StartOutTweens(false);
-        _uiElementLastSelected._audio.Play(UIEventTypes.Cancelled, _uiElementLastSelected._functionToUse);
-        RestoreHomeNoChecks();
+        _lastSelected._navigation._childBranch.StartOutTweens(false, ()=> EndOfBackToHome());
+        _lastHighlighted._audio.Play(UIEventTypes.Cancelled, _lastHighlighted._functionToUse);
+    }
+
+    private void EndOfBackToHome()
+    {
+        _homeBranches[_groupIndex].LastHighlighted.SetNotHighlighted();
         _homeBranches[_groupIndex].LastSelected.Disable();
-        _homeBranches[_groupIndex].MoveBackALevel();
+        _homeBranches[_groupIndex].MoveToNextLevel();
     }
 
     private void BackOneLevel()
     {
-        if (_uiElementLastSelected.MyParentController)
-        {
-            _uiElementLastSelected.OnCancel();
-        }
+        if (_lastSelected._navigation._childBranch.MyCanvas.enabled != true) return;
+        _lastSelected.OnCancel();
+        _lastSelected = _lastSelected.MyParentController.LastSelected;
     }
 
     public List<UIBranch> ClearScreen(UIBranch ignoreCurrent = null)
     {
         List<UIBranch> _clearedItems = new List<UIBranch>();
+        _onHomeScreen = false;
+
+
+        ClearHomeScreen();
 
         foreach (var branch in _allUIBranches)
         {
             if (ignoreCurrent != branch)
             {
-                if (branch.IsHome()) _onHomeScreen = false;
                 if (branch.MyCanvas.enabled == true)
                 {
                     _clearedItems.Add(branch);
                     branch.MyCanvas.enabled = false;
                 }
-            }        
+            }
         }
         return _clearedItems;
+    }
+
+    private void ClearHomeScreen()
+    {
+        foreach (var branch in _homeBranches)
+        {
+            branch.LastSelected.Disable();
+            branch.LastHighlighted.SetNotHighlighted();
+        }
     }
 
     public void RestoreScreen(List<UIBranch> branchesToRestore)
     {
         foreach (var branch in branchesToRestore)
         {
-            if (branch.IsHome()) _onHomeScreen = true;
-            branch.MyCanvas.enabled = true;
+            if (!branch.IsHome())
+            {
+                branch.MyCanvas.enabled = true;
+            }
         }
     }
 
-    public void RestoreHomeNoChecks()
+    public void RestoreHomeScreen()
     {
-        foreach (var item in _homeBranches)
+        if (!_onHomeScreen)
         {
-            _onHomeScreen = true;
-            item.ResetHomeScreen();
+            foreach (var item in _homeBranches)
+            {
+                _onHomeScreen = true;
+                item.ResetHomeScreen(_lastSelected.MyBranchController);
+            }
         }
     }
-
-    //public void RestoreHomeWithChecks()//
-    //{
-    //    if (!_onHomeScreen)
-    //    {
-    //        foreach (var item in _homeBranches)
-    //        {
-    //            _onHomeScreen = true;
-    //            item.RestoreHomeScreen();
-    //        }
-    //    }
-    //}
 
     private void ProcessGameToMenuSwitching()
     {
@@ -363,33 +417,21 @@ public class UIMasterController : MonoBehaviour
             if (InMenu)
             {
                 InMenu = false;
-                _uiElementLastSelected.SetNotHighlighted();
+                _lastHighlighted.SetNotHighlighted();
                 EventSystem.current.SetSelectedGameObject(null);
             }
             else
             {
                 InMenu = true;
-                _uiElementLastSelected.SetAsHighlighted();
-                EventSystem.current.SetSelectedGameObject(_uiElementLastSelected.gameObject);
+                _lastHighlighted.SetAsHighlighted();
+                EventSystem.current.SetSelectedGameObject(_lastHighlighted.gameObject);
             }
 
             _returnToGameControl.Invoke(InMenu);
         }    
     }
 
-    public bool IsItPartOfRootMenu(UIBranch uIBranch) //Check that I'm on the homescreen when mving back levels
-    {
-        foreach (var item in _homeBranches)
-        {
-            if (item == uIBranch)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private bool SetRootGroup(UIBranch uIBranch)
+    private void SetRootGroup(UIBranch uIBranch)
     {
         for (int i = 0; i < _homeBranches.Count; i++)
         {
@@ -398,14 +440,8 @@ public class UIMasterController : MonoBehaviour
                 if (i != _groupIndex)
                 {
                     _groupIndex = i;
-                    return true;
-                }
-                else
-                {
-                    return false;
                 }
             }
         }
-        return false;
     }
 }

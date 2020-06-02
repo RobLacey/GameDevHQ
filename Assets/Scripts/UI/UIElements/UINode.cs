@@ -141,7 +141,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (_buttonFunction != ButtonFunction.ToggleGroup) return;
 
-        foreach (var node in MyParentController.ThisGroupsUINodes)
+        foreach (var node in MyBranchController.ThisGroupsUINodes)
         {
             if (node._buttonFunction == ButtonFunction.ToggleGroup)
             {
@@ -174,6 +174,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         if (IsDisabled) return;
         if (eventData.pointerDrag) return;                  //Enables drag on slider to have pressed colour
         _audio.Play(UIEventTypes.Highlighted, _functionToUse);
+        MyBranchController.SetLastHighlighted(this);
         SetAsHighlighted();
     }
 
@@ -184,12 +185,11 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         SetNotHighlighted();
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    public void OnPointerDown(PointerEventData eventData = null)
     {
         if (IsDisabled) return;
         if (_isCancelOrBackButton)
         {
-            MyBranchController.SetLastSelected(MyBranchController.LastSelected);
             Canceller?.Invoke(_escapeKeyFunction);
             return;
         }
@@ -240,7 +240,6 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
         if (_isCancelOrBackButton)
         {
-            MyBranchController.SetLastSelected(MyBranchController.LastSelected);
             Canceller?.Invoke(_escapeKeyFunction);
             return;
         }
@@ -266,7 +265,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (IsDisabled) { HandleIfDisabled(IsDisabled); return; }
 
-        MyBranchController.LastSelected = this;
+        MyBranchController.SetLastHighlighted(this);
 
         if (_buttonFunction != ButtonFunction.Toggle_NotLinked
             && _buttonFunction != ButtonFunction.ToggleGroup)
@@ -293,28 +292,25 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     public void MoveToNext() //Review if can be combined with above or vise versa
     {
         if (!MyBranchController.AllowKeys) return;
-        MyBranchController.LastSelected.SetNotHighlighted();
-        MyBranchController.SetLastSelected(this);
+        MyBranchController.LastHighlighted.SetNotHighlighted();
+        MyBranchController.SetLastHighlighted(this);
         _audio.Play(UIEventTypes.Highlighted, _functionToUse);
         SetAsHighlighted();
     }
 
     private void SwitchUIDisplay()
     {
-        TurnOffLastSelectedBranchNode();
         ToggleGroupElements();
-        MyBranchController.SetLastSelected(this);
 
         if (IsSelected)
         {
             if (_buttonFunction == ButtonFunction.ToggleGroup)
             {
-                if (MyBranchController.LastSelected == this) return;
+                if (MyBranchController.LastHighlighted == this) return;
             }
-            if (_buttonFunction == ButtonFunction.Toggle_NotLinked)
-            {
-                IsSelected = false;
-            }
+
+            if (_buttonFunction == ButtonFunction.Toggle_NotLinked) { IsSelected = false; }
+
             Disable();
             DoPressedAction(UIEventTypes.Cancelled);
 
@@ -323,21 +319,6 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         {
             Activate();
             DoPressedAction(UIEventTypes.Selected);
-        }
-    }
-
-    private void TurnOffLastSelectedBranchNode() 
-    {
-        UINode lastElementSelected = MyBranchController.LastSelected;
-
-        if (lastElementSelected != this)
-        {
-            if (lastElementSelected._buttonFunction != ButtonFunction.Toggle_NotLinked
-                && lastElementSelected._buttonFunction != ButtonFunction.ToggleGroup)
-            {
-                lastElementSelected.Disable();
-                lastElementSelected.SetNotHighlighted();
-            }
         }
     }
 
@@ -361,6 +342,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             IsSelected = false;
             TurnOffChildren();
         }
+
         if (_amSlider) { QuitSlider(); }
         _swapImageOrText.CycleToggle(IsSelected, _functionToUse);
     }
@@ -372,9 +354,14 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         _swapImageOrText.CycleToggle(IsSelected, _functionToUse);
         _tooltips.HideToolTip(_functionToUse);
         StopAllCoroutines();
+        MyBranchController.SetLastSelected(this);
+
         if (_buttonFunction == ButtonFunction.Switch_NeverHold || _buttonFunction == ButtonFunction.Standard_Hold)
         {
-            TurnOnChildren();
+            if (_navigation._childBranch && (_functionToUse & Setting.NavigationAndOnClick) != 0)
+            {
+                MoveToChildBranch();
+            }
         }
     }
 
@@ -387,23 +374,15 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
                 _navigation._childBranch.StartOutTweens(false);
             }
 
-            if (_navigation._childBranch.LastSelected != null)
+            if (_navigation._childBranch.LastHighlighted != null)
             {
-                _navigation._childBranch.LastSelected.SetNotHighlighted();
+                _navigation._childBranch.LastHighlighted.SetNotHighlighted();
                 _navigation._childBranch.LastSelected.Disable();
             }
         }
     }
 
-    private void TurnOnChildren()
-    {
-        if (_navigation._childBranch && (_functionToUse & Setting.NavigationAndOnClick) != 0)
-        {
-            MoveToBranch();
-        }
-    }
-
-    private void MoveToBranch()
+    private void MoveToChildBranch() //**** Redo - Might neeed to make tweens work
     {
         if (MyBranchController.MoveToNext == MoveNext.AtTweenEnd)
         {
@@ -439,39 +418,21 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void OnCancel()
     {
-        if (_isCancelOrBackButton)
-        {
-            IsSelected = false;
-            SetNotHighlighted();
-        }
-
-        if (MyParentController.LastSelected == this) { return; }                    //Stops returning past the Home Level menus
-
         _audio.Play(UIEventTypes.Cancelled, _functionToUse);
-
-        if (MyBranchController.MoveToNext == MoveNext.AtTweenEnd)
-        {
-            MyBranchController.StartOutTweens(false, () => MoveBackALevel());
-        }
-        else
-        {
-            MyBranchController.StartOutTweens(false);
-            MoveBackALevel();
-        }
+        _navigation._childBranch.StartOutTweens(false, () => MoveBackALevel());
     }
 
-    private void MoveBackALevel()
+    private void MoveBackALevel() //*****Redo - Check tweens work on move back
     {
-        if (MyParentController.LastSelected._navigation._moveType == MoveType.MoveToInternalBranch)
+        if (_navigation._moveType == MoveType.MoveToInternalBranch || MyBranchController.TweenOnReturn)
         {
-            MyParentController.LastSelected.Disable();
-            MyParentController.DontAnimateOnChange = true;
-            MyParentController.MoveToNextLevel();
+            MyBranchController.TweenOnChange = true;
+            MyBranchController.MoveToNextLevel();
         }
         else
         {
-            MyBranchController.TurnOnMoveToParent();
-            MyParentController.MoveBackALevel();
+            _navigation._childBranch.TurnOnMoveToParent();
+            MyBranchController.MoveToNextLevel();
         }
     }
 
@@ -516,11 +477,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void HotKeyActivation()
     {
-        if (_navigation._childBranch)
-        {
-            _navigation._childBranch.MoveToNextLevel(MyBranchController);
-        }
-        SetSelected_NoEffects();
+        Activate();
         DoPressedAction(UIEventTypes.Selected);
     }
 
@@ -557,7 +514,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     private void MoveCursorToNextFree()
     {
-        if (MyBranchController.LastSelected == this)
+        if (MyBranchController.LastHighlighted == this)
         {
             if (_navigation._setNavigation != NavigationType.None)
             {

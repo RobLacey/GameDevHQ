@@ -17,16 +17,14 @@ public class UIBranch : MonoBehaviour
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [SerializeField] BranchType _branchType = BranchType.StandardUI;
-    [SerializeField] [HideIf("IsHome")] bool _clearScreen;
-    [SerializeField] [ShowIf("IsIndie")] bool _restoreHomeScreen;
     [SerializeField] [Label("Don't IN Tween On Return")] [HideIf("IsIndie")] bool _neverInTweenOnReturn;
     [SerializeField] [HideIf(EConditionOperator.Or, "IsHome", "IsIndie")] bool _turnOff_MoveToChild;
     [SerializeField] [Label("Save Selection On Exit")] [HideIf("IsIndie")] bool _saveExitSelection;
     [SerializeField] [Label("Move To Next Branch...")] MoveNext _moveType = MoveNext.OnClick;
     [SerializeField] [HideIf(EConditionOperator.Or, "IsIndie", "IsHome")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
-    [SerializeField] [ValidateInput("IsEmpty", "If left Blank it will Auto-assign first UINode in hierarchy/Group")] 
+    [SerializeField] [ValidateInput("IsEmpty", "If left Blank it will Auto-assign first UINode in hierarchy/Group")]
     UINode _userDefinedStartPosition;
-    [SerializeField] [HideIf("IsIndie")] [Label("Branch Group List (Leave blank if NO groups needed)")] 
+    [SerializeField] [HideIf("IsIndie")] [Label("Branch Group List (Leave blank if NO groups needed)")]
     [ReorderableList] List<GroupList> _groupsList;
 
     //Internal Callses & Editor Scripts
@@ -40,14 +38,14 @@ public class UIBranch : MonoBehaviour
 
     private bool IsEmpty(UINode uINode) { return uINode != null; }
     public bool IsStandard() { return _branchType == BranchType.StandardUI; }
-    public bool IsHome() 
+    public bool IsHome()
     {
         if (_branchType == BranchType.HomeScreenUI)
         {
             _escapeKeyFunction = EscapeKey.None;
             return true;
         }
-        return false; 
+        return false;
     }
     public bool IsIndie() { return _branchType == BranchType.Independent; }
 
@@ -63,18 +61,21 @@ public class UIBranch : MonoBehaviour
     List<UIBranch> _clearedBranches = new List<UIBranch>();
 
     //Properties
-    public UINode DefaultStartPosition { get { return _userDefinedStartPosition; } 
-                                         set { _userDefinedStartPosition = value; } }
+    public UINode DefaultStartPosition { get { return _userDefinedStartPosition; }
+        set { _userDefinedStartPosition = value; } }
     public Canvas MyCanvas { get; set; }
+    public UINode LastHighlighted { get; set; }
     public UINode LastSelected { get; set; }
     public bool DontSetAsActive { get; set; } = false;
     public UINode[] ThisGroupsUINodes { get { return _childUILeafs; } }
     public bool AllowKeys { get; set; }
     public CanvasGroup MyCanvasGroup { get; set; }
     public EscapeKey EscapeKeySetting { get { return _escapeKeyFunction; } }
-    public bool DontAnimateOnChange { get; set; } = false;
+    public bool TweenOnChange { get; set; } = false;
+    public bool TweenOnReturn { get { return _neverInTweenOnReturn; } }
     public BranchType MyBranchType { get { return _branchType; } }
-    public MoveNext MoveToNext { get { return _moveType;  } }
+    public MoveNext MoveToNext { get { return _moveType; } }
+    public bool TurnOffOnMove { get { return _turnOff_MoveToChild; } } //****Review
 
     private void Awake()
     {
@@ -111,7 +112,7 @@ public class UIBranch : MonoBehaviour
         {
             DefaultStartPosition = _groupsList[0]._startNode;
         }
-        else if(_groupsList.Count == 0 && DefaultStartPosition == null)
+        else if (_groupsList.Count == 0 && DefaultStartPosition == null)
         {
             foreach (Transform item in transform)
             {
@@ -124,6 +125,7 @@ public class UIBranch : MonoBehaviour
         }
 
         if (DefaultStartPosition == null) Debug.Log("NO Default Position Found : " + gameObject.name);
+        LastHighlighted = DefaultStartPosition;
         LastSelected = DefaultStartPosition;
     }
 
@@ -142,23 +144,8 @@ public class UIBranch : MonoBehaviour
                         break;
                     }
                 }
-            index++;
+                index++;
             }
-        }
-    }
-
-    public void MoveBackALevel()
-    {
-        BasicSetUp();
-
-        if (_neverInTweenOnReturn)
-        {
-            LastSelected.InitialiseStartUp();
-            _UITweener.Reset();
-        }
-        else
-        {
-            ActivateINTweens();
         }
     }
 
@@ -166,7 +153,7 @@ public class UIBranch : MonoBehaviour
     {
         BasicSetUp(newParentController);
 
-        if (!DontAnimateOnChange)
+        if (!TweenOnChange)
         {
             ActivateINTweens();
         }
@@ -174,25 +161,23 @@ public class UIBranch : MonoBehaviour
         {
             LastSelected.InitialiseStartUp();
         }
-        DontAnimateOnChange = false;
+        TweenOnChange = false;
     }
 
     private void BasicSetUp(UIBranch newParentController = null)
     {
         MyCanvas.enabled = true;
 
-        if (_branchType == BranchType.HomeScreenUI) _UiMasterController.RestoreHomeNoChecks();
-
-        _UiMasterController.SetLastUIObject(LastSelected);
+        if (_branchType == BranchType.HomeScreenUI) _UiMasterController.RestoreHomeScreen();
 
         if (!_saveExitSelection)
         {
             SetGroupIndex();
-            LastSelected.SetNotHighlighted();
-            LastSelected = DefaultStartPosition;
+            LastHighlighted.SetNotHighlighted();
+            LastHighlighted = DefaultStartPosition;
         }
 
-        if (_branchType != BranchType.Independent) 
+        if (_branchType != BranchType.Independent)
         {
             if (newParentController == null) return;
             if (newParentController.MyBranchType != BranchType.Independent)
@@ -202,12 +187,14 @@ public class UIBranch : MonoBehaviour
         }
     }
 
-    public void ResetHomeScreen()
+    public void ResetHomeScreen(UIBranch lastSelected)
     {
-        LastSelected.Disable();
-        LastSelected.SetNotHighlighted();
         MyCanvas.enabled = true;
-        DontSetAsActive = true;
+        if (lastSelected != this)
+        {
+            DontSetAsActive = true;
+        }
+
         if (!_neverInTweenOnReturn)
         {
             ActivateINTweens();
@@ -232,30 +219,36 @@ public class UIBranch : MonoBehaviour
         }
     }
 
-    public void TurnOffOnMoveToChild(UIBranch ignoreBranch = null) 
+    public void TurnOffOnMoveToChild(UIBranch ignoreBranch = null)
     {
-        if (_clearScreen)//no prop
+        if (LastSelected._navigation._moveType == MoveType.MoveToExternalBranch)//no prop
         {
             _clearedBranches = _UiMasterController.ClearScreen(ignoreBranch);
         }
     }
 
-    public void TurnOnMoveToParent() 
+    public void TurnOnMoveToParent()
     {
-        if (_clearScreen)//no prop and rename
+        if (LastSelected._navigation._moveType == MoveType.MoveToExternalBranch)//no prop
         {
             _UiMasterController.RestoreScreen(_clearedBranches);
         }
         _clearedBranches = new List<UIBranch>();
     }
 
+    public void SetLastHighlighted(UINode newNode)
+    {
+        _UiMasterController.SetLastHighlighted(newNode);
+        LastHighlighted = newNode;
+    }
+
     public void SetLastSelected(UINode lastSelected)
     {
-        _UiMasterController.SetLastUIObject(lastSelected);
+        _UiMasterController.SetLastSelected(lastSelected);
         LastSelected = lastSelected;
     }
 
-    public void StartOutTweens(bool toChild, Action action = null) 
+    public void StartOutTweens(bool toChild, Action action = null)
     {
         _onFinishedTrigger = action;
 
@@ -275,7 +268,7 @@ public class UIBranch : MonoBehaviour
         _UITweener.DeactivateTweens(() => OutTweenCallback());
     }
 
-    private void OutTweenCallback() 
+    private void OutTweenCallback()
     {
         if (_moveToChild)
         {
@@ -288,13 +281,13 @@ public class UIBranch : MonoBehaviour
     public void ActivateINTweens()
     {
         MyCanvasGroup.blocksRaycasts = false;
-        _UITweener.ActivateTweens(()=> InTweenCallback());
+        _UITweener.ActivateTweens(() => InTweenCallback());
     }
 
     private void InTweenCallback()
     {
         MyCanvasGroup.blocksRaycasts = true;
-        if (!DontSetAsActive) { LastSelected.InitialiseStartUp(); }
+        if (!DontSetAsActive) { LastHighlighted.InitialiseStartUp(); }
         DontSetAsActive = false;
     }
 
@@ -315,8 +308,6 @@ public class UIBranch : MonoBehaviour
     //Will instantly clear on any Fullscreen. No Waiing for out animation
     public void HotKeyTrigger()
     {
-        _UiMasterController.ActiveBranch.LastSelected.SetNotHighlighted();
-
         if (_branchType == BranchType.Independent)
         {
             TurnOffOnMoveToChild(this);
@@ -324,20 +315,12 @@ public class UIBranch : MonoBehaviour
         }
         else
         {
-            if (_clearScreen)
+            foreach (var item in LastHighlighted.MyParentController.ThisGroupsUINodes) //****Check this functions corretcly
             {
-                TurnOffOnMoveToChild(this);
-                MoveToNextLevel(_UiMasterController.ActiveBranch);
-            }
-            else
-            {
-                foreach (var item in LastSelected.MyParentController.ThisGroupsUINodes)
+                if (item._navigation._childBranch == this)
                 {
-                    if (item._navigation._childBranch == this)
-                    {
-                        item.MyBranchController.SetLastSelected(item);
-                        item.HotKeyActivation();
-                    }
+                    item.MyBranchController.SetLastHighlighted(item);
+                    item.OnPointerDown();
                 }
             }
         }

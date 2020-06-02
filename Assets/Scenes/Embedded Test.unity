@@ -560,6 +560,11 @@ PrefabInstance:
       propertyPath: _toggleGroupID
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8968508911427264655, guid: 74a615c871e3f7f49b9e659c416cdb84,
+        type: 3}
+      propertyPath: _testThisOne
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8968508911427264654, guid: 74a615c871e3f7f49b9e659c416cdb84, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 74a615c871e3f7f49b9e659c416cdb84, type: 3}
@@ -2949,8 +2954,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 0
-  _clearScreen: 0
-  _restoreHomeScreen: 0
   _neverInTweenOnReturn: 0
   _turnOff_MoveToChild: 1
   _saveExitSelection: 1
@@ -2990,7 +2993,7 @@ MonoBehaviour:
   _globalOutTime: 1
   _positionTween: 0
   _rotationTween: 0
-  _canvasGroupFade: 0
+  _canvasGroupFade: 1
   _scaleTransition: 0
   _punchShakeTween: 0
   _shakeOrPunchAtEnd: 0
@@ -3412,6 +3415,11 @@ PrefabInstance:
       propertyPath: _colours._imageElements.Array.data[0]
       value: 
       objectReference: {fileID: 616978319}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _testThisOne
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3688934388505339738, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
@@ -3976,6 +3984,11 @@ PrefabInstance:
       propertyPath: _buttonFunction
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _navigation._moveType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6790820044368940565, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: m_Text
@@ -4354,6 +4367,11 @@ PrefabInstance:
       propertyPath: _escapeKeyFunction
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _neverInTweenOnReturn
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _applyEffectsTo.Array.size
@@ -4412,7 +4430,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasGroupFade
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -6591,6 +6609,11 @@ PrefabInstance:
       propertyPath: _buttonFunction
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _navigation._moveType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -7895,6 +7918,11 @@ PrefabInstance:
       propertyPath: _buttonFunction
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _navigation._moveType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6790820044368940565, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: m_Text
@@ -8040,8 +8068,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 2
-  _clearScreen: 1
-  _restoreHomeScreen: 1
   _neverInTweenOnReturn: 0
   _turnOff_MoveToChild: 0
   _saveExitSelection: 0
@@ -11159,6 +11185,11 @@ PrefabInstance:
       propertyPath: _startAsSelected
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8968508911427264655, guid: 74a615c871e3f7f49b9e659c416cdb84,
+        type: 3}
+      propertyPath: _testThisOne
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8968508911427264654, guid: 74a615c871e3f7f49b9e659c416cdb84, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 74a615c871e3f7f49b9e659c416cdb84, type: 3}
@@ -11626,6 +11657,11 @@ PrefabInstance:
       propertyPath: _toggleGroupID
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _testThisOne
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12070,6 +12106,11 @@ PrefabInstance:
       propertyPath: _buttonFunction
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _navigation._moveType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12288,6 +12329,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _buttonFunction
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _navigation._moveType
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
@@ -13696,6 +13742,11 @@ PrefabInstance:
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: _startAsSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _testThisOne
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
@@ -16726,6 +16777,11 @@ PrefabInstance:
       propertyPath: _buttonFunction
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _testThisOne
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -17655,6 +17711,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _buttonFunction
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _navigation._moveType
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
@@ -19575,8 +19636,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 2
-  _clearScreen: 1
-  _restoreHomeScreen: 1
   _neverInTweenOnReturn: 0
   _turnOff_MoveToChild: 0
   _saveExitSelection: 0
@@ -20686,6 +20745,11 @@ PrefabInstance:
       propertyPath: _neverTweenOnReturn
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _neverInTweenOnReturn
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.size
@@ -21054,7 +21118,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasGroupFade
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -21700,6 +21764,11 @@ PrefabInstance:
       propertyPath: _colours._imageElements.Array.data[0]
       value: 
       objectReference: {fileID: 1547117427}
+    - target: {fileID: 7472274104007262572, guid: 889858f9542a04a41801cc9b56665611,
+        type: 3}
+      propertyPath: _buttonFunction
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7472274104007262574, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -21986,6 +22055,11 @@ PrefabInstance:
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: _startAsSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _testThisOne
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
@@ -23436,6 +23510,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _buttonFunction
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _navigation._moveType
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6790820044368940565, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -25015,6 +25094,11 @@ PrefabInstance:
       propertyPath: _escapeKeyFunction
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _neverInTweenOnReturn
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _applyEffectsTo.Array.size
@@ -25043,7 +25127,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasGroupFade
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
