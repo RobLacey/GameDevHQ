@@ -28,6 +28,7 @@ public class UIMasterController : MonoBehaviour
     //Variables
     int _groupIndex = 0;
     UIBranch[] _allUIBranches;
+    List<UIBranch> _newHomeBranches = new List<UIBranch>();
     UINode _lastHighlighted;
     UINode _lastSelected;
     Vector3 _mousePos = Vector3.zero;
@@ -35,7 +36,6 @@ public class UIMasterController : MonoBehaviour
     bool _usingKeysOrCtrl = false;
     bool _onHomeScreen = false;
     bool _canStart = false;
-    [SerializeField] UINode _storedRoot;
 
     //Properties
     bool InMenu { get; set; } = true;
@@ -99,9 +99,20 @@ public class UIMasterController : MonoBehaviour
 
     private void Start()
     {
+        foreach (var item in _allUIBranches)
+        {
+            if (item.MyBranchType == BranchType.HomeScreenUI)
+            {
+                item.MyCanvas.enabled = true;
+            }
+            else
+            {
+                item.MyCanvas.enabled = false;
+            }
+        }
+
         _lastHighlighted = _homeBranches[0].DefaultStartPosition;
         _lastSelected = _homeBranches[0].DefaultStartPosition;
-        _storedRoot = _homeBranches[0].DefaultStartPosition;
         ActiveBranch = _homeBranches[0];
         _mousePos = Input.mousePosition;
         _onHomeScreen = true;
@@ -221,45 +232,23 @@ public class UIMasterController : MonoBehaviour
     {
         if (node != _lastSelected)
         {
-            if (_onHomeScreen)
+            if (node.MyBranchController == _lastSelected.MyBranchController)
             {
-                if (node.IsSelected == true)
-                {
-                    UINode temp = node;
-                    while (temp.MyParentController != temp.MyBranchController)
-                    {
-                        temp = _lastSelected.MyParentController.LastSelected;
-                    }
-
-                    if (_storedRoot != temp)
-                    {
-                        _storedRoot.Disable();
-                        _storedRoot.SetNotHighlighted();
-                        _storedRoot = temp;
-                    }
-                }
-            }
-            else
-            {
-                if (_lastSelected != node)
-                {
-                    foreach (var item in node.MyBranchController.ThisGroupsUINodes)
-                    {
-                        if (node != item)
-                        {
-                            item.Disable();
-                            item.SetNotHighlighted();  
-                        }
-                    }
-                }
+                _lastSelected.Disable();
             }
 
+            if (node.MyBranchController != _lastSelected._navigation._childBranch)
+            {
+                _lastSelected.Disable();
+            }
+            _lastSelected.SetNotHighlighted();
         }
         _lastSelected = node;
     }
 
     public void SetLastHighlighted(UINode node)
     {
+        _lastHighlighted.SetNotHighlighted();
         _lastHighlighted = node;
         ActiveBranch = _lastHighlighted.MyBranchController;
         SetRootGroup(node.MyBranchController);
@@ -281,7 +270,7 @@ public class UIMasterController : MonoBehaviour
         {
             _groupIndex = 0;
         }
-        _homeBranches[_groupIndex].TweenOnChange = true;
+        _homeBranches[_groupIndex].TweenOnChange = false;
         _homeBranches[_groupIndex].MoveToNextLevel();
     }
 
@@ -353,48 +342,22 @@ public class UIMasterController : MonoBehaviour
     {
         if (_lastSelected._navigation._childBranch.MyCanvas.enabled != true) return;
         _lastSelected.OnCancel();
-        _lastSelected = _lastSelected.MyParentController.LastSelected;
+        _lastSelected = _lastSelected.MyBranchController.MyParentController.LastSelected;
     }
 
-    public List<UIBranch> ClearScreen(UIBranch ignoreCurrent = null)
+    public void ClearHomeScreen(UIBranch ignoreBranch)
     {
-        List<UIBranch> _clearedItems = new List<UIBranch>();
+        if (!_onHomeScreen) return;
         _onHomeScreen = false;
 
-
-        ClearHomeScreen();
-
-        foreach (var branch in _allUIBranches)
-        {
-            if (ignoreCurrent != branch)
-            {
-                if (branch.MyCanvas.enabled == true)
-                {
-                    _clearedItems.Add(branch);
-                    branch.MyCanvas.enabled = false;
-                }
-            }
-        }
-        return _clearedItems;
-    }
-
-    private void ClearHomeScreen()
-    {
         foreach (var branch in _homeBranches)
         {
-            branch.LastSelected.Disable();
-            branch.LastHighlighted.SetNotHighlighted();
-        }
-    }
-
-    public void RestoreScreen(List<UIBranch> branchesToRestore)
-    {
-        foreach (var branch in branchesToRestore)
-        {
-            if (!branch.IsHome())
+            if (branch != ignoreBranch)
             {
-                branch.MyCanvas.enabled = true;
+                branch.LastSelected.Disable();
+                branch.MyCanvas.enabled = false;
             }
+            branch.LastHighlighted.SetNotHighlighted();
         }
     }
 

@@ -93,10 +93,14 @@ public enum TweenColours
 
 public enum CurrentRoatationIs { StartRotateAt, MidPointForInAndOut, EndRotateAt }
 
-public enum MoveType { MoveToInternalBranch, MoveToExternalBranch }
+public enum ScreenType { Normal, ToFullScreen }
 
 public enum StartInMenu { InMenu, InGameControl }
 public enum BranchType { HomeScreenUI, StandardUI ,Independent }
 
 public enum MoveNext { OnClick, AtTweenEnd }
+public enum TweenOnMove
+{
+    Tween, NoTween
+}
 

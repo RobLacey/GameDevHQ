@@ -9,7 +9,7 @@ using UnityEngine.Events;
 public class UINavigation
 {
     [AllowNesting] [Label("Move To When Clicked")] [HideIf("NotAToggle")] public UIBranch _childBranch;
-    [AllowNesting] [HideIf("NotAToggle")] public MoveType _moveType = MoveType.MoveToExternalBranch;
+    [AllowNesting] [HideIf("NotAToggle")] [Label("No Tween on Move")] public TweenOnMove _doTween = TweenOnMove.Tween;
     public NavigationType _setNavigation = NavigationType.UpAndDown;
     [AllowNesting] [ShowIf("UpDownNav")] public UINode up;
     [AllowNesting] [ShowIf("UpDownNav")] public UINode down;

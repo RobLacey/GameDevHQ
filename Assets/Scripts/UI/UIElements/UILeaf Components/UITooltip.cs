@@ -56,15 +56,15 @@ public class UITooltip
 
     //TODO Change size calcs to work from camera size rather than canvas so still works when aspect changes
 
-    public void OnAwake(Setting setting, Vector3[] corners, string parent) //Make OnAwake
+    public void OnAwake(Setting setting, string parent) //Make OnAwake
     {
         if (!((setting & _mySetting) != 0)) return;
+
         if (_listOfTooltips.Length == 0) 
         { 
             Debug.Log("No tooltips set on " + parent); 
             return; 
         }
-        _myCorners = corners;
         IsActive = false;
         CreateBucket();
         _toolTipCanvas = _listOfTooltips[0].GetComponent<Canvas>();
@@ -82,6 +82,8 @@ public class UITooltip
         _canvasWidth = (_mainCanvas.rect.width / 2) - _screenSafeZone;
         _canvasHeight = (_mainCanvas.rect.height / 2) - _screenSafeZone;
     }
+
+    
 
     private void CreateBucket()
     {
@@ -226,8 +228,9 @@ public class UITooltip
         }
     }
 
-    public IEnumerator ToolTipBuild()
+    public IEnumerator ToolTipBuild(RectTransform rect)
     {
+        rect.GetWorldCorners(_myCorners);
         for (int i = 0; i < _listOfTooltips.Length; i++)
         {
             _layout = _listOfTooltips[i];

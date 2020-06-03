@@ -9,13 +9,12 @@ public class HotKeys
     [InputAxis] [AllowNesting] public string _hotkeyAxis;
     public UIBranch _UIBranch;
 
-
     public bool CheckHotkeys()
     {
         if (Input.GetButtonDown(_hotkeyAxis))
         {
-            _UIBranch.HotKeyTrigger();
-            return true;
+                _UIBranch.HotKeyTrigger();
+                return true;
         }
         return false;
     }

@@ -38,8 +38,8 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     Slider _amSlider;
     UIEventTypes _eventType = UIEventTypes.Normal;
     List<UINode> _toggleGroupMembers = new List<UINode>();
-    Vector3[] _myCorners = new Vector3[4];
     bool _isDisabled;
+    RectTransform _myRect;
 
     //Delegates
     Action<UIEventTypes, bool, Setting> SetUp;
@@ -48,7 +48,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     //Properties & Enums
     public UIBranch MyBranchController { get; set; }
     public EscapeKey EscapeKeyFunction { get { return _escapeKeyFunction; } }
-    public UIBranch MyParentController { get; set; }
+   // public UIBranch MyParentController { get; set; }
     public bool IsSelected { get; set; }
     public bool IsDisabled
     {
@@ -102,12 +102,12 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     private void Awake()
     {
-        GetComponent<RectTransform>().GetWorldCorners(_myCorners);
+        _myRect = GetComponent<RectTransform>();
         _amSlider = GetComponent<Slider>();
         MyBranchController = GetComponentInParent<UIBranch>();
         _colours.OnAwake(gameObject.GetInstanceID());
         _audio.OnAwake(GetComponentInParent<AudioSource>());
-        _tooltips.OnAwake(_functionToUse, _myCorners, gameObject.name);
+        _tooltips.OnAwake(_functionToUse, gameObject.name);
         if (_amSlider) _amSlider.interactable = false;
     }
 
@@ -165,7 +165,8 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
         if (_navigation._childBranch)
         {
-            _navigation._childBranch.SetCurrentBranchAsParent(MyBranchController);
+            _navigation._childBranch.SetCurrentBranchAsParent(MyBranchController.ScreenType, MyBranchController);
+            _navigation._childBranch.SetCurrentBranchAsParent(MyBranchController.ScreenType, MyBranchController);
         }
     }
 
@@ -365,7 +366,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    private void TurnOffChildren()
+    private void TurnOffChildren()//***Not Right
     {
         if (_navigation._childBranch && (_functionToUse & Setting.NavigationAndOnClick) != 0)
         {
@@ -374,7 +375,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
                 _navigation._childBranch.StartOutTweens(false);
             }
 
-            if (_navigation._childBranch.LastHighlighted != null)
+             if (_navigation._childBranch.LastHighlighted != null)
             {
                 _navigation._childBranch.LastHighlighted.SetNotHighlighted();
                 _navigation._childBranch.LastSelected.Disable();
@@ -384,36 +385,48 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     private void MoveToChildBranch() //**** Redo - Might neeed to make tweens work
     {
+        if (_navigation._doTween == TweenOnMove.NoTween)
+        {
+           ToBranchProcess();
+           return;
+        }
+
         if (MyBranchController.MoveToNext == MoveNext.AtTweenEnd)
         {
-            if (_navigation._moveType != MoveType.MoveToInternalBranch)
+            if (_navigation._childBranch.ScreenType == ScreenType.ToFullScreen)
             {
-                MyBranchController.StartOutTweens(true, () => MoveToStandardBranch());
+                MyBranchController.StartOutTweens(true, () => ToFullScreen_AfterTween());
             }
             else
             {
-                _navigation._childBranch.MoveToNextLevel(MyBranchController);
+                MyBranchController.StartOutTweens(true, ()=> ToBranchProcess());
             }
         }
         else
         {
-            if (_navigation._moveType != MoveType.MoveToInternalBranch)
+            MyBranchController.StartOutTweens(true);
+
+            if (_navigation._childBranch.ScreenType == ScreenType.ToFullScreen)
             {
-                MyBranchController.StartOutTweens(true, ()=> MoveToBranchNoDelay());
+               ToFullScreen_AfterTween();
             }
-            _navigation._childBranch.MoveToNextLevel(MyBranchController);
+            else
+            {
+                ToBranchProcess();
+            }
         }
     }
 
-    private void MoveToStandardBranch()
+    private void ToFullScreen_AfterTween()
     {
-        _navigation._childBranch.TurnOffOnMoveToChild(_navigation._childBranch);
-        _navigation._childBranch.MoveToNextLevel(MyBranchController);
+        _navigation._childBranch.TurnOffOnMoveToChild(MyBranchController);
+        ToBranchProcess();
     }
 
-    private void MoveToBranchNoDelay()
+    private void ToBranchProcess()
     {
-        _navigation._childBranch.TurnOffOnMoveToChild(_navigation._childBranch);
+        if (MyBranchController.TurnOffOnMove)  { MyBranchController.MyCanvas.enabled = false; }
+        _navigation._childBranch.MoveToNextLevel(MyBranchController);
     }
 
     public void OnCancel()
@@ -424,14 +437,13 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     private void MoveBackALevel() //*****Redo - Check tweens work on move back
     {
-        if (_navigation._moveType == MoveType.MoveToInternalBranch || MyBranchController.TweenOnReturn)
+        if (_navigation._doTween == TweenOnMove.NoTween || MyBranchController.DontTweenOnReturn)
         {
-            MyBranchController.TweenOnChange = true;
+            MyBranchController.TweenOnChange = false;
             MyBranchController.MoveToNextLevel();
         }
         else
         {
-            _navigation._childBranch.TurnOnMoveToParent();
             MyBranchController.MoveToNextLevel();
         }
     }
@@ -543,7 +555,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         {
             yield return new WaitForSeconds(_tooltips._delay);
             _tooltips.IsActive = true;
-            StartCoroutine(_tooltips.ToolTipBuild());
+            StartCoroutine(_tooltips.ToolTipBuild(_myRect));
             StartCoroutine(_tooltips.StartTooltip(MyBranchController.AllowKeys));
         }
         yield return null;
