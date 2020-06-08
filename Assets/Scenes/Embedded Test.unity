@@ -2965,8 +2965,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 0
   _screenType: 0
-  _neverInTweenOnReturn: 0
-  _turnOff_MoveToChild: 1
+  _dontTurnOff: 0
   _saveExitSelection: 1
   _moveType: 1
   _escapeKeyFunction: 0
@@ -3798,7 +3797,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _tooltips._keyboardPosition
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -4396,12 +4395,17 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _turnOff_MoveToChild
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _moveType
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _dontTurnOff
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -5083,6 +5087,11 @@ PrefabInstance:
     - target: {fileID: 7472274104007262572, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
       propertyPath: _navigation._moveAfter
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7472274104007262572, guid: 889858f9542a04a41801cc9b56665611,
+        type: 3}
+      propertyPath: _buttonFunction
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7472274104007262574, guid: 889858f9542a04a41801cc9b56665611,
@@ -7802,7 +7811,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _tooltips._keyboardPosition
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -8155,8 +8164,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 2
   _screenType: 1
-  _neverInTweenOnReturn: 0
-  _turnOff_MoveToChild: 0
+  _dontTurnOff: 0
   _saveExitSelection: 0
   _moveType: 1
   _escapeKeyFunction: 0
@@ -12918,7 +12926,7 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _moveType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -12933,7 +12941,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _positionTween
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -12948,7 +12956,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._tweenTargetPosition.x
-      value: 0
+      value: 934
       objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -16312,10 +16320,15 @@ PrefabInstance:
       propertyPath: _screenType
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _branchType
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasGroupFade
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -19754,8 +19767,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 2
   _screenType: 1
-  _neverInTweenOnReturn: 0
-  _turnOff_MoveToChild: 0
+  _dontTurnOff: 0
   _saveExitSelection: 0
   _moveType: 1
   _escapeKeyFunction: 0
@@ -20589,6 +20601,11 @@ PrefabInstance:
       propertyPath: _screenType
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _branchType
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.size
@@ -20597,7 +20614,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasGroupFade
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -20877,6 +20894,16 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _screenType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _dontTurnOff
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _moveType
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
@@ -21896,7 +21923,7 @@ PrefabInstance:
     - target: {fileID: 7472274104007262572, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
       propertyPath: _buttonFunction
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7472274104007262574, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
@@ -23469,7 +23496,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _tooltips._keyboardPosition
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -23760,7 +23787,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _navigation._childBranch
       value: 
-      objectReference: {fileID: 984987784}
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: _navigation._active
@@ -23814,7 +23841,7 @@ PrefabInstance:
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: _buttonFunction
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
@@ -24776,7 +24803,6 @@ MonoBehaviour:
   _functionToUse: 67
   _navigation:
     _childBranch: {fileID: 0}
-    _doTween: 0
     _setNavigation: 1
     up: {fileID: 6446246268481184040}
     down: {fileID: 531416950}
@@ -25248,6 +25274,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _turnOff_MoveToChild
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _dontTurnOff
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -25898,7 +25929,6 @@ MonoBehaviour:
   _functionToUse: 67
   _navigation:
     _childBranch: {fileID: 0}
-    _doTween: 0
     _setNavigation: 1
     up: {fileID: 531416950}
     down: {fileID: 1675654969295092519}

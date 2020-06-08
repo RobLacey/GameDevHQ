@@ -96,11 +96,11 @@ public enum CurrentRoatationIs { StartRotateAt, MidPointForInAndOut, EndRotateAt
 public enum ScreenType { Normal, ToFullScreen }
 
 public enum StartInMenu { InMenu, InGameControl }
-public enum BranchType { HomeScreenUI, StandardUI ,Independent }
+public enum BranchType { HomeScreenUI, StandardUI ,Independent, Internal }
 
 public enum MoveNext { OnClick, AtTweenEnd }
-public enum TweenOnMove
-{
-    Tween, NoTween
-}
+//public enum TweenOnMove
+//{
+//    Tween, NoTween
+//}
 

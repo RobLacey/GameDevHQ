@@ -31,6 +31,7 @@ public class UIMasterController : MonoBehaviour
     List<UIBranch> _newHomeBranches = new List<UIBranch>();
     UINode _lastHighlighted;
     UINode _lastSelected;
+    UINode _lastRootNode;
     Vector3 _mousePos = Vector3.zero;
     bool _usingMouse = false;
     bool _usingKeysOrCtrl = false;
@@ -112,7 +113,7 @@ public class UIMasterController : MonoBehaviour
         }
 
         _lastHighlighted = _homeBranches[0].DefaultStartPosition;
-        _lastSelected = _homeBranches[0].DefaultStartPosition;
+        //_lastSelected = _homeBranches[0].DefaultStartPosition;
         ActiveBranch = _homeBranches[0];
         _mousePos = Input.mousePosition;
         _onHomeScreen = true;
@@ -171,7 +172,7 @@ public class UIMasterController : MonoBehaviour
             {
                 if (Input.GetButtonDown(_cancelButton))
                 {
-                    if (_lastSelected != null)
+                    if (_lastSelected._navigation._childBranch != null)
                     {
                        OnCancel(_lastSelected._navigation._childBranch.EscapeKeySetting);
                     }
@@ -230,28 +231,59 @@ public class UIMasterController : MonoBehaviour
 
     public void SetLastSelected(UINode node)
     {
-        if (node != _lastSelected)
+        if (_lastSelected != null)
         {
-            if (node.MyBranchController == _lastSelected.MyBranchController)
+            if (node != _lastSelected)
             {
-                _lastSelected.Disable();
+                if (_onHomeScreen)
+                {
+                    UINode temp = TurnOffLastSelected(node);
+                    _lastRootNode.SetNotHighlighted();
+                    _lastRootNode = temp;
+                }
+                else
+                {
+                    if (_lastSelected._navigation._childBranch != null)
+                    {
+                        //if (_lastSelected._navigation._childBranch.ScreenType == ScreenType.FullScreen_Internal)
+                        if (_lastSelected._navigation._childBranch.MyBranchType == BranchType.Internal)
+                        {
+                            _lastSelected._navigation._childBranch.StartOutTweens(false);
+                            _lastSelected.SetNotSelected_NoEffects();
+                        }
+                    }
+                }
             }
-
-            if (node.MyBranchController != _lastSelected._navigation._childBranch)
-            {
-                _lastSelected.Disable();
-            }
-            _lastSelected.SetNotHighlighted();
+        }
+        else
+        {
+            _lastRootNode = node;
         }
         _lastSelected = node;
     }
 
-    public void SetLastHighlighted(UINode node)
+    private UINode TurnOffLastSelected(UINode node)
+    {
+        UINode temp = node;
+        while (temp.MyBranchController != temp.MyBranchController.MyParentController)
+        {
+            temp = temp.MyBranchController.MyParentController.LastSelected;
+        }
+
+        if (temp != _lastRootNode && _lastRootNode.IsSelected == true)
+        {
+            _lastRootNode.OnPointerDown();
+        }
+
+        return temp;
+    }
+
+    public void SetLastHighlighted(UINode newNode)
     {
         _lastHighlighted.SetNotHighlighted();
-        _lastHighlighted = node;
+        _lastHighlighted = newNode;
         ActiveBranch = _lastHighlighted.MyBranchController;
-        SetRootGroup(node.MyBranchController);
+        SetRootGroup(newNode.MyBranchController);
         EventSystem.current.SetSelectedGameObject(_lastHighlighted.gameObject);
     }
 
@@ -259,16 +291,17 @@ public class UIMasterController : MonoBehaviour
     {
         _lastHighlighted._audio.Play(UIEventTypes.Selected, _lastHighlighted._functionToUse);
         _lastHighlighted.SetNotHighlighted();
-        if (_lastSelected != null)
-        {
-            _lastSelected.Disable();
-            _lastSelected.SetNotHighlighted();
-        }
 
         _groupIndex++;
         if (_groupIndex > _homeBranches.Count - 1)
         {
             _groupIndex = 0;
+        }
+        if (_lastSelected != null)
+        {
+            TurnOffLastSelected(_homeBranches[_groupIndex].LastSelected);
+            _lastSelected.Deactivate();
+            _lastSelected.SetNotHighlighted();
         }
         _homeBranches[_groupIndex].TweenOnChange = false;
         _homeBranches[_groupIndex].MoveToNextLevel();
@@ -334,15 +367,36 @@ public class UIMasterController : MonoBehaviour
     private void EndOfBackToHome()
     {
         _homeBranches[_groupIndex].LastHighlighted.SetNotHighlighted();
-        _homeBranches[_groupIndex].LastSelected.Disable();
+        _homeBranches[_groupIndex].LastSelected.Deactivate();
         _homeBranches[_groupIndex].MoveToNextLevel();
     }
 
     private void BackOneLevel()
     {
-        if (_lastSelected._navigation._childBranch.MyCanvas.enabled != true) return;
-        _lastSelected.OnCancel();
-        _lastSelected = _lastSelected.MyBranchController.MyParentController.LastSelected;
+        if (_lastSelected._navigation._childBranch.MoveToNext == MoveNext.AtTweenEnd)
+        {
+            _lastSelected._navigation._childBranch.StartOutTweens(false, () => GoingBackProcess());
+        }
+        else
+        {
+            _lastSelected._navigation._childBranch.StartOutTweens(false);
+            GoingBackProcess();
+        }
+    }
+
+    private void GoingBackProcess()
+    {
+        if (_lastSelected.IsSelected != false)
+        {
+            _lastSelected.OnPointerDown();
+            if (_lastSelected.MyBranchController.DontTurnOff || 
+                _lastSelected._navigation._childBranch.MyBranchType == BranchType.Internal)
+            {
+                _lastSelected.MyBranchController.TweenOnChange = false;
+            }
+            _lastSelected.MyBranchController.MoveToNextLevel();
+            _lastSelected = _lastSelected.MyBranchController.MyParentController.LastSelected;
+        }
     }
 
     public void ClearHomeScreen(UIBranch ignoreBranch)
@@ -354,7 +408,7 @@ public class UIMasterController : MonoBehaviour
         {
             if (branch != ignoreBranch)
             {
-                branch.LastSelected.Disable();
+                branch.LastSelected.Deactivate();
                 branch.MyCanvas.enabled = false;
             }
             branch.LastHighlighted.SetNotHighlighted();

@@ -194,7 +194,10 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             Canceller?.Invoke(_escapeKeyFunction);
             return;
         }
+
+        MyBranchController.SetLastSelected(this);
         SwitchUIDisplay();
+
         if (!_amSlider)
         {
             _navigation._asButtonEvent?.Invoke();
@@ -239,6 +242,8 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (IsDisabled) return;
 
+        MyBranchController.SetLastSelected(this);
+
         if (_isCancelOrBackButton)
         {
             Canceller?.Invoke(_escapeKeyFunction);
@@ -268,10 +273,10 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
         MyBranchController.SetLastHighlighted(this);
 
-        if (_buttonFunction != ButtonFunction.Toggle_NotLinked
-            && _buttonFunction != ButtonFunction.ToggleGroup)
-        {
-            IsSelected = false;
+        //if (_buttonFunction != ButtonFunction.Toggle_NotLinked
+          //  && _buttonFunction != ButtonFunction.ToggleGroup)
+       // {
+            //IsSelected = false;
             if (_highlightFirstOption && MyBranchController.AllowKeys)
             {
                 SetAsHighlighted();
@@ -280,20 +285,22 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             {
                 SetNotHighlighted();
             }
-        }
-        else
-        {
-            if (_highlightFirstOption && MyBranchController.AllowKeys)
-            {
-                SetAsHighlighted();
-            }
-        }
+        //}
+        //else
+        //{
+        //    if (_highlightFirstOption && MyBranchController.AllowKeys)
+        //    {
+        //        Debug.Log("2");
+
+        //        SetAsHighlighted();
+        //    }
+        //}
     }
 
     public void MoveToNext() //Review if can be combined with above or vise versa
     {
         if (!MyBranchController.AllowKeys) return;
-        MyBranchController.LastHighlighted.SetNotHighlighted();
+        //MyBranchController.LastHighlighted.SetNotHighlighted();
         MyBranchController.SetLastHighlighted(this);
         _audio.Play(UIEventTypes.Highlighted, _functionToUse);
         SetAsHighlighted();
@@ -312,7 +319,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
             if (_buttonFunction == ButtonFunction.Toggle_NotLinked) { IsSelected = false; }
 
-            Disable();
+            Deactivate();
             DoPressedAction(UIEventTypes.Cancelled);
 
         }
@@ -330,13 +337,13 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             foreach (var item in _toggleGroupMembers)
             {
                 item.IsSelected = false;
-                item.Disable();
+                item.Deactivate();
                 item.SetNotHighlighted();
             }
         }
     }
 
-    public void Disable()
+    public void Deactivate()
     {
         if (_buttonFunction == ButtonFunction.Switch_NeverHold || _buttonFunction == ButtonFunction.Standard_Hold)
         {
@@ -355,7 +362,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         _swapImageOrText.CycleToggle(IsSelected, _functionToUse);
         _tooltips.HideToolTip(_functionToUse);
         StopAllCoroutines();
-        MyBranchController.SetLastSelected(this);
+        //MyBranchController.SetLastSelected(this);
 
         if (_buttonFunction == ButtonFunction.Switch_NeverHold || _buttonFunction == ButtonFunction.Standard_Hold)
         {
@@ -366,87 +373,116 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    private void TurnOffChildren()//***Not Right
+    private void TurnOffChildren()
     {
         if (_navigation._childBranch && (_functionToUse & Setting.NavigationAndOnClick) != 0)
         {
             if (_navigation._childBranch.MoveToNext == MoveNext.OnClick)
             {
                 _navigation._childBranch.StartOutTweens(false);
+                TurnoffProcess();
+            }
+            else 
+            {
+                _navigation._childBranch.StartOutTweens(false, () => TurnoffProcess());
             }
 
-             if (_navigation._childBranch.LastHighlighted != null)
-            {
-                _navigation._childBranch.LastHighlighted.SetNotHighlighted();
-                _navigation._childBranch.LastSelected.Disable();
-            }
+            // if (_navigation._childBranch.LastHighlighted != null)
+            //{
+            //    _navigation._childBranch.LastHighlighted.SetNotHighlighted();
+            //    _navigation._childBranch.LastSelected.Deactivate();
+            //}
         }
+    }
+
+    private void TurnoffProcess()
+    {
+        _navigation._childBranch.LastHighlighted.SetNotHighlighted();
+        _navigation._childBranch.LastSelected.Deactivate();
     }
 
     private void MoveToChildBranch() //**** Redo - Might neeed to make tweens work
     {
-        if (_navigation._doTween == TweenOnMove.NoTween)
-        {
-           ToBranchProcess();
-           return;
-        }
-
         if (MyBranchController.MoveToNext == MoveNext.AtTweenEnd)
         {
-            if (_navigation._childBranch.ScreenType == ScreenType.ToFullScreen)
-            {
-                MyBranchController.StartOutTweens(true, () => ToFullScreen_AfterTween());
-            }
-            else
-            {
-                MyBranchController.StartOutTweens(true, ()=> ToBranchProcess());
-            }
+            MoveToChildAfterTween();
         }
         else
         {
-            MyBranchController.StartOutTweens(true);
+            MoveToChildOnClick();
+        }
+    }
 
-            if (_navigation._childBranch.ScreenType == ScreenType.ToFullScreen)
+
+    private void MoveToChildAfterTween()
+    {
+        if (_navigation._childBranch.ScreenType == ScreenType.ToFullScreen)
+        {
+            MyBranchController.StartOutTweens(true, () => ToFullScreen_AfterTween());
+        }
+        else if (_navigation._childBranch.ScreenType == ScreenType.Normal)
+        {
+            if (_navigation._childBranch.MyBranchType == BranchType.Internal)
             {
-               ToFullScreen_AfterTween();
+                _navigation._childBranch.MoveToNextLevel(MyBranchController);
             }
             else
             {
-                ToBranchProcess();
+                MyBranchController.StartOutTweens(true, () => ToBranchProcess_AfterTween());
             }
         }
+    }
+
+    private void MoveToChildOnClick()
+    {
+        if (_navigation._childBranch.ScreenType == ScreenType.ToFullScreen)
+        {
+            MyBranchController.StartOutTweens(true, () => ToBranchProcess_OnClick());
+        }
+        _navigation._childBranch.MoveToNextLevel(MyBranchController);
     }
 
     private void ToFullScreen_AfterTween()
     {
         _navigation._childBranch.TurnOffOnMoveToChild(MyBranchController);
-        ToBranchProcess();
+        ToBranchProcess_AfterTween();
     }
 
-    private void ToBranchProcess()
+    private void ToBranchProcess_AfterTween()
     {
-        if (MyBranchController.TurnOffOnMove)  { MyBranchController.MyCanvas.enabled = false; }
+        if (!MyBranchController.DontTurnOff)  { MyBranchController.MyCanvas.enabled = false; }
         _navigation._childBranch.MoveToNextLevel(MyBranchController);
     }
 
-    public void OnCancel()
+    //private void ToFullScreen_OnClick()
+    //{
+    //    if (!MyBranchController.DontTurnOff) { MyBranchController.MyCanvas.enabled = false; }
+    //    _navigation._childBranch.TurnOffOnMoveToChild(MyBranchController);
+    //}
+
+    private void ToBranchProcess_OnClick()
     {
-        _audio.Play(UIEventTypes.Cancelled, _functionToUse);
-        _navigation._childBranch.StartOutTweens(false, () => MoveBackALevel());
+        if (!MyBranchController.DontTurnOff) { MyBranchController.MyCanvas.enabled = false; }
     }
 
-    private void MoveBackALevel() //*****Redo - Check tweens work on move back
-    {
-        if (_navigation._doTween == TweenOnMove.NoTween || MyBranchController.DontTweenOnReturn)
-        {
-            MyBranchController.TweenOnChange = false;
-            MyBranchController.MoveToNextLevel();
-        }
-        else
-        {
-            MyBranchController.MoveToNextLevel();
-        }
-    }
+    //public void OnCancel()
+    //{
+    //    _audio.Play(UIEventTypes.Cancelled, _functionToUse);
+    //    _navigation._childBranch.StartOutTweens(false, () => MoveBackALevel());
+    //}
+
+    //private void MoveBackALevel() //*****Redo - Check tweens work on move back
+    //{
+    //    if (_navigation._doTween == TweenOnMove.NoTween || MyBranchController.DontTweenOnReturn)
+    //    {
+    //        MyBranchController.TweenOnChange = false;
+    //        MyBranchController.MoveToNextLevel();
+    //    }
+    //    else
+    //    {
+    //        MyBranchController.MoveToNextLevel();
+    //    }
+    //}
 
     public void SetAsHighlighted()
     {
@@ -486,12 +522,12 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         _colours.ProcessPress(IsSelected, _functionToUse);
         _audio.Play(uIEventTypes, _functionToUse);
     }
+    //public void HotKeyActivation()
+    //{
+    //    Activate();
+    //    DoPressedAction(UIEventTypes.Selected);
+    //}
 
-    public void HotKeyActivation()
-    {
-        Activate();
-        DoPressedAction(UIEventTypes.Selected);
-    }
 
     public void SetSelected_NoEffects()
     {
@@ -510,7 +546,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     private void HandleIfDisabled(bool value) //TODO Review Code
     {
         MoveCursorToNextFree();
-        Disable();
+        Deactivate();
         ActivateFunctions(UIEventTypes.Normal);
         _isDisabled = value;
 
@@ -537,7 +573,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             }
             else
             {
-                OnCancel();
+                //OnCancel();
                 Debug.Log("No where to go except down");
             }
         }

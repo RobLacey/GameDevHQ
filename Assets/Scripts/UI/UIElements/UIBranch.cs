@@ -18,8 +18,8 @@ public class UIBranch : MonoBehaviour
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [SerializeField] BranchType _branchType = BranchType.StandardUI;
     [SerializeField] ScreenType _screenType = ScreenType.ToFullScreen;
-    [SerializeField] [Label("Don't IN Tween On Return")] [HideIf("IsIndie")] bool _neverInTweenOnReturn;
-    [SerializeField] [HideIf("IsIndie")] bool _turnOff_MoveToChild;
+   // [SerializeField] [Label("Don't IN Tween On Return")] [HideIf("IsIndie")] bool _neverInTweenOnReturn;
+    [SerializeField] [HideIf("IsIndie")] bool _dontTurnOff;
     [SerializeField] [Label("Save Selection On Exit")] [HideIf("IsIndie")] bool _saveExitSelection;
     [SerializeField] [Label("Move To Next Branch...")] MoveNext _moveType = MoveNext.OnClick;
     [SerializeField] [HideIf(EConditionOperator.Or, "IsIndie", "IsHome")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
@@ -74,10 +74,10 @@ public class UIBranch : MonoBehaviour
     public CanvasGroup MyCanvasGroup { get; set; }
     public EscapeKey EscapeKeySetting { get { return _escapeKeyFunction; } }
     public bool TweenOnChange { get; set; } = true;
-    public bool DontTweenOnReturn { get { return _neverInTweenOnReturn; } }
+   // public bool InTweenOnReturn { get { return _neverInTweenOnReturn; } }
     public BranchType MyBranchType { get { return _branchType; } }
     public MoveNext MoveToNext { get { return _moveType; } }
-    public bool TurnOffOnMove { get { return _turnOff_MoveToChild; } } //****Review
+    public bool DontTurnOff { get { return _dontTurnOff; } } //****Review
     public ScreenType ScreenType { get { return _screenType; } } 
 
 
@@ -190,11 +190,6 @@ public class UIBranch : MonoBehaviour
         {
             DontSetAsActive = true;
         }
-
-        if (!_neverInTweenOnReturn)
-        {
-            ActivateINTweens();
-        }
     }
 
     public void SetCurrentBranchAsParent(ScreenType screenType, UIBranch newParentController = null) 
@@ -229,14 +224,14 @@ public class UIBranch : MonoBehaviour
 
         if (movingToChild)
         {
-            _moveToChild = _turnOff_MoveToChild;
+            _moveToChild = !_dontTurnOff;
         }
         else
         {
             _moveToChild = true;
         }
         _UITweener.StopAllCoroutines();
-        MyCanvasGroup.blocksRaycasts = false;
+        //MyCanvasGroup.blocksRaycasts = false;
         _UITweener.DeactivateTweens(() => OutTweenCallback());
     }
 
@@ -299,7 +294,7 @@ public class UIBranch : MonoBehaviour
                     if (_UiMasterController.LastSelected.MyBranchController.ScreenType == ScreenType.ToFullScreen)
                     {
                         _UiMasterController.LastSelected._navigation._childBranch.MyCanvas.enabled = false;
-                        _UiMasterController.LastSelected.Disable();
+                        _UiMasterController.LastSelected.Deactivate();
                         _UiMasterController.LastSelected.MyBranchController
                         .MyParentController.LastSelected._navigation._childBranch.StartOutTweens(false, () => item.OnPointerDown());
                     }
