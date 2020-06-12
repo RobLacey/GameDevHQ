@@ -38,7 +38,7 @@ public enum EffectType { In, Out, Both }
 
 public enum ToggleGroup { None, TG1, TG2, TG3, TG4, TG5 }
 
-public enum EscapeKey { None, BackOneLevel, BackToRootLevel, GlobalSetting }
+public enum EscapeKey { None, BackOneLevel, BackToHome, GlobalSetting }
 
 public enum ButtonFunction { Switch_NeverHold, Standard_Hold, ToggleGroup, Toggle_NotLinked }
 
@@ -98,7 +98,7 @@ public enum ScreenType { Normal, ToFullScreen }
 public enum StartInMenu { InMenu, InGameControl }
 public enum BranchType { HomeScreenUI, StandardUI ,Independent, Internal }
 
-public enum MoveNext { OnClick, AtTweenEnd }
+public enum WhenToMove { OnClick, AtTweenEnd }
 //public enum TweenOnMove
 //{
 //    Tween, NoTween

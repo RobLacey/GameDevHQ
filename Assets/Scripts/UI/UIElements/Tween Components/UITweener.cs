@@ -90,7 +90,6 @@ public class UITweener : MonoBehaviour
     int _counter = 0;
     int _endOfEffectCounter;
     int _startOfEffectCounter;
-    public bool IsRunning { get; set; } = false;              //Use To disable Tween settings as they break when changed during runtime
     bool _effectOnInTween = false;
 
     Action _InTweensCallback;
