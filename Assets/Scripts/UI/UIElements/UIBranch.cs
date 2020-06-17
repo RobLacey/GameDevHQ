@@ -51,7 +51,7 @@ public class UIBranch : MonoBehaviour
     int _groupIndex = 0;
     bool _moveToChild = false;
     Action _onFinishedTrigger;
-    ScreenType _parentsScreenType;
+    UIIndependent _isAnIndieBranch;
 
     //Properties
     public UINode DefaultStartPosition { get { return _userDefinedStartPosition; }
@@ -73,6 +73,7 @@ public class UIBranch : MonoBehaviour
     public bool FromHotkey { get; set; }
     public ScreenType ScreenType { get { return _screenType; } } 
     public UIMasterController UIMaster { get; private set; } 
+    public UIIndependent IsAnIndie { get{ return _isAnIndieBranch; } } 
 
 
     private void Awake()
@@ -110,7 +111,11 @@ public class UIBranch : MonoBehaviour
             _tweenOnHome = true;
         }
         MyCanvasGroup.blocksRaycasts = false;
-        if (_branchType == BranchType.Independent) _escapeKeyFunction = EscapeKey.None;
+        if (_branchType == BranchType.Independent)
+        {
+            _isAnIndieBranch = new UIIndependent(this, FindObjectsOfType<UIBranch>());
+            _escapeKeyFunction = EscapeKey.None;
+        }
     }
 
     private void SetStartPositions()
@@ -155,8 +160,13 @@ public class UIBranch : MonoBehaviour
     {
         MyCanvas.enabled = true;
 
-        if (_parentsScreenType == ScreenType.Normal 
-            && _screenType != ScreenType.ToFullScreen) UIHomeGroup.RestoreHomeScreen(); ;
+        if (MyBranchType == BranchType.Independent) UIMaster.ResetHierachy();
+
+        if (MyBranchType == BranchType.HomeScreenUI && UIMaster.OnHomeScreen == false)
+        {
+            TweenOnChange = TweenOnHome;
+            UIHomeGroup.RestoreHomeScreen();
+        }
 
         if (!_saveExitSelection)
         {
@@ -184,7 +194,6 @@ public class UIBranch : MonoBehaviour
     {
         if (newParentController != null && newParentController.MyBranchType != BranchType.Independent)
         {
-            _parentsScreenType = newParentController.ScreenType;
             MyParentBranch = newParentController;
         }
     }
@@ -253,6 +262,6 @@ public class UIBranch : MonoBehaviour
     [Button]
     public void EnterIndieScreen()
     {
-        HotKeyProcess.HotKeyActivate(this);
+        _isAnIndieBranch.StartIndie();
     }
 }

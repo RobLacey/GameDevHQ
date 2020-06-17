@@ -36,7 +36,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     //Variables
     Slider _amSlider;
-    UIEventTypes _eventType = UIEventTypes.Normal;
+    //UIEventTypes _eventType = UIEventTypes.Normal;
     bool _isDisabled;
     RectTransform _rectForTooltip;
     UIToggles _toggleGroups;
@@ -52,6 +52,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     public UIBranch MyBranch { get; set; }
     public bool IsSelected { get; set; }
     public bool IsCancel { get { return _isCancelOrBackButton; } }
+    public UIBranch ChildBranch { get { return _navigation.Child; } }
     public bool IsDisabled
     {
         get { return _isDisabled; }
@@ -172,24 +173,19 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void OnSubmit(BaseEventData eventData)
     {
-        _navigation.OnEnterOrSelect();
+        _navigation.OnEnterOrSelected();
     }
 
     public void PressedActions()
     {
         if (IsDisabled) return;
-        if (_isCancelOrBackButton)
-        {
-            DoCancel?.Invoke(_escapeKeyFunction);
-            return;
-        }
+        if (_isCancelOrBackButton) { DoCancel?.Invoke(_escapeKeyFunction); return; }
 
         TurnNodeOnOff();
 
         if (!GetSlider)
         {
-            _navigation._asButtonEvent?.Invoke();
-            _navigation._asToggleEvent?.Invoke(IsSelected);
+            _navigation.TriggerEvents();
         }
     }
 
@@ -227,7 +223,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void Deactivate()
     {
-        if (_navigation._childBranch != null && (_enabledFunctions & Setting.NavigationAndOnClick) != 0)
+        if (ChildBranch != null && (_enabledFunctions & Setting.NavigationAndOnClick) != 0)
         {
             IsSelected = false;
             _navigation.TurnOffChildren();
@@ -235,35 +231,88 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
         if (_amSlider) 
         {
-            _navigation._asButtonEvent?.Invoke();
+            _navigation.TriggerEvents();
             _amSlider.interactable = IsSelected;
         }
     }
 
     private void Activate()
     {
-        if(_buttonFunction != ButtonFunction.Switch_NeverHold) IsSelected = true;
-        if (_amSlider) { _amSlider.interactable = IsSelected; }
-
+        if (_amSlider)  { _amSlider.interactable = IsSelected; }
         _tooltips.HideToolTip(_enabledFunctions);
         StopAllCoroutines();
-        MyBranch.SaveLastSelected(this);
 
-        if (_navigation._childBranch && (_enabledFunctions & Setting.NavigationAndOnClick) != 0)
-        {
-            MoveToChildBranch();
+        ActivateLastNodesOutTween();
+
+        if (_buttonFunction != ButtonFunction.Switch_NeverHold) IsSelected = true;
+
+        if (!ChildBranch && MyBranch.MyBranchType == BranchType.Independent)  
+        { 
+            MyBranch.IsAnIndie.RestoreLastPosition(); 
         }
+    }
+
+    private void ActivateLastNodesOutTween()
+    {
+        if (ChildBranch && (_enabledFunctions & Setting.NavigationAndOnClick) != 0)
+        {
+            if (MyBranch.UIMaster.LastSelected.IsSelected && TestBranch())
+            {
+                if (MyBranch.UIMaster.LastSelected.ChildBranch.WhenToMove == WhenToMove.OnClick)
+                {
+                    MyBranch.UIMaster.LastSelected.ChildBranch.OutTweenToParent();
+                    MoveToChildBranch();
+                }
+                else
+                {
+                    MyBranch.UIMaster.LastSelected.ChildBranch.OutTweenToParent(() => MoveToChildBranch());
+                }
+            }
+            else
+            {
+                MoveToChildBranch();
+            }
+        }
+    }
+
+    private bool TestBranch()
+    {
+        foreach (var item in MyBranch.UIMaster.LastSelected.ChildBranch.ThisGroupsUINodes)
+        {
+            if (item == this)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void ProcessIndieData()
+    {
+        if (MyBranch.MyBranchType == BranchType.Independent)
+        {
+            if (ChildBranch.MyBranchType == BranchType.Independent)
+            {
+                ChildBranch.IsAnIndie.PassClearedDetails(MyBranch.IsAnIndie.ClearedScreenData);
+            }
+            else
+            {
+                MyBranch.IsAnIndie.RestoreScreen();
+            }
+        }   
     }
 
     private void MoveToChildBranch()
     {
+        MyBranch.SaveLastSelected(this);
+
         if (MyBranch.WhenToMove == WhenToMove.AtTweenEnd)
         {
-            _navigation.AfterTween();
+            _navigation.MoveAfterTween();
         }
         else
         {
-            _navigation.OnClick();
+            _navigation.MoveOnClick();
         }
     }
 
@@ -293,10 +342,9 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    private void ActivateUIUFunctions(UIEventTypes uIEventTypes)
+    private void ActivateUIUFunctions(UIEventTypes uIEventTypes) //TODO simplify this and move to actual lines
     {
-        _eventType = uIEventTypes;
-        StartFunctions.Invoke(_eventType, IsSelected, _enabledFunctions);
+        StartFunctions.Invoke(uIEventTypes, IsSelected, _enabledFunctions);
     }
 
     private void DoPressedAction()

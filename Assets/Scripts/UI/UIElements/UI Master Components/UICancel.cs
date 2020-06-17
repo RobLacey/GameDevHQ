@@ -4,36 +4,20 @@ using UnityEngine;
 
 public static class UICancel
 {
-    private static List<UIBranch> homeGroup;
-    private static UINode lastSelected;
-    private static UIMasterController myMaster;
-    private static int groupIndex;
+    public static List<UIBranch> homeGroup;
+    public static UIMasterController myMaster;
 
-    public static void Cancel(UIMasterController master, UINode lastNode, List<UIBranch> group, int index) //Cancel Class
+    public static void Cancel() //Cancel Class
     {
-        lastSelected = lastNode;
-        groupIndex = index;
-        homeGroup = group;
-        myMaster = master;
-
-        if (lastSelected._navigation._childBranch != null
-            && lastSelected._navigation._childBranch.MyCanvas.enabled != false)
+        if (myMaster.LastSelected.ChildBranch != null
+            && myMaster.LastSelected.ChildBranch.MyCanvas.enabled != false)
         {
-            OnCancel(lastSelected._navigation._childBranch.EscapeKeySetting);
-        }
-        else
-        {
-            OnCancel(lastSelected.MyBranch.EscapeKeySetting);
+            OnCancel(myMaster.LastSelected.ChildBranch.EscapeKeySetting);
         }
     }
 
-    public static void CancelOrBackButton(EscapeKey escapeKey, UIMasterController master, UINode lastNode, List<UIBranch> group, int index)
+    public static void CancelOrBackButton(EscapeKey escapeKey)
     {
-        lastSelected = lastNode;
-        groupIndex = index;
-        homeGroup = group;
-        myMaster = master;
-
         OnCancel(escapeKey);
     }
 
@@ -41,9 +25,9 @@ public static class UICancel
     {
         if (escapeKey == EscapeKey.BackOneLevel)
         {
-            if (lastSelected._navigation._childBranch == null)
+            if (myMaster.LastSelected.ChildBranch == null)
             {
-                myMaster.LastSelected = lastSelected.MyBranch.MyParentBranch.LastSelected;
+                myMaster.LastSelected = myMaster.LastSelected.MyBranch.MyParentBranch.LastSelected;
             }
             EscapeButtonProcess(() => BackOneLevel());
         }
@@ -60,47 +44,44 @@ public static class UICancel
 
     private static void EscapeButtonProcess(Action endAction) 
     {
-        if (lastSelected._navigation._childBranch.WhenToMove == WhenToMove.AtTweenEnd)
+        if (myMaster.LastSelected.ChildBranch.WhenToMove == WhenToMove.AtTweenEnd)
         {
-            lastSelected._navigation._childBranch.OutTweenToParent(() => endAction.Invoke());
-            lastSelected._audio.Play(UIEventTypes.Cancelled, lastSelected._enabledFunctions);
+            myMaster.LastSelected.ChildBranch.OutTweenToParent(() => endAction.Invoke());
+            myMaster.LastSelected._audio.Play(UIEventTypes.Cancelled, myMaster.LastSelected._enabledFunctions);
         }
         else
         {
-            lastSelected._navigation._childBranch.OutTweenToParent();
-            lastSelected._audio.Play(UIEventTypes.Cancelled, lastSelected._enabledFunctions);
+            myMaster.LastSelected.ChildBranch.OutTweenToParent();
+            myMaster.LastSelected._audio.Play(UIEventTypes.Cancelled, myMaster.LastSelected._enabledFunctions);
             endAction.Invoke();
         }
     }
 
     private static void BackToHome()
     {
-        homeGroup[groupIndex].LastHighlighted.SetNotHighlighted();
+        int index = myMaster.GroupIndex;
 
-        if (homeGroup[groupIndex].LastSelected)
+        homeGroup[index].LastHighlighted.SetNotHighlighted();
+
+        if (homeGroup[index].LastSelected)
         {
-            homeGroup[groupIndex].LastSelected.Deactivate();
+            homeGroup[index].LastSelected.Deactivate();
         }
 
-        myMaster.LastSelected = homeGroup[groupIndex].LastSelected;
-
-        if (!homeGroup[groupIndex].LastSelected.MyBranch.TweenOnHome) 
-            homeGroup[groupIndex].LastSelected.MyBranch.TweenOnChange = false;
-
-        homeGroup[groupIndex].MoveToNextLevel();
+        myMaster.LastSelected = homeGroup[index].LastSelected;
+        homeGroup[index].MoveToNextLevel();
     }
 
     private static void BackOneLevel()
     {
+        UINode lastSelected = myMaster.LastSelected;
+
         if (lastSelected.IsSelected != false)
         {
             lastSelected.PressedActions();
             lastSelected.SetNotHighlighted();
-            if (lastSelected.MyBranch.DontTurnOff ||
-                lastSelected._navigation._childBranch.MyBranchType == BranchType.Internal ||
-                !lastSelected.MyBranch.TweenOnHome)
+            if (lastSelected.MyBranch.DontTurnOff || lastSelected.ChildBranch.MyBranchType == BranchType.Internal)
             {
-
                 lastSelected.MyBranch.TweenOnChange = false;
             }
             lastSelected.MyBranch.MoveToNextLevel();

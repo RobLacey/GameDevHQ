@@ -2830,6 +2830,11 @@ PrefabInstance:
       propertyPath: _navigation._moveAfter
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _enabledFunctions
+      value: 67
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3688934388505339738, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
@@ -3455,6 +3460,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _testThisOne
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _enabledFunctions
+      value: 67
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3688934388505339738, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
@@ -8470,12 +8480,12 @@ PrefabInstance:
     - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: _posTween._easeIn
-      value: 15
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: _posTween._easeOut
-      value: 14
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
@@ -8485,7 +8495,7 @@ PrefabInstance:
     - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._buildNextAfterDelay
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
@@ -9155,7 +9165,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _navigation._childBranch
       value: 
-      objectReference: {fileID: 272096970}
+      objectReference: {fileID: 1743252783}
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: _audio._sound_Highlighted
@@ -9195,6 +9205,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _navigation._moveAfter
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _enabledFunctions
+      value: 67
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3688934388505339738, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
@@ -9618,7 +9633,7 @@ PrefabInstance:
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: _escapeKeyFunction
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
@@ -11890,6 +11905,11 @@ PrefabInstance:
       propertyPath: _testThisOne
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _enabledFunctions
+      value: 67
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14014,6 +14034,11 @@ PrefabInstance:
       propertyPath: _testThisOne
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _enabledFunctions
+      value: 67
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -15736,6 +15761,11 @@ PrefabInstance:
       propertyPath: _navigation._asButtonEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 7472274104007262572, guid: 889858f9542a04a41801cc9b56665611,
+        type: 3}
+      propertyPath: _enabledFunctions
+      value: 67
+      objectReference: {fileID: 0}
     - target: {fileID: 7472274104007262574, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -16909,6 +16939,11 @@ PrefabInstance:
       propertyPath: _isCancelOrBackButton
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _enabledFunctions
+      value: 67
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3688934388505339738, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
@@ -17067,6 +17102,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _testThisOne
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _enabledFunctions
+      value: 67
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
@@ -19394,6 +19434,11 @@ PrefabInstance:
       propertyPath: _functionToUse
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _enabledFunctions
+      value: 65
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3688934388505339738, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
@@ -19959,7 +20004,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 2
-  _screenType: 1
+  _screenType: 0
   _dontTurnOff: 0
   _tweenOnHome: 0
   _saveExitSelection: 0
@@ -20481,6 +20526,16 @@ PrefabInstance:
     - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: _posTween._easeOut
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _posTween._inTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _posTween._outTime
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
@@ -21951,7 +22006,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _navigation._childBranch
       value: 
-      objectReference: {fileID: 2054211502}
+      objectReference: {fileID: 0}
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: _navigation._asButtonEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
@@ -22017,6 +22072,11 @@ PrefabInstance:
       propertyPath: _navigation._asButtonEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
       value: 
       objectReference: {fileID: 2054211502}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _enabledFunctions
+      value: 67
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3688934388505339738, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
@@ -22450,6 +22510,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _testThisOne
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _enabledFunctions
+      value: 67
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
@@ -23113,7 +23178,7 @@ PrefabInstance:
     - target: {fileID: 7472274104007262575, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
       propertyPath: m_Name
-      value: Standard Button
+      value: Background
       objectReference: {fileID: 0}
     - target: {fileID: 7472274104923999175, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
@@ -24565,7 +24630,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _navigation._childBranch
       value: 
-      objectReference: {fileID: 2054211502}
+      objectReference: {fileID: 0}
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: _navigation._asButtonEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
@@ -24631,6 +24696,11 @@ PrefabInstance:
       propertyPath: _navigation._asButtonEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
       value: 
       objectReference: {fileID: 2054211502}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _enabledFunctions
+      value: 67
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3688934388505339738, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
@@ -26095,6 +26165,16 @@ PrefabInstance:
       propertyPath: _hotKeySettings.Array.data[3]._UIBranch
       value: 
       objectReference: {fileID: 1154447021}
+    - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[4]._hotkeyAxis
+      value: Hotkey 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[4]._UIBranch
+      value: 
+      objectReference: {fileID: 620683490}
     - target: {fileID: 4421614741907461036, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _onScreenAtStart

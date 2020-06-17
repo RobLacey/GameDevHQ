@@ -20,7 +20,7 @@ public class UIMasterController : MonoBehaviour
     [SerializeField] [ShowIf("_inGameMenuSystem")] [Label("Switch To/From Game Menus")] [InputAxis] string _switchTOMenusButton;
     [SerializeField] [ShowIf("_inGameMenuSystem")] InGameOrInMenu _returnToGameControl;
     [SerializeField] [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")] List<UIBranch> _homeBranches;
-    [SerializeField] [ReorderableList] List<HotKeys> _hotKeySettings;
+    [SerializeField] [ReorderableList] [Label("Hotkeys (CAN'T have Independents as Hotkeys)")] List<HotKeys> _hotKeySettings;
 
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
@@ -41,6 +41,7 @@ public class UIMasterController : MonoBehaviour
     public EscapeKey GlobalEscape { get { return _GlobalEscapeKeyFunction;} }
     public UINode LastSelected { get; set; }
     public bool OnHomeScreen { get; set; } = false;
+    public int GroupIndex { get { return _groupIndex; } }
 
     [Serializable]
     public class GroupList
@@ -102,6 +103,9 @@ public class UIMasterController : MonoBehaviour
         _mousePos = Input.mousePosition;
         UIHomeGroup.homeGroup = _homeBranches;
         UIHomeGroup.uIMaster = this;
+        UICancel.homeGroup = _homeBranches;
+        UICancel.myMaster = this;
+        HotKeyProcess.UIMaster = this;
         OnHomeScreen = true;
         IntroAnimations();
 
@@ -166,11 +170,12 @@ public class UIMasterController : MonoBehaviour
                 if (ActiveBranch.FromHotkey)
                 {
                     ActiveBranch.FromHotkey = false;
+                    LastSelected.SetNotSelected_NoEffects();
                     CancelOrBack(EscapeKey.BackToHome);
                 }
                 else
                 {
-                    UICancel.Cancel(this, LastSelected, _homeBranches, _groupIndex);
+                    UICancel.Cancel();
                 }
             }
             else if (Input.GetButtonDown(_branchSwitchButton))
@@ -205,7 +210,14 @@ public class UIMasterController : MonoBehaviour
 
     private void CancelOrBack(EscapeKey escapeKey)
     {
-        UICancel.CancelOrBackButton(escapeKey, this, LastSelected, _homeBranches, _groupIndex);
+        if (ActiveBranch.FromHotkey)
+        {
+            ActiveBranch.FromHotkey = false;
+            LastSelected.SetNotSelected_NoEffects();
+            escapeKey = EscapeKey.BackToHome;
+        }
+
+        UICancel.CancelOrBackButton(escapeKey);
     }
 
     public void SetLastSelected(UINode node)
@@ -222,9 +234,9 @@ public class UIMasterController : MonoBehaviour
                 }
                 else
                 {
-                    if (LastSelected._navigation._childBranch != null)
+                    if (LastSelected.ChildBranch != null)
                     {
-                        if (LastSelected._navigation._childBranch.MyBranchType == BranchType.Internal)
+                        if (LastSelected.ChildBranch.MyBranchType == BranchType.Internal)
                         {
                             LastSelected.SetNotHighlighted();
                             LastSelected.PressedActions();
@@ -262,7 +274,7 @@ public class UIMasterController : MonoBehaviour
         ActiveBranch = _lastHighlighted.MyBranch;
         if (OnHomeScreen)
         {
-            _groupIndex = UIHomeGroup.SetHomeGroupIndex(_lastHighlighted.MyBranch, _homeBranches, _groupIndex);
+            UIHomeGroup.SetHomeGroupIndex(_lastHighlighted.MyBranch, ref _groupIndex);
         }
         EventSystem.current.SetSelectedGameObject(_lastHighlighted.gameObject);
     }
@@ -270,7 +282,7 @@ public class UIMasterController : MonoBehaviour
     private void SwitchHomeGroups()
     {
         _lastHighlighted._audio.Play(UIEventTypes.Selected, _lastHighlighted._enabledFunctions);
-        _groupIndex = UIHomeGroup.SwitchHomeGroups(_homeBranches, _groupIndex);
+        UIHomeGroup.SwitchHomeGroups(ref _groupIndex);
     }
 
     private void ActivateMouse()
@@ -324,4 +336,16 @@ public class UIMasterController : MonoBehaviour
             _returnToGameControl.Invoke(InMenu);
         }    
     }
+
+    public void ResetHierachy()
+    {
+        UINode thisNode = LastSelected;
+
+        while (thisNode.IsSelected == true)
+        {
+            thisNode.SetNotSelected_NoEffects();
+            thisNode = thisNode.MyBranch.MyParentBranch.LastSelected;
+        }
+    }
+
 }

@@ -6,7 +6,7 @@ public static class UIHomeGroup
     public static List<UIBranch> homeGroup;
     public static UIMasterController uIMaster;
 
-    public static int SwitchHomeGroups(List<UIBranch> homeGroup, int index)
+    public static void SwitchHomeGroups(ref int index)
     {
         homeGroup[index].LastSelected.Deactivate();
         homeGroup[index].LastSelected.SetNotHighlighted();
@@ -18,19 +18,17 @@ public static class UIHomeGroup
         }
         homeGroup[index].TweenOnChange = false;
         homeGroup[index].MoveToNextLevel();
-        return index;
     }
 
-    public static int SetHomeGroupIndex(UIBranch uIBranch, List<UIBranch> homeGroup, int index)
+    public static void SetHomeGroupIndex(UIBranch uIBranch, ref int index)
     {
         for (int i = 0; i < homeGroup.Count; i++)
         {
             if (homeGroup[i] == uIBranch)
             {
-                return i;
+                index = i;
             }
         }
-        return index;
     }
 
     public static void ClearHomeScreen(UIBranch ignoreBranch)
@@ -60,5 +58,4 @@ public static class UIHomeGroup
             }
         }
     }
-
 }

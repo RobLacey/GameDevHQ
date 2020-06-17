@@ -4,9 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 using DG.Tweening;
+using System;
 
 [System.Serializable]
-public class UIColour
+public class UIColour 
 {
     [SerializeField] [EnumFlags] EventType _coloursToUse;
     [SerializeField] [EnumFlags] TweenColours _addTweenTo;
@@ -26,6 +27,7 @@ public class UIColour
     Color _normalColour = Color.white;
     Setting _mySetting = Setting.Colours;
     int _id;
+
     public bool NoSettings { get; set; } 
 
     public void OnAwake(int objectId)
