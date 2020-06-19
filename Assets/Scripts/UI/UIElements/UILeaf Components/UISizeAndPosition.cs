@@ -25,6 +25,7 @@ public class UISizeAndPosition
     [SerializeField] [AllowNesting] [ShowIf("IsScaleTween")] Vector3 _scaleBy;
     [SerializeField] [AllowNesting] [ShowIf("IsTween")] float _time;
     [SerializeField] [AllowNesting] [ShowIf("IsTween")] Ease _ease;
+    [SerializeField] [AllowNesting] [ShowIf("CantLoop")] bool _loop;
     [SerializeField] [AllowNesting] [ShowIf("IsPositionTween")] bool _snapping;
 
     //Variables
@@ -33,7 +34,6 @@ public class UISizeAndPosition
     Vector3 _startSize;
     Vector3 _startPosition;
     Setting _mySettings = Setting.SizeAndPosition;
-    Tween _currentTween;
     int _id;
 
 
@@ -49,6 +49,16 @@ public class UISizeAndPosition
     public bool IsTween() {  return _scaledType == ScaleType.PositionTween || _scaledType == ScaleType.ScaleTween && _ChangeSizeOn != Choose.None; }
     public bool IsPositionTween() { return _scaledType == ScaleType.PositionTween && _ChangeSizeOn != Choose.None; ; }
     public bool IsScaleTween() { return _scaledType == ScaleType.ScaleTween && _ChangeSizeOn != Choose.None; ; }
+
+    public bool CantLoop() 
+    { 
+        if(_ChangeSizeOn == Choose.HighlightedAndSelected || _ChangeSizeOn == Choose.Pressed)
+        {
+            _loop = false;
+        }
+        return _ChangeSizeOn != Choose.HighlightedAndSelected && _ChangeSizeOn != Choose.Pressed; 
+    }
+
     #endregion
 
     public Action<UIEventTypes, bool, Setting> OnAwake(Transform newTransform)
@@ -74,89 +84,44 @@ public class UISizeAndPosition
 
         else if (_ChangeSizeOn == Choose.HighlightedAndSelected)
         {
-            ProcessHighlighedAndSelected(uIEventTypes, Selected);
+            ProcessHighlighedAndSelected(uIEventTypes);
         }
         else if (uIEventTypes == UIEventTypes.Highlighted && _ChangeSizeOn == Choose.Highlighted)
         {
             ProcessHighlighted();
         }
         else if (uIEventTypes == UIEventTypes.Selected && _ChangeSizeOn == Choose.Selected)
-        {
-            ProcessSelected(Selected);
+       {
+            return;
         }
         else if (uIEventTypes == UIEventTypes.Normal || uIEventTypes == UIEventTypes.Selected)
         {
-            if (_scaledType == ScaleType.ScalePunch || _scaledType == ScaleType.ScaleShake) return;
-
-            if (_scaledType == ScaleType.PositionTween)
-            {
-               MovePositionTo(false);
-            }
-            else
-            {
-                ScaleTo(false);
-            }
+            ResetTween();
         }
     }
 
-    private void ProcessHighlighedAndSelected(UIEventTypes uIEventTypes, bool Selected)
+    private void ResetTween()
     {
-        if (Selected)
+        if (_scaledType == ScaleType.PositionTween)
         {
-            if (uIEventTypes == UIEventTypes.Selected)
-            {
-                ProcessSelected(Selected);
-            }
-            else if (uIEventTypes == UIEventTypes.Highlighted)
-            {
-                ProcessHighlighted();
-            }
+            MovePositionTo(false);
         }
         else
         {
-            if (uIEventTypes == UIEventTypes.Highlighted)
-            {
-                ProcessHighlighted();            }
-
-            if (uIEventTypes == UIEventTypes.Normal)
-            {
-                if (_scaledType == ScaleType.PositionTween)
-                {
-                    MovePositionTo(false);
-                }
-                else 
-                {
-                    ScaleTo(false);
-                }
-            }
+            ScaleTo(false);
         }
     }
 
-    private void ProcessSelected(bool Selected)
+    private void ProcessHighlighedAndSelected(UIEventTypes uIEventTypes)
     {
-        if (_scaledType == ScaleType.ScalePunch || _scaledType == ScaleType.ScaleShake) return;
-
-        if (Selected)
+        if (uIEventTypes == UIEventTypes.Highlighted)
         {
-            if (_scaledType == ScaleType.PositionTween)
-            {
-                MovePositionTo(true);
-            }
-            else
-            {
-                ScaleTo(true);
-            }
+            ProcessHighlighted();            
         }
-        else
+
+        if (uIEventTypes == UIEventTypes.Normal)
         {
-            if (_scaledType == ScaleType.PositionTween)
-            {
-                MovePositionTo(false);
-            }
-            else
-            {
-                ScaleTo(false);
-            }
+            ResetTween();
         }
     }
 
@@ -164,7 +129,7 @@ public class UISizeAndPosition
     {
         if (_scaledType == ScaleType.ScalePunch || _scaledType == ScaleType.ScaleShake)
         {
-            PunchOrShake();
+            PunchOrShake(true);
         }
         else if (_scaledType == ScaleType.PositionTween)
         {
@@ -176,75 +141,100 @@ public class UISizeAndPosition
         }
     }
 
+    public void WhenPressed(Setting settingsToCheck, bool IsSelected)
+    {
+        if ((settingsToCheck & _mySettings) != 0)
+        {
+            if (_scaledType == ScaleType.ScalePunch || _scaledType == ScaleType.ScaleShake)
+            {
+                if (_ChangeSizeOn != Choose.Highlighted)
+                {
+                    PunchOrShake(true); 
+                }
+            }
+
+            if (_scaledType == ScaleType.PositionTween)
+            {
+                if (_ChangeSizeOn == Choose.Pressed)
+                {
+                    DoPositionTween(_startPosition + _pixelsToMoveBy, 2);
+                }
+                else if (_ChangeSizeOn == Choose.Selected || _ChangeSizeOn == Choose.HighlightedAndSelected)
+                {
+                    MovePositionTo(IsSelected);
+                }
+            }
+
+            if (_scaledType == ScaleType.ScaleTween)
+                {
+                if (_ChangeSizeOn == Choose.Pressed)
+                {
+                    DoScaleTween(_startSize + _scaleBy, 2);
+                }
+                else if (_ChangeSizeOn == Choose.Selected)
+                {
+                    ScaleTo(IsSelected);
+                }
+            }
+        }
+    }
+
     private void MovePositionTo(bool moveOut)
     {
         DOTween.Kill("position" + _id);
+        int loopingCycles = _loop ? -1 : 0;
+
         if (moveOut)
         {
             Vector3 targetPos = _startPosition + _pixelsToMoveBy;
-            DoPositionTween(targetPos);
+            DoPositionTween(targetPos, loopingCycles);
         }
         else
         {
             Vector3 targetPos = _startPosition;
-            DoPositionTween(targetPos);
+            DoPositionTween(targetPos, 0);
         }
     }
 
     private void ScaleTo(bool moveOut)
     {
         DOTween.Kill("scale" + _id);
+        int loopingCycles = _loop ? -1 : 0;
+
         if (moveOut)
         {
             Vector3 targetPos = _startSize + _scaleBy;
-            DoScaleTween(targetPos);
+            DoScaleTween(targetPos, loopingCycles);
         }
         else
         {
             Vector3 targetPos = _startSize;
-            DoScaleTween(targetPos);
+            DoScaleTween(targetPos, 0);
         }
     }
 
-    public IEnumerator PressedSequence(Setting settingsToCheck)
+
+    private void PunchOrShake(bool active)
     {
-        if ((settingsToCheck & _mySettings) != 0)
+        if (!active)
         {
-            if (_scaledType == ScaleType.ScalePunch || _scaledType == ScaleType.ScaleShake)
-            {
-                if (_ChangeSizeOn == Choose.Pressed || _ChangeSizeOn == Choose.Selected || _ChangeSizeOn == Choose.HighlightedAndSelected)
-                {
-                    PunchOrShake();
-                }
-            }
-            else if (_ChangeSizeOn == Choose.Pressed)
-            {
-                if (_scaledType == ScaleType.PositionTween)
-                {
-                    DoPositionTween(_startPosition + _pixelsToMoveBy);
-                    yield return _currentTween.WaitForCompletion();
-                    DoPositionTween(_startPosition);
-                }
-                if (_scaledType == ScaleType.ScaleTween)
-                {
-                    DoScaleTween(_startSize + _scaleBy);
-                    yield return _currentTween.WaitForCompletion();
-                    DoScaleTween(_startSize);
-                }
-            }
+            DOTween.Kill("punch" + _id);
+            DOTween.Kill("shake" + _id);
+            return;
         }
-        else { yield return null; }
-    }
 
-    private void PunchOrShake()
-    {
+        int loopTime = 0;
+        if (_loop)  { loopTime = -1; }
+
         if (_scaledType == ScaleType.ScalePunch)
         {
+            Debug.Log("Here");
             DOTween.Kill("punch" + _id);
             _myTransform.localScale = _startSize;
             Vector3 scaleBy = new Vector3(_punchScaleByX, _punchScaleByY, 0);
             _myTransform.DOPunchScale(scaleBy, _punchTime, _punchvibrato, _elastisity)
                                       .SetId("punch" + _id)
+                                      .SetLoops(loopTime, LoopType.Yoyo)
                                       .SetAutoKill(true)
                                       .Play();
         }
@@ -256,24 +246,27 @@ public class UISizeAndPosition
             Vector3 scaleBy = new Vector3(_shakeScaleByX, _shakeScaleByY, 0);
             _myTransform.DOShakeScale(_shakeTime, scaleBy, _shakeVibrato, _shakeRandomness, _fadeOut)
                                       .SetId("shake" + _id)
+                                      .SetLoops(loopTime, LoopType.Yoyo)
                                       .SetAutoKill(true)
                                       .Play();
         }
     }
 
-    private void DoPositionTween (Vector3 target)
+    private void DoPositionTween (Vector3 target, int loop)
     {
         _myRect.DOAnchorPos3D(target, _time, _snapping)
                                 .SetId("position" + _id)
+                                .SetLoops(loop, LoopType.Yoyo)
                                 .SetEase(_ease)
                                 .SetAutoKill(true)
                                 .Play();
     }
 
-    private void DoScaleTween (Vector3 target)
+    private void DoScaleTween (Vector3 target, int loop)
     {
         _myRect.DOScale(target, _time)
                                 .SetId("scale" + _id)
+                                .SetLoops(loop, LoopType.Yoyo)
                                 .SetEase(_ease)
                                 .SetAutoKill(true)
                                 .Play();

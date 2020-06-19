@@ -1,30 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public static class UIHomeGroup 
 {
-    public static List<UIBranch> homeGroup;
-    public static UIMasterController uIMaster;
+    public static List<UIBranch> _homeGroup;
+    public static List<UIBranch> _popUps = new List<UIBranch>();
+    public static UIBranch[] _allBranches;
+    public static UIHub _myUIHub;
 
     public static void SwitchHomeGroups(ref int index)
     {
-        homeGroup[index].LastSelected.Deactivate();
-        homeGroup[index].LastSelected.SetNotHighlighted();
+        _homeGroup[index].LastSelected.Deactivate();
+        _homeGroup[index].LastHighlighted.SetNotHighlighted();
 
         index++;
-        if (index > homeGroup.Count - 1)
+        if (index > _homeGroup.Count - 1)
         {
             index = 0;
         }
-        homeGroup[index].TweenOnChange = false;
-        homeGroup[index].MoveToNextLevel();
+        _homeGroup[index].TweenOnChange = false;
+        if (_homeGroup[index].LastSelected.Function == ButtonFunction.HoverToActivate && _homeGroup[index].AllowKeys)
+        {
+            _homeGroup[index].LastSelected.PressedActions();
+        }
+        else
+        {
+            _homeGroup[index].MoveToNextLevel();
+        }
+
     }
 
     public static void SetHomeGroupIndex(UIBranch uIBranch, ref int index)
     {
-        for (int i = 0; i < homeGroup.Count; i++)
+        for (int i = 0; i < _homeGroup.Count; i++)
         {
-            if (homeGroup[i] == uIBranch)
+            if (_homeGroup[i] == uIBranch)
             {
                 index = i;
             }
@@ -33,29 +44,45 @@ public static class UIHomeGroup
 
     public static void ClearHomeScreen(UIBranch ignoreBranch)
     {
-        if (!uIMaster.OnHomeScreen) return;
-        uIMaster.OnHomeScreen = false;
+        if (!_myUIHub.OnHomeScreen) return;
+        _myUIHub.OnHomeScreen = false;
 
-        foreach (var branch in homeGroup)
+        foreach (var item in _allBranches)
         {
-            if (branch != ignoreBranch)
+            if (item == ignoreBranch) continue;
+
+            if (item.MyBranchType != BranchType.PopUp && item.MyCanvas.enabled)
             {
-                branch.LastSelected.Deactivate();
-                branch.MyCanvas.enabled = false;
+                item.MyCanvas.enabled = false;
             }
-            branch.LastHighlighted.SetNotHighlighted();
+        }
+
+        foreach (var item in _popUps)
+        {
+            if (!item.RetainPopups)
+            {
+                item.MyCanvas.enabled = false;
+            }
         }
     }
 
     public static void RestoreHomeScreen()
     {
-        if (!uIMaster.OnHomeScreen)
+        if (!_myUIHub.OnHomeScreen)
         {
-            foreach (var item in homeGroup)
+            foreach (var item in _homeGroup)
             {
-                uIMaster.OnHomeScreen = true;
-                item.ResetHomeScreenBranch(uIMaster.LastSelected.MyBranch);
+                _myUIHub.OnHomeScreen = true;
+                item.ResetHomeScreenBranch(_myUIHub.LastSelected.MyBranch);
             }
+        }
+    }
+
+    public static void ClearAllPopUpsRegardless()
+    {
+        foreach (var item in _popUps)
+        {
+            item.MyCanvas.enabled = false;
         }
     }
 }

@@ -4,21 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 using DG.Tweening;
-using System;
 
 [System.Serializable]
 public class UIColour 
 {
-    [SerializeField] [EnumFlags] EventType _coloursToUse;
-    [SerializeField] [EnumFlags] TweenColours _addTweenTo;
-    [SerializeField] [Range(0,2)] float _tweenTime = 0.4f;
-    [SerializeField] [Range(0.5f, 2f)] float _selectedHighlightPerc = 1f;
-    [SerializeField] [Range(0, 0.5f)] float _flashTime = 0.1f;
-    [Header("Colours", order = 0)]
-    [SerializeField] Color _disabled = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-    [SerializeField] Color _selected = Color.white;
-    [SerializeField] Color _highlighted = Color.white;
-    [SerializeField] Color _pressedFlash = Color.white;
+    [SerializeField] [AllowNesting] [Label("Colour Scheme")] ColourScheme _scheme;
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [SerializeField] [Header("UI Elements To Use (MUST Assign at Least One)", order = 0)] Text _textElements;
     [SerializeField] Image[] _imageElements;
@@ -27,6 +17,11 @@ public class UIColour
     Color _normalColour = Color.white;
     Setting _mySetting = Setting.Colours;
     int _id;
+
+    public bool UsingColourScheme()
+    {
+        return _scheme;
+    }
 
     public bool NoSettings { get; set; } 
 
@@ -50,73 +45,55 @@ public class UIColour
 
     public void SetColourOnEnter(bool isSelected, Setting setting)
     {
-        if (!((setting & _mySetting) != 0)) return;
+        if (EffectNotSet(setting) || _scheme == null) return;
 
-        if ((_coloursToUse & EventType.Highlighted) !=0)
+        if ((_scheme.ColourSettings & EventType.Highlighted) !=0)
         {
-            if ((_coloursToUse & EventType.Selected) != 0 && isSelected)
+            if ((_scheme.ColourSettings & EventType.Selected) != 0 && isSelected)
             {
-                ColourChangesProcesses(SelectedHighlight(), _tweenTime);
+                ColourChangesProcesses(SelectedHighlight(), _scheme.TweenTime);
             }
             else
             {
-                ColourChangesProcesses(_highlighted, _tweenTime);
+                ColourChangesProcesses(_scheme.HighlightedColour, _scheme.TweenTime);
             }
         }    
     }
 
     public void SetColourOnExit(bool isSelected, Setting setting)
     {
-        if (!((setting & _mySetting) != 0)) return;
+        if (EffectNotSet(setting) || _scheme == null) return;
 
-        if ((_coloursToUse & EventType.Selected) == 0 || !isSelected)
+        if ((_scheme.ColourSettings & EventType.Selected) == 0 || !isSelected)
         {
-            ColourChangesProcesses(_normalColour, _tweenTime);
+            ColourChangesProcesses(_normalColour, _scheme.TweenTime);
         }
 
-        if ((_coloursToUse & EventType.Selected) != 0 && isSelected)
+        if ((_scheme.ColourSettings & EventType.Selected) != 0 && isSelected)
         {
-            ColourChangesProcesses(_selected, _tweenTime);
+            ColourChangesProcesses(_scheme.SelectedColour, _scheme.TweenTime);
         }
     }
 
     public void ResetToNormal(Setting setting)
     {
-        if (!((setting & _mySetting) != 0)) return;
-        ColourChangesProcesses(_normalColour, _tweenTime);
+        if (EffectNotSet(setting) || _scheme == null) return;
+        ColourChangesProcesses(_normalColour, _scheme.TweenTime);
     }
 
     public void ProcessPress(bool isSelected, Setting setting)
     {
-        if (!((setting & _mySetting) != 0)) return;
+        if (EffectNotSet(setting) || _scheme == null) return;
 
-        if ((_coloursToUse & EventType.Pressed) != 0)
+        if ((_scheme.ColourSettings & EventType.Pressed) != 0)
         {
             if (isSelected)
             {
-                if ((_coloursToUse & EventType.Selected) != 0)
-                {
-                    ColourChangesProcesses(_pressedFlash, _flashTime, ()=> ColourChangesProcesses(_selected, _flashTime));
-                }
-                else if((_coloursToUse & EventType.Highlighted) != 0)
-                {
-                    ColourChangesProcesses(_pressedFlash, _flashTime, () => ColourChangesProcesses(_highlighted, _flashTime));
-                }
-                else
-                {
-                    ColourChangesProcesses(_pressedFlash, _flashTime, () => ColourChangesProcesses(_normalColour, _flashTime));
-                }
+                PressedEffect_IsSelected();
             }
             else
             {
-                if ((_coloursToUse & EventType.Highlighted) != 0)
-                {
-                    ColourChangesProcesses(_pressedFlash, _flashTime, () => ColourChangesProcesses(_highlighted, _flashTime));
-                }
-                else
-                {
-                    ColourChangesProcesses(_pressedFlash, _flashTime, () => ColourChangesProcesses(_normalColour, _flashTime));
-                }
+                PressedEffect_NotSelected();
             }
         }
         else
@@ -125,83 +102,107 @@ public class UIColour
         }
     }
 
-    private void SetAsSelected(bool isSelected)
+    private void PressedEffect_NotSelected()
     {
-        if ((_coloursToUse & EventType.Selected) != 0)
-        {
-            if (isSelected)
-            {
-                ColourChangesProcesses(_selected, _tweenTime);
-            }
+        Color flashtoo;
 
-            if (!isSelected)
+        if ((_scheme.ColourSettings & EventType.Highlighted) != 0)
+        {
+            flashtoo = _scheme.HighlightedColour;
+        }
+        else
+        {
+            flashtoo = _normalColour;
+        }
+
+        ColourChangesProcesses(_scheme.PressedColour, _scheme.FlashTime,
+                                () => ColourChangesProcesses(flashtoo, _scheme.FlashTime));
+    }
+
+    private void PressedEffect_IsSelected()
+    {
+        Color flashtoo;
+
+        if ((_scheme.ColourSettings & EventType.Selected) != 0)
+        {
+            flashtoo = _scheme.SelectedColour;
+        }
+        else if ((_scheme.ColourSettings & EventType.Highlighted) != 0)
+        {
+            flashtoo = _scheme.HighlightedColour;
+        }
+        else
+        {
+            flashtoo = _normalColour;
+        }
+
+        ColourChangesProcesses(_scheme.PressedColour, _scheme.FlashTime,
+                               () => ColourChangesProcesses(flashtoo, _scheme.FlashTime));
+    }
+
+    private void SetAsSelected(bool isSelected)
+{
+    if ((_scheme.ColourSettings & EventType.Selected) != 0)
+    {
+        if (isSelected)
+        {
+            ColourChangesProcesses(_scheme.SelectedColour, _scheme.TweenTime);
+        }
+
+        if (!isSelected)
+        {
+            if ((_scheme.ColourSettings & EventType.Highlighted) != 0)
             {
-                if ((_coloursToUse & EventType.Highlighted) != 0)
-                {
-                    ColourChangesProcesses(_highlighted, _tweenTime);
-                }
-                else
-                {
-                    ColourChangesProcesses(_normalColour, _tweenTime);
-                }
+                ColourChangesProcesses(_scheme.HighlightedColour, _scheme.TweenTime);
+            }
+            else
+            {
+                ColourChangesProcesses(_normalColour, _scheme.TweenTime);
             }
         }
     }
+}
 
-    private void ColourChangesProcesses(Color newColour, float time, TweenCallback tweenCallback = null)
+private void ColourChangesProcesses(Color newColour, float time, TweenCallback tweenCallback = null)
     {
         KillTweens();
 
         if (_imageElements.Length > 0)
         {
-            if ((_addTweenTo & TweenColours.Images) != 0)
+            for (int i = 0; i < _imageElements.Length; i++)
             {
-                for (int i = 0; i < _imageElements.Length; i++)
-                {
-                   _imageElements[i].DOColor(newColour, time)
-                                                 .SetId("_images" + _id + i)
-                                                 .SetEase(Ease.Linear)
-                                                 .SetAutoKill(true)
-                                                 .OnComplete(tweenCallback)
-                                                 .Play();
-                }               
-            }
-            else
-            {
-                SetImagesColour(newColour);
-            }
+                _imageElements[i].DOColor(newColour, time)
+                                                .SetId("_images" + _id + i)
+                                                .SetEase(Ease.Linear)
+                                                .SetAutoKill(true)
+                                                .OnComplete(tweenCallback)
+                                                .Play();
+            }               
         }
 
         if (_textElements)
         {
-            if ((_addTweenTo & TweenColours.Text) != 0)
-            {
-                _textElements.DOColor(newColour, time)
-                         .SetId("_mainText" + _id)
-                         .SetEase(Ease.Linear)
-                         .SetAutoKill(true)
-                         .OnComplete(tweenCallback)
-                         .Play();
-            }
-            else
-            {
-                _textElements.color = newColour;
-            }
+            _textElements.DOColor(newColour, time)
+                        .SetId("_mainText" + _id)
+                        .SetEase(Ease.Linear)
+                        .SetAutoKill(true)
+                        .OnComplete(tweenCallback)
+                        .Play();
         }
     }
 
     public void SetAsDisabled(Setting setting)
     {
-        if (!((setting & _mySetting) != 0)) return;
+        if (EffectNotSet(setting) || _scheme == null) return;
 
         if (_textElements)
         {
-            _textElements.color =_disabled;
+            _textElements.color = _scheme.DisableColour;
         }
 
         if (_imageElements.Length > 0)
         {
-            SetImagesColour(_disabled);
+            SetImagesColour(_scheme.DisableColour);
         }
     }
 
@@ -215,17 +216,17 @@ public class UIColour
 
     private Color SelectedHighlight()
     {
-        float r = ColourCalc(_selected.r);
-        float g = ColourCalc(_selected.g);
-        float b = ColourCalc(_selected.b);
-        return new Color(Mathf.Clamp(r * _selectedHighlightPerc, 0, 1),
-                  Mathf.Clamp(g * _selectedHighlightPerc, 0, 1),
-                  Mathf.Clamp(b * _selectedHighlightPerc, 0, 1));
+        float r = ColourCalc(_scheme.SelectedColour.r);
+        float g = ColourCalc(_scheme.SelectedColour.g);
+        float b = ColourCalc(_scheme.SelectedColour.b);
+        return new Color(Mathf.Clamp(r * _scheme.SelectedPerc, 0, 1),
+                         Mathf.Clamp(g * _scheme.SelectedPerc, 0, 1),
+                         Mathf.Clamp(b * _scheme.SelectedPerc, 0, 1));
     }
 
     private float ColourCalc(float value)
     {
-        if (value < 0.1f && _selectedHighlightPerc > 1)
+        if (value < 0.1f && _scheme.SelectedPerc > 1)
         {
             return 0.2f;
         }
@@ -244,4 +245,10 @@ public class UIColour
             DOTween.Kill("_images" + _id + i);
         }  
     }
+
+    private bool EffectNotSet(Setting setting)
+    {
+        return !((setting & _mySetting) != 0);
+    }
+
 }

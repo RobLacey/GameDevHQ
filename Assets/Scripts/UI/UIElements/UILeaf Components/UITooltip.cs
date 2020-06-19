@@ -11,23 +11,21 @@ public class UITooltip
     [SerializeField] RectTransform _mainCanvas;
     [SerializeField] Camera _UICamera = null;
     [SerializeField] TooltipType _tooltipType = TooltipType.Follow;
-    [InfoBox("Padding NOT used when set to FIXED")]
     [Header("Mouse & Global Fixed Posiiton Settings", order = 2)]
     [SerializeField] [AllowNesting] [Label("Tooltip Position")] ToolTipAnchor _toolTipPosition;
-    [SerializeField] [AllowNesting] [EnableIf("Fixed")] RectTransform _groupFixedPosition;
-    [SerializeField] [Range(-50f, 50f)] float _mousePaddingX;
-    [SerializeField] [Range(-50f, 50f)] float _mousePaddingY;
+    [SerializeField] [AllowNesting] [ShowIf("Fixed")] RectTransform _groupFixedPosition;
+    [SerializeField] [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")] float _mousePaddingX;
+    [SerializeField] [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")] float _mousePaddingY;
     [Header("Keyboard and Controller Settings")]
-    [SerializeField] [AllowNesting] [Label("Tooltip Preset")] [DisableIf("Fixed")] UseSide _positionToUse = UseSide.ToTheRightOf;
-    [SerializeField] [AllowNesting] [Label("Offset Position")] [DisableIf("Fixed")] ToolTipAnchor _keyboardPosition;
-    [SerializeField] [AllowNesting] [Label("GameObject Marker")] [EnableIf("UseGameObject")] RectTransform _fixedPosition;
-    [SerializeField] [Range(-50f, 50f)] float _keyboardPaddingX;
-    [SerializeField] [Range(-50f, 50f)] float _keyboardPaddingY;
+    [SerializeField] [AllowNesting] [Label("Tooltip Preset")] [HideIf("Fixed")] UseSide _positionToUse = UseSide.ToTheRightOf;
+    [SerializeField] [AllowNesting] [Label("Offset Position")] [HideIf("Fixed")] ToolTipAnchor _keyboardPosition;
+    [SerializeField] [AllowNesting] [Label("GameObject Marker")] [ShowIf("UseGameObject")] RectTransform _fixedPosition;
+    [SerializeField] [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")] float _keyboardPaddingX;
+    [SerializeField] [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")] float _keyboardPaddingY;
     [Header("Other Settings")]
     [SerializeField] [Range(0f, 50f)] float _screenSafeZone = 10;
     [SerializeField] [AllowNesting] [Label("Display Tooltip Delay")] public float _delay = 1f;
-    [SerializeField] [AllowNesting] [EnableIf("BuildTips")] [Label("Delay Unitl Next..")] float _buildDelay = 1f;
-    [InfoBox("Add more than ONE tooltip to enable build delay time settings")]
+    [SerializeField] [AllowNesting] [ShowIf("BuildTips")] [Label("Delay Unitl Next..")] float _buildDelay = 1f;
     [SerializeField] LayoutGroup[] _listOfTooltips = new LayoutGroup[0];
 
     //Variables
@@ -36,7 +34,9 @@ public class UITooltip
     Vector2 tooltipPos;
     LayoutGroup _layout;
     RectTransform _rectTransform;
+    RectTransform[] _tooltipsRects;
     Canvas _toolTipCanvas;
+    Canvas[] _cachedCanvas;
     float _canvasWidth;
     float _canvasHeight;
     Setting _mySetting = Setting.TooplTip;
@@ -47,12 +47,10 @@ public class UITooltip
     public bool IsActive { get; set; }
 
     //Editor Scripts
-
-    public bool Fixed()  { return _tooltipType == TooltipType.Fixed;  }
+    public bool Fixed() { return _tooltipType == TooltipType.Fixed; }
     public bool FollowMouse() { return _tooltipType == TooltipType.Follow; }
     public bool BuildTips()  { return _listOfTooltips.Length > 1; }
     public bool UseGameObject() { return _positionToUse == UseSide.GameObjectAsPosition && _tooltipType != TooltipType.Fixed; }
-
 
     //TODO Change size calcs to work from camera size rather than canvas so still works when aspect changes
 
@@ -60,30 +58,39 @@ public class UITooltip
     {
         if (!((setting & _mySetting) != 0)) return;
 
-        if (_listOfTooltips.Length == 0) 
-        { 
-            Debug.Log("No tooltips set on " + parent); 
-            return; 
-        }
-        IsActive = false;
-        CreateBucket();
-        _toolTipCanvas = _listOfTooltips[0].GetComponent<Canvas>();
-
-        foreach (var item in _listOfTooltips)
+        if (_listOfTooltips.Length == 0)
         {
-            item.GetComponent<Canvas>().enabled = false;
+            Debug.Log("No tooltips set on " + parent);
+            return;
         }
 
-        if (_listOfTooltips.Length <= 1) _buildDelay = 0;
+        CreateBucket();
+
+        SetUpTooltips();
 
         //Debug.Log(Camera.main.pixelWidth + "Camera");
         //Debug.Log(_mainCanvas.rect.width + "Canvas");
-
         _canvasWidth = (_mainCanvas.rect.width / 2) - _screenSafeZone;
         _canvasHeight = (_mainCanvas.rect.height / 2) - _screenSafeZone;
     }
 
-    
+    private void SetUpTooltips()
+    {
+        IsActive = false;
+        if (_listOfTooltips.Length <= 1) _buildDelay = 0;
+        _tooltipsRects = new RectTransform[_listOfTooltips.Length];
+        _cachedCanvas = new Canvas[_listOfTooltips.Length];
+
+        for (int i = 0; i < _listOfTooltips.Length; i++)
+        {
+            _tooltipsRects[i] = _listOfTooltips[i].GetComponent<RectTransform>();
+            _cachedCanvas[i] = _listOfTooltips[i].GetComponent<Canvas>();
+            _cachedCanvas[i].enabled = false;
+        }
+
+        _toolTipCanvas = _cachedCanvas[0];
+    }
+
 
     private void CreateBucket()
     {
@@ -105,6 +112,21 @@ public class UITooltip
         _toolTipCanvas.enabled = false;
         IsActive = false;
     }
+
+    public IEnumerator ToolTipBuild(RectTransform rect)
+    {
+        rect.GetWorldCorners(_myCorners);
+        for (int i = 0; i < _listOfTooltips.Length; i++)
+        {
+            _layout = _listOfTooltips[i];
+            if (i - 1 >= 0) _cachedCanvas[i - 1].enabled = false;
+            _toolTipCanvas = _cachedCanvas[i];
+            _rectTransform = _tooltipsRects[i];
+            yield return new WaitForSeconds(_buildDelay);
+        }
+        yield return null;
+    }
+
 
     public IEnumerator StartTooltip(bool isKeyboard)
     {
@@ -132,7 +154,7 @@ public class UITooltip
 
     private void SetToolTipPosition(bool iskeyBoard)
     {
-        Vector3 pos = Vector3.zero;
+        Vector3 position = Vector3.zero;
 
         if (_tooltipType == TooltipType.Follow)
         {
@@ -140,30 +162,30 @@ public class UITooltip
             {
                 if (_positionToUse == UseSide.ToTheRightOf)
                 {
-                    pos = _myCorners[3] + ((_myCorners[2] - _myCorners[3]) / 2);
+                    position = _myCorners[3] + ((_myCorners[2] - _myCorners[3]) / 2);
                 }
                 else if (_positionToUse == UseSide.ToTheLeftOf)
                 {
-                    pos = _myCorners[1] + ((_myCorners[0] - _myCorners[1]) / 2);
+                    position = _myCorners[1] + ((_myCorners[0] - _myCorners[1]) / 2);
                 }
                 else
                 {
-                    pos = _fixedPosition.position;
+                    position = _fixedPosition.position;
                 }
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvas, pos, _UICamera, out tooltipPos);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvas, position, _UICamera, out tooltipPos);
                 tooltipPos += new Vector2(_keyboardPaddingX, _keyboardPaddingY);
             }
             else
             {
-                pos = Input.mousePosition;
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvas, pos, _UICamera, out tooltipPos);
+                position = Input.mousePosition;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvas, position, _UICamera, out tooltipPos);
                 tooltipPos += new Vector2(_mousePaddingX, _mousePaddingY);
             }
         }
         else if (_tooltipType == TooltipType.Fixed)
         {
-            pos = _groupFixedPosition.position;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvas, pos, _UICamera, out tooltipPos);
+            position = _groupFixedPosition.position;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvas, position, _UICamera, out tooltipPos);
         }
     }
 
@@ -227,19 +249,7 @@ public class UITooltip
                 break;
         }
     }
-
-    public IEnumerator ToolTipBuild(RectTransform rect)
-    {
-        rect.GetWorldCorners(_myCorners);
-        for (int i = 0; i < _listOfTooltips.Length; i++)
-        {
-            _layout = _listOfTooltips[i];
-            _toolTipCanvas = _listOfTooltips[i].GetComponent<Canvas>();
-            _rectTransform = _listOfTooltips[i].GetComponent<RectTransform>();
-            if (i - 1 >= 0) _listOfTooltips[i - 1].GetComponent<Canvas>().enabled = false; //Turns off last tooltip
-            yield return new WaitForSeconds(_buildDelay);
-        }
-        yield return null;
-    }
 }
+
+
 

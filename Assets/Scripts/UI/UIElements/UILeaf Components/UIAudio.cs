@@ -1,31 +1,27 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NaughtyAttributes;
 
 [System.Serializable]
 public class UIAudio
 {
-    public AudioClip _sound_Highlighted;
-    public float _volume_Highlighted;
-    public AudioClip _sound_Select;
-    public float _volume_Select;
-    public AudioClip _sound_Cancel;
-    public float _volume_Cancel;
+    [SerializeField] AudioScheme _audioScheme;
+    [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Highlighted Clip")] AudioClip _sound_Highlighted;
+    [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Highlighted Volume")] float _volume_Highlighted;
+    [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Selected Clip")] AudioClip _sound_Select;
+    [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Selected Volume")] float _volume_Select;
+    [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Cancelled Clip")] AudioClip _sound_Cancel;
+    [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Cancelled Volume")] float _volume_Cancel;
 
+    //Variables 
+    public static event Action<AudioClip, float> PlaySound;
     Setting _mySetting = Setting.Audio;
 
-    //Properties
-    public AudioSource MyAudiosource { get; set; }
-    public bool IsActive { get; set; } = false;
-
-    public void SetActive(bool active)
+    private bool UsingScheme()
     {
-        IsActive = active;
-    }
-
-    public void OnAwake(AudioSource audioSource)
-    {
-        MyAudiosource = audioSource;
+        return _audioScheme;
     }
 
     public void Play(UIEventTypes uIEventTypes, Setting settingToCheck)
@@ -35,27 +31,37 @@ public class UIAudio
         switch (uIEventTypes)
         {
             case UIEventTypes.Normal:
-                PlayClip(_sound_Cancel, _volume_Cancel);
                 break;
             case UIEventTypes.Highlighted:
-                PlayClip(_sound_Highlighted, _volume_Highlighted);
+                if (UsingScheme())
+                {
+                    PlaySound.Invoke(_audioScheme.HighlightedClip, _audioScheme.HighlighVolume);
+                }
+                else
+                {
+                    PlaySound.Invoke(_sound_Highlighted, _volume_Highlighted);
+                }
                 break;
             case UIEventTypes.Cancelled:
-                PlayClip(_sound_Cancel, _volume_Cancel);
+                if (UsingScheme())
+                {
+                    PlaySound.Invoke(_audioScheme.CancelledClip, _audioScheme.CancelledVolume);
+                }
+                else
+                {
+                    PlaySound.Invoke(_sound_Cancel, _volume_Cancel);
+                }
                 break;
             case UIEventTypes.Selected:
-                PlayClip(_sound_Select, _volume_Select);
+                if (UsingScheme())
+                {
+                    PlaySound.Invoke(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
+                }
+                else
+                {
+                    PlaySound.Invoke(_sound_Select, _volume_Select);
+                }
                 break;
-        }
-    }
-
-    private void PlayClip(AudioClip clip, float volume)
-    {
-        if (clip)
-        {
-            MyAudiosource.clip = clip;
-            MyAudiosource.volume = volume;
-            MyAudiosource.Play();
         }
     }
 }

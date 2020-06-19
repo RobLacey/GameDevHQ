@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 
-[RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(Canvas))]
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(RectTransform))]
@@ -21,7 +20,10 @@ public class UIBranch : MonoBehaviour
     [SerializeField] [HideIf("IsIndie")] bool _dontTurnOff;
     [SerializeField] [ShowIf("IsHome")] [Label("Tween on Return To Home")] bool _tweenOnHome;
     [SerializeField] [Label("Save Selection On Exit")] [HideIf("IsIndie")] bool _saveExitSelection;
+    [SerializeField] bool _highlightFirstOption = true;
     [SerializeField] [Label("Move To Next Branch...")] WhenToMove _moveType = WhenToMove.OnClick;
+    [SerializeField] [ShowIf("IsIndie")] [Label("Block Raycast to Main UI")] bool _blockRaycasts;
+    [SerializeField] [ShowIf("IsIndie")] [Label("Ratain Pop Ups (Not Hotkeys)")] bool _alwaysRetainPopUps;
     [SerializeField] [HideIf(EConditionOperator.Or, "IsIndie", "IsHome")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] [ValidateInput("IsEmpty", "If left Blank it will Auto-assign first UINode in hierarchy/Group")]
     UINode _userDefinedStartPosition;
@@ -42,7 +44,7 @@ public class UIBranch : MonoBehaviour
         }
         return false;
     }
-    public bool IsIndie() { return _branchType == BranchType.Independent; }
+    public bool IsIndie() { return _branchType == BranchType.PopUp; }
 
     #endregion
 
@@ -51,7 +53,6 @@ public class UIBranch : MonoBehaviour
     int _groupIndex = 0;
     bool _moveToChild = false;
     Action _onFinishedTrigger;
-    UIIndependent _isAnIndieBranch;
 
     //Properties
     public UINode DefaultStartPosition { get { return _userDefinedStartPosition; }
@@ -71,9 +72,12 @@ public class UIBranch : MonoBehaviour
     public bool DontTurnOff { get { return _dontTurnOff; } } 
     public bool TweenOnHome { get { return _tweenOnHome; } }
     public bool FromHotkey { get; set; }
+    public bool BlockRaycasts { get { return _blockRaycasts; } }
+    public bool RetainPopups { get { return _alwaysRetainPopUps; } }
+    public bool HighlightFirstOption { get { return _highlightFirstOption; } }
     public ScreenType ScreenType { get { return _screenType; } } 
-    public UIMasterController UIMaster { get; private set; } 
-    public UIIndependent IsAnIndie { get{ return _isAnIndieBranch; } } 
+    public UIHub UIHub { get; private set; } 
+    public UIPopUp IsAPopUp { get; private set; } 
 
 
     private void Awake()
@@ -81,7 +85,7 @@ public class UIBranch : MonoBehaviour
         ThisGroupsUINodes = gameObject.GetComponentsInChildren<UINode>();
         MyCanvasGroup = GetComponent<CanvasGroup>();
         _UITweener = GetComponent<UITweener>();
-        UIMaster = FindObjectOfType<UIMasterController>();
+        UIHub = FindObjectOfType<UIHub>();
         MyCanvas = GetComponent<Canvas>();
         SetNewParentBranch(this);
         SetStartPositions();
@@ -90,12 +94,12 @@ public class UIBranch : MonoBehaviour
 
     private void OnEnable()
     {
-        UIMasterController.AllowKeys += (x) => AllowKeys = x;
+        UIHub.AllowKeys += (x) => AllowKeys = x;
     }
 
     private void OnDisable()
     {
-        UIMasterController.AllowKeys -= (x) => AllowKeys = x;
+        UIHub.AllowKeys -= (x) => AllowKeys = x;
     }
 
     private void Start()
@@ -111,9 +115,10 @@ public class UIBranch : MonoBehaviour
             _tweenOnHome = true;
         }
         MyCanvasGroup.blocksRaycasts = false;
-        if (_branchType == BranchType.Independent)
+
+        if (_branchType == BranchType.PopUp)
         {
-            _isAnIndieBranch = new UIIndependent(this, FindObjectsOfType<UIBranch>());
+            IsAPopUp = new UIPopUp(this, FindObjectsOfType<UIBranch>());
             _escapeKeyFunction = EscapeKey.None;
         }
     }
@@ -160,9 +165,7 @@ public class UIBranch : MonoBehaviour
     {
         MyCanvas.enabled = true;
 
-        if (MyBranchType == BranchType.Independent) UIMaster.ResetHierachy();
-
-        if (MyBranchType == BranchType.HomeScreenUI && UIMaster.OnHomeScreen == false)
+        if (MyBranchType == BranchType.HomeScreenUI && UIHub.OnHomeScreen == false)
         {
             TweenOnChange = TweenOnHome;
             UIHomeGroup.RestoreHomeScreen();
@@ -192,7 +195,7 @@ public class UIBranch : MonoBehaviour
 
     public void SetNewParentBranch(UIBranch newParentController) 
     {
-        if (newParentController != null && newParentController.MyBranchType != BranchType.Independent)
+        if (newParentController != null && newParentController.MyBranchType != BranchType.PopUp)
         {
             MyParentBranch = newParentController;
         }
@@ -200,13 +203,13 @@ public class UIBranch : MonoBehaviour
 
     public void SaveLastHighlighted(UINode newNode)
     {
-        UIMaster.SetLastHighlighted(newNode);
+        UIHub.SetLastHighlighted(newNode);
         LastHighlighted = newNode;
     }
 
     public void SaveLastSelected(UINode lastSelected)
     {
-        UIMaster.SetLastSelected(lastSelected);
+        UIHub.SetLastSelected(lastSelected);
         LastSelected = lastSelected;
     }
 
@@ -249,7 +252,7 @@ public class UIBranch : MonoBehaviour
         if (!DontSetAsActive) 
         {
             SaveLastHighlighted(LastHighlighted);
-            LastHighlighted.SetUpNodeWhenActive(); 
+            LastHighlighted.InitailNodeAsActive(); 
         }
         DontSetAsActive = false;
     }
@@ -262,6 +265,6 @@ public class UIBranch : MonoBehaviour
     [Button]
     public void EnterIndieScreen()
     {
-        _isAnIndieBranch.StartIndie();
+        IsAPopUp.StartPopUp();
     }
 }

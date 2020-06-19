@@ -22,11 +22,13 @@ public class HotKeys
 
 public static class HotKeyProcess
 {
-    public static UIMasterController UIMaster;
+    public static UIHub _myUIHub;
 
     public static void HotKeyActivate(UIBranch branch)
     {
-        if (branch.MyBranchType == BranchType.Independent)
+        if (branch.MyCanvas.enabled == true) return;
+
+        if (branch.MyBranchType == BranchType.PopUp)
         {
             Debug.Log("Can't have independent as HotKey");
             return;
@@ -36,26 +38,26 @@ public static class HotKeyProcess
         {
             if (node.ChildBranch == branch)
             {
-                if (UIMaster.LastSelected != node && UIMaster.LastSelected.ChildBranch != null)
+                ToNextBranch(branch, node);
+                _myUIHub.LastHighlighted.SetNotHighlighted();
+
+                if (_myUIHub.LastSelected != node && _myUIHub.LastSelected.ChildBranch != null)
                 {
-                    if (UIMaster.LastSelected.IsSelected == true)
+                    if (_myUIHub.LastSelected.IsSelected == true)
                     {
-                        if (UIMaster.LastSelected.ChildBranch.WhenToMove == WhenToMove.OnClick)
+                        if (_myUIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.OnClick)
                         {
-                            UIMaster.LastSelected.ChildBranch.OutTweenToParent();
-                            branch.UIMaster.ResetHierachy();
+                            _myUIHub.LastSelected.ChildBranch.OutTweenToParent();
                             TurnOff(branch, node);
                         }
                         else
                         {
-                            UIMaster.LastSelected.ChildBranch.OutTweenToParent(() => TurnOff(branch, node));
-                            branch.UIMaster.ResetHierachy();
+                            _myUIHub.LastSelected.ChildBranch.OutTweenToParent(() => TurnOff(branch, node));
                         }
                     }
                     else
                     {
                         TurnOff(branch, node);
-                        branch.UIMaster.ResetHierachy();
                     }
                 }
                 else
@@ -70,40 +72,44 @@ public static class HotKeyProcess
 
     private static void TurnOff(UIBranch branch, UINode node)
     {
+        //ToNextBranch(branch, node);
+
         if (branch.ScreenType == ScreenType.ToFullScreen)
         {
-            if (UIMaster.OnHomeScreen)
+            if (_myUIHub.OnHomeScreen)
             {
                 UIHomeGroup.ClearHomeScreen(branch);
+                UIHomeGroup.ClearAllPopUpsRegardless();
             }
         }
         else
         {
-            if (!UIMaster.OnHomeScreen)
+            if (!_myUIHub.OnHomeScreen)
             {
 
                 UIHomeGroup.RestoreHomeScreen();
             }
         }
-        ToNextBranch(branch, node);
+        branch.MoveToNextLevel();
+
     }
 
     private static void ToNextBranch(UIBranch branch, UINode node)
     {
-        if (UIMaster.LastSelected.IsSelected == true)
-        {
-            UIMaster.LastSelected.Deactivate();
-        }
-        node.SetSelected_NoEffects();
+        UICancel.ResetHierachy();
 
-        if (branch.MyParentBranch.MyBranchType != BranchType.HomeScreenUI)
+        if (branch.MyBranchType != BranchType.HomeScreenUI)   { branch.FromHotkey = true; }
+
+        if (branch.ScreenType == ScreenType.ToFullScreen)
         {
-            branch.FromHotkey = true;
+            node.IsSelected = true;
         }
-        branch.MyParentBranch.LastHighlighted = node;
-        branch.MyParentBranch.LastSelected = node;
-        UIMaster.LastSelected = node;
+        else
+        {
+            node.SetSelected_NoEffects();
+        }
+        branch.MyParentBranch.SaveLastHighlighted(node);
         branch.MyParentBranch.SaveLastSelected(node);
-        branch.MoveToNextLevel();
+        //branch.MoveToNextLevel();
     }
 }

@@ -4,15 +4,15 @@ using UnityEngine;
 
 public static class UICancel
 {
-    public static List<UIBranch> homeGroup;
-    public static UIMasterController myMaster;
+    public static List<UIBranch> _homeGroup;
+    public static UIHub _myUIHub;
 
     public static void Cancel() //Cancel Class
     {
-        if (myMaster.LastSelected.ChildBranch != null
-            && myMaster.LastSelected.ChildBranch.MyCanvas.enabled != false)
+        if (_myUIHub.LastSelected.ChildBranch != null
+            && _myUIHub.LastSelected.ChildBranch.MyCanvas.enabled != false)
         {
-            OnCancel(myMaster.LastSelected.ChildBranch.EscapeKeySetting);
+            OnCancel(_myUIHub.LastSelected.ChildBranch.EscapeKeySetting);
         }
     }
 
@@ -25,10 +25,6 @@ public static class UICancel
     {
         if (escapeKey == EscapeKey.BackOneLevel)
         {
-            if (myMaster.LastSelected.ChildBranch == null)
-            {
-                myMaster.LastSelected = myMaster.LastSelected.MyBranch.MyParentBranch.LastSelected;
-            }
             EscapeButtonProcess(() => BackOneLevel());
         }
         else if (escapeKey == EscapeKey.BackToHome)
@@ -38,43 +34,42 @@ public static class UICancel
 
         else if (escapeKey == EscapeKey.GlobalSetting)
         {
-            OnCancel(myMaster.GlobalEscape);
+            OnCancel(_myUIHub.GlobalEscape);
         }
     }
 
     private static void EscapeButtonProcess(Action endAction) 
     {
-        if (myMaster.LastSelected.ChildBranch.WhenToMove == WhenToMove.AtTweenEnd)
+        if (_myUIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.AtTweenEnd)
         {
-            myMaster.LastSelected.ChildBranch.OutTweenToParent(() => endAction.Invoke());
-            myMaster.LastSelected._audio.Play(UIEventTypes.Cancelled, myMaster.LastSelected._enabledFunctions);
+            _myUIHub.LastSelected.ChildBranch.OutTweenToParent(() => endAction.Invoke());
+            _myUIHub.LastSelected._audio.Play(UIEventTypes.Cancelled, _myUIHub.LastSelected._enabledFunctions);
         }
         else
         {
-            myMaster.LastSelected.ChildBranch.OutTweenToParent();
-            myMaster.LastSelected._audio.Play(UIEventTypes.Cancelled, myMaster.LastSelected._enabledFunctions);
+            _myUIHub.LastSelected.ChildBranch.OutTweenToParent();
+            _myUIHub.LastSelected._audio.Play(UIEventTypes.Cancelled, _myUIHub.LastSelected._enabledFunctions);
             endAction.Invoke();
         }
     }
 
     private static void BackToHome()
     {
-        int index = myMaster.GroupIndex;
+        int index = _myUIHub.GroupIndex;
 
-        homeGroup[index].LastHighlighted.SetNotHighlighted();
-
-        if (homeGroup[index].LastSelected)
+        if (_myUIHub.OnHomeScreen)
         {
-            homeGroup[index].LastSelected.Deactivate();
+            _homeGroup[index].TweenOnChange = false;
         }
 
-        myMaster.LastSelected = homeGroup[index].LastSelected;
-        homeGroup[index].MoveToNextLevel();
+        _homeGroup[index].LastSelected.Deactivate();
+        _homeGroup[index].LastSelected.SetNotHighlighted();
+        _homeGroup[index].MoveToNextLevel();
     }
 
     private static void BackOneLevel()
     {
-        UINode lastSelected = myMaster.LastSelected;
+        UINode lastSelected = _myUIHub.LastSelected;
 
         if (lastSelected.IsSelected != false)
         {
@@ -85,8 +80,20 @@ public static class UICancel
                 lastSelected.MyBranch.TweenOnChange = false;
             }
             lastSelected.MyBranch.MoveToNextLevel();
-            myMaster.LastSelected = lastSelected.MyBranch.MyParentBranch.LastSelected;
+            _myUIHub.LastSelected = lastSelected.MyBranch.MyParentBranch.LastSelected;
         }
     }
+
+    public static void ResetHierachy()
+    {
+        UINode thisNode = _myUIHub.LastSelected;
+
+        while (thisNode.IsSelected == true)
+        {
+            thisNode.SetNotSelected_NoEffects();
+            thisNode = thisNode.MyBranch.MyParentBranch.LastSelected;
+        }
+    }
+
 
 }

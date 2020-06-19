@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 613e35cf264b3f847980c74f4b660d92, type: 3}
+  m_Name: Main Scheme
+  m_EditorClassIdentifier: 
+  _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+  _selected: {r: 0.9811321, g: 0.27413985, b: 0.24528302, a: 1}
+  _highlighted: {r: 0.41388392, g: 1, b: 0, a: 1}
+  _pressedFlash: {r: 0, g: 0, b: 0, a: 1}
+  _coloursToUse: 3
+  _tweenTime: 0.3
+  _selectedHighlightPerc: 1
+  _pressedFlashTime: 0.1

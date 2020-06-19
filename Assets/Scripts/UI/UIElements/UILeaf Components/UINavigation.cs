@@ -15,11 +15,6 @@ public class UINavigation
     [SerializeField] [AllowNesting] [ShowIf("UpDownNav")] UINode down;
     [SerializeField] [AllowNesting] [ShowIf("RightLeftNav")] UINode left;
     [SerializeField] [AllowNesting] [ShowIf("RightLeftNav")] UINode right;
-    public UnityEvent _asButtonEvent;
-    public OnToggleEvent _asToggleEvent;
-
-    [System.Serializable]
-    public class OnToggleEvent : UnityEvent<bool> { }
 
     #region Editor Scripts & Internal Classes
     public bool NotAToggle { get; set; }
@@ -40,6 +35,7 @@ public class UINavigation
         }
         return false;
     }
+
     #endregion
 
     //Variables
@@ -57,7 +53,7 @@ public class UINavigation
 
     public void SetChildsParentBranch()
     {
-        if (_myBranch.MyBranchType == BranchType.Independent) return;
+        if (_myBranch.MyBranchType == BranchType.PopUp) return;
 
         if (_childBranch)
         {
@@ -69,9 +65,16 @@ public class UINavigation
     public void PointerEnter(PointerEventData eventData)
     {
         if (eventData.pointerDrag) return;                  //Enables drag on slider to have pressed colour
-        _myNode._audio.Play(UIEventTypes.Highlighted, _myNode._enabledFunctions);
-        _myBranch.SaveLastHighlighted(_myNode);
-        _myNode.SetAsHighlighted();
+        if (_myNode.Function == ButtonFunction.HoverToActivate)
+        {
+            _myNode.PressedActions();
+        }
+        else
+        {
+            _myNode._audio.Play(UIEventTypes.Highlighted, _myNode._enabledFunctions);
+            _myBranch.SaveLastHighlighted(_myNode);
+            _myNode.SetAsHighlighted();
+        }
     }
 
     public void PointerExit(PointerEventData eventData)
@@ -80,37 +83,9 @@ public class UINavigation
         _myNode.SetNotHighlighted();
     }
 
-    public void PointerDown()
-    {
-        _myNode.PressedActions();
-        if (_myNode.IsDisabled) return;
-        if (_myNode.IsCancel) return;
-
-        if (_myNode.IsSelected)
-        {
-            _myNode._audio.Play(UIEventTypes.Cancelled, _myNode._enabledFunctions);
-        }
-        else
-        {
-            _myNode._audio.Play(UIEventTypes.Selected, _myNode._enabledFunctions);
-        }
-    }
-
-    public void PointerUp()
-    {
-        if (_myNode.IsDisabled) return;
-        if (_myNode.IsCancel) return;
-
-        if (_myNode.GetSlider)
-        {
-            TriggerEvents();
-            _myNode.TurnNodeOnOff();
-        }
-    }
-
     public void KeyBoardOrController(AxisEventData eventData)
     {
-        if (_myNode.GetSlider)
+        if (_myNode.AmSlider)
         {
             if (_myNode.IsSelected)
             {
@@ -143,6 +118,7 @@ public class UINavigation
                 {
                     if (down.IsDisabled) { down.OnMove(eventData); return; }
                     down._navigation.NavigateToNextNode();
+                    _myNode.SetNotHighlighted();
                 }
             }
 
@@ -152,6 +128,8 @@ public class UINavigation
                 {
                     if (up.IsDisabled) { up.OnMove(eventData); return; }
                     up._navigation.NavigateToNextNode();
+                    _myNode.SetNotHighlighted();
+
                 }
             }
         }
@@ -164,6 +142,8 @@ public class UINavigation
                 {
                     if (left.IsDisabled) { left.OnMove(eventData); return; }
                     left._navigation.NavigateToNextNode();
+                    _myNode.SetNotHighlighted();
+
                 }
             }
 
@@ -173,23 +153,9 @@ public class UINavigation
                 {
                     if (right.IsDisabled) { right.OnMove(eventData); return; }
                     right._navigation.NavigateToNextNode();
+                    _myNode.SetNotHighlighted();
+
                 }
-            }
-        }
-    }
-
-    public void OnEnterOrSelected()
-    {
-        PointerDown();
-        if (_myNode.IsDisabled) return;
-        if (_myNode.IsCancel) return;
-
-        if (_myNode.GetSlider)        //TODO Need to check this still works properly
-        {
-            _myNode.GetSlider.interactable = _myNode.IsSelected;
-            if (!_myNode.IsSelected)
-            {
-                TriggerEvents();
             }
         }
     }
@@ -197,8 +163,16 @@ public class UINavigation
     public void NavigateToNextNode()
     {
         if (!_myBranch.AllowKeys) return;
+        if (_myNode.Function == ButtonFunction.HoverToActivate)
+        {
+            _myNode.PressedActions();
+        }
+        else
+        {
+            _myNode._audio.Play(UIEventTypes.Highlighted, _myNode._enabledFunctions);
+        }
+
         _myBranch.SaveLastHighlighted(_myNode);
-        _myNode._audio.Play(UIEventTypes.Highlighted, _myNode._enabledFunctions);
         _myNode.SetAsHighlighted();
     }
 
@@ -227,7 +201,6 @@ public class UINavigation
         {
             _myBranch.OutTweensToChild(() => ToChildBranch_OnClick());
         }
-        _myNode.ProcessIndieData();
         _childBranch.MoveToNextLevel(_myBranch);
     }
 
@@ -240,7 +213,6 @@ public class UINavigation
     private void ToChildBranch_AfterTween()
     {
         if (!_myBranch.DontTurnOff) { _myBranch.MyCanvas.enabled = false; }
-        _myNode.ProcessIndieData();
         _childBranch.MoveToNextLevel(_myBranch);
     }
 
@@ -251,8 +223,6 @@ public class UINavigation
 
     public void TurnOffChildren()
     {
-        if (_childBranch.MyCanvas.enabled == false) return;
-
         if (_childBranch.WhenToMove == WhenToMove.OnClick)
         {
             _childBranch.OutTweenToParent();
@@ -266,13 +236,7 @@ public class UINavigation
 
     private void TurnOff()
     {
-        _childBranch.LastHighlighted.SetNotHighlighted();
         _childBranch.LastSelected.Deactivate();
-    }
-
-    public void TriggerEvents()
-    {
-        _asButtonEvent?.Invoke();
-        _asToggleEvent?.Invoke(_myNode.IsSelected);
+        _childBranch.LastHighlighted.SetNotHighlighted();
     }
 }

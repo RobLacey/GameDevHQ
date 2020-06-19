@@ -40,7 +40,7 @@ public enum ToggleGroup { None, TG1, TG2, TG3, TG4, TG5 }
 
 public enum EscapeKey { None, BackOneLevel, BackToHome, GlobalSetting }
 
-public enum ButtonFunction { Switch_NeverHold, Standard_Hold, ToggleGroup, Toggle_NotLinked }
+public enum ButtonFunction { Switch_NeverHold, Standard_Hold, ToggleGroup, Toggle_NotLinked, HoverToActivate }
 
 public enum Setting
 {
@@ -52,7 +52,8 @@ public enum Setting
     SwapImageOrText = 1 << 4,
     Accessories = 1 << 5,
     Audio = 1 << 6,
-    TooplTip = 1 << 7
+    TooplTip = 1 << 7,
+    Events = 1 << 8
 }
 
 public enum NavigationType { RightAndLeft, UpAndDown, AllDirections, None }
@@ -84,19 +85,12 @@ public enum EventType
     Pressed = 1 << 2,
 }
 
-public enum TweenColours
-{
-    None = 0,
-    Images = 1 << 0,
-    Text = 1 << 1,
-}
-
 public enum CurrentRoatationIs { StartRotateAt, MidPointForInAndOut, EndRotateAt }
 
 public enum ScreenType { Normal, ToFullScreen }
 
 public enum StartInMenu { InMenu, InGameControl }
-public enum BranchType { HomeScreenUI, StandardUI ,Independent, Internal }
+public enum BranchType { HomeScreenUI, StandardUI ,PopUp, Internal }
 
 public enum WhenToMove { OnClick, AtTweenEnd }
 //public enum TweenOnMove
