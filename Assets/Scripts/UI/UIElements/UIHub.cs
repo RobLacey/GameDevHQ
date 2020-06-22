@@ -15,6 +15,7 @@ public class UIHub : MonoBehaviour
     [SerializeField] [InputAxis] string _cancelButton;
     [SerializeField] [InputAxis] string _branchSwitchButton;
     [SerializeField] [InputAxis] string _pauseButton;
+    [SerializeField] UIBranch _pauseMenu;
     [SerializeField] [Label("Enable Controls After..")] float _atStartDelay = 0;
     [Header("In-Game Menu Settings")]
     [SerializeField] bool _inGameMenuSystem = false;
@@ -27,6 +28,7 @@ public class UIHub : MonoBehaviour
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
     public static event Action<bool> AllowKeys;
+    public static event Action<bool> IsPaused;
 
     //Variables
     int _groupIndex = 0;
@@ -36,6 +38,7 @@ public class UIHub : MonoBehaviour
     bool _usingKeysOrCtrl = false;
     bool _canStart = false;
     UIAudioManager _UIAudio;
+    public List<UIBranch> ActivePopUps { get; set; } = new List<UIBranch>();
 
     //Properties
     bool InMenu { get; set; } = true;
@@ -44,6 +47,7 @@ public class UIHub : MonoBehaviour
     public UINode LastSelected { get; set; }
     public UINode LastHighlighted { get; set; }
     public bool OnHomeScreen { get; set; } = false;
+    public bool GameIsPaused { get; private set; }
     public int GroupIndex { get { return _groupIndex; } }
 
     [Serializable]
@@ -148,9 +152,14 @@ public class UIHub : MonoBehaviour
     }
 
 
-    private void Update()
+    private void Update() //Review how keys work as hotkeys and pause shouldn't activate keyboard. Maybe hard setting rather than auto
     {
         if (!_canStart) return;
+
+        if (Input.GetButtonDown(_pauseButton))
+        {
+            PauseMenu();
+        }
 
         if (Input.GetButtonDown(_switchTOMenusButton) & _inGameMenuSystem)
         {
@@ -175,6 +184,23 @@ public class UIHub : MonoBehaviour
         }
     }
 
+    public void PauseMenu()
+    {
+        if (GameIsPaused)
+        {
+            _pauseMenu.IsPauseMenu.RestoreLastPosition();
+            GameIsPaused = false;
+            Time.timeScale = 1;
+        }
+        else
+        {
+            _pauseMenu.IsPauseMenu.StartPopUp();
+            GameIsPaused = true;
+            Time.timeScale = 0;
+        }
+        IsPaused?.Invoke(GameIsPaused);
+    }
+
     private void HandleInMenu()
     {
         if (Input.mousePosition != _mousePos)
@@ -189,6 +215,10 @@ public class UIHub : MonoBehaviour
                 if (ActiveBranch.FromHotkey)
                 {
                     CancelOrBack(EscapeKey.BackToHome);
+                }
+                else if(GameIsPaused || ActivePopUps.Count > 0)
+                {
+                    UICancel.CancelOrBackButton(EscapeKey.BackOneLevel);
                 }
                 else
                 {
@@ -247,7 +277,7 @@ public class UIHub : MonoBehaviour
             }
             else
             {
-                if (LastSelected.ChildBranch != null)
+                if (LastSelected.ChildBranch != null && node.MyBranch.MyBranchType != BranchType.PauseMenu)
                 {
                     if (LastSelected.ChildBranch.MyBranchType == BranchType.Internal)
                     {

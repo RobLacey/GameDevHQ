@@ -17,17 +17,17 @@ public class UIBranch : MonoBehaviour
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [SerializeField] BranchType _branchType = BranchType.StandardUI;
     [SerializeField] ScreenType _screenType = ScreenType.ToFullScreen;
-    [SerializeField] [HideIf("IsIndie")] bool _dontTurnOff;
+    [SerializeField] [HideIf("IsPopUp")] bool _dontTurnOff;
     [SerializeField] [ShowIf("IsHome")] [Label("Tween on Return To Home")] bool _tweenOnHome;
     [SerializeField] [Label("Save Selection On Exit")] [HideIf("IsIndie")] bool _saveExitSelection;
     [SerializeField] bool _highlightFirstOption = true;
     [SerializeField] [Label("Move To Next Branch...")] WhenToMove _moveType = WhenToMove.OnClick;
-    [SerializeField] [ShowIf("IsIndie")] [Label("Block Raycast to Main UI")] bool _blockRaycasts;
-    [SerializeField] [ShowIf("IsIndie")] [Label("Ratain Pop Ups (Not Hotkeys)")] bool _alwaysRetainPopUps;
-    [SerializeField] [HideIf(EConditionOperator.Or, "IsIndie", "IsHome")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
+    [SerializeField] [ShowIf("IsPopUp")] [Label("Ratain Pop Ups (Not Hotkeys)")] bool _alwaysRetainPopUps = false;
+    [SerializeField] 
+    [HideIf(EConditionOperator.Or, "IsPopUp", "IsHome", "IsPause")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] [ValidateInput("IsEmpty", "If left Blank it will Auto-assign first UINode in hierarchy/Group")]
     UINode _userDefinedStartPosition;
-    [SerializeField] [HideIf("IsIndie")] [Label("Branch Group List (Leave blank if NO groups needed)")]
+    [SerializeField] [HideIf("IsPopUp")] [Label("Branch Group List (Leave blank if NO groups needed)")]
     [ReorderableList] List<GroupList> _groupsList;
 
     //Internal Callses & Editor Scripts
@@ -44,14 +44,15 @@ public class UIBranch : MonoBehaviour
         }
         return false;
     }
-    public bool IsIndie() { return _branchType == BranchType.PopUp; }
+    public bool IsPopUp() { return _branchType == BranchType.PopUp; }
+    public bool IsPause() { return _branchType == BranchType.PauseMenu; }
 
     #endregion
 
     //Variables
     UITweener _UITweener;
     int _groupIndex = 0;
-    bool _moveToChild = false;
+    bool _toParent = false;
     Action _onFinishedTrigger;
 
     //Properties
@@ -72,12 +73,12 @@ public class UIBranch : MonoBehaviour
     public bool DontTurnOff { get { return _dontTurnOff; } } 
     public bool TweenOnHome { get { return _tweenOnHome; } }
     public bool FromHotkey { get; set; }
-    public bool BlockRaycasts { get { return _blockRaycasts; } }
     public bool RetainPopups { get { return _alwaysRetainPopUps; } }
     public bool HighlightFirstOption { get { return _highlightFirstOption; } }
     public ScreenType ScreenType { get { return _screenType; } } 
     public UIHub UIHub { get; private set; } 
     public UIPopUp IsAPopUp { get; private set; } 
+    public UIPopUp IsPauseMenu { get; private set; } 
 
 
     private void Awake()
@@ -116,10 +117,16 @@ public class UIBranch : MonoBehaviour
         }
         MyCanvasGroup.blocksRaycasts = false;
 
+        if (_branchType == BranchType.PauseMenu)
+        {
+            IsPauseMenu = new UIPopUp(this, FindObjectsOfType<UIBranch>());
+            _escapeKeyFunction = EscapeKey.BackOneLevel;
+        }
+
         if (_branchType == BranchType.PopUp)
         {
             IsAPopUp = new UIPopUp(this, FindObjectsOfType<UIBranch>());
-            _escapeKeyFunction = EscapeKey.None;
+           _escapeKeyFunction = EscapeKey.BackOneLevel;
         }
     }
 
@@ -215,7 +222,7 @@ public class UIBranch : MonoBehaviour
     public void OutTweensToChild(Action action = null)
     {
         _onFinishedTrigger = action;
-        _moveToChild = !_dontTurnOff;
+        _toParent = false;
         _UITweener.StopAllCoroutines();
          MyCanvasGroup.blocksRaycasts = false;
         _UITweener.DeactivateTweens(() => OutTweenCallback());
@@ -224,7 +231,6 @@ public class UIBranch : MonoBehaviour
     public void OutTweenToParent(Action action = null)
     {
         _onFinishedTrigger = action;
-        _moveToChild = true;
         _UITweener.StopAllCoroutines();
          MyCanvasGroup.blocksRaycasts = false;
         _UITweener.DeactivateTweens(() => OutTweenCallback());
@@ -232,8 +238,7 @@ public class UIBranch : MonoBehaviour
 
     private void OutTweenCallback()
     {
-        if (_moveToChild) { MyCanvas.enabled = false; }
-
+        MyCanvas.enabled = false;
         MyCanvasGroup.blocksRaycasts = true;
         _onFinishedTrigger?.Invoke();
     }

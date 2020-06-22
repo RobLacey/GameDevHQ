@@ -26,6 +26,8 @@ public class MovementTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Vector3 rotationSpeed = new Vector3(0, 0, 30);
+        transform.Rotate(rotationSpeed * Time.deltaTime, Space.Self);
         if (!_inMenu)
         {
             _horizontalSpeed = Input.GetAxis(_horizontal) * _speed;

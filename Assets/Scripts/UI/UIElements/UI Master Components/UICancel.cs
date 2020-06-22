@@ -41,6 +41,13 @@ public static class UICancel
 
     private static void EscapeButtonProcess(Action endAction) 
     {
+        if (_myUIHub.GameIsPaused || _myUIHub.ActivePopUps.Count > 0)
+        {
+            _myUIHub.LastSelected.IAudio.Play(UIEventTypes.Cancelled);
+            endAction.Invoke();
+            return;
+        }
+
         if (_myUIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.AtTweenEnd)
         {
             _myUIHub.LastSelected.ChildBranch.OutTweenToParent(() => endAction.Invoke());
@@ -54,7 +61,7 @@ public static class UICancel
         }
     }
 
-    private static void BackToHome()
+    private static void BackToHome() //TODO Review with Pause and Pop UP as may fall over
     {
         int index = _myUIHub.GroupIndex;
 
@@ -72,12 +79,24 @@ public static class UICancel
     {
         UINode lastSelected = _myUIHub.LastSelected;
 
-        if (lastSelected.IsSelected != false)
+        if (lastSelected.ChildBranch)
         {
             if (lastSelected.MyBranch.DontTurnOff || lastSelected.ChildBranch.MyBranchType == BranchType.Internal)
             {
                 lastSelected.MyBranch.TweenOnChange = false;
             }
+        }
+
+        if (_myUIHub.GameIsPaused && _myUIHub.ActiveBranch.MyBranchType == BranchType.PauseMenu)
+        {
+            _myUIHub.PauseMenu();
+        }
+        else if (_myUIHub.ActivePopUps.Count > 0 && !_myUIHub.GameIsPaused)
+        {
+            HandleRemovingPopUps();
+        }
+        else
+        {
             lastSelected.Deactivate();
             lastSelected.SetNotHighlighted();
             lastSelected.MyBranch.MoveToNextLevel();
@@ -96,5 +115,17 @@ public static class UICancel
         }
     }
 
+    private static void HandleRemovingPopUps()
+    {
+        if (_myUIHub.LastHighlighted.MyBranch.MyBranchType == BranchType.PopUp)
+        {
+            _myUIHub.LastHighlighted.MyBranch.IsAPopUp.RemoveFromActiveList();
+        }
+        else
+        {
+            int lastIndexItem = _myUIHub.ActivePopUps.Count - 1;
+            _myUIHub.ActivePopUps[lastIndexItem].IsAPopUp.RemoveFromActiveList();
+        }
+    }
 
 }

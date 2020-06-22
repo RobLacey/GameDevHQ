@@ -90,7 +90,7 @@ public enum CurrentRoatationIs { StartRotateAt, MidPointForInAndOut, EndRotateAt
 public enum ScreenType { Normal, ToFullScreen }
 
 public enum StartInMenu { InMenu, InGameControl }
-public enum BranchType { HomeScreenUI, StandardUI ,PopUp, Internal }
+public enum BranchType { HomeScreenUI, StandardUI ,PopUp, Internal, PauseMenu }
 
 public enum WhenToMove { OnClick, AtTweenEnd }
 //public enum TweenOnMove

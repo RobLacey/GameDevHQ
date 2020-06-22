@@ -27,6 +27,10 @@ public class UIPopUp
 
     public void StartPopUp()
     {
+        if (myBranch.MyBranchType == BranchType.PopUp)
+        {
+            AddToActivePopUps();
+        }
         ClearedScreenData._clearedBranches.Clear();
         ClearedScreenData._fromHomeScreen = false;
         ClearedScreenData.lastSelected = myBranch.UIHub.LastSelected;
@@ -36,11 +40,7 @@ public class UIPopUp
         {
             if (branch.MyCanvas.enabled == true && branch != myBranch)
             {
-                if (branch.MyBranchType != BranchType.PopUp)
-                {
-                    ClearedScreenData._clearedBranches.Add(branch);
-                }
-
+                ClearedScreenData._clearedBranches.Add(branch);
 
                 if (myBranch.ScreenType == ScreenType.ToFullScreen)
                 {
@@ -52,7 +52,12 @@ public class UIPopUp
                     branch.MyCanvas.enabled = false;
                 }
 
-                if (myBranch.BlockRaycasts)
+                if (branch.MyBranchType != BranchType.PopUp)
+                {
+                    branch.MyCanvasGroup.blocksRaycasts = false;
+                }
+
+                if (myBranch.MyBranchType == BranchType.PauseMenu)
                 {
                     branch.MyCanvasGroup.blocksRaycasts = false;
                 }
@@ -84,10 +89,18 @@ public class UIPopUp
             myBranch.UIHub.OnHomeScreen = true;
         }
 
+        if (myBranch.UIHub.ActivePopUps.Count > 0)
+        {
+            UINode nextPopUp = myBranch.UIHub.ActivePopUps[myBranch.UIHub.ActivePopUps.Count - 1].LastHighlighted;
+            ClearedScreenData.lastHighlighted = nextPopUp;
+            ClearedScreenData.lastSelected = nextPopUp;
+        }
+
+        myBranch.UIHub.LastSelected = ClearedScreenData.lastSelected;
+        myBranch.UIHub.SetLastHighlighted(ClearedScreenData.lastHighlighted);
+
         if (myBranch.AllowKeys)
         {
-            myBranch.UIHub.LastSelected = ClearedScreenData.lastSelected;
-            myBranch.UIHub.SetLastHighlighted(ClearedScreenData.lastHighlighted);
             ClearedScreenData.lastHighlighted.InitailNodeAsActive();
         }
     }
@@ -96,11 +109,40 @@ public class UIPopUp
     {
         foreach (var branch in ClearedScreenData._clearedBranches)
         {
-            if (ClearedScreenData._fromHomeScreen)
+            if (myBranch.UIHub.GameIsPaused)
             {
-                branch.MyCanvas.enabled = true;
+                if (branch.MyBranchType == BranchType.PopUp)
+                {
+                    branch.MyCanvasGroup.blocksRaycasts = true;
+                }
             }
-            branch.MyCanvasGroup.blocksRaycasts = true;
+
+            else if(myBranch.UIHub.ActivePopUps.Count > 0)
+            {
+                if (branch.MyBranchType == BranchType.PopUp)
+                {
+                    branch.MyCanvasGroup.blocksRaycasts = true;
+                }
+            }
+            else
+            {
+                branch.MyCanvasGroup.blocksRaycasts = true;
+            }
+            branch.MyCanvas.enabled = true;
+        }
+    }
+
+    public void AddToActivePopUps()
+    {
+        myBranch.UIHub.ActivePopUps.Add(myBranch);
+    }
+
+    public void RemoveFromActiveList()
+    {
+        if(myBranch.UIHub.ActivePopUps.Contains(myBranch))
+        {
+            myBranch.UIHub.ActivePopUps.Remove(myBranch);
+            RestoreLastPosition();
         }
     }
 }

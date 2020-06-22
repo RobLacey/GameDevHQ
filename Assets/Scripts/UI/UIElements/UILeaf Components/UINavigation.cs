@@ -197,9 +197,9 @@ public class UINavigation : IUINavigation
     {
         if (_childBranch.ScreenType == ScreenType.ToFullScreen)
         {
-            _myBranch.OutTweensToChild(() => ToChildBranch_OnClick());
+            _myBranch.OutTweensToChild();
         }
-        _childBranch.MoveToNextLevel(_myBranch);
+        ToChildBranch_OnClick();
     }
 
     private void ToFullScreen_AfterTween()
@@ -217,6 +217,7 @@ public class UINavigation : IUINavigation
     private void ToChildBranch_OnClick()
     {
         if (!_myBranch.DontTurnOff) { _myBranch.MyCanvas.enabled = false; }
+        _childBranch.MoveToNextLevel(_myBranch);
     }
 
     public void TurnOffChildren()

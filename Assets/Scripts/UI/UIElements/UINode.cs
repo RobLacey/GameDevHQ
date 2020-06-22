@@ -183,7 +183,6 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     public void OnSubmit(BaseEventData eventData)
     {
         if (IsDisabled) return;
-        if (IsCancel) return;
         if (_buttonFunction == ButtonFunction.HoverToActivate) return;
 
         if (AmSlider)        //TODO Need to check this still works properly
@@ -194,7 +193,6 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
                 InvokeClickEvents();
             }
         }
-
         PressedActions();
     }
 
@@ -227,14 +225,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
         if (_isCancelOrBackButton) 
         {
-            if (MyBranch.MyBranchType == BranchType.PopUp)
-            {
-                MyBranch.IsAPopUp.RestoreLastPosition();
-            }
-            else
-            {
-                DoCancel?.Invoke(_escapeKeyFunction); 
-            }
+            DoCancel?.Invoke(_escapeKeyFunction); 
             return; 
         }
 
