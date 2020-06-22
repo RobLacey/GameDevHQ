@@ -15,18 +15,18 @@ public class UIColour
 
     //Variables
     Color _normalColour = Color.white;
-    Setting _mySetting = Setting.Colours;
     int _id;
 
-    public bool UsingColourScheme()
-    {
-        return _scheme;
-    }
+    //Editor Methods
+    public bool UsingColourScheme()  { return _scheme; }
 
+    //Properties
     public bool NoSettings { get; set; } 
+    public bool CanActivate { get; private set; }
 
-    public void OnAwake(int objectId)
+    public void OnAwake(int objectId, Setting setting)
     {
+        CanActivate = (setting & Setting.Colours) != 0;
         _id = objectId;
         if (_imageElements.Length > 0)
         { 
@@ -43,9 +43,9 @@ public class UIColour
         if (_imageElements.Length == 0 && !_textElements) { NoSettings = true; }
     }
 
-    public void SetColourOnEnter(bool isSelected, Setting setting)
+    public void SetColourOnEnter(bool isSelected)
     {
-        if (EffectNotSet(setting) || _scheme == null) return;
+        if (!CanActivate || _scheme == null) return;
 
         if ((_scheme.ColourSettings & EventType.Highlighted) !=0)
         {
@@ -60,9 +60,9 @@ public class UIColour
         }    
     }
 
-    public void SetColourOnExit(bool isSelected, Setting setting)
+    public void SetColourOnExit(bool isSelected)
     {
-        if (EffectNotSet(setting) || _scheme == null) return;
+        if (!CanActivate || _scheme == null) return;
 
         if ((_scheme.ColourSettings & EventType.Selected) == 0 || !isSelected)
         {
@@ -75,15 +75,15 @@ public class UIColour
         }
     }
 
-    public void ResetToNormal(Setting setting)
+    public void ResetToNormal()
     {
-        if (EffectNotSet(setting) || _scheme == null) return;
+        if (!CanActivate || _scheme == null) return;
         ColourChangesProcesses(_normalColour, _scheme.TweenTime);
     }
 
-    public void ProcessPress(bool isSelected, Setting setting)
+    public void ProcessPress(bool isSelected)
     {
-        if (EffectNotSet(setting) || _scheme == null) return;
+        if (!CanActivate || _scheme == null) return;
 
         if ((_scheme.ColourSettings & EventType.Pressed) != 0)
         {
@@ -163,7 +163,7 @@ public class UIColour
     }
 }
 
-private void ColourChangesProcesses(Color newColour, float time, TweenCallback tweenCallback = null)
+    private void ColourChangesProcesses(Color newColour, float time, TweenCallback tweenCallback = null)
     {
         KillTweens();
 
@@ -191,9 +191,9 @@ private void ColourChangesProcesses(Color newColour, float time, TweenCallback t
         }
     }
 
-    public void SetAsDisabled(Setting setting)
+    public void SetAsDisabled()
     {
-        if (EffectNotSet(setting) || _scheme == null) return;
+        if (!CanActivate || _scheme == null) return;
 
         if (_textElements)
         {
@@ -245,10 +245,4 @@ private void ColourChangesProcesses(Color newColour, float time, TweenCallback t
             DOTween.Kill("_images" + _id + i);
         }  
     }
-
-    private bool EffectNotSet(Setting setting)
-    {
-        return !((setting & _mySetting) != 0);
-    }
-
 }

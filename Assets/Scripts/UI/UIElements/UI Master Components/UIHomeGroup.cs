@@ -12,7 +12,6 @@ public static class UIHomeGroup
     public static void SwitchHomeGroups(ref int index)
     {
         _homeGroup[index].LastSelected.Deactivate();
-        _homeGroup[index].LastHighlighted.SetNotHighlighted();
 
         index++;
         if (index > _homeGroup.Count - 1)
@@ -28,7 +27,6 @@ public static class UIHomeGroup
         {
             _homeGroup[index].MoveToNextLevel();
         }
-
     }
 
     public static void SetHomeGroupIndex(UIBranch uIBranch, ref int index)

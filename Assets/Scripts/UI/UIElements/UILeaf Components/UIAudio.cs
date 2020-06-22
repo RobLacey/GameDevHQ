@@ -5,7 +5,7 @@ using UnityEngine;
 using NaughtyAttributes;
 
 [System.Serializable]
-public class UIAudio
+public class UIAudio : IUIAudio
 {
     [SerializeField] AudioScheme _audioScheme;
     [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Highlighted Clip")] AudioClip _sound_Highlighted;
@@ -17,21 +17,24 @@ public class UIAudio
 
     //Variables 
     public static event Action<AudioClip, float> PlaySound;
-    Setting _mySetting = Setting.Audio;
+    bool _canPlay;
+
+    public void OnAwake(Setting setting)
+    {
+        _canPlay = (setting & Setting.Audio) != 0;
+    }
 
     private bool UsingScheme()
     {
         return _audioScheme;
     }
 
-    public void Play(UIEventTypes uIEventTypes, Setting settingToCheck)
+    public void Play(UIEventTypes uIEventTypes)
     {
-        if (!((settingToCheck & _mySetting) != 0)) return;
+        if (!_canPlay) return;
 
         switch (uIEventTypes)
         {
-            case UIEventTypes.Normal:
-                break;
             case UIEventTypes.Highlighted:
                 if (UsingScheme())
                 {

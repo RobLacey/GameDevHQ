@@ -13,6 +13,13 @@ public class UIEvents
     public UnityEvent _OnButtonClickEvent;
     public OnToggleEvent _OnToggleEvent;
 
+    public bool CanActivate { get; private set; }
+
+    public void OnAwake(Setting setting)
+    {
+        CanActivate = (setting & Setting.Events) != 0;
+    }
+
     [System.Serializable]
     public class OnToggleEvent : UnityEvent<bool> { }
 

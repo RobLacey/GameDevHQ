@@ -60,7 +60,7 @@ public class UIBranch : MonoBehaviour
     public Canvas MyCanvas { get; set; }
     public UINode LastHighlighted { get; set; }
     public UINode LastSelected { get; set; }
-    public UIBranch MyParentBranch { get; set; }
+    public UIBranch MyParentBranch { get; private set; }
     public bool DontSetAsActive { get; set; } = false;
     public UINode[] ThisGroupsUINodes { get; private set; }
     public bool AllowKeys { get; set; }
@@ -174,7 +174,6 @@ public class UIBranch : MonoBehaviour
         if (!_saveExitSelection)
         {
             _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartPosition, _groupsList);
-            LastHighlighted.SetNotHighlighted();
             LastHighlighted = DefaultStartPosition;
         }
         SetNewParentBranch(newParentController);

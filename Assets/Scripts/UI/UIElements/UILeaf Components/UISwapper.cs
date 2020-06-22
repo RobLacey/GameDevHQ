@@ -23,12 +23,14 @@ public class UISwapper
     Sprite _startImage;
     string _startText;
     string _startToggleText;
-    Setting _mySetting = Setting.SwapImageOrText;
+    bool canActivate;
 
     //TODO Add Multi Select Toggle - Will need to be a new UIElement type so a lot of work
 
-    public Action<UIEventTypes, bool, Setting> OnAwake(bool selected)
+    public Action<UIEventTypes, bool> OnAwake(bool selected, Setting setting)
     {
+        canActivate = (setting & Setting.SwapImageOrText) != 0;
+
         if (_imageToSwap)
         {
             _startImage = _imageToSwap.sprite;
@@ -43,18 +45,18 @@ public class UISwapper
             _startToggleText = _toggleText.text;
         }
 
-        CycleToggle(selected, Setting.SwapImageOrText);
+        CycleToggle(selected);
         return Swap;
     }
 
-    public Action<UIEventTypes, bool, Setting> OnDisable()
+    public Action<UIEventTypes, bool> OnDisable()
     {
         return Swap;
     }
 
-    private void Swap(UIEventTypes uIEventTypes, bool selected, Setting setting)
+    private void Swap(UIEventTypes uIEventTypes, bool selected)
     {
-        if (!((setting & _mySetting) != 0)) return;
+        if (!canActivate) return;
 
         if (_imageToSwap)
         {
@@ -81,9 +83,9 @@ public class UISwapper
         }
     }
 
-    public void CycleToggle(bool selected, Setting setting)
+    public void CycleToggle(bool selected)
     {
-        if (!((setting & _mySetting) != 0)) return;
+        if (!canActivate) return;
         if (_toggleIsOff == null) return;
 
         if (selected)

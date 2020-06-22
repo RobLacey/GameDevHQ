@@ -7,7 +7,8 @@ public static class UICancel
     public static List<UIBranch> _homeGroup;
     public static UIHub _myUIHub;
 
-    public static void Cancel() //Cancel Class
+
+    public static void Cancel()
     {
         if (_myUIHub.LastSelected.ChildBranch != null
             && _myUIHub.LastSelected.ChildBranch.MyCanvas.enabled != false)
@@ -43,12 +44,12 @@ public static class UICancel
         if (_myUIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.AtTweenEnd)
         {
             _myUIHub.LastSelected.ChildBranch.OutTweenToParent(() => endAction.Invoke());
-            _myUIHub.LastSelected._audio.Play(UIEventTypes.Cancelled, _myUIHub.LastSelected._enabledFunctions);
+            _myUIHub.LastSelected.IAudio.Play(UIEventTypes.Cancelled);
         }
         else
         {
             _myUIHub.LastSelected.ChildBranch.OutTweenToParent();
-            _myUIHub.LastSelected._audio.Play(UIEventTypes.Cancelled, _myUIHub.LastSelected._enabledFunctions);
+            _myUIHub.LastSelected.IAudio.Play(UIEventTypes.Cancelled);
             endAction.Invoke();
         }
     }
@@ -73,12 +74,12 @@ public static class UICancel
 
         if (lastSelected.IsSelected != false)
         {
-            lastSelected.PressedActions();
-            lastSelected.SetNotHighlighted();
             if (lastSelected.MyBranch.DontTurnOff || lastSelected.ChildBranch.MyBranchType == BranchType.Internal)
             {
                 lastSelected.MyBranch.TweenOnChange = false;
             }
+            lastSelected.Deactivate();
+            lastSelected.SetNotHighlighted();
             lastSelected.MyBranch.MoveToNextLevel();
             _myUIHub.LastSelected = lastSelected.MyBranch.MyParentBranch.LastSelected;
         }

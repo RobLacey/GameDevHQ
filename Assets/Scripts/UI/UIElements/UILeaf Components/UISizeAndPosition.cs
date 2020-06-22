@@ -33,9 +33,8 @@ public class UISizeAndPosition
     RectTransform _myRect;
     Vector3 _startSize;
     Vector3 _startPosition;
-    Setting _mySettings = Setting.SizeAndPosition;
     int _id;
-
+    bool canActivate;
 
     //Editor Script
     #region Editor Scripts
@@ -61,8 +60,9 @@ public class UISizeAndPosition
 
     #endregion
 
-    public Action<UIEventTypes, bool, Setting> OnAwake(Transform newTransform)
+    public Action<UIEventTypes, bool> OnAwake(Transform newTransform, Setting setting)
     {
+        canActivate = (setting & Setting.SizeAndPosition) != 0;
         _myTransform = newTransform;
         _id = _myTransform.gameObject.GetInstanceID();
         _myRect = _myTransform.GetComponent<RectTransform>();
@@ -71,14 +71,14 @@ public class UISizeAndPosition
         return HowToChangeSize;
     }
 
-    public Action<UIEventTypes, bool, Setting> OnDisable()
+    public Action<UIEventTypes, bool> OnDisable()
     {
         return HowToChangeSize;
     }
 
-    private void HowToChangeSize(UIEventTypes uIEventTypes, bool Selected, Setting settingsToCheck)
+    private void HowToChangeSize(UIEventTypes uIEventTypes, bool Selected)
     {
-        if (!((settingsToCheck & _mySettings) != 0)) return;
+        if (!canActivate) return;
 
         if (_ChangeSizeOn == Choose.Pressed) return;
 
@@ -141,9 +141,9 @@ public class UISizeAndPosition
         }
     }
 
-    public void WhenPressed(Setting settingsToCheck, bool IsSelected)
+    public void WhenPressed(bool IsSelected)
     {
-        if ((settingsToCheck & _mySettings) != 0)
+        if (canActivate)
         {
             if (_scaledType == ScaleType.ScalePunch || _scaledType == ScaleType.ScaleShake)
             {

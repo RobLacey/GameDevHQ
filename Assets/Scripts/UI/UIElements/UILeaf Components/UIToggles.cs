@@ -29,12 +29,13 @@ public class UIToggles
                     _toggleGroupMembers.Add(node);
                 }
 
-                if (_startAsSelected)
-                {
-                    _myNode.IsSelected = true;
-                    _myNode.SetNotHighlighted();
-                }
             }
+        }
+        if (_startAsSelected)
+        {
+            _myNode.SetSelected_NoEffects();
+            //_myNode.IsSelected = true;
+            // _myNode.SetNotHighlighted();
         }
     }
 

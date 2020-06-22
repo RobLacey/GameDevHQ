@@ -39,12 +39,12 @@ public class UITooltip
     Canvas[] _cachedCanvas;
     float _canvasWidth;
     float _canvasHeight;
-    Setting _mySetting = Setting.TooplTip;
     Vector3[] _myCorners = new Vector3[4];
 
     //Enums & Properties
     enum UseSide { ToTheRightOf, ToTheLeftOf, GameObjectAsPosition  }
     public bool IsActive { get; set; }
+    public bool CanActivate { get; private set; }
 
     //Editor Scripts
     public bool Fixed() { return _tooltipType == TooltipType.Fixed; }
@@ -56,22 +56,26 @@ public class UITooltip
 
     public void OnAwake(Setting setting, string parent) //Make OnAwake
     {
-        if (!((setting & _mySetting) != 0)) return;
+        CanActivate = (setting & Setting.TooplTip) != 0;
 
-        if (_listOfTooltips.Length == 0)
+        if (CanActivate)
         {
-            Debug.Log("No tooltips set on " + parent);
-            return;
-        }
+            if (_listOfTooltips.Length == 0)
+            {
+                Debug.Log("No tooltips set on " + parent);
+                return;
+            }
 
-        CreateBucket();
+            CreateBucket();
 
-        SetUpTooltips();
+            SetUpTooltips();
 
-        //Debug.Log(Camera.main.pixelWidth + "Camera");
-        //Debug.Log(_mainCanvas.rect.width + "Canvas");
-        _canvasWidth = (_mainCanvas.rect.width / 2) - _screenSafeZone;
-        _canvasHeight = (_mainCanvas.rect.height / 2) - _screenSafeZone;
+            //Debug.Log(Camera.main.pixelWidth + "Camera");
+            //Debug.Log(_mainCanvas.rect.width + "Canvas");
+            _canvasWidth = (_mainCanvas.rect.width / 2) - _screenSafeZone;
+            _canvasHeight = (_mainCanvas.rect.height / 2) - _screenSafeZone;
+
+        }    
     }
 
     private void SetUpTooltips()
@@ -105,9 +109,9 @@ public class UITooltip
         }
     }
 
-    public void HideToolTip(Setting setting)
+    public void HideToolTip()
     {
-        if (!((setting & _mySetting) != 0)) return;
+        if (!CanActivate) return;
         
         _toolTipCanvas.enabled = false;
         IsActive = false;

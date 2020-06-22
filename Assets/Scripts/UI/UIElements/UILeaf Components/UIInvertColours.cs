@@ -22,7 +22,6 @@ public class UIInvertColours
     bool _canInvert;
     Color _checkMarkStartColour = Color.white;
     Color _textStartColour = Color.white;
-    Setting _mySetting = Setting.InvertColourCorrection;
 
     #region Editor Scripts
     private bool TextSet()
@@ -37,32 +36,30 @@ public class UIInvertColours
     }
 
     #endregion
-    public Action<UIEventTypes, bool, Setting> OnAwake()
+    public Action<UIEventTypes, bool> OnAwake(Setting setting)
     {
-        _canInvert = CheckSettings();
+        _canInvert = CheckSettings(setting);
         if (_image != null) _checkMarkStartColour = _image.color;
         if (_text != null) _textStartColour = _text.color;
         return InvertColour;
     }
 
-    public Action<UIEventTypes, bool, Setting> OnDisable()
+    public Action<UIEventTypes, bool> OnDisable()
     {
         return InvertColour;
     }
 
-    private bool CheckSettings()
+    private bool CheckSettings(Setting setting)
     {
-        if (_text || _image)
+        if (_text || _image && (setting & Setting.InvertColourCorrection) != 0)
         {
             return true;
         }
         return false;
     }
 
-    private void InvertColour(UIEventTypes eventType, bool selected, Setting setting)
+    private void InvertColour(UIEventTypes eventType, bool selected)
     {
-        if (!((setting & _mySetting) != 0)) return;
-
         if (_canInvert)
         {
             switch (eventType)
@@ -89,7 +86,7 @@ public class UIInvertColours
                         }
                         else
                         {
-                            InvertColour(UIEventTypes.Highlighted, selected, _mySetting);
+                            InvertColour(UIEventTypes.Highlighted, selected);
                         }
                     }
                     else

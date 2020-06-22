@@ -10,7 +10,7 @@ using NaughtyAttributes;
 
 public class UIHub : MonoBehaviour
 {
-    [Header("Main Settings")] 
+    [Header("Main Settings")]
     [SerializeField] [ValidateInput("ProtectEscapekeySetting")] EscapeKey _GlobalEscapeKeyFunction;
     [SerializeField] [InputAxis] string _cancelButton;
     [SerializeField] [InputAxis] string _branchSwitchButton;
@@ -30,7 +30,6 @@ public class UIHub : MonoBehaviour
 
     //Variables
     int _groupIndex = 0;
-    //UINode _lastHighlighted;
     UINode _lastRootNode;
     Vector3 _mousePos = Vector3.zero;
     bool _usingMouse = false;
@@ -41,7 +40,7 @@ public class UIHub : MonoBehaviour
     //Properties
     bool InMenu { get; set; } = true;
     public UIBranch ActiveBranch { get; set; }
-    public EscapeKey GlobalEscape { get { return _GlobalEscapeKeyFunction;} }
+    public EscapeKey GlobalEscape { get { return _GlobalEscapeKeyFunction; } }
     public UINode LastSelected { get; set; }
     public UINode LastHighlighted { get; set; }
     public bool OnHomeScreen { get; set; } = false;
@@ -60,9 +59,10 @@ public class UIHub : MonoBehaviour
     {
         if (_GlobalEscapeKeyFunction == EscapeKey.GlobalSetting)
         {
-            Debug.Log("Escape KeyError"); 
+            Debug.Log("Escape KeyError");
         }
-        return escapeKey != EscapeKey.GlobalSetting; }
+        return escapeKey != EscapeKey.GlobalSetting;
+    }
 
     [Button("Add a New Home Branch Folder")]
     private void MakeFolder()
@@ -131,7 +131,7 @@ public class UIHub : MonoBehaviour
         UIHomeGroup._myUIHub = this;
         UIHomeGroup._allBranches = FindObjectsOfType<UIBranch>();
 
-        foreach (var item in FindObjectsOfType<UIBranch>())
+        foreach (UIBranch item in FindObjectsOfType<UIBranch>())
         {
             if (item.MyBranchType == BranchType.PopUp)
             {
@@ -157,9 +157,9 @@ public class UIHub : MonoBehaviour
             GameToMenuSwitching();
         }
 
-        foreach (var item in _hotKeySettings)
+        foreach (HotKeys item in _hotKeySettings)
         {
-            if(item.CheckHotkeys())
+            if (item.CheckHotkeys())
             {
                 if (_inGameMenuSystem)
                 {
@@ -215,13 +215,13 @@ public class UIHub : MonoBehaviour
 
     private void IntroAnimations()
     {
-        foreach (var item in _homeBranches)
+        foreach (UIBranch homeBranch in _homeBranches)
         {
-            if (item != _homeBranches[0])
+            if (homeBranch != _homeBranches[0])
             {
-                item.DontSetAsActive = true;
+                homeBranch.DontSetAsActive = true;
             }
-            item.MoveToNextLevel();
+            homeBranch.MoveToNextLevel();
         }
     }
 
@@ -252,7 +252,7 @@ public class UIHub : MonoBehaviour
                     if (LastSelected.ChildBranch.MyBranchType == BranchType.Internal)
                     {
                         LastSelected.SetNotHighlighted();
-                        if(LastSelected.IsSelected == true) LastSelected.PressedActions();
+                        if (LastSelected.IsSelected == true) LastSelected.PressedActions();
                     }
                 }
             }
@@ -269,6 +269,7 @@ public class UIHub : MonoBehaviour
         if (node.MyBranch.MyBranchType == BranchType.PopUp) return LastSelected;
 
         UINode temp = node;
+
         while (temp.MyBranch != temp.MyBranch.MyParentBranch)
         {
             temp = temp.MyBranch.MyParentBranch.LastSelected;
@@ -283,19 +284,22 @@ public class UIHub : MonoBehaviour
 
     public void SetLastHighlighted(UINode newNode)
     {
-        //_lastHighlighted.SetNotHighlighted();
-        LastHighlighted = newNode;
-        ActiveBranch = LastHighlighted.MyBranch;
-        if (OnHomeScreen)
+        if (newNode != LastHighlighted)
         {
-            UIHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch, ref _groupIndex);
+            LastHighlighted.SetNotHighlighted();
+            LastHighlighted = newNode;
+            ActiveBranch = LastHighlighted.MyBranch;
+            if (OnHomeScreen)
+            {
+                UIHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch, ref _groupIndex);
+            }
+            EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
         }
-        EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
     }
 
     private void SwitchHomeGroups()
     {
-        LastHighlighted._audio.Play(UIEventTypes.Selected, LastHighlighted._enabledFunctions);
+        LastHighlighted.IAudio.Play(UIEventTypes.Selected);
         UIHomeGroup.SwitchHomeGroups(ref _groupIndex);
     }
 
@@ -348,7 +352,7 @@ public class UIHub : MonoBehaviour
             }
 
             _returnToGameControl.Invoke(InMenu);
-        }    
+        }
     }
 
     public void PrintEnter()

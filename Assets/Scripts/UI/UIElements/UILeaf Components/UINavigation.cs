@@ -7,7 +7,7 @@ using UnityEngine.Events;
 using System;
 
 [System.Serializable]
-public class UINavigation
+public class UINavigation : IUINavigation
 {
     [SerializeField] [AllowNesting] [Label("Move To When Clicked")] [HideIf("NotAToggle")] UIBranch _childBranch;
     [SerializeField] NavigationType _setNavigation = NavigationType.UpAndDown;
@@ -18,6 +18,7 @@ public class UINavigation
 
     #region Editor Scripts & Internal Classes
     public bool NotAToggle { get; set; }
+
     public bool UpDownNav()
     {
         if (_setNavigation == NavigationType.UpAndDown || _setNavigation == NavigationType.AllDirections)
@@ -39,16 +40,17 @@ public class UINavigation
     #endregion
 
     //Variables
-    Setting _mySettings = Setting.NavigationAndOnClick;
     UINode _myNode;
     UIBranch _myBranch;
+    public bool CanNaviagte { get; private set; }
 
     public UIBranch Child { get { return _childBranch; } }
 
-    public void OnAwake(UINode node, UIBranch branch)
+    public void OnAwake(UINode node, UIBranch branch, Setting setting)
     {
         _myNode = node;
         _myBranch = branch;
+        CanNaviagte = (setting & Setting.NavigationAndOnClick) != 0;
     }
 
     public void SetChildsParentBranch()
@@ -71,7 +73,7 @@ public class UINavigation
         }
         else
         {
-            _myNode._audio.Play(UIEventTypes.Highlighted, _myNode._enabledFunctions);
+            _myNode.IAudio.Play(UIEventTypes.Highlighted);
             _myBranch.SaveLastHighlighted(_myNode);
             _myNode.SetAsHighlighted();
         }
@@ -91,24 +93,24 @@ public class UINavigation
             {
                 if (eventData.moveDir == MoveDirection.Left || eventData.moveDir == MoveDirection.Right)
                 {
-                    _myNode._audio.Play(UIEventTypes.Selected, _myNode._enabledFunctions);
+                    _myNode.IAudio.Play(UIEventTypes.Selected);
                 }
             }
             else
             {
-                ProcessMoves(eventData, _myNode._enabledFunctions);
+                ProcessMoves(eventData);
             }
         }
         else
         {
-            ProcessMoves(eventData, _myNode._enabledFunctions);
+            ProcessMoves(eventData);
         }
     }
 
 
-    private void ProcessMoves(AxisEventData eventData, Setting setting)
+    private void ProcessMoves(AxisEventData eventData)
     {
-        if (_setNavigation == NavigationType.None || (setting & _mySettings) == 0) return;
+        if (_setNavigation == NavigationType.None || !CanNaviagte) return;
 
         if (_setNavigation != NavigationType.RightAndLeft)
         {
@@ -117,8 +119,7 @@ public class UINavigation
                 if (down)
                 {
                     if (down.IsDisabled) { down.OnMove(eventData); return; }
-                    down._navigation.NavigateToNextNode();
-                    _myNode.SetNotHighlighted();
+                    down.INavigation.NavigateToNextNode();
                 }
             }
 
@@ -127,8 +128,7 @@ public class UINavigation
                 if (up)
                 {
                     if (up.IsDisabled) { up.OnMove(eventData); return; }
-                    up._navigation.NavigateToNextNode();
-                    _myNode.SetNotHighlighted();
+                    up.INavigation.NavigateToNextNode();
 
                 }
             }
@@ -141,8 +141,7 @@ public class UINavigation
                 if (left)
                 {
                     if (left.IsDisabled) { left.OnMove(eventData); return; }
-                    left._navigation.NavigateToNextNode();
-                    _myNode.SetNotHighlighted();
+                    left.INavigation.NavigateToNextNode();
 
                 }
             }
@@ -152,8 +151,7 @@ public class UINavigation
                 if (right)
                 {
                     if (right.IsDisabled) { right.OnMove(eventData); return; }
-                    right._navigation.NavigateToNextNode();
-                    _myNode.SetNotHighlighted();
+                    right.INavigation.NavigateToNextNode();
 
                 }
             }
@@ -169,7 +167,7 @@ public class UINavigation
         }
         else
         {
-            _myNode._audio.Play(UIEventTypes.Highlighted, _myNode._enabledFunctions);
+            _myNode.IAudio.Play(UIEventTypes.Highlighted);
         }
 
         _myBranch.SaveLastHighlighted(_myNode);
@@ -226,17 +224,11 @@ public class UINavigation
         if (_childBranch.WhenToMove == WhenToMove.OnClick)
         {
             _childBranch.OutTweenToParent();
-            TurnOff();
+            _childBranch.LastSelected.Deactivate();
         }
         else
         {
-            _childBranch.OutTweenToParent(() => TurnOff());
+            _childBranch.OutTweenToParent(() => _childBranch.LastSelected.Deactivate());
         }
-    }
-
-    private void TurnOff()
-    {
-        _childBranch.LastSelected.Deactivate();
-        _childBranch.LastHighlighted.SetNotHighlighted();
     }
 }

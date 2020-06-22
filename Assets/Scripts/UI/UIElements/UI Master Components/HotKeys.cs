@@ -34,64 +34,38 @@ public static class HotKeyProcess
             return;
         }
 
-        foreach (var node in branch.MyParentBranch.ThisGroupsUINodes) //****Check this functions corretcly
+        foreach (UINode node in branch.MyParentBranch.ThisGroupsUINodes)
         {
             if (node.ChildBranch == branch)
             {
                 ToNextBranch(branch, node);
-                _myUIHub.LastHighlighted.SetNotHighlighted();
 
-                if (_myUIHub.LastSelected != node && _myUIHub.LastSelected.ChildBranch != null)
+                if (_myUIHub.LastSelected != node && _myUIHub.LastSelected.ChildBranch != null 
+                    && _myUIHub.LastSelected.IsSelected == true)
                 {
-                    if (_myUIHub.LastSelected.IsSelected == true)
-                    {
-                        if (_myUIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.OnClick)
-                        {
-                            _myUIHub.LastSelected.ChildBranch.OutTweenToParent();
-                            TurnOff(branch, node);
-                        }
-                        else
-                        {
-                            _myUIHub.LastSelected.ChildBranch.OutTweenToParent(() => TurnOff(branch, node));
-                        }
-                    }
-                    else
-                    {
-                        TurnOff(branch, node);
-                    }
+                    StartTween(branch);
                 }
                 else
                 {
 
-                    TurnOff(branch, node);
+                    TurnOff(branch);
                 }
                 break;
             }
         }
-    } 
+    }
 
-    private static void TurnOff(UIBranch branch, UINode node)
+    private static void StartTween(UIBranch branch)
     {
-        //ToNextBranch(branch, node);
-
-        if (branch.ScreenType == ScreenType.ToFullScreen)
+        if (_myUIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.OnClick)
         {
-            if (_myUIHub.OnHomeScreen)
-            {
-                UIHomeGroup.ClearHomeScreen(branch);
-                UIHomeGroup.ClearAllPopUpsRegardless();
-            }
+            _myUIHub.LastSelected.ChildBranch.OutTweenToParent();
+            TurnOff(branch);
         }
         else
         {
-            if (!_myUIHub.OnHomeScreen)
-            {
-
-                UIHomeGroup.RestoreHomeScreen();
-            }
+            _myUIHub.LastSelected.ChildBranch.OutTweenToParent(() => TurnOff(branch));
         }
-        branch.MoveToNextLevel();
-
     }
 
     private static void ToNextBranch(UIBranch branch, UINode node)
@@ -108,8 +82,29 @@ public static class HotKeyProcess
         {
             node.SetSelected_NoEffects();
         }
+        branch.DefaultStartPosition.IAudio.Play(UIEventTypes.Selected);
         branch.MyParentBranch.SaveLastHighlighted(node);
         branch.MyParentBranch.SaveLastSelected(node);
-        //branch.MoveToNextLevel();
     }
+
+    private static void TurnOff(UIBranch branch)
+    {
+        if (branch.ScreenType == ScreenType.ToFullScreen)
+        {
+            if (_myUIHub.OnHomeScreen)
+            {
+                UIHomeGroup.ClearHomeScreen(branch);
+                UIHomeGroup.ClearAllPopUpsRegardless();
+            }
+        }
+        else
+        {
+            if (!_myUIHub.OnHomeScreen)
+            {
+                UIHomeGroup.RestoreHomeScreen();
+            }
+        }
+        branch.MoveToNextLevel();
+    }
+
 }

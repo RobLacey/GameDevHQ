@@ -14,7 +14,7 @@ public class UIAccessories
     [SerializeField] Image[] _accessoriesList;
 
     //Variables
-    Setting _mySettings = Setting.Accessories;
+    bool canActivate;
 
     //Editor Script
     public bool Activate()
@@ -26,20 +26,21 @@ public class UIAccessories
         return true;
     }
 
-    public Action<UIEventTypes, bool, Setting> OnAwake()
+    public Action<UIEventTypes, bool> OnAwake(Setting setting)
     {
-        ActivatePointer(UIEventTypes.Normal, false, _mySettings);
+        canActivate = (setting & Setting.Accessories) != 0;
+        ActivatePointer(UIEventTypes.Normal, false);
         return ActivatePointer;
     }
 
-    public Action<UIEventTypes, bool, Setting> OnDisable()
+    public Action<UIEventTypes, bool> OnDisable()
     {
         return ActivatePointer;
     }
 
-    private void ActivatePointer(UIEventTypes uIEventTypes, bool active, Setting setting)
+    private void ActivatePointer(UIEventTypes uIEventTypes, bool active)
     {
-        if (!((setting & _mySettings) != 0)) { ActivateAccessories(false); return; }
+        if (!canActivate) { ActivateAccessories(false); return; }
 
         switch (uIEventTypes)
         {
