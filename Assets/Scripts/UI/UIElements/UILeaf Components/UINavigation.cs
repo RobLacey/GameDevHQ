@@ -55,7 +55,7 @@ public class UINavigation : IUINavigation
 
     public void SetChildsParentBranch()
     {
-        if (_myBranch.MyBranchType == BranchType.PopUp) return;
+        if (_myBranch.IsAPopUpBranch()) return;
 
         if (_childBranch)
         {

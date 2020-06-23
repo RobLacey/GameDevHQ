@@ -5,7 +5,6 @@ using UnityEngine;
 public static class UIHomeGroup 
 {
     public static List<UIBranch> _homeGroup;
-    public static List<UIBranch> _popUps = new List<UIBranch>();
     public static UIBranch[] _allBranches;
     public static UIHub _myUIHub;
 
@@ -49,15 +48,7 @@ public static class UIHomeGroup
         {
             if (item == ignoreBranch) continue;
 
-            if (item.MyBranchType != BranchType.PopUp && item.MyCanvas.enabled)
-            {
-                item.MyCanvas.enabled = false;
-            }
-        }
-
-        foreach (var item in _popUps)
-        {
-            if (!item.RetainPopups)
+            if (item.MyCanvas.enabled)
             {
                 item.MyCanvas.enabled = false;
             }
@@ -73,14 +64,6 @@ public static class UIHomeGroup
                 _myUIHub.OnHomeScreen = true;
                 item.ResetHomeScreenBranch(_myUIHub.LastSelected.MyBranch);
             }
-        }
-    }
-
-    public static void ClearAllPopUpsRegardless()
-    {
-        foreach (var item in _popUps)
-        {
-            item.MyCanvas.enabled = false;
         }
     }
 }

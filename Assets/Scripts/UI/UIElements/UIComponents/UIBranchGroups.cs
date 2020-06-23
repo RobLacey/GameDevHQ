@@ -29,7 +29,7 @@ public static class UIBranchGroups
 
     public static int SwitchBranchGroup(List<GroupList> groupsList, int index)
     {
-        groupsList[index]._startNode.SetNotHighlighted();
+        groupsList[index]._startNode.SetNotHighlighted(); 
 
         if (index == groupsList.Count - 1)
         {

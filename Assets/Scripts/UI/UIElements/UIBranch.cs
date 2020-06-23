@@ -17,17 +17,16 @@ public class UIBranch : MonoBehaviour
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [SerializeField] BranchType _branchType = BranchType.StandardUI;
     [SerializeField] ScreenType _screenType = ScreenType.ToFullScreen;
-    [SerializeField] [HideIf("IsPopUp")] bool _dontTurnOff;
+    [SerializeField] [HideIf("IsAPopUpBranch")] bool _dontTurnOff;
     [SerializeField] [ShowIf("IsHome")] [Label("Tween on Return To Home")] bool _tweenOnHome;
     [SerializeField] [Label("Save Selection On Exit")] [HideIf("IsIndie")] bool _saveExitSelection;
     [SerializeField] bool _highlightFirstOption = true;
     [SerializeField] [Label("Move To Next Branch...")] WhenToMove _moveType = WhenToMove.OnClick;
-    [SerializeField] [ShowIf("IsPopUp")] [Label("Ratain Pop Ups (Not Hotkeys)")] bool _alwaysRetainPopUps = false;
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "IsPopUp", "IsHome", "IsPause")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
+    [HideIf(EConditionOperator.Or, "IsAPopUpBranch", "IsHome", "IsPause")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] [ValidateInput("IsEmpty", "If left Blank it will Auto-assign first UINode in hierarchy/Group")]
     UINode _userDefinedStartPosition;
-    [SerializeField] [HideIf("IsPopUp")] [Label("Branch Group List (Leave blank if NO groups needed)")]
+    [SerializeField] [HideIf("IsAPopUpBranch")] [Label("Branch Group List (Leave blank if NO groups needed)")]
     [ReorderableList] List<GroupList> _groupsList;
 
     //Internal Callses & Editor Scripts
@@ -44,8 +43,6 @@ public class UIBranch : MonoBehaviour
         }
         return false;
     }
-    public bool IsPopUp() { return _branchType == BranchType.PopUp; }
-    public bool IsPause() { return _branchType == BranchType.PauseMenu; }
 
     #endregion
 
@@ -56,6 +53,8 @@ public class UIBranch : MonoBehaviour
     Action _onFinishedTrigger;
 
     //Properties
+    public bool IsAPopUpBranch() { return _branchType == BranchType.PopUp_NonResolve || _branchType == BranchType.PopUp_Resolve; }
+    public bool IsPause() { return _branchType == BranchType.PauseMenu; }
     public UINode DefaultStartPosition { get { return _userDefinedStartPosition; }
         private set { _userDefinedStartPosition = value; } }
     public Canvas MyCanvas { get; set; }
@@ -73,12 +72,14 @@ public class UIBranch : MonoBehaviour
     public bool DontTurnOff { get { return _dontTurnOff; } } 
     public bool TweenOnHome { get { return _tweenOnHome; } }
     public bool FromHotkey { get; set; }
-    public bool RetainPopups { get { return _alwaysRetainPopUps; } }
+    public bool IsResolvePopUp { get { return _branchType == BranchType.PopUp_Resolve; } }
+    public bool IsNonResolvePopUp { get { return _branchType == BranchType.PopUp_NonResolve; } }
     public bool HighlightFirstOption { get { return _highlightFirstOption; } }
     public ScreenType ScreenType { get { return _screenType; } } 
     public UIHub UIHub { get; private set; } 
-    public UIPopUp IsAPopUp { get; private set; } 
-    public UIPopUp IsPauseMenu { get; private set; } 
+    public UIPopUp PopUpClass { get; private set; } 
+    public UIPopUp IsPauseMenu { get; private set; }
+    public int GroupListCount { get { return _groupsList.Count; } }
 
 
     private void Awake()
@@ -123,9 +124,9 @@ public class UIBranch : MonoBehaviour
             _escapeKeyFunction = EscapeKey.BackOneLevel;
         }
 
-        if (_branchType == BranchType.PopUp)
+        if (IsAPopUpBranch())
         {
-            IsAPopUp = new UIPopUp(this, FindObjectsOfType<UIBranch>());
+            PopUpClass = new UIPopUp(this, FindObjectsOfType<UIBranch>());
            _escapeKeyFunction = EscapeKey.BackOneLevel;
         }
     }
@@ -201,7 +202,7 @@ public class UIBranch : MonoBehaviour
 
     public void SetNewParentBranch(UIBranch newParentController) 
     {
-        if (newParentController != null && newParentController.MyBranchType != BranchType.PopUp)
+        if (newParentController != null && !newParentController.IsAPopUpBranch())
         {
             MyParentBranch = newParentController;
         }
@@ -239,7 +240,6 @@ public class UIBranch : MonoBehaviour
     private void OutTweenCallback()
     {
         MyCanvas.enabled = false;
-        MyCanvasGroup.blocksRaycasts = true;
         _onFinishedTrigger?.Invoke();
     }
 
@@ -251,7 +251,9 @@ public class UIBranch : MonoBehaviour
 
     private void InTweenCallback()
     {
-        MyCanvasGroup.blocksRaycasts = true;
+        if (!IsAPopUpBranch()) MyCanvasGroup.blocksRaycasts = true;
+        if (IsAPopUpBranch()) PopUpClass.ManagePopUpRaycast();
+        // MyCanvasGroup.blocksRaycasts = true;
 
         if (!DontSetAsActive) 
         {
@@ -269,6 +271,6 @@ public class UIBranch : MonoBehaviour
     [Button]
     public void EnterIndieScreen()
     {
-        IsAPopUp.StartPopUp();
+        PopUpClass.StartPopUp();
     }
 }

@@ -7,8 +7,17 @@ using NaughtyAttributes;
 public class HotKeys 
 {
     [InputAxis] [AllowNesting] public string _hotkeyAxis;
-    public UIBranch _UIBranch;
+    [ValidateInput("IsAllowedType", "Can't have PopUp as Hotkey as HotKey")] public UIBranch _UIBranch;
 
+    public bool IsAllowedType()
+    {
+        if (_UIBranch.IsAPopUpBranch())
+        {
+            Debug.Log("Can't have PopUp as Hotkey as HotKey");
+            return false;
+        }
+        return true;
+    }
     public bool CheckHotkeys()
     {
         if (Input.GetButtonDown(_hotkeyAxis))
@@ -27,12 +36,6 @@ public static class HotKeyProcess
     public static void HotKeyActivate(UIBranch branch)
     {
         if (branch.MyCanvas.enabled == true) return;
-
-        if (branch.MyBranchType == BranchType.PopUp)
-        {
-            Debug.Log("Can't have independent as HotKey");
-            return;
-        }
 
         foreach (UINode node in branch.MyParentBranch.ThisGroupsUINodes)
         {
@@ -72,7 +75,8 @@ public static class HotKeyProcess
     {
         UICancel.ResetHierachy();
 
-        if (branch.MyBranchType != BranchType.HomeScreenUI)   { branch.FromHotkey = true; }
+        if (branch.MyBranchType != BranchType.HomeScreenUI)
+                { branch.FromHotkey = true; } //Ensures back to home is used on cancel
 
         if (branch.ScreenType == ScreenType.ToFullScreen)
         {
@@ -94,7 +98,6 @@ public static class HotKeyProcess
             if (_myUIHub.OnHomeScreen)
             {
                 UIHomeGroup.ClearHomeScreen(branch);
-                UIHomeGroup.ClearAllPopUpsRegardless();
             }
         }
         else

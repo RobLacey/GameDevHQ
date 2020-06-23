@@ -38,7 +38,8 @@ public class UIHub : MonoBehaviour
     bool _usingKeysOrCtrl = false;
     bool _canStart = false;
     UIAudioManager _UIAudio;
-    public List<UIBranch> ActivePopUps { get; set; } = new List<UIBranch>();
+    int _popUpIndex;
+    int _groupCount;
 
     //Properties
     bool InMenu { get; set; } = true;
@@ -49,6 +50,9 @@ public class UIHub : MonoBehaviour
     public bool OnHomeScreen { get; set; } = false;
     public bool GameIsPaused { get; private set; }
     public int GroupIndex { get { return _groupIndex; } }
+    public List<UIBranch> ActivePopUps_Resolve { get; set; } = new List<UIBranch>();
+    public List<UIBranch> ActivePopUps_NonResolve { get; set; } = new List<UIBranch>();
+
 
     [Serializable]
     public class GroupList
@@ -134,14 +138,6 @@ public class UIHub : MonoBehaviour
         UIHomeGroup._homeGroup = _homeBranches;
         UIHomeGroup._myUIHub = this;
         UIHomeGroup._allBranches = FindObjectsOfType<UIBranch>();
-
-        foreach (UIBranch item in FindObjectsOfType<UIBranch>())
-        {
-            if (item.MyBranchType == BranchType.PopUp)
-            {
-                UIHomeGroup._popUps.Add(item);
-            }
-        }
     }
 
     private IEnumerator StartDelay()
@@ -166,15 +162,18 @@ public class UIHub : MonoBehaviour
             GameToMenuSwitching();
         }
 
-        foreach (HotKeys item in _hotKeySettings)
+        if (ActivePopUps_Resolve.Count == 0)
         {
-            if (item.CheckHotkeys())
+            foreach (HotKeys item in _hotKeySettings)
             {
-                if (_inGameMenuSystem)
+                if (item.CheckHotkeys())
                 {
-                    GameToMenuSwitching();
+                    if (_inGameMenuSystem)
+                    {
+                        GameToMenuSwitching();
+                    }
+                    return;
                 }
-                return;
             }
         }
 
@@ -188,14 +187,14 @@ public class UIHub : MonoBehaviour
     {
         if (GameIsPaused)
         {
-            _pauseMenu.IsPauseMenu.RestoreLastPosition();
             GameIsPaused = false;
+            _pauseMenu.IsPauseMenu.RestoreLastPosition();
             Time.timeScale = 1;
         }
         else
         {
-            _pauseMenu.IsPauseMenu.StartPopUp();
             GameIsPaused = true;
+            _pauseMenu.IsPauseMenu.StartPopUp();
             Time.timeScale = 0;
         }
         IsPaused?.Invoke(GameIsPaused);
@@ -216,7 +215,7 @@ public class UIHub : MonoBehaviour
                 {
                     CancelOrBack(EscapeKey.BackToHome);
                 }
-                else if(GameIsPaused || ActivePopUps.Count > 0)
+                else if(GameIsPaused || ActiveBranch.IsAPopUpBranch())
                 {
                     UICancel.CancelOrBackButton(EscapeKey.BackOneLevel);
                 }
@@ -225,20 +224,69 @@ public class UIHub : MonoBehaviour
                     UICancel.Cancel();
                 }
             }
-            else if (Input.GetButtonDown(_branchSwitchButton))
+            else if (Input.GetButtonDown(_branchSwitchButton) && ActivePopUps_Resolve.Count == 0)
             {
-                if (OnHomeScreen)
-                {
-                    SwitchHomeGroups();
-                }
-                else
-                {
-                    ActiveBranch.SwitchBranchGroup();
-                }
+                SwitchingGroups();
             }
             else
             {
                 ActivateKeysOrControl();
+            }
+        }
+    }
+
+    private void SwitchingGroups()
+    {
+        if (_popUpIndex == 0)
+        {
+            if (OnHomeScreen)
+            {
+                _groupCount = _homeBranches.Count;
+            }
+            else
+            {
+                _groupCount = ActiveBranch.GroupListCount;
+            }
+        }
+
+        if (ActivePopUps_NonResolve.Count > 0)
+        {
+            if (_popUpIndex < ActivePopUps_NonResolve.Count)
+            {
+                SetLastHighlighted(ActivePopUps_NonResolve[_popUpIndex].LastHighlighted);
+                ActivePopUps_NonResolve[_popUpIndex].LastHighlighted.InitailNodeAsActive();
+                _popUpIndex++;
+            }
+            else
+            {
+                SwitchingGroups();
+            }
+            Debug.Log("Pop Index to sort out");
+        }
+        else if (OnHomeScreen)
+        {
+            if (_groupCount > 0)
+            {
+                _groupCount--;
+                SwitchHomeGroups();
+            }
+            else
+            {
+                _popUpIndex = 0;
+                SwitchingGroups();
+            }
+        }
+        else
+        {
+            if (_groupCount > 0)
+            {
+                _groupCount--;
+                ActiveBranch.SwitchBranchGroup();
+            }
+            else
+            {
+                _popUpIndex = 0;
+                SwitchingGroups();
             }
         }
     }
@@ -265,7 +313,7 @@ public class UIHub : MonoBehaviour
         UICancel.CancelOrBackButton(escapeKey);
     }
 
-    public void SetLastSelected(UINode node)
+    public void SetLastSelected(UINode node) // Review as internal might be simplify
     {
         if (LastSelected != null && _lastRootNode != null)
         {
@@ -296,7 +344,7 @@ public class UIHub : MonoBehaviour
 
     private UINode DeactiveLastSelected(UINode node)
     {
-        if (node.MyBranch.MyBranchType == BranchType.PopUp) return LastSelected;
+        if (node.MyBranch.IsAPopUpBranch()) return LastSelected; //***Review
 
         UINode temp = node;
 

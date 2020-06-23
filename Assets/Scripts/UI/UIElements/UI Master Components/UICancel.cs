@@ -41,7 +41,8 @@ public static class UICancel
 
     private static void EscapeButtonProcess(Action endAction) 
     {
-        if (_myUIHub.GameIsPaused || _myUIHub.ActivePopUps.Count > 0)
+        //if (_myUIHub.GameIsPaused || _myUIHub.ActiveResolvePopUps.Count > 0)
+        if (_myUIHub.GameIsPaused || _myUIHub.ActiveBranch.IsAPopUpBranch()) //***
         {
             _myUIHub.LastSelected.IAudio.Play(UIEventTypes.Cancelled);
             endAction.Invoke();
@@ -86,14 +87,18 @@ public static class UICancel
                 lastSelected.MyBranch.TweenOnChange = false;
             }
         }
-
         if (_myUIHub.GameIsPaused && _myUIHub.ActiveBranch.MyBranchType == BranchType.PauseMenu)
         {
             _myUIHub.PauseMenu();
         }
-        else if (_myUIHub.ActivePopUps.Count > 0 && !_myUIHub.GameIsPaused)
+        else if (_myUIHub.ActivePopUps_Resolve.Count > 0 && !_myUIHub.GameIsPaused) //***
         {
-            HandleRemovingPopUps();
+            HandleRemovingPopUps_Resolve();
+        }
+        else if(_myUIHub.LastHighlighted.MyBranch.IsNonResolvePopUp 
+            &&_myUIHub.ActivePopUps_NonResolve.Count > 0 && !_myUIHub.GameIsPaused)
+        {
+            HandleRemovingPopUp_NonResolve();
         }
         else
         {
@@ -115,17 +120,22 @@ public static class UICancel
         }
     }
 
-    private static void HandleRemovingPopUps()
+    private static void HandleRemovingPopUps_Resolve()
     {
-        if (_myUIHub.LastHighlighted.MyBranch.MyBranchType == BranchType.PopUp)
+        if (_myUIHub.LastHighlighted.MyBranch.IsResolvePopUp)
         {
-            _myUIHub.LastHighlighted.MyBranch.IsAPopUp.RemoveFromActiveList();
+            _myUIHub.LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_Resolve();
         }
         else
         {
-            int lastIndexItem = _myUIHub.ActivePopUps.Count - 1;
-            _myUIHub.ActivePopUps[lastIndexItem].IsAPopUp.RemoveFromActiveList();
+            int lastIndexItem = _myUIHub.ActivePopUps_Resolve.Count - 1;
+            _myUIHub.ActivePopUps_Resolve[lastIndexItem].PopUpClass.RemoveFromActiveList_Resolve();
         }
+    }
+    private static void HandleRemovingPopUp_NonResolve()
+    {
+        _myUIHub.LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_NonResolve();
+        _myUIHub.ActiveBranch.PopUpClass.RestoreLastPosition(_homeGroup[_myUIHub.GroupIndex].LastHighlighted);
     }
 
 }

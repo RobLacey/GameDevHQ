@@ -3374,7 +3374,6 @@ MonoBehaviour:
   _saveExitSelection: 1
   _highlightFirstOption: 1
   _moveType: 1
-  _alwaysRetainPopUps: 0
   _escapeKeyFunction: 0
   _userDefinedStartPosition: {fileID: 0}
   _groupsList: []
@@ -4665,7 +4664,7 @@ GameObject:
   m_Component:
   - component: {fileID: 305721819}
   m_Layer: 0
-  m_Name: Independent Test
+  m_Name: PopUp 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9564,7 +9563,7 @@ GameObject:
   - component: {fileID: 620683491}
   - component: {fileID: 620683490}
   m_Layer: 0
-  m_Name: Indie Branch
+  m_Name: Resolve
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9604,14 +9603,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 2
+  _branchType: 3
   _screenType: 0
   _dontTurnOff: 0
   _tweenOnHome: 0
   _saveExitSelection: 0
   _highlightFirstOption: 1
   _moveType: 1
-  _alwaysRetainPopUps: 0
   _escapeKeyFunction: 1
   _userDefinedStartPosition: {fileID: 1541690463}
   _groupsList: []
@@ -16446,7 +16444,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1015388780}
   m_Layer: 0
-  m_Name: Independent Test (1)
+  m_Name: Pop Up 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19430,7 +19428,7 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _branchType
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -23386,14 +23384,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 4
-  _screenType: 0
+  _branchType: 5
+  _screenType: 1
   _dontTurnOff: 0
   _tweenOnHome: 0
   _saveExitSelection: 0
   _highlightFirstOption: 1
   _moveType: 0
-  _alwaysRetainPopUps: 0
   _escapeKeyFunction: 1
   _userDefinedStartPosition: {fileID: 457656681}
   _groupsList: []
@@ -24187,7 +24184,7 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _branchType
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -25993,7 +25990,7 @@ GameObject:
   - component: {fileID: 2018220712}
   - component: {fileID: 2018220711}
   m_Layer: 0
-  m_Name: Indie Branch
+  m_Name: NonResolve
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26033,14 +26030,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 2
+  _branchType: 4
   _screenType: 0
   _dontTurnOff: 0
   _tweenOnHome: 0
   _saveExitSelection: 0
   _highlightFirstOption: 1
   _moveType: 1
-  _alwaysRetainPopUps: 0
   _escapeKeyFunction: 1
   _userDefinedStartPosition: {fileID: 717249547}
   _groupsList: []
