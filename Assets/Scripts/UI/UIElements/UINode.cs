@@ -177,7 +177,10 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void OnMove(AxisEventData eventData)
     {
-        _navigation.KeyBoardOrController(eventData);
+       // if (MyBranch.CheckIfPopUpsNeedHandling())
+       // {
+            _navigation.KeyBoardOrController(eventData);
+       // }
     }
 
     public void OnSubmit(BaseEventData eventData)

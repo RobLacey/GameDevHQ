@@ -91,14 +91,13 @@ public static class UICancel
         {
             _myUIHub.PauseMenu();
         }
-        else if (_myUIHub.ActivePopUps_Resolve.Count > 0 && !_myUIHub.GameIsPaused) //***
+        else if (_myUIHub.ActivePopUps_Resolve.Count > 0 && !_myUIHub.GameIsPaused)
         {
             HandleRemovingPopUps_Resolve();
         }
-        else if(_myUIHub.LastHighlighted.MyBranch.IsNonResolvePopUp 
-            &&_myUIHub.ActivePopUps_NonResolve.Count > 0 && !_myUIHub.GameIsPaused)
+        else if(_myUIHub.LastHighlighted.MyBranch.IsNonResolvePopUp && !_myUIHub.GameIsPaused)
         {
-            HandleRemovingPopUp_NonResolve();
+            _myUIHub.LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_NonResolve();
         }
         else
         {
@@ -132,10 +131,4 @@ public static class UICancel
             _myUIHub.ActivePopUps_Resolve[lastIndexItem].PopUpClass.RemoveFromActiveList_Resolve();
         }
     }
-    private static void HandleRemovingPopUp_NonResolve()
-    {
-        _myUIHub.LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_NonResolve();
-        _myUIHub.ActiveBranch.PopUpClass.RestoreLastPosition(_homeGroup[_myUIHub.GroupIndex].LastHighlighted);
-    }
-
 }

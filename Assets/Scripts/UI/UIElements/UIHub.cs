@@ -38,8 +38,9 @@ public class UIHub : MonoBehaviour
     bool _usingKeysOrCtrl = false;
     bool _canStart = false;
     UIAudioManager _UIAudio;
-    int _popUpIndex;
-    int _groupCount;
+    //int _popUpIndex;
+    List<UIBranch> _resolveList = new List<UIBranch>();
+    List<UIBranch> _nonResolveList = new List<UIBranch>();
 
     //Properties
     bool InMenu { get; set; } = true;
@@ -50,8 +51,11 @@ public class UIHub : MonoBehaviour
     public bool OnHomeScreen { get; set; } = false;
     public bool GameIsPaused { get; private set; }
     public int GroupIndex { get { return _groupIndex; } }
-    public List<UIBranch> ActivePopUps_Resolve { get; set; } = new List<UIBranch>();
-    public List<UIBranch> ActivePopUps_NonResolve { get; set; } = new List<UIBranch>();
+    public List<UIBranch> ActivePopUps_Resolve { get { return _resolveList; } } // Change to Methods
+    public List<UIBranch> ActivePopUps_NonResolve { get { return _nonResolveList; } } // chnage To Methods
+    public int PopIndex { get; set; }
+    public UINode LastHomePosition { get { return _homeBranches[_groupIndex].LastHighlighted; } }
+    public UINode LastNodeBeforePopUp { get; set; }
 
 
     [Serializable]
@@ -237,58 +241,26 @@ public class UIHub : MonoBehaviour
 
     private void SwitchingGroups()
     {
-        if (_popUpIndex == 0)
-        {
-            if (OnHomeScreen)
-            {
-                _groupCount = _homeBranches.Count;
-            }
-            else
-            {
-                _groupCount = ActiveBranch.GroupListCount;
-            }
-        }
-
         if (ActivePopUps_NonResolve.Count > 0)
         {
-            if (_popUpIndex < ActivePopUps_NonResolve.Count)
-            {
-                SetLastHighlighted(ActivePopUps_NonResolve[_popUpIndex].LastHighlighted);
-                ActivePopUps_NonResolve[_popUpIndex].LastHighlighted.InitailNodeAsActive();
-                _popUpIndex++;
-            }
-            else
-            {
-                SwitchingGroups();
-            }
-            Debug.Log("Pop Index to sort out");
+            HandleActivePopUps();
         }
-        else if (OnHomeScreen)
+        else if (OnHomeScreen && _homeBranches.Count > 1)
         {
-            if (_groupCount > 0)
-            {
-                _groupCount--;
-                SwitchHomeGroups();
-            }
-            else
-            {
-                _popUpIndex = 0;
-                SwitchingGroups();
-            }
+            SwitchHomeGroups();
         }
-        else
+        else if (ActiveBranch.GroupListCount > 1)
         {
-            if (_groupCount > 0)
-            {
-                _groupCount--;
-                ActiveBranch.SwitchBranchGroup();
-            }
-            else
-            {
-                _popUpIndex = 0;
-                SwitchingGroups();
-            }
+            ActiveBranch.SwitchBranchGroup();
         }
+    }
+
+    public void HandleActivePopUps()
+    {
+        int groupLength = ActivePopUps_NonResolve.Count;
+        SetLastHighlighted(ActivePopUps_NonResolve[PopIndex].LastHighlighted);
+        ActivePopUps_NonResolve[PopIndex].LastHighlighted.InitailNodeAsActive();
+        PopIndex = PopIndex.Iterate(groupLength);
     }
 
     private void IntroAnimations()
@@ -313,7 +285,7 @@ public class UIHub : MonoBehaviour
         UICancel.CancelOrBackButton(escapeKey);
     }
 
-    public void SetLastSelected(UINode node) // Review as internal might be simplify
+    public void SetLastSelected(UINode node) //TODO Review as internal might be simplify
     {
         if (LastSelected != null && _lastRootNode != null)
         {
@@ -406,13 +378,25 @@ public class UIHub : MonoBehaviour
             {
                 _usingKeysOrCtrl = true;
                 _usingMouse = false;
-                LastHighlighted.SetAsHighlighted();
                 AllowKeys?.Invoke(true);
+
+                if (ActivePopUps_Resolve.Count > 0)
+                {
+                    LastHighlighted.SetAsHighlighted();
+                }
+                else if (ActivePopUps_NonResolve.Count > 0)
+                {
+                    HandleActivePopUps();
+                }
+                else
+                {
+                    LastHighlighted.SetAsHighlighted();
+                }
             }
         }
     }
 
-    private void GameToMenuSwitching()
+    private void GameToMenuSwitching() //TODO Review in light of popUps, pause should work and returns to any popups first
     {
         if (!_usingMouse)
         {

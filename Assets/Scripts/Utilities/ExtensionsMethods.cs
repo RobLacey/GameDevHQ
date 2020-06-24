@@ -167,4 +167,15 @@ public static class ExtensionsMethods
         colorBlock.normalColor = newColour;
         return colorBlock;
     }
+
+    //Numerat collection
+
+    public static int Iterate (this int pointer,  int size) 
+    {
+        if (size -1 == pointer)
+        {
+            return 0;
+        }
+        return pointer + 1;
+    }
 }

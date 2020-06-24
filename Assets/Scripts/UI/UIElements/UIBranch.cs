@@ -16,6 +16,7 @@ public class UIBranch : MonoBehaviour
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [SerializeField] BranchType _branchType = BranchType.StandardUI;
+    [SerializeField] [ShowIf("IsTimedPopUp")] float _timer = 1f;
     [SerializeField] ScreenType _screenType = ScreenType.ToFullScreen;
     [SerializeField] [HideIf("IsAPopUpBranch")] bool _dontTurnOff;
     [SerializeField] [ShowIf("IsHome")] [Label("Tween on Return To Home")] bool _tweenOnHome;
@@ -53,7 +54,9 @@ public class UIBranch : MonoBehaviour
     Action _onFinishedTrigger;
 
     //Properties
-    public bool IsAPopUpBranch() { return _branchType == BranchType.PopUp_NonResolve || _branchType == BranchType.PopUp_Resolve; }
+    public bool IsAPopUpBranch() { return _branchType == BranchType.PopUp_NonResolve 
+                                           || _branchType == BranchType.PopUp_Resolve
+                                           || _branchType == BranchType.PopUp_Timed; }
     public bool IsPause() { return _branchType == BranchType.PauseMenu; }
     public UINode DefaultStartPosition { get { return _userDefinedStartPosition; }
         private set { _userDefinedStartPosition = value; } }
@@ -74,6 +77,7 @@ public class UIBranch : MonoBehaviour
     public bool FromHotkey { get; set; }
     public bool IsResolvePopUp { get { return _branchType == BranchType.PopUp_Resolve; } }
     public bool IsNonResolvePopUp { get { return _branchType == BranchType.PopUp_NonResolve; } }
+    public bool IsTimedPopUp { get { return _branchType == BranchType.PopUp_Timed; } }
     public bool HighlightFirstOption { get { return _highlightFirstOption; } }
     public ScreenType ScreenType { get { return _screenType; } } 
     public UIHub UIHub { get; private set; } 
@@ -81,6 +85,7 @@ public class UIBranch : MonoBehaviour
     public UIPopUp IsPauseMenu { get; private set; }
     public int GroupListCount { get { return _groupsList.Count; } }
 
+    public float Timer { get { return _timer; } }
 
     private void Awake()
     {
@@ -253,7 +258,6 @@ public class UIBranch : MonoBehaviour
     {
         if (!IsAPopUpBranch()) MyCanvasGroup.blocksRaycasts = true;
         if (IsAPopUpBranch()) PopUpClass.ManagePopUpRaycast();
-        // MyCanvasGroup.blocksRaycasts = true;
 
         if (!DontSetAsActive) 
         {
