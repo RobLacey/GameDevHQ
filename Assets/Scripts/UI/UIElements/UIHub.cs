@@ -12,16 +12,16 @@ public class UIHub : MonoBehaviour
 {
     [Header("Main Settings")]
     [SerializeField] [ValidateInput("ProtectEscapekeySetting")] EscapeKey _GlobalEscapeKeyFunction;
-    [SerializeField] [InputAxis] string _cancelButton;
-    [SerializeField] [InputAxis] string _branchSwitchButton;
-    [SerializeField] [InputAxis] string _pauseButton;
-    [SerializeField] UIBranch _pauseMenu;
+    [SerializeField] [InputAxis] string _cancelButton = default;
+    [SerializeField] [InputAxis] string _branchSwitchButton = default;
+    [SerializeField] [InputAxis] string _pauseButton = default;
+    [SerializeField] UIBranch _pauseMenu = default;
     [SerializeField] [Label("Enable Controls After..")] float _atStartDelay = 0;
     [Header("In-Game Menu Settings")]
     [SerializeField] bool _inGameMenuSystem = false;
     [SerializeField] [ShowIf("_inGameMenuSystem")] StartInMenu _startGameWhere = StartInMenu.InGameControl;
     [SerializeField] [ShowIf("_inGameMenuSystem")] [Label("Switch To/From Game Menus")] [InputAxis] string _switchTOMenusButton;
-    [SerializeField] [ShowIf("_inGameMenuSystem")] InGameOrInMenu _returnToGameControl;
+    [SerializeField] [ShowIf("_inGameMenuSystem")] InGameOrInMenu _returnToGameControl = default;
     [SerializeField] [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")] List<UIBranch> _homeBranches;
     [SerializeField] [ReorderableList] [Label("Hotkeys (CAN'T have Independents as Hotkeys)")] List<HotKeys> _hotKeySettings;
 
@@ -32,12 +32,12 @@ public class UIHub : MonoBehaviour
 
     //Variables
     int _groupIndex = 0;
-    UINode _lastRootNode;
+    UINode _lastRootNode = default;
     Vector3 _mousePos = Vector3.zero;
     bool _usingMouse = false;
     bool _usingKeysOrCtrl = false;
     bool _canStart = false;
-    UIAudioManager _UIAudio;
+    UIAudioManager _UIAudio = default;
     //int _popUpIndex;
     List<UIBranch> _resolveList = new List<UIBranch>();
     List<UIBranch> _nonResolveList = new List<UIBranch>();
@@ -46,23 +46,17 @@ public class UIHub : MonoBehaviour
     bool InMenu { get; set; } = true;
     public UIBranch ActiveBranch { get; set; }
     public EscapeKey GlobalEscape { get { return _GlobalEscapeKeyFunction; } }
-    public UINode LastSelected { get; set; }
-    public UINode LastHighlighted { get; set; }
+    public UINode LastSelected { get; private set; }
+    public UINode LastHighlighted { get; private set; }
     public bool OnHomeScreen { get; set; } = false;
     public bool GameIsPaused { get; private set; }
-    public int GroupIndex { get { return _groupIndex; } }
+    public int GroupIndex { get { return _groupIndex; } set { _groupIndex = value; } }
     public List<UIBranch> ActivePopUps_Resolve { get { return _resolveList; } } // Change to Methods
     public List<UIBranch> ActivePopUps_NonResolve { get { return _nonResolveList; } } // chnage To Methods
     public int PopIndex { get; set; }
     public UINode LastHomePosition { get { return _homeBranches[_groupIndex].LastHighlighted; } }
     public UINode LastNodeBeforePopUp { get; set; }
 
-
-    [Serializable]
-    public class GroupList
-    {
-        public UIBranch _groupStartLevel;
-    }
 
     //Editor Scripts
     #region Editor Scripts
@@ -287,31 +281,44 @@ public class UIHub : MonoBehaviour
 
     public void SetLastSelected(UINode node) //TODO Review as internal might be simplify
     {
-        if (LastSelected != null && _lastRootNode != null)
+        if (OnHomeScreen)
         {
-            if (OnHomeScreen)
+            Debug.Log("Here");
+            WhenOnHomeScreen(node);
+        }
+        else
+        {
+            WhenNotOnHome(node);
+        }
+
+        LastSelected = node;
+    }
+
+    private void WhenNotOnHome(UINode node)
+    {
+        if (LastSelected != node)
+        {
+            if (LastSelected.ChildBranch != null/* && node.MyBranch.MyBranchType != BranchType.PauseMenu*/)
             {
-                UINode temp = DeactiveLastSelected(node);
-                _lastRootNode.SetNotHighlighted();
-                _lastRootNode = temp;
-            }
-            else
-            {
-                if (LastSelected.ChildBranch != null && node.MyBranch.MyBranchType != BranchType.PauseMenu)
+                if (LastSelected.ChildBranch.MyBranchType == BranchType.Internal)
                 {
-                    if (LastSelected.ChildBranch.MyBranchType == BranchType.Internal)
-                    {
-                        LastSelected.SetNotHighlighted();
-                        if (LastSelected.IsSelected == true) LastSelected.PressedActions();
-                    }
+                    if (LastSelected.IsSelected == true) LastSelected.Deactivate();
                 }
             }
+        }
+    }
+
+    private void WhenOnHomeScreen(UINode node)
+    {
+        if (LastSelected != null && _lastRootNode != null)
+        {
+            UINode temp = DeactiveLastSelected(node);
+            _lastRootNode = temp;
         }
         else
         {
             _lastRootNode = node;
         }
-        LastSelected = node;
     }
 
     private UINode DeactiveLastSelected(UINode node)
@@ -327,7 +334,7 @@ public class UIHub : MonoBehaviour
 
         if (temp != _lastRootNode && _lastRootNode.IsSelected == true)
         {
-            _lastRootNode.PressedActions();
+            _lastRootNode.Deactivate();
         }
         return temp;
     }
@@ -341,7 +348,7 @@ public class UIHub : MonoBehaviour
             ActiveBranch = LastHighlighted.MyBranch;
             if (OnHomeScreen)
             {
-                UIHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch, ref _groupIndex);
+                _groupIndex = UIHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch);
             }
             EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
         }
@@ -380,11 +387,11 @@ public class UIHub : MonoBehaviour
                 _usingMouse = false;
                 AllowKeys?.Invoke(true);
 
-                if (ActivePopUps_Resolve.Count > 0)
+                if (ActivePopUps_Resolve.Count > 0 && OnHomeScreen)
                 {
                     LastHighlighted.SetAsHighlighted();
                 }
-                else if (ActivePopUps_NonResolve.Count > 0)
+                else if (ActivePopUps_NonResolve.Count > 0 && OnHomeScreen)
                 {
                     HandleActivePopUps();
                 }

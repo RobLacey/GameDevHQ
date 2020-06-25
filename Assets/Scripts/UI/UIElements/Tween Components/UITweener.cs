@@ -23,8 +23,8 @@ public class UITweener : MonoBehaviour
     [SerializeField] [Label("Shake or Punch Tween")] public PunchShakeTween _punchShakeTween = PunchShakeTween.NoTween;
     [SerializeField] [Label("Shake/Punch As End Effect")] bool _shakeOrPunchAtEnd;
     [SerializeField] bool _addTweenEventTriggers = false;
-    [SerializeField] [ShowIf("_addTweenEventTriggers")] [Label("Event At After Start/Mid-Point of Tween")] TweenTrigger _middleOfTweenAction;
-    [SerializeField] [ShowIf("_addTweenEventTriggers")] [Label("Event At End of Tween")] TweenTrigger _endOfTweenAction;
+    [SerializeField] [ShowIf("AddTweenEvent")] [Label("Event At After Start/Mid-Point of Tween")] TweenTrigger _middleOfTweenAction;
+    [SerializeField] [ShowIf("AddTweenEvent")] [Label("Event At End of Tween")] TweenTrigger _endOfTweenAction;
     [SerializeField] [Label("Settings")] [ShowIf("Position")] [BoxGroup("Position Tween")] PositionTween _posTween = new PositionTween();
     [SerializeField] [Label("Settings")] [ShowIf("Rotation")] [BoxGroup("Rotation Tween")] RotateTween _rotateTween = new RotateTween();
     [SerializeField] [Label("Settings")] [ShowIf("Scale")] [BoxGroup("Scale Tween")] ScaleTweener _scaleTween = new ScaleTweener();
@@ -82,6 +82,7 @@ public class UITweener : MonoBehaviour
     public bool Punch()  { return _punchShakeTween == PunchShakeTween.Punch; }
     public bool Shake() { return _punchShakeTween == PunchShakeTween.Shake; }
     public bool Fade() {  return _canvasGroupFade != FadeTween.NoTween; }
+    public bool AddTweenEvent() { return _addTweenEventTriggers; }
 
     #endregion
 

@@ -68,11 +68,6 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     //Editor Scripts
     #region Editor Scripts
 
-    [Button] private void DisableObject() { IsDisabled = true; }
-    [Button] private void EnableObject() { IsDisabled = false; }
-    //[Button] private void NotSelected() { SetNotSelected_NoEffects(); }
-    //[Button] private void AsSelected() { SetSelected_NoEffects(); }
-
     private bool SetChildBranch(ButtonFunction buttonFunction) 
     {
         if (buttonFunction == ButtonFunction.ToggleGroup
@@ -247,7 +242,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    public void TurnNodeOnOff()
+    private void TurnNodeOnOff()
     {
         _toggleGroups.ToggleGroupElements();
 
@@ -256,6 +251,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             if (_buttonFunction == ButtonFunction.ToggleGroup && MyBranch.LastHighlighted == this) return;
             if (_buttonFunction == ButtonFunction.Toggle_NotLinked) { IsSelected = false; }
             Deactivate();
+            MyBranch.SaveLastSelected(MyBranch.MyParentBranch.LastSelected);
         }
         else
         {
@@ -267,11 +263,14 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void Deactivate()
     {
+        if (!IsSelected) return;
+
         if (ChildBranch != null && _navigation.CanNaviagte)
         {
             IsSelected = false;
             _navigation.TurnOffChildren();
         }
+        SetNotHighlighted();
 
         SetSlider(false);
     }
@@ -394,6 +393,10 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             _amSlider.interactable = IsSelected;
         }
     }
+
+    public void DisableObject() { IsDisabled = true; }
+    public void EnableObject() { IsDisabled = false; }
+
 }
 
 

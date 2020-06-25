@@ -103,9 +103,14 @@ public class UITooltip
         {
             _tooltipsParent = new GameObject();
             _tooltipsParent.AddComponent<RectTransform>();
-            _tooltipsParent.transform.parent = _mainCanvas.transform;
+            _tooltipsParent.transform.SetParent(_mainCanvas.transform);
             _tooltipsParent.name = _toolTipBucketName;
             _tooltipsParent.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+
+        }
+        foreach (var tooltip in _listOfTooltips)
+        {
+            tooltip.transform.SetParent(_tooltipsParent.transform);
         }
     }
 
@@ -136,7 +141,6 @@ public class UITooltip
     {
         while (IsActive)
         {
-            if (_tooltipsParent != null) _layout.transform.parent = _tooltipsParent.transform;
             SetToolTipPosition(isKeyboard);
 
             if (!isKeyboard)
@@ -150,7 +154,6 @@ public class UITooltip
 
             _rectTransform.anchoredPosition = new Vector2(tooltipPos.x, tooltipPos.y);
             _toolTipCanvas.enabled = true;
-            if (_tooltipsParent != null) _layout.transform.parent = _tooltipsParent.transform;
             yield return null;
         }
         yield return null;

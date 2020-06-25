@@ -42,8 +42,11 @@ public class UIPopUp
         {
             myBranch.UIHub.LastNodeBeforePopUp = myBranch.UIHub.LastHighlighted;
         }
-
-        if (myBranch.IsResolvePopUp && !myBranch.MyCanvas.enabled)
+        if (myBranch.IsPause())
+        {
+            MainProcess();
+        }
+        else if (myBranch.IsResolvePopUp && !myBranch.MyCanvas.enabled)
         {
             AddToActivePopUps_Rsolve();
         }
@@ -141,14 +144,9 @@ public class UIPopUp
     {
         RestoreScreen();
 
-        if (ClearedScreenData._fromHomeScreen)
-        {
-            myBranch.UIHub.OnHomeScreen = true;
-        }
-
         if (myBranch.IsPause())
         {
-            myBranch.UIHub.LastSelected = ClearedScreenData.lastSelected;
+            myBranch.SaveLastSelected(ClearedScreenData.lastSelected);
             myBranch.UIHub.SetLastHighlighted(ClearedScreenData.lastHighlighted);
 
             if (myBranch.AllowKeys)
@@ -158,13 +156,19 @@ public class UIPopUp
         }
         else
         {
-            myBranch.UIHub.LastSelected = lastHomeGroupNode;
+            myBranch.SaveLastSelected(lastHomeGroupNode);
+
             myBranch.UIHub.SetLastHighlighted(lastHomeGroupNode);
 
             if (myBranch.AllowKeys)
             {
                 lastHomeGroupNode.InitailNodeAsActive();
             }
+        }
+
+        if (ClearedScreenData._fromHomeScreen)
+        {
+            myBranch.UIHub.OnHomeScreen = true;
         }
     }
 

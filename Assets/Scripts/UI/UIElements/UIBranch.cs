@@ -192,11 +192,11 @@ public class UIBranch : MonoBehaviour
         SetNewParentBranch(newParentController);
     }
 
-    public void ResetHomeScreenBranch(UIBranch lastSelected)
+    public void ResetHomeScreenBranch(UIBranch lastBranch)
     {
         if (TweenOnHome)
         {
-            if (lastSelected != this)
+            if (lastBranch != this)
             {
                 DontSetAsActive = true;
             }
@@ -272,8 +272,7 @@ public class UIBranch : MonoBehaviour
         _groupIndex = UIBranchGroups.SwitchBranchGroup(_groupsList, _groupIndex);
     }
 
-    [Button]
-    public void EnterIndieScreen()
+    public void StartPopUpScreen()
     {
         PopUpClass.StartPopUp();
     }

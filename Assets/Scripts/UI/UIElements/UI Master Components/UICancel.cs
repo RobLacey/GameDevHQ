@@ -41,8 +41,7 @@ public static class UICancel
 
     private static void EscapeButtonProcess(Action endAction) 
     {
-        //if (_myUIHub.GameIsPaused || _myUIHub.ActiveResolvePopUps.Count > 0)
-        if (_myUIHub.GameIsPaused || _myUIHub.ActiveBranch.IsAPopUpBranch()) //***
+        if (_myUIHub.GameIsPaused || _myUIHub.ActiveBranch.IsAPopUpBranch())
         {
             _myUIHub.LastSelected.IAudio.Play(UIEventTypes.Cancelled);
             endAction.Invoke();
@@ -71,9 +70,9 @@ public static class UICancel
             _homeGroup[index].TweenOnChange = false;
         }
 
-        _homeGroup[index].LastSelected.Deactivate();
-        _homeGroup[index].LastSelected.SetNotHighlighted();
+        _homeGroup[index].LastSelected.SetNotSelected_NoEffects();
         _homeGroup[index].MoveToNextLevel();
+        _homeGroup[index].LastSelected.MyBranch.SaveLastSelected(_homeGroup[index].LastSelected);
     }
 
     private static void BackOneLevel()
@@ -101,10 +100,9 @@ public static class UICancel
         }
         else
         {
-            lastSelected.Deactivate();
-            lastSelected.SetNotHighlighted();
+            lastSelected.SetNotSelected_NoEffects();
+            lastSelected.MyBranch.SaveLastSelected(lastSelected.MyBranch.MyParentBranch.LastSelected);
             lastSelected.MyBranch.MoveToNextLevel();
-            _myUIHub.LastSelected = lastSelected.MyBranch.MyParentBranch.LastSelected;
         }
     }
 

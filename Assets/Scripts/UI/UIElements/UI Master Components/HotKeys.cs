@@ -41,37 +41,36 @@ public static class HotKeyProcess
         {
             if (node.ChildBranch == branch)
             {
-                ToNextBranch(branch, node);
-
                 if (_myUIHub.LastSelected != node && _myUIHub.LastSelected.ChildBranch != null 
                     && _myUIHub.LastSelected.IsSelected == true)
                 {
-                    StartTween(branch);
+                    StartTween(branch, node);
                 }
                 else
                 {
 
-                    TurnOff(branch);
+                    TurnOff(branch, node);
                 }
+                ToNextBranch(branch, node);
                 break;
             }
         }
     }
 
-    private static void StartTween(UIBranch branch)
+    private static void StartTween(UIBranch branch, UINode parentNode)
     {
         if (_myUIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.OnClick)
         {
             _myUIHub.LastSelected.ChildBranch.OutTweenToParent();
-            TurnOff(branch);
+            TurnOff(branch, parentNode);
         }
         else
         {
-            _myUIHub.LastSelected.ChildBranch.OutTweenToParent(() => TurnOff(branch));
+            _myUIHub.LastSelected.ChildBranch.OutTweenToParent(() => TurnOff(branch, parentNode));
         }
     }
 
-    private static void ToNextBranch(UIBranch branch, UINode node)
+    private static void ToNextBranch(UIBranch branch, UINode parentNode)
     {
         UICancel.ResetHierachy();
 
@@ -80,24 +79,25 @@ public static class HotKeyProcess
 
         if (branch.ScreenType == ScreenType.ToFullScreen)
         {
-            node.IsSelected = true;
+            parentNode.IsSelected = true;
         }
         else
         {
-            node.SetSelected_NoEffects();
+            parentNode.SetSelected_NoEffects();
         }
         branch.DefaultStartPosition.IAudio.Play(UIEventTypes.Selected);
-        branch.MyParentBranch.SaveLastHighlighted(node);
-        branch.MyParentBranch.SaveLastSelected(node);
+        branch.MyParentBranch.SaveLastHighlighted(parentNode);
+        branch.MyParentBranch.SaveLastSelected(parentNode);
     }
 
-    private static void TurnOff(UIBranch branch)
+    private static void TurnOff(UIBranch branch, UINode parentNode)
     {
         if (branch.ScreenType == ScreenType.ToFullScreen)
         {
             if (_myUIHub.OnHomeScreen)
             {
                 UIHomeGroup.ClearHomeScreen(branch);
+                _myUIHub.GroupIndex = UIHomeGroup.SetHomeGroupIndex(parentNode.MyBranch);
             }
         }
         else
@@ -109,5 +109,4 @@ public static class HotKeyProcess
         }
         branch.MoveToNextLevel();
     }
-
 }

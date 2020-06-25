@@ -11,13 +11,14 @@ public static class UIHomeGroup
     public static void SwitchHomeGroups(ref int index)
     {
         _homeGroup[index].LastSelected.Deactivate();
-
         index++;
+
         if (index > _homeGroup.Count - 1)
         {
             index = 0;
         }
         _homeGroup[index].TweenOnChange = false;
+
         if (_homeGroup[index].LastSelected.Function == ButtonFunction.HoverToActivate && _homeGroup[index].AllowKeys)
         {
             _homeGroup[index].LastSelected.PressedActions();
@@ -28,15 +29,16 @@ public static class UIHomeGroup
         }
     }
 
-    public static void SetHomeGroupIndex(UIBranch uIBranch, ref int index)
+    public static int SetHomeGroupIndex(UIBranch uIBranch)
     {
         for (int i = 0; i < _homeGroup.Count; i++)
         {
             if (_homeGroup[i] == uIBranch)
             {
-                index = i;
+                return i;
             }
         }
+        return 0;
     }
 
     public static void ClearHomeScreen(UIBranch ignoreBranch)
@@ -62,8 +64,9 @@ public static class UIHomeGroup
             foreach (var item in _homeGroup)
             {
                 _myUIHub.OnHomeScreen = true;
-                item.ResetHomeScreenBranch(_myUIHub.LastSelected.MyBranch);
+                item.ResetHomeScreenBranch(_homeGroup[_myUIHub.GroupIndex]);
             }
         }
+        _myUIHub.ActivePopUps_NonResolve.Clear();
     }
 }
