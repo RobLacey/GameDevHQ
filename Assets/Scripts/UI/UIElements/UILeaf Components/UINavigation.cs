@@ -67,7 +67,7 @@ public class UINavigation : IUINavigation
     public void PointerEnter(PointerEventData eventData)
     {
         if (eventData.pointerDrag) return;                  //Enables drag on slider to have pressed colour
-        if (_myNode.Function == ButtonFunction.HoverToActivate)
+        if (_myNode.Function == ButtonFunction.HoverToActivate & !_myNode.IsSelected)
         {
             _myNode.PressedActions();
         }
@@ -118,6 +118,7 @@ public class UINavigation : IUINavigation
             {
                 if (down)
                 {
+                    _myNode.TriggerExitEvent();
                     if (down.IsDisabled) { down.OnMove(eventData); return; }
                     down.INavigation.NavigateToNextNode();
                 }
@@ -127,6 +128,7 @@ public class UINavigation : IUINavigation
             {
                 if (up)
                 {
+                    _myNode.TriggerExitEvent();
                     if (up.IsDisabled) { up.OnMove(eventData); return; }
                     up.INavigation.NavigateToNextNode();
 
@@ -140,6 +142,7 @@ public class UINavigation : IUINavigation
             {
                 if (left)
                 {
+                    _myNode.TriggerExitEvent();
                     if (left.IsDisabled) { left.OnMove(eventData); return; }
                     left.INavigation.NavigateToNextNode();
 
@@ -150,6 +153,7 @@ public class UINavigation : IUINavigation
             {
                 if (right)
                 {
+                    _myNode.TriggerExitEvent();
                     if (right.IsDisabled) { right.OnMove(eventData); return; }
                     right.INavigation.NavigateToNextNode();
 
@@ -169,7 +173,7 @@ public class UINavigation : IUINavigation
         {
             _myNode.IAudio.Play(UIEventTypes.Highlighted);
         }
-
+        _myNode.TriggerEnterEvent();
         _myBranch.SaveLastHighlighted(_myNode);
         _myNode.SetAsHighlighted();
     }
@@ -178,7 +182,7 @@ public class UINavigation : IUINavigation
     {
         if (_childBranch.ScreenType == ScreenType.ToFullScreen)
         {
-            _myBranch.OutTweensToChild(() => ToFullScreen_AfterTween());
+            _myBranch.StartOutTween(() => ToFullScreen_AfterTween());
         }
         else if (_childBranch.ScreenType == ScreenType.Normal)
         {
@@ -188,7 +192,7 @@ public class UINavigation : IUINavigation
             }
             else
             {
-                _myBranch.OutTweensToChild(() => ToChildBranch_AfterTween());
+                _myBranch.StartOutTween(() => ToChildBranch_AfterTween());
             }
         }
     }
@@ -197,7 +201,7 @@ public class UINavigation : IUINavigation
     {
         if (_childBranch.ScreenType == ScreenType.ToFullScreen)
         {
-            _myBranch.OutTweensToChild();
+            _myBranch.StartOutTween();
         }
         ToChildBranch_OnClick();
     }
@@ -224,12 +228,12 @@ public class UINavigation : IUINavigation
     {
         if (_childBranch.WhenToMove == WhenToMove.OnClick)
         {
-            _childBranch.OutTweenToParent();
+            _childBranch.StartOutTween();
             _childBranch.LastSelected.Deactivate();
         }
         else
         {
-            _childBranch.OutTweenToParent(() => _childBranch.LastSelected.Deactivate());
+            _childBranch.StartOutTween(() => _childBranch.LastSelected.Deactivate());
         }
     }
 }

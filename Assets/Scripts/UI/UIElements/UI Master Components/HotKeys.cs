@@ -61,12 +61,12 @@ public static class HotKeyProcess
     {
         if (_myUIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.OnClick)
         {
-            _myUIHub.LastSelected.ChildBranch.OutTweenToParent();
+            _myUIHub.LastSelected.ChildBranch.StartOutTween();
             TurnOff(branch, parentNode);
         }
         else
         {
-            _myUIHub.LastSelected.ChildBranch.OutTweenToParent(() => TurnOff(branch, parentNode));
+            _myUIHub.LastSelected.ChildBranch.StartOutTween(() => TurnOff(branch, parentNode));
         }
     }
 

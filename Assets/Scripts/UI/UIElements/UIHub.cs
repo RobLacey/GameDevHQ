@@ -11,24 +11,26 @@ using NaughtyAttributes;
 public class UIHub : MonoBehaviour
 {
     [Header("Main Settings")]
-    [SerializeField] [ValidateInput("ProtectEscapekeySetting")] EscapeKey _GlobalEscapeKeyFunction;
+    [SerializeField] [ValidateInput("ProtectEscapekeySetting", "Can't set Global Settings to Global Settings")] 
+    EscapeKey _globalCancelFunction;
     [SerializeField] [InputAxis] string _cancelButton = default;
     [SerializeField] [InputAxis] string _branchSwitchButton = default;
-    [SerializeField] [InputAxis] string _pauseButton = default;
-    [SerializeField] UIBranch _pauseMenu = default;
+    [SerializeField] [Label("Pause / Option Button")] [InputAxis] string _pauseOptionButton = default;
+    [SerializeField] [Label("Pause / Option Menu")] UIBranch _pauseOptionMenu = default;
+    [SerializeField] [Label("No Cancel Action")] PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.Nothing;
     [SerializeField] [Label("Enable Controls After..")] float _atStartDelay = 0;
     [Header("In-Game Menu Settings")]
-    [SerializeField] bool _inGameMenuSystem = false;
-    [SerializeField] [ShowIf("_inGameMenuSystem")] StartInMenu _startGameWhere = StartInMenu.InGameControl;
-    [SerializeField] [ShowIf("_inGameMenuSystem")] [Label("Switch To/From Game Menus")] [InputAxis] string _switchTOMenusButton;
-    [SerializeField] [ShowIf("_inGameMenuSystem")] InGameOrInMenu _returnToGameControl = default;
+    [SerializeField] InGameSystem _inGameMenuSystem = InGameSystem.Off;
+    [SerializeField] [ShowIf("ActiveInGameSystem")] StartInMenu _startGameWhere = StartInMenu.InGameControl;
+    [SerializeField] [ShowIf("ActiveInGameSystem")] [Label("Switch To/From Game Menus")] [InputAxis] string _switchTOMenusButton;
+    [SerializeField] [ShowIf("ActiveInGameSystem")] InGameOrInMenu _returnToGameControl = default;
     [SerializeField] [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")] List<UIBranch> _homeBranches;
     [SerializeField] [ReorderableList] [Label("Hotkeys (CAN'T have Independents as Hotkeys)")] List<HotKeys> _hotKeySettings;
 
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
     public static event Action<bool> AllowKeys;
-    public static event Action<bool> IsPaused;
+    public static event Action<bool> IsPaused; // Subscrib To to trigger pause operations
 
     //Variables
     int _groupIndex = 0;
@@ -38,24 +40,24 @@ public class UIHub : MonoBehaviour
     bool _usingKeysOrCtrl = false;
     bool _canStart = false;
     UIAudioManager _UIAudio = default;
-    //int _popUpIndex;
-    List<UIBranch> _resolveList = new List<UIBranch>();
-    List<UIBranch> _nonResolveList = new List<UIBranch>();
+    enum InGameSystem { On, Off }
+    enum PauseOptionsOnEscape { EnterPauseOrEscape, Nothing }
 
     //Properties
     bool InMenu { get; set; } = true;
     public UIBranch ActiveBranch { get; set; }
-    public EscapeKey GlobalEscape { get { return _GlobalEscapeKeyFunction; } }
+    public EscapeKey GlobalEscape { get { return _globalCancelFunction; } }
     public UINode LastSelected { get; private set; }
     public UINode LastHighlighted { get; private set; }
     public bool OnHomeScreen { get; set; } = false;
     public bool GameIsPaused { get; private set; }
     public int GroupIndex { get { return _groupIndex; } set { _groupIndex = value; } }
-    public List<UIBranch> ActivePopUps_Resolve { get { return _resolveList; } } // Change to Methods
-    public List<UIBranch> ActivePopUps_NonResolve { get { return _nonResolveList; } } // chnage To Methods
+    public List<UIBranch> ActivePopUps_Resolve { get; } = new List<UIBranch>();// Change to Methods
+    public List<UIBranch> ActivePopUps_NonResolve { get; } = new List<UIBranch>(); // chnage To Methods
     public int PopIndex { get; set; }
     public UINode LastHomePosition { get { return _homeBranches[_groupIndex].LastHighlighted; } }
     public UINode LastNodeBeforePopUp { get; set; }
+    public bool ActiveInGameSystem { get { return _inGameMenuSystem == InGameSystem.On; } }
 
 
     //Editor Scripts
@@ -63,7 +65,7 @@ public class UIHub : MonoBehaviour
 
     private bool ProtectEscapekeySetting(EscapeKey escapeKey)
     {
-        if (_GlobalEscapeKeyFunction == EscapeKey.GlobalSetting)
+        if (_globalCancelFunction == EscapeKey.GlobalSetting)
         {
             Debug.Log("Escape KeyError");
         }
@@ -87,7 +89,6 @@ public class UIHub : MonoBehaviour
         newNode.AddComponent<UINode>();
 
     }
-
     #endregion
 
     private void Awake()
@@ -119,7 +120,7 @@ public class UIHub : MonoBehaviour
         IntroAnimations();
         SetUpHomeGroup();
 
-        if (_inGameMenuSystem && _startGameWhere == StartInMenu.InGameControl)
+        if (ActiveInGameSystem && _startGameWhere == StartInMenu.InGameControl)
         {
             _canStart = true;
             GameToMenuSwitching();
@@ -150,12 +151,12 @@ public class UIHub : MonoBehaviour
     {
         if (!_canStart) return;
 
-        if (Input.GetButtonDown(_pauseButton))
+        if (Input.GetButtonDown(_pauseOptionButton))
         {
-            PauseMenu();
+            PauseOptionMenu();
         }
 
-        if (Input.GetButtonDown(_switchTOMenusButton) & _inGameMenuSystem)
+        if (Input.GetButtonDown(_switchTOMenusButton) & ActiveInGameSystem)
         {
             GameToMenuSwitching();
         }
@@ -166,7 +167,7 @@ public class UIHub : MonoBehaviour
             {
                 if (item.CheckHotkeys())
                 {
-                    if (_inGameMenuSystem)
+                    if (ActiveInGameSystem)
                     {
                         GameToMenuSwitching();
                     }
@@ -181,19 +182,19 @@ public class UIHub : MonoBehaviour
         }
     }
 
-    public void PauseMenu()
+    public void PauseOptionMenu()
     {
         if (GameIsPaused)
         {
             GameIsPaused = false;
-            _pauseMenu.IsPauseMenu.RestoreLastPosition();
-            Time.timeScale = 1;
+            if (_pauseOptionMenu != null) 
+                _pauseOptionMenu.IsPauseMenu.RestoreLastPosition();
         }
         else
         {
             GameIsPaused = true;
-            _pauseMenu.IsPauseMenu.StartPopUp();
-            Time.timeScale = 0;
+            if (_pauseOptionMenu != null) 
+                _pauseOptionMenu.IsPauseMenu.StartPopUp();
         }
         IsPaused?.Invoke(GameIsPaused);
     }
@@ -213,16 +214,23 @@ public class UIHub : MonoBehaviour
                 {
                     CancelOrBack(EscapeKey.BackToHome);
                 }
-                else if(GameIsPaused || ActiveBranch.IsAPopUpBranch())
+                else if (GameIsPaused || ActiveBranch.IsAPopUpBranch())
                 {
                     UICancel.CancelOrBackButton(EscapeKey.BackOneLevel);
+                }
+                else if (!UICancel.CanCancel())
+                {
+                    if (_pauseOptionsOnEscape == PauseOptionsOnEscape.EnterPauseOrEscape)
+                    {
+                        PauseOptionMenu();
+                    }
                 }
                 else
                 {
                     UICancel.Cancel();
                 }
             }
-            else if (Input.GetButtonDown(_branchSwitchButton) && ActivePopUps_Resolve.Count == 0)
+            else if (CanSwitchBranches())
             {
                 SwitchingGroups();
             }
@@ -230,7 +238,7 @@ public class UIHub : MonoBehaviour
             {
                 ActivateKeysOrControl();
             }
-        }
+       }
     }
 
     private void SwitchingGroups()
@@ -279,26 +287,25 @@ public class UIHub : MonoBehaviour
         UICancel.CancelOrBackButton(escapeKey);
     }
 
-    public void SetLastSelected(UINode node) //TODO Review as internal might be simplify
+    public void SetLastSelected(UINode NewNode) //TODO Review as internal might be simplify
     {
         if (OnHomeScreen)
         {
-            Debug.Log("Here");
-            WhenOnHomeScreen(node);
+            WhenOnHomeScreen(NewNode);
         }
         else
         {
-            WhenNotOnHome(node);
+            WhenNotOnHome(NewNode);
         }
 
-        LastSelected = node;
+        LastSelected = NewNode;
     }
 
-    private void WhenNotOnHome(UINode node)
+    private void WhenNotOnHome(UINode newNode)
     {
-        if (LastSelected != node)
+        if (LastSelected != newNode)
         {
-            if (LastSelected.ChildBranch != null/* && node.MyBranch.MyBranchType != BranchType.PauseMenu*/)
+            if (LastSelected.ChildBranch != null)
             {
                 if (LastSelected.ChildBranch.MyBranchType == BranchType.Internal)
                 {
@@ -424,20 +431,15 @@ public class UIHub : MonoBehaviour
         }
     }
 
-    public void PrintEnter()
+    private bool CanSwitchBranches()
     {
-        Debug.Log("This is Enter test");
-    }
-    public void PrintExit()
-    {
-        Debug.Log("This is Exit test");
-    }
-    public void PrintClick()
-    {
-        Debug.Log("This is Cllick test");
-    }
-    public void PrintToggle()
-    {
-        Debug.Log("This is Toggle test");
+        if (_branchSwitchButton != string.Empty)
+        {
+            if (Input.GetButtonDown(_branchSwitchButton) && ActivePopUps_Resolve.Count == 0)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -16,7 +16,6 @@ public class UIAudio : IUIAudio
     [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Cancelled Volume")] float _volume_Cancel;
 
     //Variables 
-    public static event Action<AudioClip, float> PlaySound;
     bool _canPlay;
 
     public void OnAwake(Setting setting)
@@ -38,31 +37,31 @@ public class UIAudio : IUIAudio
             case UIEventTypes.Highlighted:
                 if (UsingScheme())
                 {
-                    PlaySound.Invoke(_audioScheme.HighlightedClip, _audioScheme.HighlighVolume);
+                    UIAudioManager.AudioPlay.Invoke(_audioScheme.HighlightedClip, _audioScheme.HighlighVolume);
                 }
                 else
                 {
-                    PlaySound.Invoke(_sound_Highlighted, _volume_Highlighted);
+                    UIAudioManager.AudioPlay.Invoke(_sound_Highlighted, _volume_Highlighted);
                 }
                 break;
             case UIEventTypes.Cancelled:
                 if (UsingScheme())
                 {
-                    PlaySound.Invoke(_audioScheme.CancelledClip, _audioScheme.CancelledVolume);
+                    UIAudioManager.AudioPlay.Invoke(_audioScheme.CancelledClip, _audioScheme.CancelledVolume);
                 }
                 else
                 {
-                    PlaySound.Invoke(_sound_Cancel, _volume_Cancel);
+                    UIAudioManager.AudioPlay.Invoke(_sound_Cancel, _volume_Cancel);
                 }
                 break;
             case UIEventTypes.Selected:
                 if (UsingScheme())
                 {
-                    PlaySound.Invoke(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
+                    UIAudioManager.AudioPlay.Invoke(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
                 }
                 else
                 {
-                    PlaySound.Invoke(_sound_Select, _volume_Select);
+                    UIAudioManager.AudioPlay.Invoke(_sound_Select, _volume_Select);
                 }
                 break;
         }

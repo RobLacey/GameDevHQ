@@ -25,8 +25,6 @@ public class UISwapper
     string _startToggleText;
     bool canActivate;
 
-    //TODO Add Multi Select Toggle - Will need to be a new UIElement type so a lot of work
-
     public Action<UIEventTypes, bool> OnAwake(bool selected, Setting setting)
     {
         canActivate = (setting & Setting.SwapImageOrText) != 0;

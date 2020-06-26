@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Canvas))]
 [RequireComponent(typeof(CanvasGroup))]
@@ -29,9 +30,10 @@ public class UIBranch : MonoBehaviour
     UINode _userDefinedStartPosition;
     [SerializeField] [HideIf("IsAPopUpBranch")] [Label("Branch Group List (Leave blank if NO groups needed)")]
     [ReorderableList] List<GroupList> _groupsList;
+    [SerializeField] BranchEvents _branchEvents;
 
-    //Internal Callses & Editor Scripts
-    #region Internal Classes & Editor Scripts
+    //Editor Scripts
+    #region Editor Scripts
 
     private bool IsEmpty(UINode uINode) { return uINode != null; }
     public bool IsStandard() { return _branchType == BranchType.StandardUI; }
@@ -50,8 +52,15 @@ public class UIBranch : MonoBehaviour
     //Variables
     UITweener _UITweener;
     int _groupIndex = 0;
-    bool _toParent = false;
     Action _onFinishedTrigger;
+
+    //InternalClasses
+    [Serializable]
+    private class BranchEvents
+    {
+        public UnityEvent OnBranchEnabled;
+        public UnityEvent OnBranchDisabled;
+    }
 
     //Properties
     public bool IsAPopUpBranch() { return _branchType == BranchType.PopUp_NonResolve 
@@ -60,14 +69,14 @@ public class UIBranch : MonoBehaviour
     public bool IsPause() { return _branchType == BranchType.PauseMenu; }
     public UINode DefaultStartPosition { get { return _userDefinedStartPosition; }
         private set { _userDefinedStartPosition = value; } }
-    public Canvas MyCanvas { get; set; }
-    public UINode LastHighlighted { get; set; }
-    public UINode LastSelected { get; set; }
+    public Canvas MyCanvas { get; private set; }
+    public UINode LastHighlighted { get; private set; }
+    public UINode LastSelected { get; private set; }
     public UIBranch MyParentBranch { get; private set; }
     public bool DontSetAsActive { get; set; } = false;
     public UINode[] ThisGroupsUINodes { get; private set; }
-    public bool AllowKeys { get; set; }
-    public CanvasGroup MyCanvasGroup { get; set; }
+    public bool AllowKeys { get; private set; }
+    public CanvasGroup MyCanvasGroup { get; private set; }
     public EscapeKey EscapeKeySetting { get { return _escapeKeyFunction; } }
     public bool TweenOnChange { get; set; } = true;
     public BranchType MyBranchType { get { return _branchType; } }
@@ -84,7 +93,6 @@ public class UIBranch : MonoBehaviour
     public UIPopUp PopUpClass { get; private set; } 
     public UIPopUp IsPauseMenu { get; private set; }
     public int GroupListCount { get { return _groupsList.Count; } }
-
     public float Timer { get { return _timer; } }
 
     private void Awake()
@@ -225,17 +233,9 @@ public class UIBranch : MonoBehaviour
         LastSelected = lastSelected;
     }
 
-    public void OutTweensToChild(Action action = null)
+    public void StartOutTween(Action action = null)
     {
-        _onFinishedTrigger = action;
-        _toParent = false;
-        _UITweener.StopAllCoroutines();
-         MyCanvasGroup.blocksRaycasts = false;
-        _UITweener.DeactivateTweens(() => OutTweenCallback());
-    }
-
-    public void OutTweenToParent(Action action = null)
-    {
+        _branchEvents?.OnBranchDisabled.Invoke();
         _onFinishedTrigger = action;
         _UITweener.StopAllCoroutines();
          MyCanvasGroup.blocksRaycasts = false;
@@ -264,6 +264,7 @@ public class UIBranch : MonoBehaviour
             SaveLastHighlighted(LastHighlighted);
             LastHighlighted.InitailNodeAsActive(); 
         }
+        _branchEvents?.OnBranchEnabled.Invoke();        
         DontSetAsActive = false;
     }
 

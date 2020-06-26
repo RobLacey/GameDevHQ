@@ -7,9 +7,12 @@ using NaughtyAttributes;
 [System.Serializable]
 public class UIEvents
 {
+    [Header("Highlight Events")]
+    [HorizontalLine(4, color: EColor.Blue, order = 1)]
     public UnityEvent OnEnterEvent;
     public UnityEvent OnExitEvent;
     [Header("Click/Selected Events")]
+    [HorizontalLine(4, color: EColor.Blue, order = 1)]
     public UnityEvent _OnButtonClickEvent;
     public OnToggleEvent _OnToggleEvent;
 

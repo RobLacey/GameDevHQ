@@ -7,6 +7,9 @@ using NaughtyAttributes;
 public class TestRunner : MonoBehaviour
 {
     [SerializeField] EventsForTest _eventsForTest;
+    [SerializeField] string _test1Test;
+    [SerializeField] string _test2Test;
+    [SerializeField] string _test3Test;
 
     [System.Serializable]
     private class EventsForTest
@@ -42,5 +45,18 @@ public class TestRunner : MonoBehaviour
     public void Button_Event5()
     {
         _eventsForTest._event5?.Invoke();
+    }
+
+    public void PrintTest1()
+    {
+        Debug.Log(_test1Test);
+    }
+    public void PrintTest2()
+    {
+        Debug.Log(_test2Test);
+    }
+    public void PrintTest3()
+    {
+        Debug.Log(_test3Test);
     }
 }

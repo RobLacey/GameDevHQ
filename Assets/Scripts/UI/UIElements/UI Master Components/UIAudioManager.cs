@@ -6,16 +6,17 @@ using UnityEngine;
 public class UIAudioManager
 {
     AudioSource _myAudioSource;
+    public static Action<AudioClip, float> AudioPlay;
 
     public UIAudioManager(AudioSource audioSource)
     {
         _myAudioSource = audioSource;
-        UIAudio.PlaySound += Play;
+        AudioPlay += Play;
     }
 
     public void OnDisable()
     {
-        PlayAudio -= Play;
+        AudioPlay -= Play;
     }
 
     public static event Action<AudioClip, float> PlayAudio;

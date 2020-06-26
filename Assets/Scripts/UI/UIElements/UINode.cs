@@ -42,7 +42,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     
 
     //Delegates
-    Action<UIEventTypes, bool> StartFunctions;
+    Action<UIEventTypes, bool> StartUIFunctions;
     public static event Action<EscapeKey> DoCancel;
 
     //Properties & Enums
@@ -110,21 +110,20 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         IAudio = _audio;
     }
 
-
     private void OnEnable()
     {
-        StartFunctions += _accessories.OnAwake(_enabledFunctions);
-        StartFunctions += _sizeAndPos.OnAwake(transform, _enabledFunctions);
-        StartFunctions += _swapImageOrText.OnAwake(IsSelected, _enabledFunctions);
-        StartFunctions += _invertColourCorrection.OnAwake(_enabledFunctions);
+        StartUIFunctions += _accessories.OnAwake(_enabledFunctions);
+        StartUIFunctions += _sizeAndPos.OnAwake(transform, _enabledFunctions);
+        StartUIFunctions += _swapImageOrText.OnAwake(IsSelected, _enabledFunctions);
+        StartUIFunctions += _invertColourCorrection.OnAwake(_enabledFunctions);
     }
 
     private void OnDisable()
     {
-        StartFunctions -= _accessories.OnDisable();
-        StartFunctions -= _sizeAndPos.OnDisable();
-        StartFunctions -= _swapImageOrText.OnDisable();
-        StartFunctions -= _invertColourCorrection.OnDisable();
+        StartUIFunctions -= _accessories.OnDisable();
+        StartUIFunctions -= _sizeAndPos.OnDisable();
+        StartUIFunctions -= _swapImageOrText.OnDisable();
+        StartUIFunctions -= _invertColourCorrection.OnDisable();
     }
 
     private void Start()
@@ -138,23 +137,22 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    // Input Systems Interfaces
-
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (IsDisabled) return;
+        TriggerEnterEvent();
         _navigation.PointerEnter(eventData);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (IsDisabled) return;
+        TriggerExitEvent();
         _navigation.PointerExit(eventData);
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (_buttonFunction == ButtonFunction.HoverToActivate) return;
         PressedActions();
     }
 
@@ -172,10 +170,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void OnMove(AxisEventData eventData)
     {
-       // if (MyBranch.CheckIfPopUpsNeedHandling())
-       // {
-            _navigation.KeyBoardOrController(eventData);
-       // }
+        _navigation.KeyBoardOrController(eventData);
     }
 
     public void OnSubmit(BaseEventData eventData)
@@ -257,7 +252,10 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         {
             Activate();
         }
-        DoPressedAction();
+
+        StartUIFunctions.Invoke(UIEventTypes.Selected, IsSelected);
+        _sizeAndPos.WhenPressed(IsSelected);
+        _colours.ProcessPress(IsSelected);
         _swapImageOrText.CycleToggle(IsSelected);
     }
 
@@ -277,7 +275,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     private void Activate()
     {
-        if (_buttonFunction != ButtonFunction.Switch_NeverHold) IsSelected = true;
+        IsSelected = true;
         if (!AmSlider)  { InvokeClickEvents(); }
         _tooltips.HideToolTip();
         StopAllCoroutines();
@@ -306,9 +304,8 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     public void SetAsHighlighted()
     {
         if (IsDisabled) return;
-        if (_events.CanActivate) _events.OnEnterEvent?.Invoke();
         _colours.SetColourOnEnter(IsSelected);
-        ActivateUIUFunctions(UIEventTypes.Highlighted);
+        StartUIFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
         StartCoroutine(StartToopTip());
     }
 
@@ -318,30 +315,17 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         _tooltips.HideToolTip();
 
         if (IsDisabled) return;
-        if (_events.CanActivate) _events.OnExitEvent?.Invoke();
 
         if (IsSelected)
         {
-            ActivateUIUFunctions(UIEventTypes.Selected);
+            StartUIFunctions.Invoke(UIEventTypes.Selected, IsSelected);
             _colours.SetColourOnExit(IsSelected);
         }
         else
         {
-            ActivateUIUFunctions(UIEventTypes.Normal);
+            StartUIFunctions.Invoke(UIEventTypes.Normal, IsSelected);
             _colours.ResetToNormal();
         }
-    }
-
-    private void ActivateUIUFunctions(UIEventTypes uIEventTypes) //TODO simplify this and move to actual lines
-    {
-        StartFunctions.Invoke(uIEventTypes, IsSelected);
-    }
-
-    private void DoPressedAction()
-    {
-        ActivateUIUFunctions(UIEventTypes.Selected);
-        _sizeAndPos.WhenPressed(IsSelected);
-        _colours.ProcessPress(IsSelected);
     }
 
     public void SetSelected_NoEffects()
@@ -361,7 +345,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     private void HandleIfDisabled()
     {
         Deactivate();
-        ActivateUIUFunctions(UIEventTypes.Normal);
+        StartUIFunctions.Invoke(UIEventTypes.Normal, IsSelected);
 
         if (_isDisabled)
         {
@@ -397,6 +381,15 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     public void DisableObject() { IsDisabled = true; }
     public void EnableObject() { IsDisabled = false; }
 
+    public void TriggerExitEvent()
+    {
+        if (_events.CanActivate) _events.OnExitEvent?.Invoke();
+    }
+
+    public void TriggerEnterEvent()
+    {
+        if (_events.CanActivate) _events.OnEnterEvent?.Invoke();
+    }
 }
 
 

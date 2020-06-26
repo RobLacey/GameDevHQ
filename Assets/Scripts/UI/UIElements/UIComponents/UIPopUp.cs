@@ -5,21 +5,13 @@ using UnityEngine;
 
 public class UIPopUp
 {
-    private class CoRunner : MonoBehaviour
-    {
-        public void StartCo(IEnumerator corouitne)
-        {
-            StartCoroutine(corouitne);
-        }
-    }
-
     //Variables
     UIBranch myBranch;
     UIBranch[] _allBranches;
-    CoRunner _CoRunner;
     bool _running;
     Coroutine _coroutine;
 
+    //Internal Classes
     private class Data
     {
         public List<UIBranch> _clearedBranches = new List<UIBranch>();
@@ -28,6 +20,7 @@ public class UIPopUp
         public bool _fromHomeScreen;
     }
 
+    //Properties
     private Data ClearedScreenData { get; set; } = new Data();
 
     public UIPopUp(UIBranch branch, UIBranch[] branchList)
@@ -111,6 +104,7 @@ public class UIPopUp
             myBranch.DontSetAsActive = true;
         }
         myBranch.SaveLastSelected(myBranch.LastSelected);
+        myBranch.LastSelected.IAudio.Play(UIEventTypes.Selected);
         myBranch.MoveToNextLevel();
     }
 
@@ -124,18 +118,18 @@ public class UIPopUp
         }
         yield return new WaitForSeconds(myBranch.Timer);
         _running = false;
-        myBranch.OutTweenToParent();
+        myBranch.StartOutTween();
     }
 
     public void RestoreLastPosition(UINode lastHomeGroupNode = null)
     {
         if (myBranch.WhenToMove == WhenToMove.AtTweenEnd)
         {
-            myBranch.OutTweenToParent(()=> EndOfTweenactions(lastHomeGroupNode));
+            myBranch.StartOutTween(()=> EndOfTweenactions(lastHomeGroupNode));
         }
         else
         {
-            myBranch.OutTweenToParent();
+            myBranch.StartOutTween();
             EndOfTweenactions(lastHomeGroupNode);
         }
     }

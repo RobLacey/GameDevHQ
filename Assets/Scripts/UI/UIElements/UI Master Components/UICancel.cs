@@ -10,8 +10,7 @@ public static class UICancel
 
     public static void Cancel()
     {
-        if (_myUIHub.LastSelected.ChildBranch != null
-            && _myUIHub.LastSelected.ChildBranch.MyCanvas.enabled != false)
+        if (CanCancel())
         {
             OnCancel(_myUIHub.LastSelected.ChildBranch.EscapeKeySetting);
         }
@@ -26,10 +25,12 @@ public static class UICancel
     {
         if (escapeKey == EscapeKey.BackOneLevel)
         {
+            _myUIHub.LastSelected.SetNotSelected_NoEffects();
             EscapeButtonProcess(() => BackOneLevel());
         }
         else if (escapeKey == EscapeKey.BackToHome)
         {
+            _homeGroup[_myUIHub.GroupIndex].LastSelected.SetNotSelected_NoEffects();
             EscapeButtonProcess(() => BackToHome());
         }
 
@@ -43,6 +44,7 @@ public static class UICancel
     {
         if (_myUIHub.GameIsPaused || _myUIHub.ActiveBranch.IsAPopUpBranch())
         {
+            _myUIHub.LastSelected.ChildBranch.StartOutTween();
             _myUIHub.LastSelected.IAudio.Play(UIEventTypes.Cancelled);
             endAction.Invoke();
             return;
@@ -50,18 +52,18 @@ public static class UICancel
 
         if (_myUIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.AtTweenEnd)
         {
-            _myUIHub.LastSelected.ChildBranch.OutTweenToParent(() => endAction.Invoke());
+            _myUIHub.LastSelected.ChildBranch.StartOutTween(() => endAction.Invoke());
             _myUIHub.LastSelected.IAudio.Play(UIEventTypes.Cancelled);
         }
         else
         {
-            _myUIHub.LastSelected.ChildBranch.OutTweenToParent();
+            _myUIHub.LastSelected.ChildBranch.StartOutTween();
             _myUIHub.LastSelected.IAudio.Play(UIEventTypes.Cancelled);
             endAction.Invoke();
         }
     }
 
-    private static void BackToHome() //TODO Review with Pause and Pop UP as may fall over
+    private static void BackToHome()
     {
         int index = _myUIHub.GroupIndex;
 
@@ -69,8 +71,7 @@ public static class UICancel
         {
             _homeGroup[index].TweenOnChange = false;
         }
-
-        _homeGroup[index].LastSelected.SetNotSelected_NoEffects();
+        _homeGroup[_myUIHub.GroupIndex].LastSelected.INavigation.TurnOffChildren(); //Used as object is deselected in Escape process to avoid Colour flashes
         _homeGroup[index].MoveToNextLevel();
         _homeGroup[index].LastSelected.MyBranch.SaveLastSelected(_homeGroup[index].LastSelected);
     }
@@ -88,7 +89,7 @@ public static class UICancel
         }
         if (_myUIHub.GameIsPaused && _myUIHub.ActiveBranch.MyBranchType == BranchType.PauseMenu)
         {
-            _myUIHub.PauseMenu();
+            _myUIHub.PauseOptionMenu();
         }
         else if (_myUIHub.ActivePopUps_Resolve.Count > 0 && !_myUIHub.GameIsPaused)
         {
@@ -100,7 +101,6 @@ public static class UICancel
         }
         else
         {
-            lastSelected.SetNotSelected_NoEffects();
             lastSelected.MyBranch.SaveLastSelected(lastSelected.MyBranch.MyParentBranch.LastSelected);
             lastSelected.MyBranch.MoveToNextLevel();
         }
@@ -128,5 +128,15 @@ public static class UICancel
             int lastIndexItem = _myUIHub.ActivePopUps_Resolve.Count - 1;
             _myUIHub.ActivePopUps_Resolve[lastIndexItem].PopUpClass.RemoveFromActiveList_Resolve();
         }
+    }
+
+    public static bool CanCancel()
+    {
+        if (_myUIHub.LastSelected.ChildBranch != null
+    && _myUIHub.LastSelected.ChildBranch.MyCanvas.enabled != false)
+        {
+            return true;
+        }
+        return false;
     }
 }
