@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 public enum UIEventTypes
 {
     Normal, Highlighted, Selected, Pressed, Cancelled
@@ -42,6 +44,7 @@ public enum EscapeKey { None, BackOneLevel, BackToHome, GlobalSetting }
 
 public enum ButtonFunction { Standard_Hold, ToggleGroup, Toggle_NotLinked, HoverToActivate }
 
+[Flags]
 public enum Setting
 {
     None = 0,

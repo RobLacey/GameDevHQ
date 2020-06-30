@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using EnhancedHierarchy;
 using UnityEngine;
 
 public class UIPopUp
 {
+    public UIPopUp(UIBranch branch, UIBranch[] branchList, IHubData newHubData)
+    {
+        myHubData = newHubData;
+        myBranch = branch;
+        _allBranches = branchList;
+    }
+
     //Variables
+    IHubData myHubData;
     UIBranch myBranch;
     UIBranch[] _allBranches;
     bool _running;
@@ -14,100 +23,150 @@ public class UIPopUp
     //Internal Classes
     private class Data
     {
-        public List<UIBranch> _clearedBranches = new List<UIBranch>();
-        public UINode lastSelected;
-        public UINode lastHighlighted;
         public bool _fromHomeScreen;
+        public List<UIBranch> _clearedBranches = new List<UIBranch>();
+        public UINode lastHighlighted;
+        public UINode lastSelected;
     }
 
     //Properties
     private Data ClearedScreenData { get; set; } = new Data();
+    //public bool GameIsPaused { get; private set; } = false;
 
-    public UIPopUp(UIBranch branch, UIBranch[] branchList)
-    {
-        myBranch = branch;
-        _allBranches = branchList;
-    }
 
+    /// <summary> Starts any PopUp from other classes or Inpsector Event calls </summary>     
     public void StartPopUp()
     {
-        if (myBranch.UIHub.ActivePopUps_NonResolve.Count == 0 && myBranch.UIHub.ActivePopUps_Resolve.Count == 0)
+        if (myHubData.GameIsPaused) return;
+
+        //if (myHubData.ActivePopUps_NonResolve.Count == 0 && myHubData.ActivePopUps_Resolve.Count == 0)
+        //{
+         //   myHubData.LastNodeBeforePopUp = myHubData.LastHighlighted;
+        //}
+
+        if (!myBranch.MyCanvas.enabled)
         {
-            myBranch.UIHub.LastNodeBeforePopUp = myBranch.UIHub.LastHighlighted;
+            SetUpPopUp();
         }
-        if (myBranch.IsPause())
+        else
         {
-            MainProcess();
-        }
-        else if (myBranch.IsResolvePopUp && !myBranch.MyCanvas.enabled)
-        {
-            AddToActivePopUps_Rsolve();
-        }
-        else if (myBranch.IsNonResolvePopUp && !myBranch.MyCanvas.enabled)
-        {
-            AddToActivePopUp_NonResolve();
-        }
-        else if (myBranch.IsTimedPopUp)
-        {
-            if (!_running)
-            {
-                _coroutine = StaticCoroutine.StartCoroutine(TimedPopUpProcess());
-                return;
-            }
-            else
+            if (myBranch.IsTimedPopUp)
             {
                 StaticCoroutine.StopCoroutines(_coroutine);
                 _coroutine = StaticCoroutine.StartCoroutine(TimedPopUpProcess());
-                return;
             }
         }
     }
 
-    private void MainProcess()
+    private void SetUpPopUp()
     {
-        ClearedScreenData._clearedBranches.Clear();
-        ClearedScreenData._fromHomeScreen = false;
-        ClearedScreenData.lastSelected = myBranch.UIHub.LastSelected;
-        ClearedScreenData.lastHighlighted = myBranch.UIHub.ActiveBranch.LastHighlighted;
+        if (myBranch.IsResolvePopUp)
+        {
+            StartActivePopUps_Resolve();
+        }
+        else if (myBranch.IsNonResolvePopUp)
+        {
+            StartActivePopUp_NonResolve();
+        }
+        else if (myBranch.IsTimedPopUp)
+        {
+            _coroutine = StaticCoroutine.StartCoroutine(TimedPopUpProcess());
+        }
+    }
+
+    private void StartActivePopUps_Resolve()
+    {
+        if (!myHubData.ActivePopUps_Resolve.Contains(myBranch))
+        {
+            myHubData.ActivePopUps_Resolve.Add(myBranch);
+        }
+        PopUpStartProcess();
+    }
+
+    private void StartActivePopUp_NonResolve()
+    {
+        if (!myHubData.ActivePopUps_NonResolve.Contains(myBranch))
+        {
+            myHubData.ActivePopUps_NonResolve.Add(myBranch);
+        }
+        PopUpStartProcess();
+    }
+
+    public void PauseMenu()
+    {
+        if (myHubData.GameIsPaused)
+        {
+            myHubData.GameIsPaused = false;
+            RestoreLastPosition();
+        }
+        else
+        {
+            myHubData.GameIsPaused = true;
+            PopUpStartProcess();
+        }
+    }
+
+    /// <summary> Directly Starts up the popup. Stores data, clears screen, deactivates raycasts etc </summary>     
+    public void PopUpStartProcess()
+    {
+        StoreClearScreenData();
 
         foreach (var branch in _allBranches)
         {
             if (branch.MyCanvas.enabled == true && branch != myBranch)
             {
                 if (!branch.IsAPopUpBranch()) ClearedScreenData._clearedBranches.Add(branch);
-
-                if (myBranch.ScreenType == ScreenType.ToFullScreen)
-                {
-                    if (myBranch.UIHub.OnHomeScreen == true)
-                    {
-                        branch.UIHub.OnHomeScreen = false;
-                        ClearedScreenData._fromHomeScreen = true;
-                    }
-                    branch.MyCanvas.enabled = false;
-                }
-
-                if (myBranch.IsResolvePopUp && !branch.IsResolvePopUp)
-                {
-                    branch.MyCanvasGroup.blocksRaycasts = false;
-                }
-
-                if (myBranch.IsPause() || branch.IsPause())
-                {
-                    branch.MyCanvasGroup.blocksRaycasts = false;
-                    myBranch.MyCanvasGroup.blocksRaycasts = true; //Ensures Pause can't be acciently deactivated
-                }
+                IfBranchIsFullscreen(branch);
+                HandlePopUpTypes(branch);
             }
         }
+        ActivatePopUp();
+    }
+    private void StoreClearScreenData()
+    {
+        ClearedScreenData._clearedBranches.Clear();
+        ClearedScreenData._fromHomeScreen = false;
+        ClearedScreenData.lastSelected = myHubData.LastSelected;
+        ClearedScreenData.lastHighlighted = myHubData.ActiveBranch.LastHighlighted;
+    }
 
-        if (!myBranch.IsResolvePopUp && !myBranch.IsPause() && myBranch.UIHub.ActivePopUps_Resolve.Count != 0)
+    private void IfBranchIsFullscreen(UIBranch branch)
+    {
+        if (myBranch.ScreenType == ScreenType.ToFullScreen)
+        {
+            if (myHubData.OnHomeScreen == true)
+            {
+                myHubData.OnHomeScreen = false;
+                ClearedScreenData._fromHomeScreen = true;
+            }
+            branch.MyCanvas.enabled = false;
+        }
+    }
+
+    private void HandlePopUpTypes(UIBranch branch)
+    {
+        if (myBranch.IsResolvePopUp && !branch.IsResolvePopUp)
+        {
+            branch.MyCanvasGroup.blocksRaycasts = false;
+        }
+
+        if (myBranch.IsPause() || branch.IsPause())
+        {
+            branch.MyCanvasGroup.blocksRaycasts = false;
+            myBranch.MyCanvasGroup.blocksRaycasts = true; //Ensures Pause can't be acciently deactivated
+        }
+    }
+    private void ActivatePopUp()
+    {
+        if (!myBranch.IsResolvePopUp && !myBranch.IsPause() && myHubData.ActivePopUps_Resolve.Count != 0)
         {
             myBranch.DontSetAsActive = true;
         }
         myBranch.SaveLastSelected(myBranch.LastSelected);
+        myBranch.SaveLastHighlighted(myBranch.LastSelected);
         myBranch.LastSelected.IAudio.Play(UIEventTypes.Selected);
         myBranch.MoveToNextLevel();
     }
-
     private IEnumerator TimedPopUpProcess()
     {
         if (!_running)
@@ -121,48 +180,48 @@ public class UIPopUp
         myBranch.StartOutTween();
     }
 
-    public void RestoreLastPosition(UINode lastHomeGroupNode = null)
+    private void RestoreLastPosition(UINode lastHomeGroupNode = null)
     {
         if (myBranch.WhenToMove == WhenToMove.AtTweenEnd)
         {
-            myBranch.StartOutTween(()=> EndOfTweenactions(lastHomeGroupNode));
+            myBranch.StartOutTween(()=> EndOfTweenActions(lastHomeGroupNode));
         }
         else
         {
             myBranch.StartOutTween();
-            EndOfTweenactions(lastHomeGroupNode);
+            EndOfTweenActions(lastHomeGroupNode);
         }
     }
 
-    private void EndOfTweenactions(UINode lastHomeGroupNode = null)
+    private void EndOfTweenActions(UINode lastHomeGroupNode = null)
     {
         RestoreScreen();
 
         if (myBranch.IsPause())
         {
-            myBranch.SaveLastSelected(ClearedScreenData.lastSelected);
-            myBranch.UIHub.SetLastHighlighted(ClearedScreenData.lastHighlighted);
-
+            myHubData.SetLastSelected(ClearedScreenData.lastSelected);
+            myBranch.SaveLastHighlighted(ClearedScreenData.lastHighlighted);
             if (myBranch.AllowKeys)
             {
-                ClearedScreenData.lastHighlighted.InitailNodeAsActive();
+                ClearedScreenData.lastHighlighted.SetNodeAsActive();
             }
         }
         else
         {
-            myBranch.SaveLastSelected(lastHomeGroupNode);
-
-            myBranch.UIHub.SetLastHighlighted(lastHomeGroupNode);
-
-            if (myBranch.AllowKeys)
+            if (lastHomeGroupNode != null)
             {
-                lastHomeGroupNode.InitailNodeAsActive();
+                myHubData.SetLastSelected(lastHomeGroupNode.MyBranch.MyParentBranch.LastSelected);
+                myBranch.SaveLastHighlighted(lastHomeGroupNode);
+                if (myBranch.AllowKeys)
+                {
+                    lastHomeGroupNode.SetNodeAsActive();
+                }
             }
         }
 
         if (ClearedScreenData._fromHomeScreen)
         {
-            myBranch.UIHub.OnHomeScreen = true;
+            myHubData.OnHomeScreen = true;
         }
     }
 
@@ -170,9 +229,9 @@ public class UIPopUp
     {
         foreach (var branch in ClearedScreenData._clearedBranches)
         {
-            if (!myBranch.UIHub.GameIsPaused)
+            if (!myHubData.GameIsPaused)
             {
-                if (myBranch.UIHub.ActivePopUps_Resolve.Count == 0)
+                if (myHubData.ActivePopUps_Resolve.Count == 0)
                 {
                     branch.MyCanvasGroup.blocksRaycasts = true;
                 }
@@ -180,64 +239,43 @@ public class UIPopUp
             }
         }
 
-        foreach (var item in myBranch.UIHub.ActivePopUps_Resolve)
+        foreach (var item in myHubData.ActivePopUps_Resolve)
         {
             item.MyCanvasGroup.blocksRaycasts = true;
             item.MyCanvas.enabled = true;
         }
 
-        foreach (var item in myBranch.UIHub.ActivePopUps_NonResolve)
+        foreach (var item in myHubData.ActivePopUps_NonResolve)
         {
-            if (myBranch.UIHub.ActivePopUps_Resolve.Count == 0)
+            if (myHubData.ActivePopUps_Resolve.Count == 0)
             {
                 item.MyCanvasGroup.blocksRaycasts = true;
             }
             item.MyCanvas.enabled = true;
         }
     }
-
-    public void AddToActivePopUps_Rsolve()
-    {
-        MainProcess();
-
-        if (!myBranch.UIHub.ActivePopUps_Resolve.Contains(myBranch))
-        {
-            myBranch.UIHub.ActivePopUps_Resolve.Add(myBranch);
-        }
-    }
-
-    public void AddToActivePopUp_NonResolve()
-    {
-        MainProcess();
-
-        if (!myBranch.UIHub.ActivePopUps_NonResolve.Contains(myBranch))
-        {
-            myBranch.UIHub.ActivePopUps_NonResolve.Add(myBranch);
-        }
-    }
-
     public void RemoveFromActiveList_Resolve()
     {
-        if(myBranch.UIHub.ActivePopUps_Resolve.Contains(myBranch))
+        if(myHubData.ActivePopUps_Resolve.Contains(myBranch))
         {
-            myBranch.UIHub.ActivePopUps_Resolve.Remove(myBranch);
+            myHubData.ActivePopUps_Resolve.Remove(myBranch);
 
-            if (myBranch.UIHub.ActivePopUps_Resolve.Count > 0)
+            if (myHubData.ActivePopUps_Resolve.Count > 0)
             {
-                int lastIndexItem = myBranch.UIHub.ActivePopUps_Resolve.Count - 1;
-                RestoreLastPosition(myBranch.UIHub.ActivePopUps_Resolve[lastIndexItem].LastHighlighted);
+                int lastIndexItem = myHubData.ActivePopUps_Resolve.Count - 1;
+                RestoreLastPosition(myHubData.ActivePopUps_Resolve[lastIndexItem].LastHighlighted);
             }
             else
             {
-                if (myBranch.UIHub.ActivePopUps_NonResolve.Count > 0)
+                if (myHubData.ActivePopUps_NonResolve.Count > 0)
                 {
-                    int lastIndexItem = myBranch.UIHub.ActivePopUps_NonResolve.Count - 1;
-                    myBranch.UIHub.PopIndex = lastIndexItem;
-                    RestoreLastPosition(myBranch.UIHub.ActivePopUps_NonResolve[lastIndexItem].LastHighlighted);
+                    int lastIndexItem = myHubData.ActivePopUps_NonResolve.Count - 1;
+                    myHubData.PopIndex = lastIndexItem;
+                    RestoreLastPosition(myHubData.ActivePopUps_NonResolve[lastIndexItem].LastHighlighted);
                 }
                 else
                 {
-                    RestoreLastPosition(myBranch.UIHub.LastNodeBeforePopUp);
+                    RestoreLastPosition(myHubData.LastNodeBeforePopUp);
                 }
             }
         }
@@ -245,26 +283,26 @@ public class UIPopUp
 
     public void RemoveFromActiveList_NonResolve()
     {
-        if(myBranch.UIHub.ActivePopUps_NonResolve.Contains(myBranch))
+        if(myHubData.ActivePopUps_NonResolve.Contains(myBranch))
         {
-            myBranch.UIHub.ActivePopUps_NonResolve.Remove(myBranch);
+            myHubData.ActivePopUps_NonResolve.Remove(myBranch);
 
-            if (myBranch.UIHub.ActivePopUps_NonResolve.Count > 0)
+            if (myHubData.ActivePopUps_NonResolve.Count > 0)
             {
-                myBranch.UIHub.PopIndex = 0;
-                myBranch.UIHub.HandleActivePopUps();
-                RestoreLastPosition(myBranch.UIHub.ActivePopUps_NonResolve[0].LastHighlighted);
+                myHubData.PopIndex = 0;
+                myHubData.HandleActivePopUps();
+                RestoreLastPosition(myHubData.ActivePopUps_NonResolve[0].LastHighlighted);
             }
             else
             {
-                RestoreLastPosition(myBranch.UIHub.LastHomePosition);
+                RestoreLastPosition(myHubData.LastNodeBeforePopUp);
             }
         }
     }
 
     public void ManagePopUpRaycast()
     {
-        if (myBranch.UIHub.ActivePopUps_Resolve.Count > 0 && !myBranch.IsResolvePopUp)
+        if (myHubData.ActivePopUps_Resolve.Count > 0 && !myBranch.IsResolvePopUp)
         {
             myBranch.MyCanvasGroup.blocksRaycasts = false;
         }

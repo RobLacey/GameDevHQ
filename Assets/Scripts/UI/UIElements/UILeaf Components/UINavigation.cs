@@ -208,7 +208,6 @@ public class UINavigation : IUINavigation
 
     private void ToFullScreen_AfterTween()
     {
-        UIHomeGroup.ClearHomeScreen(_myBranch);
         ToChildBranch_AfterTween();
     }
 

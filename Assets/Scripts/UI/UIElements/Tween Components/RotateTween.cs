@@ -18,9 +18,9 @@ public class RotateTween
     //Variables
     float _tweenTime;
     Ease _tweenEase;
-    List<BuildSettings> _listToUse;
-    List<BuildSettings> _reversedBuild = new List<BuildSettings>();
-    List<BuildSettings> _buildList = new List<BuildSettings>();
+    List<TweenSettings> _listToUse;
+    List<TweenSettings> _reversedBuild = new List<TweenSettings>();
+    List<TweenSettings> _buildList = new List<TweenSettings>();
     int _id;
     Action<IEnumerator> _startCoroutine;
     Action<RectTransform> _effectCallback;
@@ -28,7 +28,7 @@ public class RotateTween
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public Action SetUpRotateTweens(List<BuildSettings> buildObjectsList, 
+    public Action SetUpRotateTweens(List<TweenSettings> buildObjectsList, 
                                   Action<IEnumerator> startCoroutine, Action<RectTransform> effectCall)
     {
         _effectCallback = effectCall;
@@ -38,7 +38,7 @@ public class RotateTween
         {
             item._element.localRotation = Quaternion.Euler(item._rotateFrom);
         }
-        _reversedBuild = new List<BuildSettings>(_buildList);
+        _reversedBuild = new List<TweenSettings>(_buildList);
         _reversedBuild.Reverse();
         return Reset;
     }

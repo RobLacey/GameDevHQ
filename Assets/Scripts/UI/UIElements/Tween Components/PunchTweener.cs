@@ -17,7 +17,7 @@ public class PunchTweener
     [SerializeField] [AllowNesting] [Range(1, 10)] int _vibrato = 5;
 
     //Variables
-    List<BuildSettings> _buildList = new List<BuildSettings>();
+    List<TweenSettings> _buildList = new List<TweenSettings>();
     int _id;
     Action<IEnumerator> _startCoroutine;
 
@@ -25,7 +25,7 @@ public class PunchTweener
 
     public bool CheckOutEffectType() { return _punchWhen == EffectType.Out || _punchWhen == EffectType.Both; }
 
-    public void SetUpPunchTween(List<BuildSettings> buildSettings, Action<IEnumerator> startCoroutine)
+    public void SetUpPunchTween(List<TweenSettings> buildSettings, Action<IEnumerator> startCoroutine)
     {
         _startCoroutine = startCoroutine;
         _buildList = buildSettings;

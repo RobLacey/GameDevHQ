@@ -2,14 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class UIHomeGroup 
+public class UIHomeGroup : IHomeGroup
 {
-    public static List<UIBranch> _homeGroup;
-    public static UIBranch[] _allBranches;
-    public static UIHub _myUIHub;
+    List<UIBranch> _homeGroup;
+    UIBranch[] _allBranches;
+    IHubData _myUIHub;
 
-    public static void SwitchHomeGroups(ref int index)
+    public UIHomeGroup(IHubData hubData)
     {
+        _myUIHub = hubData;
+        _allBranches = _myUIHub.AllBranches;
+        _homeGroup = _myUIHub.HomeGroupBranches;
+    }
+
+    public void SwitchHomeGroups()
+    {
+        int index = _myUIHub.GroupIndex;
         _homeGroup[index].LastSelected.Deactivate();
         index++;
 
@@ -17,6 +25,7 @@ public static class UIHomeGroup
         {
             index = 0;
         }
+        _myUIHub.GroupIndex = index;
         _homeGroup[index].TweenOnChange = false;
 
         if (_homeGroup[index].LastSelected.Function == ButtonFunction.HoverToActivate && _homeGroup[index].AllowKeys)
@@ -29,19 +38,19 @@ public static class UIHomeGroup
         }
     }
 
-    public static int SetHomeGroupIndex(UIBranch uIBranch)
+    public void SetHomeGroupIndex(UIBranch uIBranch)
     {
         for (int i = 0; i < _homeGroup.Count; i++)
         {
             if (_homeGroup[i] == uIBranch)
             {
-                return i;
+                _myUIHub.GroupIndex = i;
             }
         }
-        return 0;
+        //return 0;
     }
 
-    public static void ClearHomeScreen(UIBranch ignoreBranch)
+    public void ClearHomeScreen(UIBranch ignoreBranch)
     {
         if (!_myUIHub.OnHomeScreen) return;
         _myUIHub.OnHomeScreen = false;
@@ -57,7 +66,7 @@ public static class UIHomeGroup
         }
     }
 
-    public static void RestoreHomeScreen()
+    public void RestoreHomeScreen()
     {
         if (!_myUIHub.OnHomeScreen)
         {

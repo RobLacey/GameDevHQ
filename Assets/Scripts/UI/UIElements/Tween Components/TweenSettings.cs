@@ -5,7 +5,7 @@ using UnityEngine;
 using NaughtyAttributes;
 
 [Serializable]
-public class BuildSettings
+public class TweenSettings
 {
     [SerializeField] public RectTransform _element;
     [SerializeField] [AllowNesting] [ShowIf("PositionTween")] [Label("Start Position")] public Vector3 _tweenStartPosition;

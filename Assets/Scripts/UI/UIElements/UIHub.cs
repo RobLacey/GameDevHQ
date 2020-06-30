@@ -4,66 +4,79 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using System;
+using JetBrains.Annotations;
 using NaughtyAttributes;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(AudioSource))]
 
-public class UIHub : MonoBehaviour
+public class UIHub : MonoBehaviour, IHubData
 {
     [Header("Main Settings")]
-    [SerializeField] [ValidateInput("ProtectEscapekeySetting", "Can't set Global Settings to Global Settings")] 
-    EscapeKey _globalCancelFunction;
-    [SerializeField] [InputAxis] string _cancelButton = default;
-    [SerializeField] [InputAxis] string _branchSwitchButton = default;
-    [SerializeField] [Label("Pause / Option Button")] [InputAxis] string _pauseOptionButton = default;
-    [SerializeField] [Label("Pause / Option Menu")] UIBranch _pauseOptionMenu = default;
+    [SerializeField] [ValidateInput("ProtectEscapeKeySetting", "Can't set Global Settings to Global Settings")] 
+    EscapeKey _globalCancelFunction = EscapeKey.BackOneLevel;
+    [SerializeField] [InputAxis] string _cancelButton;
+    [SerializeField] [InputAxis] string _branchSwitchButton;
+    [SerializeField] [Label("Pause / Option Button")] [InputAxis] string _pauseOptionButton;
+    [SerializeField] [Label("Pause / Option Menu")] UIBranch _pauseOptionMenu;
     [SerializeField] [Label("No Cancel Action")] PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.Nothing;
-    [SerializeField] [Label("Enable Controls After..")] float _atStartDelay = 0;
+    [SerializeField] [Label("Enable Controls After..")] float _atStartDelay;
     [Header("In-Game Menu Settings")]
     [SerializeField] InGameSystem _inGameMenuSystem = InGameSystem.Off;
     [SerializeField] [ShowIf("ActiveInGameSystem")] StartInMenu _startGameWhere = StartInMenu.InGameControl;
-    [SerializeField] [ShowIf("ActiveInGameSystem")] [Label("Switch To/From Game Menus")] [InputAxis] string _switchTOMenusButton;
-    [SerializeField] [ShowIf("ActiveInGameSystem")] InGameOrInMenu _returnToGameControl = default;
+    [SerializeField] [ShowIf("ActiveInGameSystem")] [Label("Switch To/From Game Menus")] [InputAxis] string _switchToMenusButton;
+    [SerializeField] [ShowIf("ActiveInGameSystem")] InGameOrInMenu _returnToGameControl;
     [SerializeField] [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")] List<UIBranch> _homeBranches;
-    [SerializeField] [ReorderableList] [Label("Hotkeys (CAN'T have Independents as Hotkeys)")] List<HotKeys> _hotKeySettings;
+    [SerializeField] [ReorderableList] [Label("Hot keys (CAN'T have Independents as Hot keys)")] List<HotKeys> _hotKeySettings;
 
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
+    
+    //Events
     public static event Action<bool> AllowKeys;
-    public static event Action<bool> IsPaused; // Subscrib To to trigger pause operations
+    public static event Action<bool> IsPaused; // Subscribe To to trigger pause operations
 
     //Variables
-    int _groupIndex = 0;
-    UINode _lastRootNode = default;
-    Vector3 _mousePos = Vector3.zero;
-    bool _usingMouse = false;
-    bool _usingKeysOrCtrl = false;
-    bool _canStart = false;
-    UIAudioManager _UIAudio = default;
-    enum InGameSystem { On, Off }
-    enum PauseOptionsOnEscape { EnterPauseOrEscape, Nothing }
+    private UINode _lastHomeScreenNode;
+    private Vector3 _mousePos = Vector3.zero;
+    private bool _usingMouse;
+    private bool _usingKeysOrCtrl;
+    private bool _canStart;
+    private bool _inMenu = true;
+    private UIAudioManager _uiAudio;
+    private UICancel _myUiCancel;
+    private bool _isPauseOptionMenuNotNull;
+    private bool _canBranchSwitch;
+
+    private enum InGameSystem { On, Off }
+
+    private enum PauseOptionsOnEscape { EnterPauseOrEscape, Nothing }
 
     //Properties
-    bool InMenu { get; set; } = true;
     public UIBranch ActiveBranch { get; set; }
-    public EscapeKey GlobalEscape { get { return _globalCancelFunction; } }
+    public EscapeKey GlobalEscape => _globalCancelFunction;
     public UINode LastSelected { get; private set; }
     public UINode LastHighlighted { get; private set; }
-    public bool OnHomeScreen { get; set; } = false;
-    public bool GameIsPaused { get; private set; }
-    public int GroupIndex { get { return _groupIndex; } set { _groupIndex = value; } }
-    public List<UIBranch> ActivePopUps_Resolve { get; } = new List<UIBranch>();// Change to Methods
-    public List<UIBranch> ActivePopUps_NonResolve { get; } = new List<UIBranch>(); // chnage To Methods
+    public bool OnHomeScreen { get; set; }
+    public bool GameIsPaused { get; set; }
+    public List<UIBranch> HomeGroupBranches => _homeBranches;
+    public UIBranch[] AllBranches { get; private set; }
+    public int GroupIndex { get; set; } = 0;
+    public List<UIBranch> ActivePopUps_Resolve { get; } = new List<UIBranch>();
+    public List<UIBranch> ActivePopUps_NonResolve { get; } = new List<UIBranch>();
     public int PopIndex { get; set; }
-    public UINode LastHomePosition { get { return _homeBranches[_groupIndex].LastHighlighted; } }
     public UINode LastNodeBeforePopUp { get; set; }
-    public bool ActiveInGameSystem { get { return _inGameMenuSystem == InGameSystem.On; } }
+    private bool ActiveInGameSystem => _inGameMenuSystem == InGameSystem.On;
+    public UIHomeGroup UIHomeGroup { get; private set; }
+
+    private bool NoActivePopUps => ActivePopUps_Resolve.Count == 0
+                                     & ActivePopUps_NonResolve.Count == 0;
 
 
     //Editor Scripts
     #region Editor Scripts
 
-    private bool ProtectEscapekeySetting(EscapeKey escapeKey)
+    private bool ProtectEscapeKeySetting(EscapeKey escapeKey)
     {
         if (_globalCancelFunction == EscapeKey.GlobalSetting)
         {
@@ -93,8 +106,16 @@ public class UIHub : MonoBehaviour
 
     private void Awake()
     {
-        _returnToGameControl.Invoke(InMenu);
-        _UIAudio = new UIAudioManager(GetComponent<AudioSource>());
+        _isPauseOptionMenuNotNull = _pauseOptionMenu != null;
+        AllBranches = FindObjectsOfType<UIBranch>();
+        _returnToGameControl.Invoke(_inMenu);
+        _uiAudio = new UIAudioManager(GetComponent<AudioSource>());
+        _myUiCancel = new UICancel(this);
+        UIHomeGroup = new UIHomeGroup(this);
+        foreach (UIBranch branch in AllBranches)
+        {
+            branch.OnAwake(this, this, UIHomeGroup);
+        }
     }
 
     private void OnEnable()
@@ -113,12 +134,14 @@ public class UIHub : MonoBehaviour
         LastSelected = _homeBranches[0].DefaultStartPosition;
         ActiveBranch = _homeBranches[0];
         _mousePos = Input.mousePosition;
-        UICancel._homeGroup = _homeBranches;
-        UICancel._myUIHub = this;
-        HotKeyProcess._myUIHub = this;
+        _canBranchSwitch = _branchSwitchButton != string.Empty;
+
+        foreach (var hotKey in _hotKeySettings)
+        {
+            hotKey.OnAwake(this, UIHomeGroup);
+        }
         OnHomeScreen = true;
         IntroAnimations();
-        SetUpHomeGroup();
 
         if (ActiveInGameSystem && _startGameWhere == StartInMenu.InGameControl)
         {
@@ -130,139 +153,6 @@ public class UIHub : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
             StartCoroutine(StartDelay());
         }
-    }
-
-    private void SetUpHomeGroup()
-    {
-        UIHomeGroup._homeGroup = _homeBranches;
-        UIHomeGroup._myUIHub = this;
-        UIHomeGroup._allBranches = FindObjectsOfType<UIBranch>();
-    }
-
-    private IEnumerator StartDelay()
-    {
-        yield return new WaitForSeconds(_atStartDelay);
-        _canStart = true;
-        ActivateKeysOrControl();
-    }
-
-
-    private void Update() //Review how keys work as hotkeys and pause shouldn't activate keyboard. Maybe hard setting rather than auto
-    {
-        if (!_canStart) return;
-
-        if (Input.GetButtonDown(_pauseOptionButton))
-        {
-            PauseOptionMenu();
-        }
-
-        if (Input.GetButtonDown(_switchTOMenusButton) & ActiveInGameSystem)
-        {
-            GameToMenuSwitching();
-        }
-
-        if (ActivePopUps_Resolve.Count == 0)
-        {
-            foreach (HotKeys item in _hotKeySettings)
-            {
-                if (item.CheckHotkeys())
-                {
-                    if (ActiveInGameSystem)
-                    {
-                        GameToMenuSwitching();
-                    }
-                    return;
-                }
-            }
-        }
-
-        if (InMenu)
-        {
-            HandleInMenu();
-        }
-    }
-
-    public void PauseOptionMenu()
-    {
-        if (GameIsPaused)
-        {
-            GameIsPaused = false;
-            if (_pauseOptionMenu != null) 
-                _pauseOptionMenu.IsPauseMenu.RestoreLastPosition();
-        }
-        else
-        {
-            GameIsPaused = true;
-            if (_pauseOptionMenu != null) 
-                _pauseOptionMenu.IsPauseMenu.StartPopUp();
-        }
-        IsPaused?.Invoke(GameIsPaused);
-    }
-
-    private void HandleInMenu()
-    {
-        if (Input.mousePosition != _mousePos)
-        {
-            ActivateMouse();
-        }
-
-        if (Input.anyKeyDown)
-        {
-            if (Input.GetButtonDown(_cancelButton))
-            {
-                if (ActiveBranch.FromHotkey)
-                {
-                    CancelOrBack(EscapeKey.BackToHome);
-                }
-                else if (GameIsPaused || ActiveBranch.IsAPopUpBranch())
-                {
-                    UICancel.CancelOrBackButton(EscapeKey.BackOneLevel);
-                }
-                else if (!UICancel.CanCancel())
-                {
-                    if (_pauseOptionsOnEscape == PauseOptionsOnEscape.EnterPauseOrEscape)
-                    {
-                        PauseOptionMenu();
-                    }
-                }
-                else
-                {
-                    UICancel.Cancel();
-                }
-            }
-            else if (CanSwitchBranches())
-            {
-                SwitchingGroups();
-            }
-            else
-            {
-                ActivateKeysOrControl();
-            }
-       }
-    }
-
-    private void SwitchingGroups()
-    {
-        if (ActivePopUps_NonResolve.Count > 0)
-        {
-            HandleActivePopUps();
-        }
-        else if (OnHomeScreen && _homeBranches.Count > 1)
-        {
-            SwitchHomeGroups();
-        }
-        else if (ActiveBranch.GroupListCount > 1)
-        {
-            ActiveBranch.SwitchBranchGroup();
-        }
-    }
-
-    public void HandleActivePopUps()
-    {
-        int groupLength = ActivePopUps_NonResolve.Count;
-        SetLastHighlighted(ActivePopUps_NonResolve[PopIndex].LastHighlighted);
-        ActivePopUps_NonResolve[PopIndex].LastHighlighted.InitailNodeAsActive();
-        PopIndex = PopIndex.Iterate(groupLength);
     }
 
     private void IntroAnimations()
@@ -277,169 +167,250 @@ public class UIHub : MonoBehaviour
         }
     }
 
+    private IEnumerator StartDelay()
+    {
+        yield return new WaitForSeconds(_atStartDelay);
+        _canStart = true;
+        ActivateKeysOrControl();
+    }
+    
+
+    private void Update() // Review how keys work as hot keys and pause shouldn't activate keyboard. Maybe hard setting rather than auto
+    {
+        if (!_canStart) return;
+
+        if (Input.GetButtonDown(_pauseOptionButton))
+        {
+            if (_isPauseOptionMenuNotNull) PauseOptionMenu();
+        }
+
+        if (ActiveInGameSystem && Input.GetButtonDown(_switchToMenusButton))
+        {
+            GameToMenuSwitching();
+        }
+
+        if (NoActivePopUps && Input.anyKeyDown && _usingMouse) //**Review
+        {
+            foreach (var item in _hotKeySettings)
+            {
+                if (!item.CheckHotKeys()) continue;
+                if (ActiveInGameSystem) GameToMenuSwitching();
+                return;
+            }
+        }
+
+        if (_inMenu)
+        {
+            HandleInMenu();
+        }
+    }
+    
+    private void HandleInMenu()
+    {
+        if (Input.mousePosition != _mousePos)
+        {
+            ActivateMouse();
+        }
+
+        if (Input.anyKeyDown)
+        {
+            if (Input.GetButtonDown(_cancelButton))
+            {
+                CancelPressed();
+            }
+            else if (CanSwitchBranches())
+            {
+                SwitchingGroups();
+            }
+            else
+            {
+                ActivateKeysOrControl();
+            }
+        }
+    }
+
+    public void PauseOptionMenu()
+    {
+        _pauseOptionMenu.IsPauseMenu.PauseMenu();
+        IsPaused?.Invoke(GameIsPaused);
+    }
+
+    private void GameToMenuSwitching() //TODO Review in light of popUps, pause should work and returns to any popups first
+    {
+        if (_usingMouse) return;
+        
+        if (_inMenu)
+        {
+            _inMenu = false;
+            LastHighlighted.SetNotHighlighted();
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+        else
+        {
+            _inMenu = true;
+            LastHighlighted.SetAsHighlighted();
+            EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
+        }
+        _returnToGameControl.Invoke(_inMenu);
+    }
+
+    
+    private void ActivateMouse()
+    {
+        _mousePos = Input.mousePosition;
+
+        if (_usingMouse) return;
+        
+        _usingMouse = true;
+        _usingKeysOrCtrl = false;
+        LastHighlighted.SetNotHighlighted();
+        AllowKeys?.Invoke(false);
+    }
+
+    private void ActivateKeysOrControl()
+    {
+        if (!_canStart) return;
+        if (_usingKeysOrCtrl) return;
+        if (!(!Input.GetMouseButton(0) & !Input.GetMouseButton(1))) return;
+
+        _usingKeysOrCtrl = true;
+        _usingMouse = false;
+        AllowKeys?.Invoke( true);
+        EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
+        SetHighlightedForKeys();
+    }
+
+    private void CancelPressed()
+    {
+        if (ActiveBranch.FromHotkey)
+        {
+            CancelOrBack(EscapeKey.BackToHome);
+        }
+        else if (GameIsPaused || ActiveBranch.IsAPopUpBranch())
+        {
+            _myUiCancel.OnCancel(EscapeKey.BackOneLevel);
+        }
+        else if (!_myUiCancel.CanCancel())
+        {
+            if (_pauseOptionsOnEscape == PauseOptionsOnEscape.EnterPauseOrEscape)
+            {
+                PauseOptionMenu();
+            }
+        }
+        else
+        {
+            _myUiCancel.OnCancel(LastSelected.ChildBranch.EscapeKeySetting);
+        }
+    }
+    
+    // Handles Staring Cancel or Back from UI buttons
     private void CancelOrBack(EscapeKey escapeKey)
     {
         if (ActiveBranch.FromHotkey)
         {
             ActiveBranch.FromHotkey = false;
         }
-
-        UICancel.CancelOrBackButton(escapeKey);
-    }
-
-    public void SetLastSelected(UINode NewNode) //TODO Review as internal might be simplify
-    {
-        if (OnHomeScreen)
-        {
-            WhenOnHomeScreen(NewNode);
-        }
-        else
-        {
-            WhenNotOnHome(NewNode);
-        }
-
-        LastSelected = NewNode;
-    }
-
-    private void WhenNotOnHome(UINode newNode)
-    {
-        if (LastSelected != newNode)
-        {
-            if (LastSelected.ChildBranch != null)
-            {
-                if (LastSelected.ChildBranch.MyBranchType == BranchType.Internal)
-                {
-                    if (LastSelected.IsSelected == true) LastSelected.Deactivate();
-                }
-            }
-        }
-    }
-
-    private void WhenOnHomeScreen(UINode node)
-    {
-        if (LastSelected != null && _lastRootNode != null)
-        {
-            UINode temp = DeactiveLastSelected(node);
-            _lastRootNode = temp;
-        }
-        else
-        {
-            _lastRootNode = node;
-        }
-    }
-
-    private UINode DeactiveLastSelected(UINode node)
-    {
-        if (node.MyBranch.IsAPopUpBranch()) return LastSelected; //***Review
-
-        UINode temp = node;
-
-        while (temp.MyBranch != temp.MyBranch.MyParentBranch)
-        {
-            temp = temp.MyBranch.MyParentBranch.LastSelected;
-        }
-
-        if (temp != _lastRootNode && _lastRootNode.IsSelected == true)
-        {
-            _lastRootNode.Deactivate();
-        }
-        return temp;
-    }
-
-    public void SetLastHighlighted(UINode newNode)
-    {
-        if (newNode != LastHighlighted)
-        {
-            LastHighlighted.SetNotHighlighted();
-            LastHighlighted = newNode;
-            ActiveBranch = LastHighlighted.MyBranch;
-            if (OnHomeScreen)
-            {
-                _groupIndex = UIHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch);
-            }
-            EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
-        }
-    }
-
-    private void SwitchHomeGroups()
-    {
-        LastHighlighted.IAudio.Play(UIEventTypes.Selected);
-        UIHomeGroup.SwitchHomeGroups(ref _groupIndex);
-    }
-
-    private void ActivateMouse()
-    {
-        _mousePos = Input.mousePosition;
-
-        if (_usingMouse == false)
-        {
-            _usingMouse = true;
-            _usingKeysOrCtrl = false;
-            LastHighlighted.SetNotHighlighted();
-            AllowKeys?.Invoke(false);
-        }
-    }
-
-    private void ActivateKeysOrControl()
-    {
-        if (!_canStart) return;
-
-        if (!Input.GetMouseButton(0) & !Input.GetMouseButton(1))
-        {
-            EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
-
-            if (_usingKeysOrCtrl == false)
-            {
-                _usingKeysOrCtrl = true;
-                _usingMouse = false;
-                AllowKeys?.Invoke(true);
-
-                if (ActivePopUps_Resolve.Count > 0 && OnHomeScreen)
-                {
-                    LastHighlighted.SetAsHighlighted();
-                }
-                else if (ActivePopUps_NonResolve.Count > 0 && OnHomeScreen)
-                {
-                    HandleActivePopUps();
-                }
-                else
-                {
-                    LastHighlighted.SetAsHighlighted();
-                }
-            }
-        }
-    }
-
-    private void GameToMenuSwitching() //TODO Review in light of popUps, pause should work and returns to any popups first
-    {
-        if (!_usingMouse)
-        {
-            if (InMenu)
-            {
-                InMenu = false;
-                LastHighlighted.SetNotHighlighted();
-                EventSystem.current.SetSelectedGameObject(null);
-            }
-            else
-            {
-                InMenu = true;
-                LastHighlighted.SetAsHighlighted();
-                EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
-            }
-
-            _returnToGameControl.Invoke(InMenu);
-        }
+        _myUiCancel.OnCancel(escapeKey);
     }
 
     private bool CanSwitchBranches()
     {
-        if (_branchSwitchButton != string.Empty)
-        {
-            if (Input.GetButtonDown(_branchSwitchButton) && ActivePopUps_Resolve.Count == 0)
-            {
-                return true;
-            }
-        }
-        return false;
+        return _canBranchSwitch && Input.GetButtonDown(_branchSwitchButton) && ActivePopUps_Resolve.Count == 0;
     }
+
+    private void SwitchingGroups()
+    {
+        if (ActivePopUps_NonResolve.Count > 0)
+        {
+            HandleActivePopUps();
+        }
+        else if (OnHomeScreen && _homeBranches.Count > 1)
+        {
+            LastHighlighted.IAudio.Play(UIEventTypes.Selected);
+            UIHomeGroup.SwitchHomeGroups();
+        }
+        else if (ActiveBranch.GroupListCount > 1)
+        {
+            ActiveBranch.SwitchBranchGroup();
+        }
+    }
+
+    public void HandleActivePopUps()
+    {
+        int groupLength = ActivePopUps_NonResolve.Count;
+        SetLastHighlighted(ActivePopUps_NonResolve[PopIndex].LastHighlighted);
+        ActivePopUps_NonResolve[PopIndex].LastHighlighted.SetNodeAsActive();
+        PopIndex = PopIndex.Iterate(groupLength);
+    }
+    
+    public void SetLastSelected(UINode newNode)
+    {
+        if (_lastHomeScreenNode == null) _lastHomeScreenNode = newNode;
+        if (LastSelected == newNode) return;
+
+        if (OnHomeScreen)
+        {
+            WhenOnHomeScreen(newNode);
+        }
+        else
+        {
+            WhenNotOnHome();
+        }
+        LastSelected = newNode;
+    }
+
+    private void WhenNotOnHome()
+    {
+        if (LastSelected.ChildBranch.MyBranchType == BranchType.Internal)
+        {
+            LastSelected.Deactivate();
+        }
+    }
+
+    private void WhenOnHomeScreen([NotNull] UINode newNode)
+    {
+        if (newNode.MyBranch.IsAPopUpBranch() || newNode.MyBranch.IsPause()) return;
+
+        while (newNode.MyBranch != newNode.MyBranch.MyParentBranch)
+        {
+            newNode = newNode.MyBranch.MyParentBranch.LastSelected;
+        }
+
+        if (newNode != _lastHomeScreenNode && _lastHomeScreenNode.IsSelected)
+        {
+            _lastHomeScreenNode.Deactivate();
+        }
+        _lastHomeScreenNode = newNode;
+    }
+
+    public void SetLastHighlighted(UINode newNode)
+    {
+        if (newNode == LastHighlighted) return;
+        if (!newNode.MyBranch.IsAPopUpBranch())         //Todo Check Pause might need it
+        {
+            LastNodeBeforePopUp = newNode;
+        }
+        LastHighlighted.SetNotHighlighted();
+        LastHighlighted = newNode;
+        ActiveBranch = LastHighlighted.MyBranch;
+        if (OnHomeScreen) UIHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch);
+        EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
+    }
+    
+    private void SetHighlightedForKeys()
+    {
+        if (GameIsPaused || ActivePopUps_Resolve.Count > 0)
+        {
+            LastHighlighted.SetAsHighlighted();
+        }
+        else if (ActivePopUps_NonResolve.Count > 0)
+        {
+            HandleActivePopUps();
+        }
+        else
+        {
+            LastHighlighted.SetAsHighlighted();
+        }
+    }
+
 }

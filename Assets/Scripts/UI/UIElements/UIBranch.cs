@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 using UnityEngine.Events;
+using System.Linq;
 
 [RequireComponent(typeof(Canvas))]
 [RequireComponent(typeof(CanvasGroup))]
@@ -53,6 +54,8 @@ public class UIBranch : MonoBehaviour
     UITweener _UITweener;
     int _groupIndex = 0;
     Action _onFinishedTrigger;
+    IHubData _hubData;
+    IUIHistory _myUIHistoryData;
 
     //InternalClasses
     [Serializable]
@@ -89,22 +92,27 @@ public class UIBranch : MonoBehaviour
     public bool IsTimedPopUp { get { return _branchType == BranchType.PopUp_Timed; } }
     public bool HighlightFirstOption { get { return _highlightFirstOption; } }
     public ScreenType ScreenType { get { return _screenType; } } 
-    public UIHub UIHub { get; private set; } 
     public UIPopUp PopUpClass { get; private set; } 
     public UIPopUp IsPauseMenu { get; private set; }
     public int GroupListCount { get { return _groupsList.Count; } }
     public float Timer { get { return _timer; } }
+    public IHomeGroup HomeGroup { get; private set; }
 
     private void Awake()
     {
         ThisGroupsUINodes = gameObject.GetComponentsInChildren<UINode>();
         MyCanvasGroup = GetComponent<CanvasGroup>();
         _UITweener = GetComponent<UITweener>();
-        UIHub = FindObjectOfType<UIHub>();
         MyCanvas = GetComponent<Canvas>();
-        SetNewParentBranch(this);
-        SetStartPositions();
         _UITweener.OnAwake(MyCanvasGroup);
+        SetNewParentBranch(this);
+    }
+
+    public void OnAwake(IHubData hubData, IUIHistory uIHistory, IHomeGroup homeGroup)
+    {
+        _hubData = hubData;
+        _myUIHistoryData = uIHistory;
+        HomeGroup = homeGroup;
     }
 
     private void OnEnable()
@@ -119,6 +127,8 @@ public class UIBranch : MonoBehaviour
 
     private void Start()
     {
+        SetStartPositions();
+
         if (_branchType == BranchType.HomeScreenUI)
         {
             _escapeKeyFunction = EscapeKey.None;
@@ -133,15 +143,16 @@ public class UIBranch : MonoBehaviour
 
         if (_branchType == BranchType.PauseMenu)
         {
-            IsPauseMenu = new UIPopUp(this, FindObjectsOfType<UIBranch>());
+            IsPauseMenu = new UIPopUp(this, FindObjectsOfType<UIBranch>(), _hubData);
             _escapeKeyFunction = EscapeKey.BackOneLevel;
         }
 
         if (IsAPopUpBranch())
         {
-            PopUpClass = new UIPopUp(this, FindObjectsOfType<UIBranch>());
+            PopUpClass = new UIPopUp(this, FindObjectsOfType<UIBranch>(), _hubData);
            _escapeKeyFunction = EscapeKey.BackOneLevel;
         }
+
     }
 
     private void SetStartPositions()
@@ -170,7 +181,7 @@ public class UIBranch : MonoBehaviour
     public void MoveToNextLevel(UIBranch newParentController = null)
     {
         BasicSetUp(newParentController);
-
+        
         if (TweenOnChange)
         {
             ActivateINTweens();
@@ -186,10 +197,15 @@ public class UIBranch : MonoBehaviour
     {
         MyCanvas.enabled = true;
 
-        if (MyBranchType == BranchType.HomeScreenUI && UIHub.OnHomeScreen == false)
+        if (MyBranchType == BranchType.HomeScreenUI && _hubData.OnHomeScreen == false)
         {
             TweenOnChange = TweenOnHome;
-            UIHomeGroup.RestoreHomeScreen();
+            HomeGroup.RestoreHomeScreen();
+        }
+
+        if (ScreenType == ScreenType.ToFullScreen && _hubData.OnHomeScreen == true)
+        {
+            HomeGroup.ClearHomeScreen(this);
         }
 
         if (!_saveExitSelection)
@@ -223,13 +239,13 @@ public class UIBranch : MonoBehaviour
 
     public void SaveLastHighlighted(UINode newNode)
     {
-        UIHub.SetLastHighlighted(newNode);
+        _myUIHistoryData.SetLastHighlighted(newNode);
         LastHighlighted = newNode;
     }
 
     public void SaveLastSelected(UINode lastSelected)
     {
-        UIHub.SetLastSelected(lastSelected);
+        _myUIHistoryData.SetLastSelected(lastSelected);
         LastSelected = lastSelected;
     }
 
@@ -262,7 +278,7 @@ public class UIBranch : MonoBehaviour
         if (!DontSetAsActive) 
         {
             SaveLastHighlighted(LastHighlighted);
-            LastHighlighted.InitailNodeAsActive(); 
+            LastHighlighted.SetNodeAsActive(); 
         }
         _branchEvents?.OnBranchEnabled.Invoke();        
         DontSetAsActive = false;

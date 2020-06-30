@@ -8,7 +8,7 @@ using UnityEngine.Events;
 public class UITweener : MonoBehaviour
 {
     [SerializeField] [ReorderableList] [Label("List Of Objects To Apply Effects To")] 
-    List<BuildSettings> _buildObjectsList = new List<BuildSettings>();
+    List<TweenSettings> _buildObjectsList = new List<TweenSettings>();
 
     [InfoBox("Add PARENT to apply effects as a whole or add each CHILD for a build effect. List is DRAG & DROP orderable", order = 0)]
     [Header("Effect Tween Settings", order = 1)] [HorizontalLine(4, color: EColor.Blue, order = 2)]

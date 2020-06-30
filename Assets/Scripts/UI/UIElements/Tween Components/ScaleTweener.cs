@@ -16,9 +16,9 @@ public class ScaleTweener
     //Varibales
     float _tweenTime;
     Ease _tweenEase;
-    List<BuildSettings> _listToUse;
-    List<BuildSettings> _reversedBuildSettings = new List<BuildSettings>();
-    List<BuildSettings> _buildList = new List<BuildSettings>();
+    List<TweenSettings> _listToUse;
+    List<TweenSettings> _reversedBuildSettings = new List<TweenSettings>();
+    List<TweenSettings> _buildList = new List<TweenSettings>();
     int _id;
     Action<IEnumerator> _startCoroutine;
     Action<RectTransform> _effectCallback;
@@ -27,7 +27,7 @@ public class ScaleTweener
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public Action SetUpScaleTweens(List<BuildSettings> buildObjectsList, 
+    public Action SetUpScaleTweens(List<TweenSettings> buildObjectsList, 
                                  Action<IEnumerator> startCoroutine, Action<RectTransform> effectCall)
     {
         _effectCallback = effectCall;
@@ -38,7 +38,7 @@ public class ScaleTweener
         {
             item._element.transform.localScale = item._startScale;
         }
-        _reversedBuildSettings = new List<BuildSettings>(_buildList);
+        _reversedBuildSettings = new List<TweenSettings>(_buildList);
         _reversedBuildSettings.Reverse();
         return Reset;
     }

@@ -42,23 +42,25 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     
 
     //Delegates
-    Action<UIEventTypes, bool> StartUIFunctions;
+    private Action<UIEventTypes, bool> StartUIFunctions;
+    private bool _isToggleGroup;
+    private bool _isToggleNotLinked;
     public static event Action<EscapeKey> DoCancel;
 
     //Properties & Enums
-    public Slider AmSlider { get { return _amSlider; } }
-    public ButtonFunction Function { get { return _buttonFunction; } }
-    public ToggleGroup ID { get { return _toggleGroupID; } }
+    public Slider AmSlider => _amSlider;
+    public ButtonFunction Function => _buttonFunction;
+    public ToggleGroup ID => _toggleGroupID;
     public UIBranch MyBranch { get; set; }
     public bool IsSelected { get; set; }
-    public bool IsCancel { get { return _isCancelOrBackButton; } }
-    public UIBranch ChildBranch { get { return _navigation.Child; } }
+    private bool IsCancel => _isCancelOrBackButton;
+    public UIBranch ChildBranch => _navigation.Child;
     public IUINavigation INavigation { get; private set; }
     public IUIAudio IAudio { get; private set; } 
     public bool IsDisabled
     {
-        get { return _isDisabled;  }
-        set
+        get => _isDisabled;
+        private set
         {
             _isDisabled = value;
             HandleIfDisabled(); 
@@ -130,6 +132,8 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         _navigation.SetChildsParentBranch();
         _toggleGroups.SetUpToggleGroup(MyBranch.ThisGroupsUINodes);
+        _isToggleGroup = _buttonFunction == ButtonFunction.ToggleGroup;
+        _isToggleNotLinked = _buttonFunction == ButtonFunction.Toggle_NotLinked;
 
         if (_colours.CanActivate && _colours.NoSettings)
         {
@@ -197,7 +201,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     }
 
 
-    public void InitailNodeAsActive()
+    public void SetNodeAsActive()
     {
         if (IsDisabled) { HandleIfDisabled(); return; }
 
@@ -227,14 +231,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     private void HandleAudio()
     {
-        if (IsSelected)
-        {
-            _audio.Play(UIEventTypes.Cancelled);
-        }
-        else
-        {
-            _audio.Play(UIEventTypes.Selected);
-        }
+        _audio.Play(IsSelected ? UIEventTypes.Cancelled : UIEventTypes.Selected);
     }
 
     private void TurnNodeOnOff()
@@ -243,8 +240,8 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
         if (IsSelected)
         {
-            if (_buttonFunction == ButtonFunction.ToggleGroup && MyBranch.LastHighlighted == this) return;
-            if (_buttonFunction == ButtonFunction.Toggle_NotLinked) { IsSelected = false; }
+            if (_isToggleGroup && MyBranch.LastHighlighted == this) return;
+            if (_isToggleNotLinked) { IsSelected = false; }
             Deactivate();
             MyBranch.SaveLastSelected(MyBranch.MyParentBranch.LastSelected);
         }
@@ -306,7 +303,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         if (IsDisabled) return;
         _colours.SetColourOnEnter(IsSelected);
         StartUIFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
-        StartCoroutine(StartToopTip());
+        StartCoroutine(StartToolTip());
     }
 
     public void SetNotHighlighted()
@@ -357,7 +354,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    private IEnumerator StartToopTip()
+    private IEnumerator StartToolTip()
     {
         if (_tooltips.CanActivate)
         {
@@ -378,7 +375,9 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
+    // ReSharper disable once UnusedMember.Global - Used to Disable Object
     public void DisableObject() { IsDisabled = true; }
+    // ReSharper disable once UnusedMember.Global - Used to Enable Object
     public void EnableObject() { IsDisabled = false; }
 
     public void TriggerExitEvent()

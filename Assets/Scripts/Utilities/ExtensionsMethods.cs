@@ -72,19 +72,19 @@ public static class ExtensionsMethods
 
     //Tween library
 
-    public static float EaseINOut (this float perc)
+    public static float EaseINOut(this float perc)
     {
         perc = perc * perc * (3f - 2f * perc);
         return perc;
     }
 
-    public static float EaseIN (this float perc)
+    public static float EaseIN(this float perc)
     {
         perc = 1f - Mathf.Cos(perc * Mathf.PI * 0.5f);
         return perc;
     }
 
-    public static float EaseOut (this float perc)
+    public static float EaseOut(this float perc)
     {
         perc = Mathf.Sin(perc * Mathf.PI * 0.5f);
         return perc;
@@ -92,19 +92,19 @@ public static class ExtensionsMethods
 
     //Direction
 
-    public static Vector3 Direction (this Transform from, Transform to)
+    public static Vector3 Direction(this Transform from, Transform to)
     {
         return to.position - from.position;
     }
 
-    public static Vector3 Direction (this Transform from, Vector3 to)
+    public static Vector3 Direction(this Transform from, Vector3 to)
     {
         return to - from.position;
     }
 
     //GetChildren
 
-    public static GameObject[] FillWithChildren (this GameObject[] array, Transform parent)
+    public static GameObject[] FillWithChildren(this GameObject[] array, Transform parent)
     {
         int index = 0;
         array = new GameObject[parent.childCount];
@@ -121,25 +121,25 @@ public static class ExtensionsMethods
     public static Color PulseAlpha(this Color color, float alphaAmount, float speed) //TODO Improve, maybe do lerp or use sine
     {
         float t = Mathf.PingPong(Time.time * speed, 1) + alphaAmount;
-        color = new Color(color.r, color.g, color.b, t );
+        color = new Color(color.r, color.g, color.b, t);
         return color;
     }
 
     public static Color FadeDown(this Color color, float perc)
     {
         float alpha = Mathf.Lerp(1, 0, perc);
-        color = new Color(color.r, color.g, color.b, alpha );
+        color = new Color(color.r, color.g, color.b, alpha);
         return color;
     }
 
     public static Color FadeUp(this Color color, float perc)
     {
         float alpha = Mathf.Lerp(0, 1, perc);
-        color = new Color(color.r, color.g, color.b, alpha );
+        color = new Color(color.r, color.g, color.b, alpha);
         return color;
     }
 
-    public static Color CrossFade(this Color color, Color targetColor,  float perc)
+    public static Color CrossFade(this Color color, Color targetColor, float perc)
     {
         return Color.Lerp(color, targetColor, perc); ;
     }
@@ -148,7 +148,7 @@ public static class ExtensionsMethods
 
     //Pooling Agent
 
-    public static PoolingAgent SetUpPoolingAgent(this PoolingAgent agentToSet,PoolingAgent[] array, PoolingID poolingID)
+    public static PoolingAgent SetUpPoolingAgent(this PoolingAgent agentToSet, PoolingAgent[] array, PoolingID poolingID)
     {
         foreach (var item in array)
         {
@@ -162,7 +162,7 @@ public static class ExtensionsMethods
 
     //UI ElementColourChange
 
-    public static ColorBlock SwapUIColour (this ColorBlock colorBlock, Color newColour)
+    public static ColorBlock SwapUIColour(this ColorBlock colorBlock, Color newColour)
     {
         colorBlock.normalColor = newColour;
         return colorBlock;
@@ -170,9 +170,9 @@ public static class ExtensionsMethods
 
     //Numerat collection
 
-    public static int Iterate (this int pointer,  int size) 
+    public static int Iterate(this int pointer, int size)
     {
-        if (size -1 == pointer)
+        if (size - 1 == pointer)
         {
             return 0;
         }

@@ -18,7 +18,7 @@ public class ShakeTweener
     [SerializeField] [AllowNesting] bool _fadeOut = true;
 
     //Variables
-    List<BuildSettings> _buildList = new List<BuildSettings>();
+    List<TweenSettings> _buildList = new List<TweenSettings>();
     int _id;
     Action<IEnumerator> _startCoroutine;
 
@@ -26,7 +26,7 @@ public class ShakeTweener
 
     public bool CheckOutEffectType() { return _shakeWhen == EffectType.Out || _shakeWhen == EffectType.Both;  }
 
-    public void SetUpShakeTween(List<BuildSettings> buildSettings, Action<IEnumerator> startCoroutine)
+    public void SetUpShakeTween(List<TweenSettings> buildSettings, Action<IEnumerator> startCoroutine)
     {
         _startCoroutine = startCoroutine;
         _buildList = buildSettings;

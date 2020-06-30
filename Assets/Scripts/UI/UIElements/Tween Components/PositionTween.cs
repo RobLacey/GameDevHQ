@@ -17,9 +17,9 @@ public class PositionTween
     //Variables
     float _tweenTime;
     Ease _tweenEase;
-    List<BuildSettings> _listToUse;
-    List<BuildSettings> _reversedBuild = new List<BuildSettings>();
-    List<BuildSettings> _buildList = new List<BuildSettings>();
+    List<TweenSettings> _listToUse;
+    List<TweenSettings> _reversedBuild = new List<TweenSettings>();
+    List<TweenSettings> _buildList = new List<TweenSettings>();
     int _id;
     Action<IEnumerator> _startCoroutine;
     Action<RectTransform> _effectCallback;
@@ -28,7 +28,7 @@ public class PositionTween
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public Action SetUpPositionTweens(List<BuildSettings> buildObjectsList, 
+    public Action SetUpPositionTweens(List<TweenSettings> buildObjectsList, 
                                     Action<IEnumerator> startCoroutine, 
                                     Action<RectTransform> effectCall)
     {
@@ -39,7 +39,7 @@ public class PositionTween
         {
             item._element.anchoredPosition3D = item._tweenStartPosition;
         }
-        _reversedBuild = new List<BuildSettings>(_buildList);
+        _reversedBuild = new List<TweenSettings>(_buildList);
         _reversedBuild.Reverse();
         return Reset;
     }
