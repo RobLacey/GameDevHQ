@@ -8,7 +8,7 @@ using NaughtyAttributes;
 
 [RequireComponent(typeof(RectTransform))]
 
-public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
+public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IAllowKeys,
                                      IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
 {
     [Header("Main Settings")]
@@ -56,7 +56,9 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     private bool IsCancel => _isCancelOrBackButton;
     public UIBranch ChildBranch => _navigation.Child;
     public IUINavigation INavigation { get; private set; }
-    public IUIAudio IAudio { get; private set; } 
+    public IUIAudio IAudio { get; private set; }
+    public bool AllowKeys { get; set; } = false;
+
     public bool IsDisabled
     {
         get => _isDisabled;
@@ -205,7 +207,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (IsDisabled) { HandleIfDisabled(); return; }
 
-        if (MyBranch.HighlightFirstOption && MyBranch.AllowKeys)
+        if (MyBranch.HighlightFirstOption && AllowKeys)
         {
             SetAsHighlighted();
         }
@@ -361,7 +363,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
             yield return new WaitForSeconds(_tooltips._delay);
             _tooltips.IsActive = true;
             StartCoroutine(_tooltips.ToolTipBuild(_rectForTooltip));
-            StartCoroutine(_tooltips.StartTooltip(MyBranch.AllowKeys));
+            StartCoroutine(_tooltips.StartTooltip(AllowKeys));
         }
         yield return null;
     }

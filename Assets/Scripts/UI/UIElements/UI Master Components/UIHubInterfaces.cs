@@ -14,7 +14,7 @@ public interface IHubData : IUIHistory, IPopUpData, IPauseData
     EscapeKey GlobalEscape { get; }
 
     UIHomeGroup UIHomeGroup { get; }
-    void AllowKeyInvoker(bool canAllow);
+    //void AllowKeyInvoker(bool canAllow);
 }
 
 public interface IUIHistory
@@ -67,6 +67,12 @@ public interface IHomeGroup
 public interface IChangeControl
 {
     bool UsingMouse { get; }
-    void StartGame(ControlMethod controlMethod);
+    void StartGame(IAllowKeys[] allowKeys);
     void ChangeControlType();
 }
+
+public interface IAllowKeys
+{
+    bool AllowKeys { set; }
+}
+

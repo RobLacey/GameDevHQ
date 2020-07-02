@@ -164,7 +164,7 @@ public class UINavigation : IUINavigation
 
     public void NavigateToNextNode()
     {
-        if (!_myBranch.AllowKeys) return;
+        if(!_myBranch.AllowKeys) return;
         if (_myNode.Function == ButtonFunction.HoverToActivate)
         {
             _myNode.PressedActions();

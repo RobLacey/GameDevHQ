@@ -13,7 +13,7 @@ using System.Linq;
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
-public class UIBranch : MonoBehaviour
+public class UIBranch : MonoBehaviour, IAllowKeys
 {
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
@@ -78,7 +78,7 @@ public class UIBranch : MonoBehaviour
     public UIBranch MyParentBranch { get; private set; }
     public bool DontSetAsActive { get; set; } = false;
     public UINode[] ThisGroupsUINodes { get; private set; }
-    public bool AllowKeys { get; private set; }
+    //public bool AllowKeys { get; private set; }
     public CanvasGroup MyCanvasGroup { get; private set; }
     public EscapeKey EscapeKeySetting { get { return _escapeKeyFunction; } }
     public bool TweenOnChange { get; set; } = true;
@@ -97,6 +97,8 @@ public class UIBranch : MonoBehaviour
     public int GroupListCount { get { return _groupsList.Count; } }
     public float Timer { get { return _timer; } }
     public IHomeGroup HomeGroup { get; private set; }
+    public bool AllowKeys { get; set; } = false;
+
 
     private void Awake()
     {
@@ -115,6 +117,7 @@ public class UIBranch : MonoBehaviour
         HomeGroup = homeGroup;
     }
 
+    /*
     private void OnEnable()
     {
         UIHub.AllowKeys += (x) => AllowKeys = x;
@@ -124,6 +127,7 @@ public class UIBranch : MonoBehaviour
     {
         UIHub.AllowKeys -= (x) => AllowKeys = x;
     }
+    */
 
     private void Start()
     {

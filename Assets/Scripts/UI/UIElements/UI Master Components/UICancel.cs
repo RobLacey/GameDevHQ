@@ -102,7 +102,6 @@ public class UICancel : ICancel
         }
         else if (_hubData.LastHighlighted.MyBranch.IsNonResolvePopUp && !_hubData.GameIsPaused)
         {
-            Debug.Log("Here");
             _hubData.LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_NonResolve();
         }
         else

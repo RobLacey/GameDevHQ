@@ -30881,6 +30881,11 @@ PrefabInstance:
       propertyPath: _hotKeySettings.Array.data[3]._hotKeyAxis
       value: Hotkey 4
       objectReference: {fileID: 0}
+    - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _mainControlType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4421614741907461036, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _onScreenAtStart
