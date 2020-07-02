@@ -96,8 +96,7 @@ public enum StartInMenu { InMenu, InGameControl }
 public enum BranchType { HomeScreenUI, StandardUI, Internal, PopUp_Resolve, PopUp_NonResolve, PopUp_Timed, PauseMenu }
 
 public enum WhenToMove { OnClick, AtTweenEnd }
-//public enum TweenOnMove
-//{
-//    Tween, NoTween
-//}
+public enum PauseOptionsOnEscape { EnterPauseOrEscape, Nothing }
+public  enum ControlMethod { Mouse, KeysOrController, BothStartAsMouse, BothStartAsKeys }
+
 

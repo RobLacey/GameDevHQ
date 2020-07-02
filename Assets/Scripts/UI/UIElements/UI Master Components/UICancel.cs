@@ -10,22 +10,51 @@ public class UICancel : ICancel
     {
         _hubData = hubData;
     }
-
-    public void OnCancel(EscapeKey escapeKey)
+    public void CancelPressed()
     {
-        //_hubData.LastSelected.SetNotSelected_NoEffects();
-        if (escapeKey == EscapeKey.BackOneLevel)
+        if (_hubData.ActiveBranch.FromHotkey)
         {
-            EscapeButtonProcess(() => BackOneLevel());
+            CancelOrBack(EscapeKey.BackToHome);
         }
-        else if (escapeKey == EscapeKey.BackToHome)
+        else if (_hubData.GameIsPaused || _hubData.ActiveBranch.IsAPopUpBranch())
         {
-            EscapeButtonProcess(() => BackToHome());
+            OnCancel(EscapeKey.BackOneLevel);
         }
+        else if (!CanCancel())
+        {
+            if (_hubData.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscape)
+            {
+                _hubData.PauseOptionMenu();
+            }
+        }
+        else
+        {
+            OnCancel(_hubData.LastSelected.ChildBranch.EscapeKeySetting);
+        }
+    }
+    
+    public void CancelOrBack(EscapeKey escapeKey)
+    {
+        if (_hubData.ActiveBranch.FromHotkey)
+        {
+            _hubData.ActiveBranch.FromHotkey = false;
+        }
+        OnCancel(escapeKey);
+    }
 
-        else if (escapeKey == EscapeKey.GlobalSetting)
+
+    private void OnCancel(EscapeKey escapeKey)
+    {
+        if (escapeKey == EscapeKey.GlobalSetting) escapeKey = _hubData.GlobalEscape;
+        
+        switch (escapeKey)
         {
-            OnCancel(_hubData.GlobalEscape);
+            case EscapeKey.BackOneLevel:
+                EscapeButtonProcess(BackOneLevel);
+                break;
+            case EscapeKey.BackToHome:
+                EscapeButtonProcess(BackToHome);
+                break;
         }
     }
 
@@ -87,15 +116,15 @@ public class UICancel : ICancel
     private void BackToHome()
     {
         int index = _hubData.GroupIndex;
-        List<UIBranch> _homeGroup = _hubData.HomeGroupBranches;
+        List<UIBranch> homeGroup = _hubData.HomeGroupBranches;
 
         if (_hubData.OnHomeScreen)
         {
-            _homeGroup[index].TweenOnChange = false;
+            homeGroup[index].TweenOnChange = false;
         }
-        _homeGroup[index].LastSelected.SetNotSelected_NoEffects();
-        _homeGroup[index].LastSelected.MyBranch.SaveLastSelected(_homeGroup[index].LastSelected);
-        _homeGroup[index].MoveToNextLevel();
+        homeGroup[index].LastSelected.SetNotSelected_NoEffects();
+        homeGroup[index].LastSelected.MyBranch.SaveLastSelected(homeGroup[index].LastSelected);
+        homeGroup[index].MoveToNextLevel();
     }
 
     private void HandleRemovingPopUps_Resolve()
@@ -113,11 +142,6 @@ public class UICancel : ICancel
 
     public bool CanCancel()
     {
-        if (_hubData.LastSelected.ChildBranch != null
-            && _hubData.LastSelected.ChildBranch.MyCanvas.enabled != false)
-        {
-            return true;
-        }
-        return false;
+        return _hubData.LastSelected.ChildBranch.MyCanvas.enabled;
     }
 }

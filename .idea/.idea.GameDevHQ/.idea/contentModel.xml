@@ -255,6 +255,7 @@
                 <e p="UITweener.cs" t="Include" />
               </e>
               <e p="UI Master Components" t="Include">
+                <e p="ChangeControl.cs" t="Include" />
                 <e p="HotKeys.cs" t="Include" />
                 <e p="UIAudioManager.cs" t="Include" />
                 <e p="UICancel.cs" t="Include" />

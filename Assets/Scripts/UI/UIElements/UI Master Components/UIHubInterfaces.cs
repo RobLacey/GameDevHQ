@@ -14,6 +14,7 @@ public interface IHubData : IUIHistory, IPopUpData, IPauseData
     EscapeKey GlobalEscape { get; }
 
     UIHomeGroup UIHomeGroup { get; }
+    void AllowKeyInvoker(bool canAllow);
 }
 
 public interface IUIHistory
@@ -44,6 +45,7 @@ public interface IPauseData
 
     //Methods
     void PauseOptionMenu();
+    PauseOptionsOnEscape PauseOptions { get; }
 }
 
 public interface ICancel
@@ -60,4 +62,11 @@ public interface IHomeGroup
     void SetHomeGroupIndex(UIBranch uIBranch);
     void ClearHomeScreen(UIBranch ignoreBranch);
     void RestoreHomeScreen();
+}
+
+public interface IChangeControl
+{
+    bool UsingMouse { get; }
+    void StartGame(ControlMethod controlMethod);
+    void ChangeControlType();
 }
