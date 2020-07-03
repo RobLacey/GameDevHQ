@@ -6,9 +6,10 @@ using UnityEngine.EventSystems;
 using System;
 using NaughtyAttributes;
 
+[RequireComponent(typeof(Slider))]
 [RequireComponent(typeof(RectTransform))]
 
-public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IAllowKeys,
+public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
                                      IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
 {
     [Header("Main Settings")]
@@ -27,7 +28,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
     [SerializeField] [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")] UINavigation _navigation;
     [SerializeField] [Label("Colour Settings")] [ShowIf("NeedColour")] UIColour _colours;
     [SerializeField] [Label("Invert Colour when Highlighted or Selected")] [ShowIf("NeedInvert")] UIInvertColours _invertColourCorrection;
-    [SerializeField] [Label("Swap Images, Text or SetUp Toogle Image List")] [ShowIf("NeedSwap")] UISwapper _swapImageOrText;
+    [SerializeField] [Label("Swap Images, Text or SetUp Toggle Image List")] [ShowIf("NeedSwap")] UISwapper _swapImageOrText;
     [SerializeField] [Label("Size And Position Effect Settings")] [ShowIf("NeedSize")] UISizeAndPosition _sizeAndPos;
     [SerializeField] [Label("Accessories, Outline Or Shadow Settings")] [ShowIf("NeedAccessories")] UIAccessories _accessories;
     [SerializeField] [Label("Audio Settings")] [ShowIf("NeedAudio")] UIAudio _audio;
@@ -35,29 +36,28 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
     [SerializeField] [Label("Event Settings")] [ShowIf("NeedEvents")] UIEvents _events;
 
     //Variables
-    Slider _amSlider;
-    bool _isDisabled;
-    RectTransform _rectForTooltip;
-    UIToggles _toggleGroups;
+    private bool _isDisabled;
+    private RectTransform _rectForTooltip;
+    private UIToggles _toggleGroups;
+    private bool _isToggleGroup;
+    private bool _isToggleNotLinked;
     
 
     //Delegates
-    private Action<UIEventTypes, bool> StartUIFunctions;
-    private bool _isToggleGroup;
-    private bool _isToggleNotLinked;
+    private Action<UIEventTypes, bool> _startUiFunctions;
     public static event Action<EscapeKey> DoCancel;
 
     //Properties & Enums
-    public Slider AmSlider => _amSlider;
+    public Slider AmSlider { get; private set; }
     public ButtonFunction Function => _buttonFunction;
     public ToggleGroup ID => _toggleGroupID;
-    public UIBranch MyBranch { get; set; }
+    public UIBranch MyBranch { get; private set; }
     public bool IsSelected { get; set; }
     private bool IsCancel => _isCancelOrBackButton;
     public UIBranch ChildBranch => _navigation.Child;
-    public IUINavigation INavigation { get; private set; }
-    public IUIAudio IAudio { get; private set; }
-    public bool AllowKeys { get; set; } = false;
+    public IUINavigation Navigation { get; private set; }
+    public IUIAudio Audio { get; private set; }
+    //public bool AllowKeys { get; set; } = false;
 
     public bool IsDisabled
     {
@@ -102,32 +102,32 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
     {
         _audio.OnAwake(_enabledFunctions);
         _rectForTooltip = GetComponent<RectTransform>();
-        _amSlider = GetComponent<Slider>();
+        AmSlider = GetComponent<Slider>();
         MyBranch = GetComponentInParent<UIBranch>();
         _colours.OnAwake(gameObject.GetInstanceID(), _enabledFunctions); //Do I need This
         _tooltips.OnAwake(_enabledFunctions, gameObject.name);
         _events.OnAwake(_enabledFunctions);
         _navigation.OnAwake(this, MyBranch, _enabledFunctions);
-        if (_amSlider) _amSlider.interactable = false;
+        if (AmSlider) AmSlider.interactable = false;
         _toggleGroups = new UIToggles(this, _buttonFunction, _startAsSelected);
-        INavigation = _navigation;
-        IAudio = _audio;
+        Navigation = _navigation;
+        Audio = _audio;
     }
 
     private void OnEnable()
     {
-        StartUIFunctions += _accessories.OnAwake(_enabledFunctions);
-        StartUIFunctions += _sizeAndPos.OnAwake(transform, _enabledFunctions);
-        StartUIFunctions += _swapImageOrText.OnAwake(IsSelected, _enabledFunctions);
-        StartUIFunctions += _invertColourCorrection.OnAwake(_enabledFunctions);
+        _startUiFunctions += _accessories.OnAwake(_enabledFunctions);
+        _startUiFunctions += _sizeAndPos.OnAwake(transform, _enabledFunctions);
+        _startUiFunctions += _swapImageOrText.OnAwake(IsSelected, _enabledFunctions);
+        _startUiFunctions += _invertColourCorrection.OnAwake(_enabledFunctions);
     }
 
     private void OnDisable()
     {
-        StartUIFunctions -= _accessories.OnDisable();
-        StartUIFunctions -= _sizeAndPos.OnDisable();
-        StartUIFunctions -= _swapImageOrText.OnDisable();
-        StartUIFunctions -= _invertColourCorrection.OnDisable();
+        _startUiFunctions -= _accessories.OnDisable();
+        _startUiFunctions -= _sizeAndPos.OnDisable();
+        _startUiFunctions -= _swapImageOrText.OnDisable();
+        _startUiFunctions -= _invertColourCorrection.OnDisable();
     }
 
     private void Start()
@@ -136,6 +136,10 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
         _toggleGroups.SetUpToggleGroup(MyBranch.ThisGroupsUINodes);
         _isToggleGroup = _buttonFunction == ButtonFunction.ToggleGroup;
         _isToggleNotLinked = _buttonFunction == ButtonFunction.Toggle_NotLinked;
+        if (MyBranch.IsAPopUpBranch() || MyBranch.IsPause())
+        {
+            _escapeKeyFunction = EscapeKey.BackOneLevel;
+        }
 
         if (_colours.CanActivate && _colours.NoSettings)
         {
@@ -145,33 +149,30 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (IsDisabled) return;
+        if (IsDisabled || MyBranch.AllowKeys) return;
         TriggerEnterEvent();
         _navigation.PointerEnter(eventData);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (IsDisabled) return;
+        if (IsDisabled || MyBranch.AllowKeys) return;
         TriggerExitEvent();
         _navigation.PointerExit(eventData);
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (IsDisabled || MyBranch.AllowKeys) return;
         PressedActions();
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (IsDisabled) return;
-        if (IsCancel) return;
+        if (IsDisabled || IsCancel || !AmSlider || MyBranch.AllowKeys) return;
 
-        if (AmSlider)
-        {
-            InvokeClickEvents();
-            TurnNodeOnOff();
-        }
+        InvokeClickEvents();
+        TurnNodeOnOff();
     }
 
     public void OnMove(AxisEventData eventData)
@@ -188,9 +189,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
         {
             AmSlider.interactable = IsSelected;
             if (!IsSelected)
-            {
                 InvokeClickEvents();
-            }
         }
         PressedActions();
     }
@@ -207,7 +206,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
     {
         if (IsDisabled) { HandleIfDisabled(); return; }
 
-        if (MyBranch.HighlightFirstOption && AllowKeys)
+        if (MyBranch.HighlightFirstOption && MyBranch.AllowKeys)
         {
             SetAsHighlighted();
         }
@@ -252,7 +251,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
             Activate();
         }
 
-        StartUIFunctions.Invoke(UIEventTypes.Selected, IsSelected);
+        _startUiFunctions.Invoke(UIEventTypes.Selected, IsSelected);
         _sizeAndPos.WhenPressed(IsSelected);
         _colours.ProcessPress(IsSelected);
         _swapImageOrText.CycleToggle(IsSelected);
@@ -304,7 +303,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
     {
         if (IsDisabled) return;
         _colours.SetColourOnEnter(IsSelected);
-        StartUIFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
+        _startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
         StartCoroutine(StartToolTip());
     }
 
@@ -317,12 +316,12 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
 
         if (IsSelected)
         {
-            StartUIFunctions.Invoke(UIEventTypes.Selected, IsSelected);
+            _startUiFunctions.Invoke(UIEventTypes.Selected, IsSelected);
             _colours.SetColourOnExit(IsSelected);
         }
         else
         {
-            StartUIFunctions.Invoke(UIEventTypes.Normal, IsSelected);
+            _startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
             _colours.ResetToNormal();
         }
     }
@@ -344,7 +343,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
     private void HandleIfDisabled()
     {
         Deactivate();
-        StartUIFunctions.Invoke(UIEventTypes.Normal, IsSelected);
+        _startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
 
         if (_isDisabled)
         {
@@ -363,7 +362,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
             yield return new WaitForSeconds(_tooltips._delay);
             _tooltips.IsActive = true;
             StartCoroutine(_tooltips.ToolTipBuild(_rectForTooltip));
-            StartCoroutine(_tooltips.StartTooltip(AllowKeys));
+            StartCoroutine(_tooltips.StartTooltip(MyBranch.AllowKeys));
         }
         yield return null;
     }
@@ -373,7 +372,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, 
         if (AmSlider)
         {
             IsSelected = selected;
-            _amSlider.interactable = IsSelected;
+            AmSlider.interactable = IsSelected;
         }
     }
 

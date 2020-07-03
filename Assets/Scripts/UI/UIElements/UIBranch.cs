@@ -93,7 +93,7 @@ public class UIBranch : MonoBehaviour, IAllowKeys
     public bool HighlightFirstOption { get { return _highlightFirstOption; } }
     public ScreenType ScreenType { get { return _screenType; } } 
     public UIPopUp PopUpClass { get; private set; } 
-    public UIPopUp IsPauseMenu { get; private set; }
+    public UIPopUp PauseMenuClass { get; private set; }
     public int GroupListCount { get { return _groupsList.Count; } }
     public float Timer { get { return _timer; } }
     public IHomeGroup HomeGroup { get; private set; }
@@ -117,18 +117,6 @@ public class UIBranch : MonoBehaviour, IAllowKeys
         HomeGroup = homeGroup;
     }
 
-    /*
-    private void OnEnable()
-    {
-        UIHub.AllowKeys += (x) => AllowKeys = x;
-    }
-
-    private void OnDisable()
-    {
-        UIHub.AllowKeys -= (x) => AllowKeys = x;
-    }
-    */
-
     private void Start()
     {
         SetStartPositions();
@@ -147,7 +135,7 @@ public class UIBranch : MonoBehaviour, IAllowKeys
 
         if (_branchType == BranchType.PauseMenu)
         {
-            IsPauseMenu = new UIPopUp(this, FindObjectsOfType<UIBranch>(), _hubData);
+            PauseMenuClass = new UIPopUp(this, FindObjectsOfType<UIBranch>(), _hubData);
             _escapeKeyFunction = EscapeKey.BackOneLevel;
         }
 
@@ -276,7 +264,7 @@ public class UIBranch : MonoBehaviour, IAllowKeys
 
     private void InTweenCallback()
     {
-        if (!IsAPopUpBranch()) MyCanvasGroup.blocksRaycasts = true;
+        if (!IsAPopUpBranch() && _myUIHistoryData.CanStart) MyCanvasGroup.blocksRaycasts = true;
         if (IsAPopUpBranch()) PopUpClass.ManagePopUpRaycast();
 
         if (!DontSetAsActive) 

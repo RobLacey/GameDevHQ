@@ -1,36 +1,29 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using NaughtyAttributes;
-using UnityEngine.Serialization;
 
 [System.Serializable]
 public class HotKeys 
 {
     [InputAxis] [AllowNesting] public string _hotKeyAxis;
-    [ValidateInput("IsAllowedType", "Can't have PopUp as HotKey as HotKey")] public UIBranch _UIBranch;
+    [ValidateInput("IsAllowedType", "Can't have PopUp as HotKey as HotKey")] public UIBranch _uiBranch;
 
     //Variables
-    IHubData _myUIHub;
-   // ICancel _myUICancel;
-    IHomeGroup _homeGroup;
+    private IHubData _myUiHub;
+    private IHomeGroup _homeGroup;
 
     //Editor Script
     #region Editor Script
     public bool IsAllowedType()
     {
-        if (_UIBranch.IsAPopUpBranch())
-        {
-            Debug.Log("Can't have PopUp as Hotkey as HotKey");
-            return false;
-        }
-        return true;
+        if (!_uiBranch.IsAPopUpBranch()) return true;
+        Debug.Log("Can't have PopUp as Hot Key as Hot Key");
+        return false;
     }
     #endregion
 
     public void OnAwake(IHubData hubData,IHomeGroup homeGroup)
     {
-        _myUIHub = hubData;
+        _myUiHub = hubData;
         _homeGroup = homeGroup;
     }
 
@@ -43,50 +36,48 @@ public class HotKeys
 
     private void HotKeyActivate()
     {
-        if (_UIBranch.MyCanvas.enabled) return;
+        if (_uiBranch.MyCanvas.enabled) return;
 
-        foreach (UINode node in _UIBranch.MyParentBranch.ThisGroupsUINodes)
+        foreach (UINode node in _uiBranch.MyParentBranch.ThisGroupsUINodes)
         {
-            if (node.ChildBranch == _UIBranch)
+            if (node.ChildBranch != _uiBranch) continue;
+            if (TweenToHotKey(node))
             {
-                if (TweenToHotKey(node))
-                {
-                    StartOutTweenOnLastSelected(node);
-                }
-                else
-                {
-                    StartHotKeyBranch(node);
-                }
-                SetUpNextBranch(node);
-                break;
+                StartOutTweenOnLastSelected(node);
             }
+            else
+            {
+                StartHotKeyBranch(node);
+            }
+            SetUpNextBranch(node);
+            break;
         }
     }
 
     private bool TweenToHotKey(UINode node)
     {
-        return _myUIHub.LastSelected != node && _myUIHub.LastSelected.ChildBranch != null
-                            && _myUIHub.LastSelected.IsSelected;
+        return _myUiHub.LastSelected != node && _myUiHub.LastSelected.ChildBranch != null
+                            && _myUiHub.LastSelected.IsSelected;
     }
 
     private void StartOutTweenOnLastSelected(UINode parentNode)
     {
-        if (_myUIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.OnClick)
+        if (_myUiHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.OnClick)
         {
-            _myUIHub.LastSelected.ChildBranch.StartOutTween();
+            _myUiHub.LastSelected.ChildBranch.StartOutTween();
             StartHotKeyBranch(parentNode);
         }
         else
         {
-            _myUIHub.LastSelected.ChildBranch.StartOutTween(() => StartHotKeyBranch(parentNode));
+            _myUiHub.LastSelected.ChildBranch.StartOutTween(() => StartHotKeyBranch(parentNode));
         }
     }
 
     private void SetUpNextBranch(UINode parentNode)
     {
-        if (_UIBranch.MyBranchType != BranchType.HomeScreenUI) { _UIBranch.FromHotkey = true; }                //Ensures back to home is used on cancel
+        if (_uiBranch.MyBranchType != BranchType.HomeScreenUI) { _uiBranch.FromHotkey = true; }                //Ensures back to home is used on cancel
 
-        if (_UIBranch.ScreenType == ScreenType.ToFullScreen)
+        if (_uiBranch.ScreenType == ScreenType.ToFullScreen)
         {
             parentNode.IsSelected = true;
         }
@@ -94,14 +85,14 @@ public class HotKeys
         {
             parentNode.SetSelected_NoEffects();
         }
-        _UIBranch.DefaultStartPosition.IAudio.Play(UIEventTypes.Selected);
-        _UIBranch.MyParentBranch.SaveLastHighlighted(parentNode);
+        _uiBranch.DefaultStartPosition.Audio.Play(UIEventTypes.Selected);
+        _uiBranch.MyParentBranch.SaveLastHighlighted(parentNode);
     }
 
     private void StartHotKeyBranch(UINode parentNode)
     {
         _homeGroup.SetHomeGroupIndex(parentNode.MyBranch);
-        _UIBranch.MyParentBranch.SaveLastSelected(parentNode);
-        _UIBranch.MoveToNextLevel();
+        _uiBranch.MyParentBranch.SaveLastSelected(parentNode);
+        _uiBranch.MoveToNextLevel();
     }
 }

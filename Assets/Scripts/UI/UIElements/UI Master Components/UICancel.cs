@@ -4,7 +4,15 @@ using UnityEngine;
 
 public class UICancel : ICancel
 {
-    private IHubData _hubData;
+    private readonly IHubData _hubData;
+    private bool DontAllowTween => _hubData.LastSelected.MyBranch.DontTurnOff 
+                                   || _hubData.LastSelected.ChildBranch.MyBranchType == BranchType.Internal;
+    private bool NotPausedAndIsNonResolvePopUp => _hubData.LastHighlighted.MyBranch.IsNonResolvePopUp 
+                                                  && !_hubData.GameIsPaused;
+    private bool NotPausedAndNoResolvePopUps => _hubData.ActivePopUps_Resolve.Count > 0 
+                                                && !_hubData.GameIsPaused;
+    private bool IsPausedAndPauseMenu => _hubData.GameIsPaused 
+                                         && _hubData.ActiveBranch.MyBranchType == BranchType.PauseMenu;
 
     public UICancel(IHubData hubData)
     {
@@ -60,7 +68,7 @@ public class UICancel : ICancel
 
     private void EscapeButtonProcess(Action endAction) 
     {
-        _hubData.LastSelected.IAudio.Play(UIEventTypes.Cancelled);
+        _hubData.LastSelected.Audio.Play(UIEventTypes.Cancelled);
 
         if ( _hubData.ActiveBranch.IsAPopUpBranch())
         {
@@ -81,34 +89,38 @@ public class UICancel : ICancel
 
     private void BackOneLevel()
     {
-        UINode lastSelected = _hubData.LastSelected;
+        var lastSelected = _hubData.LastSelected;
 
         if (lastSelected.ChildBranch)
         {
-            if (lastSelected.MyBranch.DontTurnOff || lastSelected.ChildBranch.MyBranchType == BranchType.Internal)
-            {
+            if (DontAllowTween) 
                 lastSelected.MyBranch.TweenOnChange = false;
-            }
         }
 
-        if (_hubData.GameIsPaused && _hubData.ActiveBranch.MyBranchType == BranchType.PauseMenu)
+        if (IsPausedAndPauseMenu)
         {
             lastSelected.MyBranch.TweenOnChange = true;
             _hubData.PauseOptionMenu();
         }
-        else if (_hubData.ActivePopUps_Resolve.Count > 0 && !_hubData.GameIsPaused)
-        {
-            HandleRemovingPopUps_Resolve();
-        }
-        else if (_hubData.LastHighlighted.MyBranch.IsNonResolvePopUp && !_hubData.GameIsPaused)
-        {
-            _hubData.LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_NonResolve();
-        }
         else
         {
-            lastSelected.SetNotSelected_NoEffects();
-            lastSelected.MyBranch.SaveLastSelected(lastSelected.MyBranch.MyParentBranch.LastSelected);
-            lastSelected.MyBranch.MoveToNextLevel();
+            if (NotPausedAndNoResolvePopUps)
+            {
+                HandleRemovingPopUps_Resolve();
+            }
+            else
+            {
+                if (NotPausedAndIsNonResolvePopUp)
+                {
+                    _hubData.LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_NonResolve();
+                }
+                else
+                {
+                    lastSelected.SetNotSelected_NoEffects();
+                    lastSelected.MyBranch.SaveLastSelected(lastSelected.MyBranch.MyParentBranch.LastSelected);
+                    lastSelected.MyBranch.MoveToNextLevel();
+                }
+            }
         }
     }
 
@@ -116,11 +128,8 @@ public class UICancel : ICancel
     {
         int index = _hubData.GroupIndex;
         List<UIBranch> homeGroup = _hubData.HomeGroupBranches;
-
-        if (_hubData.OnHomeScreen)
-        {
+        if (_hubData.OnHomeScreen) 
             homeGroup[index].TweenOnChange = false;
-        }
         homeGroup[index].LastSelected.SetNotSelected_NoEffects();
         homeGroup[index].LastSelected.MyBranch.SaveLastSelected(homeGroup[index].LastSelected);
         homeGroup[index].MoveToNextLevel();

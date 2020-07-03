@@ -73,7 +73,7 @@ public class UINavigation : IUINavigation
         }
         else
         {
-            _myNode.IAudio.Play(UIEventTypes.Highlighted);
+            _myNode.Audio.Play(UIEventTypes.Highlighted);
             _myBranch.SaveLastHighlighted(_myNode);
             _myNode.SetAsHighlighted();
         }
@@ -93,7 +93,7 @@ public class UINavigation : IUINavigation
             {
                 if (eventData.moveDir == MoveDirection.Left || eventData.moveDir == MoveDirection.Right)
                 {
-                    _myNode.IAudio.Play(UIEventTypes.Selected);
+                    _myNode.Audio.Play(UIEventTypes.Selected);
                 }
             }
             else
@@ -120,7 +120,7 @@ public class UINavigation : IUINavigation
                 {
                     _myNode.TriggerExitEvent();
                     if (down.IsDisabled) { down.OnMove(eventData); return; }
-                    down.INavigation.NavigateToNextNode();
+                    down.Navigation.NavigateToNextNode();
                 }
             }
 
@@ -130,7 +130,7 @@ public class UINavigation : IUINavigation
                 {
                     _myNode.TriggerExitEvent();
                     if (up.IsDisabled) { up.OnMove(eventData); return; }
-                    up.INavigation.NavigateToNextNode();
+                    up.Navigation.NavigateToNextNode();
 
                 }
             }
@@ -144,7 +144,7 @@ public class UINavigation : IUINavigation
                 {
                     _myNode.TriggerExitEvent();
                     if (left.IsDisabled) { left.OnMove(eventData); return; }
-                    left.INavigation.NavigateToNextNode();
+                    left.Navigation.NavigateToNextNode();
 
                 }
             }
@@ -155,7 +155,7 @@ public class UINavigation : IUINavigation
                 {
                     _myNode.TriggerExitEvent();
                     if (right.IsDisabled) { right.OnMove(eventData); return; }
-                    right.INavigation.NavigateToNextNode();
+                    right.Navigation.NavigateToNextNode();
 
                 }
             }
@@ -171,7 +171,7 @@ public class UINavigation : IUINavigation
         }
         else
         {
-            _myNode.IAudio.Play(UIEventTypes.Highlighted);
+            _myNode.Audio.Play(UIEventTypes.Highlighted);
         }
         _myNode.TriggerEnterEvent();
         _myBranch.SaveLastHighlighted(_myNode);

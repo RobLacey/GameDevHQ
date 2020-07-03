@@ -39,7 +39,7 @@ public static class UIBranchGroups
         {
             index++;
         }
-        groupsList[index]._startNode.INavigation.NavigateToNextNode();
+        groupsList[index]._startNode.Navigation.NavigateToNextNode();
         return index;
     }
 

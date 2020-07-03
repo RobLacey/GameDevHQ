@@ -13,7 +13,7 @@ using NaughtyAttributes;
 public class UIHub : MonoBehaviour, IHubData
 {
     [Header("Main Settings")]
-    [SerializeField] [ValidateInput("ProtectEscapeKeySetting", "Can't set Global Settings to Global Settings")] 
+    [SerializeField] [ValidateInput("ProtectEscapeKeySetting", "Can't set Global Settings to Global Settings")]
     EscapeKey _globalCancelFunction = EscapeKey.BackOneLevel;
     [SerializeField] private ControlMethod _mainControlType = ControlMethod.Mouse;
     [SerializeField] [InputAxis] string _cancelButton;
@@ -22,8 +22,7 @@ public class UIHub : MonoBehaviour, IHubData
     [SerializeField] [Label("Pause / Option Menu")] UIBranch _pauseOptionMenu;
     [SerializeField] [Label("No Cancel Action")] PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.Nothing;
     [SerializeField] [Label("Enable Controls After..")] float _atStartDelay;
-    [Header("In-Game Menu Settings")]
-    [SerializeField] [HideIf("MouseOnly")]  InGameSystem _inGameMenuSystem = InGameSystem.Off;
+    [Header("In-Game Menu Settings")] [SerializeField] [HideIf("MouseOnly")] InGameSystem _inGameMenuSystem = InGameSystem.Off;
     [SerializeField] [ShowIf("ActiveInGameSystem")] StartInMenu _startGameWhere = StartInMenu.InGameControl;
     [SerializeField] [ShowIf("ActiveInGameSystem")] [Label("Switch To/From Game Menus")] [InputAxis] string _switchToMenusButton;
     [SerializeField] [ShowIf("ActiveInGameSystem")] InGameOrInMenu _returnToGameControl;
@@ -32,14 +31,12 @@ public class UIHub : MonoBehaviour, IHubData
 
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
-    
+
     //Events
     public static event Action<bool> IsPaused; // Subscribe To to trigger pause operations
 
     //Variables
     private UINode _lastHomeScreenNode;
-    private bool _canStart;
-    private bool _inMenu = true;
     private UIAudioManager _uiAudio; //Used to hold instance of class
     private UICancel _myUiCancel;
     private bool _isPauseOptionMenuNotNull;
@@ -47,7 +44,7 @@ public class UIHub : MonoBehaviour, IHubData
     private IChangeControl _changeControl;
 
     private enum InGameSystem { On, Off }
-    
+
     //Properties
     public UIBranch ActiveBranch { get; set; }
     public EscapeKey GlobalEscape => _globalCancelFunction;
@@ -61,15 +58,21 @@ public class UIHub : MonoBehaviour, IHubData
     public List<UIBranch> ActivePopUps_Resolve { get; } = new List<UIBranch>();
     public List<UIBranch> ActivePopUps_NonResolve { get; } = new List<UIBranch>();
     public int PopIndex { get; set; }
-    public UINode LastNodeBeforePopUp { get; set; }
+    public UINode LastNodeBeforePopUp { get; private set; }
     private bool ActiveInGameSystem => _inGameMenuSystem == InGameSystem.On;
     public UIHomeGroup UIHomeGroup { get; private set; }
     private bool NoActivePopUps => ActivePopUps_Resolve.Count == 0
                                    & ActivePopUps_NonResolve.Count == 0;
     public PauseOptionsOnEscape PauseOptions => _pauseOptionsOnEscape;
-    private bool MouseOnly => _mainControlType == ControlMethod.Mouse;
+    public bool InMenu { get; private set; } = true;
+    public bool CanStart { get; private set; }
+    private bool MouseOnly()
+    {
+        if(_mainControlType == ControlMethod.Mouse) _inGameMenuSystem = InGameSystem.Off;
+        return _mainControlType == ControlMethod.Mouse;
+    }
 
-    //Editor Scripts
+//Editor Scripts
     #region Editor Scripts
 
     // ReSharper disable once UnusedMember.Local
@@ -106,8 +109,8 @@ public class UIHub : MonoBehaviour, IHubData
     {
         _isPauseOptionMenuNotNull = _pauseOptionMenu != null;
         AllBranches = FindObjectsOfType<UIBranch>();
-        _returnToGameControl.Invoke(_inMenu);
-        _changeControl = new ChangeControl(this, _cancelButton, _branchSwitchButton, _mainControlType);
+        _returnToGameControl.Invoke(InMenu);
+        _changeControl = new ChangeControl(this, _mainControlType, _cancelButton, _branchSwitchButton);
         _uiAudio = new UIAudioManager(GetComponent<AudioSource>());
         _myUiCancel = new UICancel(this);
         UIHomeGroup = new UIHomeGroup(this);
@@ -131,33 +134,41 @@ public class UIHub : MonoBehaviour, IHubData
     {
         LastHighlighted = _homeBranches[0].DefaultStartPosition;
         LastSelected = _homeBranches[0].DefaultStartPosition;
+        LastNodeBeforePopUp = LastHighlighted;
         ActiveBranch = _homeBranches[0];
+        _changeControl.AllowKeyClasses = FindObjectsOfType<MonoBehaviour>().OfType<IAllowKeys>().ToArray();
         _canBranchSwitch = _branchSwitchButton != string.Empty;
-
+        
         foreach (var hotKey in _hotKeySettings)
         {
             hotKey.OnAwake(this, UIHomeGroup);
         }
         OnHomeScreen = true;
-        IntroAnimations();
 
         if (ActiveInGameSystem && _startGameWhere == StartInMenu.InGameControl)
         {
-            _canStart = true;
+            InMenu = true;
             GameToMenuSwitching();
+            _changeControl.StartGame();
+            IntroAnimations(true);
         }
         else
         {
             EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
-            StartCoroutine(StartDelay());
+            IntroAnimations(false);
         }
+        StartCoroutine(StartDelay());
     }
 
-    private void IntroAnimations()
+    private void IntroAnimations(bool blockAll)
     {
         foreach (UIBranch homeBranch in _homeBranches)
         {
-            if (homeBranch != _homeBranches[0])
+            homeBranch.MyCanvasGroup.blocksRaycasts = false;
+            if (blockAll)
+                _homeBranches[0].DontSetAsActive = true;
+            
+            if ( homeBranch != _homeBranches[0])
             {
                 homeBranch.DontSetAsActive = true;
             }
@@ -168,44 +179,69 @@ public class UIHub : MonoBehaviour, IHubData
     private IEnumerator StartDelay()
     {
         yield return new WaitForSeconds(_atStartDelay);
-        _canStart = true;
-        var temp = FindObjectsOfType<MonoBehaviour>().OfType<IAllowKeys>().ToArray();
-        _changeControl.StartGame(temp);
+        CanStart = true;
+        if (!ActiveInGameSystem || _startGameWhere != StartInMenu.InGameControl)
+            _changeControl.StartGame();
+        
+        if (_mainControlType == ControlMethod.KeysOrController)
+        {
+            foreach (var branch in AllBranches)
+            {
+                branch.MyCanvasGroup.blocksRaycasts = false;
+            }
+            _changeControl.UsingKeysOrCtrl = true;
+            _changeControl.SetAllowKeys();
+        }
+        else
+        {
+            foreach (var homeBranch in _homeBranches)
+            {
+                homeBranch.MyCanvasGroup.blocksRaycasts = true;
+            }
+        }
     }
 
     private void Update() // Review how keys work as hot keys and pause shouldn't activate keyboard. Maybe hard setting rather than auto
     {
-        if (!_canStart) return;
+        if (!CanStart) return;
 
-        if (Input.GetButtonDown(_pauseOptionButton))
-        {
-            if (_isPauseOptionMenuNotNull) PauseOptionMenu();
-        }
+        if (Input.GetButtonDown(_pauseOptionButton) && _isPauseOptionMenuNotNull)
+            PauseOptionMenu();
 
-        if (NoActivePopUps && ActiveInGameSystem && Input.GetButtonDown(_switchToMenusButton))
-        {
+        if (Input.GetButtonDown(_switchToMenusButton) && NoActivePopUps)
             GameToMenuSwitching();
-        }
+        
+        HotKeys();
 
-        if (NoActivePopUps && _hotKeySettings.Count > 0)
-        {
-            foreach (var item in _hotKeySettings)
-            {
-                if (!item.CheckHotKeys()) continue;
-                if (ActiveInGameSystem) GameToMenuSwitching();
-                return;
-            }
-        }
-
-        if (_inMenu)
+        if (InMenu)
         {
             HandleInMenu();
         }
     }
+
+    private void HotKeys()
+    {
+        if (ActivePopUps_Resolve.Count > 0 || GameIsPaused) return;
+        if (_changeControl.UsingKeysOrCtrl && !NoActivePopUps) return;
+        
+        if (_hotKeySettings.Count > 0)
+        {
+            if (_hotKeySettings.Any(hotKeys => hotKeys.CheckHotKeys()))
+            {
+                if (!InMenu) GameToMenuSwitching();
+            }
+        }
+    }
+
+    public void PauseOptionMenu()
+    {
+        _pauseOptionMenu.PauseMenuClass.PauseMenu();
+        IsPaused?.Invoke(GameIsPaused);
+    }
     
     private void HandleInMenu()
     {
-        _changeControl.ChangeControlType();
+    _changeControl.ChangeControlType();
 
         if (Input.anyKeyDown)
         {
@@ -213,42 +249,36 @@ public class UIHub : MonoBehaviour, IHubData
             {
                 _myUiCancel.CancelPressed();
             }
-            else if (CanSwitchBranches() && !MouseOnly)
+            else if (CanSwitchBranches() && !MouseOnly())
             {
                 SwitchingGroups();
             }
         }
     }
 
-    public void PauseOptionMenu()
+    private bool CanSwitchBranches()
     {
-        _pauseOptionMenu.IsPauseMenu.PauseMenu();
-        IsPaused?.Invoke(GameIsPaused);
+        return _canBranchSwitch && Input.GetButtonDown(_branchSwitchButton) && ActivePopUps_Resolve.Count == 0;
     }
 
-    private void GameToMenuSwitching() //TODO Review in light of popUps, pause should work and returns to any popups first
+    public void GameToMenuSwitching() //TODO Review in light of popUps, pause should work and returns to any popups first
     {
-        if (MouseOnly) return;
+        if (MouseOnly()) return;
+        if(!ActiveInGameSystem ) return;
         
-        if (_inMenu)
+        if (InMenu)
         {
-            _inMenu = false;
+            InMenu = false;
             LastHighlighted.SetNotHighlighted();
             EventSystem.current.SetSelectedGameObject(null);
         }
         else
         {
-            _inMenu = true;
+            InMenu = true;
             LastHighlighted.SetAsHighlighted();
             EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
         }
-        _returnToGameControl.Invoke(_inMenu);
-    }
-
-
-    private bool CanSwitchBranches()
-    {
-        return _canBranchSwitch && Input.GetButtonDown(_branchSwitchButton) && ActivePopUps_Resolve.Count == 0;
+        _returnToGameControl.Invoke(InMenu);
     }
 
     private void SwitchingGroups()
@@ -259,7 +289,7 @@ public class UIHub : MonoBehaviour, IHubData
         }
         else if (OnHomeScreen && _homeBranches.Count > 1)
         {
-            LastHighlighted.IAudio.Play(UIEventTypes.Selected);
+            LastHighlighted.Audio.Play(UIEventTypes.Selected);
             UIHomeGroup.SwitchHomeGroups();
         }
         else if (ActiveBranch.GroupListCount > 1)
@@ -319,14 +349,26 @@ public class UIHub : MonoBehaviour, IHubData
     public void SetLastHighlighted(UINode newNode)
     {
         if (newNode == LastHighlighted) return;
-        if (!newNode.MyBranch.IsAPopUpBranch())         //Todo Check Pause might need it
+        if (!newNode.MyBranch.IsAPopUpBranch() && !newNode.MyBranch.IsPause())         //Todo Check Pause might need it
         {
             LastNodeBeforePopUp = newNode;
         }
         LastHighlighted.SetNotHighlighted();
         LastHighlighted = newNode;
         ActiveBranch = LastHighlighted.MyBranch;
-        if (OnHomeScreen) UIHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch);
+        if (OnHomeScreen) 
+            UIHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch);
         EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
     }
+    
+    public bool IsUsingMouse()
+    {
+        if (!_changeControl.UsingMouse)
+        {
+            _changeControl.ActivateKeysOrControl();
+            return false;
+        }
+        return true;
+    }
+
 }

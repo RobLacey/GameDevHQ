@@ -22,15 +22,18 @@ public interface IUIHistory
     UINode LastSelected { get; }
     UINode LastHighlighted { get; }
     UIBranch ActiveBranch { get; set; }
-
+    bool InMenu { get;}
+    void GameToMenuSwitching(); 
+    bool CanStart { get;}
     //Methods
     void SetLastSelected(UINode NewNode);
     void SetLastHighlighted(UINode newNode);
+    bool IsUsingMouse();
 }
 
 public interface IPopUpData
 {
-    UINode LastNodeBeforePopUp { get; set; }
+    UINode LastNodeBeforePopUp { get; }
     List<UIBranch> ActivePopUps_Resolve { get; }
     List<UIBranch> ActivePopUps_NonResolve { get; }
     int PopIndex { get; set; }
@@ -67,8 +70,12 @@ public interface IHomeGroup
 public interface IChangeControl
 {
     bool UsingMouse { get; }
-    void StartGame(IAllowKeys[] allowKeys);
+    bool UsingKeysOrCtrl { get; set; }
+    IAllowKeys[] AllowKeyClasses { get; set; }
+    void StartGame();
     void ChangeControlType();
+    void SetAllowKeys();
+    void ActivateKeysOrControl();
 }
 
 public interface IAllowKeys

@@ -23,6 +23,7 @@ public class UIPopUp
     //Internal Classes
     private class Data
     {
+        public bool _wasInMenu;
         public bool _fromHomeScreen;
         public List<UIBranch> _clearedBranches = new List<UIBranch>();
         public UINode lastHighlighted;
@@ -37,12 +38,10 @@ public class UIPopUp
     /// <summary> Starts any PopUp from other classes or Inpsector Event calls </summary>     
     public void StartPopUp()
     {
-        if (myHubData.GameIsPaused) return;
+        if (myBranch.IsAPopUpBranch() && !myHubData.IsUsingMouse()) 
+            myBranch.AllowKeys = true;
 
-        //if (myHubData.ActivePopUps_NonResolve.Count == 0 && myHubData.ActivePopUps_Resolve.Count == 0)
-        //{
-         //   myHubData.LastNodeBeforePopUp = myHubData.LastHighlighted;
-        //}
+        if (myHubData.GameIsPaused) return;
 
         if (!myBranch.MyCanvas.enabled)
         {
@@ -94,6 +93,9 @@ public class UIPopUp
 
     public void PauseMenu()
     {
+        if (myBranch.IsPause() && !myHubData.IsUsingMouse()) 
+            myBranch.AllowKeys = true;
+
         if (myHubData.GameIsPaused)
         {
             myHubData.GameIsPaused = false;
@@ -107,9 +109,14 @@ public class UIPopUp
     }
 
     /// <summary> Directly Starts up the popup. Stores data, clears screen, deactivates raycasts etc </summary>     
-    public void PopUpStartProcess()
+    private void PopUpStartProcess()
     {
         StoreClearScreenData();
+        
+        if (!myHubData.InMenu)
+        {
+            myHubData.GameToMenuSwitching();
+        }
 
         foreach (var branch in _allBranches)
         {
@@ -124,6 +131,7 @@ public class UIPopUp
     }
     private void StoreClearScreenData()
     {
+        ClearedScreenData._wasInMenu = myHubData.InMenu;
         ClearedScreenData._clearedBranches.Clear();
         ClearedScreenData._fromHomeScreen = false;
         ClearedScreenData.lastSelected = myHubData.LastSelected;
@@ -132,15 +140,14 @@ public class UIPopUp
 
     private void IfBranchIsFullscreen(UIBranch branch)
     {
-        if (myBranch.ScreenType == ScreenType.ToFullScreen)
+        if (myBranch.ScreenType != ScreenType.ToFullScreen) return;
+        
+        if (myHubData.OnHomeScreen == true)
         {
-            if (myHubData.OnHomeScreen == true)
-            {
-                myHubData.OnHomeScreen = false;
-                ClearedScreenData._fromHomeScreen = true;
-            }
-            branch.MyCanvas.enabled = false;
+            myHubData.OnHomeScreen = false;
+            ClearedScreenData._fromHomeScreen = true;
         }
+        branch.MyCanvas.enabled = false;
     }
 
     private void HandlePopUpTypes(UIBranch branch)
@@ -164,7 +171,7 @@ public class UIPopUp
         }
         myBranch.SaveLastSelected(myBranch.LastSelected);
         myBranch.SaveLastHighlighted(myBranch.LastSelected);
-        myBranch.LastSelected.IAudio.Play(UIEventTypes.Selected);
+        myBranch.LastSelected.Audio.Play(UIEventTypes.Selected);
         myBranch.MoveToNextLevel();
     }
     private IEnumerator TimedPopUpProcess()
@@ -193,10 +200,18 @@ public class UIPopUp
         }
     }
 
-    private void EndOfTweenActions(UINode lastHomeGroupNode = null)
+    private void EndOfTweenActions(UINode lastHomeGroupNode)
     {
         RestoreScreen();
 
+        if (!ClearedScreenData._wasInMenu)
+        {
+            myHubData.SetLastSelected(ClearedScreenData.lastSelected);
+            myHubData.SetLastHighlighted(myHubData.LastNodeBeforePopUp);
+            myHubData.GameToMenuSwitching();
+            return;
+        }
+        
         if (myBranch.IsPause())
         {
             myHubData.SetLastSelected(ClearedScreenData.lastSelected);
@@ -208,25 +223,22 @@ public class UIPopUp
         }
         else
         {
-            if (lastHomeGroupNode != null)
+            myHubData.SetLastSelected(lastHomeGroupNode.MyBranch.MyParentBranch.LastSelected);
+            myBranch.SaveLastHighlighted(lastHomeGroupNode);
+            if (myBranch.AllowKeys)
             {
-                myHubData.SetLastSelected(lastHomeGroupNode.MyBranch.MyParentBranch.LastSelected);
-                myBranch.SaveLastHighlighted(lastHomeGroupNode);
-                if (myBranch.AllowKeys)
-                {
-                    lastHomeGroupNode.SetNodeAsActive();
-                }
+                lastHomeGroupNode.SetNodeAsActive();
             }
-        }
-
-        if (ClearedScreenData._fromHomeScreen)
-        {
-            myHubData.OnHomeScreen = true;
         }
     }
 
     private void RestoreScreen()
     {
+        if (ClearedScreenData._fromHomeScreen)
+        {
+            myHubData.OnHomeScreen = true;
+        }
+
         foreach (var branch in ClearedScreenData._clearedBranches)
         {
             if (!myHubData.GameIsPaused)

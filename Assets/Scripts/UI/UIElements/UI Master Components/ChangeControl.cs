@@ -5,15 +5,19 @@ using UnityEngine.EventSystems;
 public class ChangeControl: IChangeControl
 {
     private readonly IHubData _hubData;
-    public bool UsingMouse { get; private set; }
-    private bool UsingKeysOrCtrl { get; set; }
     private Vector3 _mousePos = Vector3.zero;
     private readonly string _cancel;
     private readonly string _switch;
     private readonly ControlMethod _controlMethod;
-    private IAllowKeys[] _allowKeyClasses;
+    private bool _gameStarted;
 
-    public ChangeControl(IHubData newHubDataData, string cancelButton, string switchButton, ControlMethod controlMethod)
+    //Properties
+    public bool UsingMouse { get; private set; }
+    public bool UsingKeysOrCtrl { get; set; }
+    public IAllowKeys[] AllowKeyClasses { get; set; }
+
+    //Internal Class
+    public ChangeControl(IHubData newHubDataData, ControlMethod controlMethod, string cancelButton, string switchButton)
     {
         _hubData = newHubDataData;
         _cancel = cancelButton;
@@ -21,9 +25,8 @@ public class ChangeControl: IChangeControl
         _controlMethod = controlMethod;
     }
     
-    public void StartGame(IAllowKeys[] allowKeys)
+    public void StartGame()
     {
-        _allowKeyClasses = allowKeys;
         if (_controlMethod == ControlMethod.Mouse || _controlMethod == ControlMethod.BothStartAsMouse)
         {
             ActivateMouse();
@@ -37,19 +40,20 @@ public class ChangeControl: IChangeControl
 
     public void ChangeControlType()
     {
-        if(CheckInput()) return;
+        if(CheckIfAllowedInput()) return;
         if (_mousePos != Input.mousePosition && _controlMethod != ControlMethod.KeysOrController)
         {
             _mousePos = Input.mousePosition;
             if (UsingMouse) return;
             ActivateMouse();
         }
-        else if(Input.anyKeyDown && !UsingKeysOrCtrl && _controlMethod != ControlMethod.Mouse)
+        else if(Input.anyKeyDown && /*!UsingKeysOrCtrl && */_controlMethod != ControlMethod.Mouse)
         {
+            if (!(!Input.GetMouseButton(0) & !Input.GetMouseButton(1))) return;
             ActivateKeysOrControl();
         }
     }
-    
+
     private void ActivateMouse()
     {
         UsingMouse = true;
@@ -58,17 +62,19 @@ public class ChangeControl: IChangeControl
         _hubData.LastHighlighted.SetNotHighlighted();
     }
 
-    private void ActivateKeysOrControl()
+    public void ActivateKeysOrControl()
     {
-        if (!(!Input.GetMouseButton(0) & !Input.GetMouseButton(1))) return;
-
-        UsingKeysOrCtrl = true;
-        UsingMouse = false;
-        SetAllowKeys();
+        if (!_hubData.CanStart) return;
+        if (!UsingKeysOrCtrl)
+        {
+            UsingKeysOrCtrl = true;
+            UsingMouse = false;
+            SetAllowKeys();
+            SetHighlightedForKeys();
+        }
         EventSystem.current.SetSelectedGameObject(_hubData.LastHighlighted.gameObject);
-        SetHighlightedForKeys();
     }
-    
+
     private void SetHighlightedForKeys()
     {
         if (_hubData.GameIsPaused || _hubData.ActivePopUps_Resolve.Count > 0)
@@ -85,19 +91,18 @@ public class ChangeControl: IChangeControl
         }
     }
 
-    private bool CheckInput()
+    private bool CheckIfAllowedInput()
     {
-        return Input.GetButtonDown(_cancel) && Input.GetButtonDown(_switch);
+        return Input.GetButtonDown(_cancel) || Input.GetButtonDown(_switch);
     }
 
-    private void SetAllowKeys()
+    public void SetAllowKeys()
     {
         if (_controlMethod == ControlMethod.Mouse) return;
         
-        foreach (var item in _allowKeyClasses)
+        foreach (var item in AllowKeyClasses)
         {
             item.AllowKeys = UsingKeysOrCtrl;
-            Debug.Log(UsingKeysOrCtrl);
         }
     }
 }
