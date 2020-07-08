@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using UnityEngine;
 
-public class UIHomeGroup : IHomeGroup
+public class UIHomeGroup
 {
     List<UIBranch> _homeGroup;
     UIBranch[] _allBranches;
-    IHubData _myUIHub;
+    UIHub _uIHub;
 
-    public UIHomeGroup(IHubData hubData)
+    public UIHomeGroup(UIHub uIHub)
     {
-        _myUIHub = hubData;
-        _allBranches = _myUIHub.AllBranches;
-        _homeGroup = _myUIHub.HomeGroupBranches;
+        _uIHub = uIHub;
+        _allBranches = _uIHub.AllBranches;
+        _homeGroup = _uIHub.HomeGroupBranches;
     }
 
     public void SwitchHomeGroups()
     {
-        int index = _myUIHub.GroupIndex;
+        int index = _uIHub.GroupIndex;
         _homeGroup[index].LastSelected.Deactivate();
         index++;
 
@@ -25,7 +26,7 @@ public class UIHomeGroup : IHomeGroup
         {
             index = 0;
         }
-        _myUIHub.GroupIndex = index;
+        _uIHub.GroupIndex = index;
         _homeGroup[index].TweenOnChange = false;
 
         if (_homeGroup[index].LastSelected.Function == ButtonFunction.HoverToActivate && _homeGroup[index].AllowKeys)
@@ -44,19 +45,20 @@ public class UIHomeGroup : IHomeGroup
         {
             if (_homeGroup[i] == uIBranch)
             {
-                _myUIHub.GroupIndex = i;
+                _uIHub.GroupIndex = i;
             }
         }
         //return 0;
     }
 
-    public void ClearHomeScreen(UIBranch ignoreBranch)
+    public void ClearHomeScreen(UIBranch ignoreBranch, IsActive turnOffPopUps)
     {
-        if (!_myUIHub.OnHomeScreen) return;
-        _myUIHub.OnHomeScreen = false;
+        if (!_uIHub.OnHomeScreen) return;
+        _uIHub.OnHomeScreen = false;
 
         foreach (var item in _allBranches)
         {
+            if(item.IsNonResolvePopUp && turnOffPopUps == IsActive.Yes) continue;
             if (item == ignoreBranch) continue;
 
             if (item.MyCanvas.enabled)
@@ -68,14 +70,13 @@ public class UIHomeGroup : IHomeGroup
 
     public void RestoreHomeScreen()
     {
-        if (!_myUIHub.OnHomeScreen)
+        if (!_uIHub.OnHomeScreen)
         {
             foreach (var item in _homeGroup)
             {
-                _myUIHub.OnHomeScreen = true;
-                item.ResetHomeScreenBranch(_homeGroup[_myUIHub.GroupIndex]);
+                _uIHub.OnHomeScreen = true;
+                item.ResetHomeScreenBranch(_homeGroup[_uIHub.GroupIndex]);
             }
         }
-        _myUIHub.ActivePopUps_NonResolve.Clear();
     }
 }

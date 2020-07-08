@@ -2,50 +2,50 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UICancel : ICancel
+public class UICancel
 {
-    private readonly IHubData _hubData;
-    private bool DontAllowTween => _hubData.LastSelected.MyBranch.DontTurnOff 
-                                   || _hubData.LastSelected.ChildBranch.MyBranchType == BranchType.Internal;
-    private bool NotPausedAndIsNonResolvePopUp => _hubData.LastHighlighted.MyBranch.IsNonResolvePopUp 
-                                                  && !_hubData.GameIsPaused;
-    private bool NotPausedAndNoResolvePopUps => _hubData.ActivePopUps_Resolve.Count > 0 
-                                                && !_hubData.GameIsPaused;
-    private bool IsPausedAndPauseMenu => _hubData.GameIsPaused 
-                                         && _hubData.ActiveBranch.MyBranchType == BranchType.PauseMenu;
+    private readonly UIHub _uIHub;
+    private bool DontAllowTween => _uIHub.LastSelected.MyBranch.StayOn 
+                                   || _uIHub.LastSelected.ChildBranch.MyBranchType == BranchType.Internal;
+    private bool NotPausedAndIsNonResolvePopUp => _uIHub.LastHighlighted.MyBranch.IsNonResolvePopUp 
+                                                  && !_uIHub.GameIsPaused;
+    private bool NotPausedAndNoResolvePopUps => _uIHub.ActivePopUpsResolve.Count > 0 
+                                                && !_uIHub.GameIsPaused;
+    private bool IsPausedAndPauseMenu => _uIHub.GameIsPaused 
+                                         && _uIHub.ActiveBranch.MyBranchType == BranchType.PauseMenu;
 
-    public UICancel(IHubData hubData)
+    public UICancel(UIHub uIHub)
     {
-        _hubData = hubData;
+        _uIHub = uIHub;
     }
     public void CancelPressed()
     {
-        if (_hubData.ActiveBranch.FromHotkey)
+        if(_uIHub.ActiveBranch.IsResolvePopUp) return;
+        
+        if (_uIHub.ActiveBranch.FromHotkey)
         {
             CancelOrBack(EscapeKey.BackToHome);
         }
-        else if (_hubData.GameIsPaused || _hubData.ActiveBranch.IsAPopUpBranch())
+        else if (_uIHub.GameIsPaused || _uIHub.ActiveBranch.IsNonResolvePopUp)
         {
             OnCancel(EscapeKey.BackOneLevel);
         }
-        else if (!CanCancel())
+        else if (CanEnterPauseOptionsScreen())
         {
-            if (_hubData.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscape)
-            {
-                _hubData.PauseOptionMenu();
-            }
+            _uIHub.PauseOptionMenu();
         }
         else
         {
-            OnCancel(_hubData.LastSelected.ChildBranch.EscapeKeySetting);
+            OnCancel(_uIHub.LastSelected.ChildBranch.EscapeKeySetting);
         }
     }
     
     public void CancelOrBack(EscapeKey escapeKey)
     {
-        if (_hubData.ActiveBranch.FromHotkey)
+        if (_uIHub.ActiveBranch.FromHotkey)
         {
-            _hubData.ActiveBranch.FromHotkey = false;
+            _uIHub.ActiveBranch.FromHotkey = false;
+            _uIHub.LastSelected.SetNotSelected_NoEffects();
         }
         OnCancel(escapeKey);
     }
@@ -53,7 +53,7 @@ public class UICancel : ICancel
 
     private void OnCancel(EscapeKey escapeKey)
     {
-        if (escapeKey == EscapeKey.GlobalSetting) escapeKey = _hubData.GlobalEscape;
+        if (escapeKey == EscapeKey.GlobalSetting) escapeKey = _uIHub.GlobalEscape;
         
         switch (escapeKey)
         {
@@ -68,28 +68,36 @@ public class UICancel : ICancel
 
     private void EscapeButtonProcess(Action endAction) 
     {
-        _hubData.LastSelected.Audio.Play(UIEventTypes.Cancelled);
+        _uIHub.LastSelected.Audio.Play(UIEventTypes.Cancelled);
 
-        if ( _hubData.ActiveBranch.IsAPopUpBranch())
+        if ( _uIHub.ActiveBranch.IsAPopUpBranch())
         {
             endAction.Invoke();
             return;
         }
 
-        if (_hubData.LastSelected.ChildBranch.WhenToMove == WhenToMove.AtTweenEnd)
+        // if (_uIHub.GameIsPaused)
+        // {
+        //     _uIHub.SetLastSelected(_uIHub.ActiveBranch.LastSelected);
+        //     Debug.Log("Paused");
+        // }
+        
+        if(!_uIHub.LastSelected.ChildBranch) return; //Stops Tween Error when no child
+        
+        if (_uIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.AfterEndOfTween)
         {
-            _hubData.LastSelected.ChildBranch.StartOutTween(() => endAction.Invoke());
+            _uIHub.LastSelected.ChildBranch.StartOutTween(() => endAction.Invoke());
         }
         else
         {
-            _hubData.LastSelected.ChildBranch.StartOutTween();
+            _uIHub.LastSelected.ChildBranch.StartOutTween();
             endAction.Invoke();
         }
     }
 
     private void BackOneLevel()
     {
-        var lastSelected = _hubData.LastSelected;
+        var lastSelected = _uIHub.LastSelected;
 
         if (lastSelected.ChildBranch)
         {
@@ -100,19 +108,19 @@ public class UICancel : ICancel
         if (IsPausedAndPauseMenu)
         {
             lastSelected.MyBranch.TweenOnChange = true;
-            _hubData.PauseOptionMenu();
+            _uIHub.PauseOptionMenu();
         }
         else
         {
-            if (NotPausedAndNoResolvePopUps)
-            {
-                HandleRemovingPopUps_Resolve();
-            }
-            else
-            {
+             if (NotPausedAndNoResolvePopUps)
+             {
+                 HandleRemovingPopUps_Resolve();
+             }
+             else
+             {
                 if (NotPausedAndIsNonResolvePopUp)
                 {
-                    _hubData.LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_NonResolve();
+                    _uIHub.LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_NonResolve();
                 }
                 else
                 {
@@ -120,36 +128,38 @@ public class UICancel : ICancel
                     lastSelected.MyBranch.SaveLastSelected(lastSelected.MyBranch.MyParentBranch.LastSelected);
                     lastSelected.MyBranch.MoveToNextLevel();
                 }
-            }
+             }
         }
     }
 
     private void BackToHome()
     {
-        int index = _hubData.GroupIndex;
-        List<UIBranch> homeGroup = _hubData.HomeGroupBranches;
-        if (_hubData.OnHomeScreen) 
+        int index = _uIHub.GroupIndex;
+        List<UIBranch> homeGroup = _uIHub.HomeGroupBranches;
+        if (_uIHub.OnHomeScreen) 
             homeGroup[index].TweenOnChange = false;
-        homeGroup[index].LastSelected.SetNotSelected_NoEffects();
+        //homeGroup[index].LastSelected.SetNotSelected_NoEffects();
+        homeGroup[index].LastSelected.Deactivate();
         homeGroup[index].LastSelected.MyBranch.SaveLastSelected(homeGroup[index].LastSelected);
         homeGroup[index].MoveToNextLevel();
     }
 
     private void HandleRemovingPopUps_Resolve()
     {
-        if (_hubData.LastHighlighted.MyBranch.IsResolvePopUp)
+        if (_uIHub.LastHighlighted.MyBranch.IsResolvePopUp)
         {
-            _hubData.LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_Resolve();
+            _uIHub.LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_Resolve();
         }
         else
         {
-            int lastIndexItem = _hubData.ActivePopUps_Resolve.Count - 1;
-            _hubData.ActivePopUps_Resolve[lastIndexItem].PopUpClass.RemoveFromActiveList_Resolve();
+            int lastIndexItem = _uIHub.ActivePopUpsResolve.Count - 1;
+            _uIHub.ActivePopUpsResolve[lastIndexItem].PopUpClass.RemoveFromActiveList_Resolve();
         }
     }
 
-    public bool CanCancel()
+    private bool CanEnterPauseOptionsScreen()
     {
-        return _hubData.LastSelected.ChildBranch.MyCanvas.enabled;
+        return (_uIHub.NoActivePopUps && _uIHub.LastSelected.ChildBranch.MyCanvas.enabled == false) 
+               && _uIHub.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
     }
 }

@@ -1,9 +1,15 @@
 ﻿
 using System;
 
+
 public enum UIEventTypes
 {
     Normal, Highlighted, Selected, Pressed, Cancelled
+}
+
+public enum IsActive
+{
+    Yes, No
 }
 
 public enum UIGroupID
@@ -95,8 +101,8 @@ public enum ScreenType { Normal, ToFullScreen }
 public enum StartInMenu { InMenu, InGameControl }
 public enum BranchType { HomeScreenUI, StandardUI, Internal, PopUp_Resolve, PopUp_NonResolve, PopUp_Timed, PauseMenu }
 
-public enum WhenToMove { OnClick, AtTweenEnd }
-public enum PauseOptionsOnEscape { EnterPauseOrEscape, Nothing }
+public enum WhenToMove { Immediately, AfterEndOfTween }
+public enum PauseOptionsOnEscape { EnterPauseOrEscapeMenu, DoNothing }
 public  enum ControlMethod { Mouse, KeysOrController, BothStartAsMouse, BothStartAsKeys }
 
 

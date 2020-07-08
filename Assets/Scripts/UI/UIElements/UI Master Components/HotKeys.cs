@@ -8,8 +8,8 @@ public class HotKeys
     [ValidateInput("IsAllowedType", "Can't have PopUp as HotKey as HotKey")] public UIBranch _uiBranch;
 
     //Variables
-    private IHubData _myUiHub;
-    private IHomeGroup _homeGroup;
+    private UIHub _uIHub;
+    private UIHomeGroup _homeGroup;
 
     //Editor Script
     #region Editor Script
@@ -21,9 +21,9 @@ public class HotKeys
     }
     #endregion
 
-    public void OnAwake(IHubData hubData,IHomeGroup homeGroup)
+    public void OnAwake(UIHub hubData, UIHomeGroup homeGroup)
     {
-        _myUiHub = hubData;
+        _uIHub = hubData;
         _homeGroup = homeGroup;
     }
 
@@ -56,20 +56,20 @@ public class HotKeys
 
     private bool TweenToHotKey(UINode node)
     {
-        return _myUiHub.LastSelected != node && _myUiHub.LastSelected.ChildBranch != null
-                            && _myUiHub.LastSelected.IsSelected;
+        return _uIHub.LastSelected != node && _uIHub.LastSelected.ChildBranch != null
+                            && _uIHub.LastSelected.IsSelected;
     }
 
     private void StartOutTweenOnLastSelected(UINode parentNode)
     {
-        if (_myUiHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.OnClick)
+        if (_uIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.Immediately)
         {
-            _myUiHub.LastSelected.ChildBranch.StartOutTween();
+            _uIHub.LastSelected.ChildBranch.StartOutTween();
             StartHotKeyBranch(parentNode);
         }
         else
         {
-            _myUiHub.LastSelected.ChildBranch.StartOutTween(() => StartHotKeyBranch(parentNode));
+            _uIHub.LastSelected.ChildBranch.StartOutTween(() => StartHotKeyBranch(parentNode));
         }
     }
 

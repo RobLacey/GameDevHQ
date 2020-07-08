@@ -206,7 +206,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (IsDisabled) { HandleIfDisabled(); return; }
 
-        if (MyBranch.HighlightFirstOption && MyBranch.AllowKeys)
+        if (/*MyBranch.HighlightFirstOption &&*/ MyBranch.AllowKeys)
         {
             SetAsHighlighted();
         }
@@ -260,8 +260,8 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     public void Deactivate()
     {
         if (!IsSelected) return;
-
-        if (ChildBranch != null && _navigation.CanNaviagte)
+        
+        if (ChildBranch && _navigation.CanNaviagte)
         {
             IsSelected = false;
             _navigation.TurnOffChildren();
@@ -289,7 +289,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         MyBranch.SaveLastSelected(this);
 
-        if (MyBranch.WhenToMove == WhenToMove.AtTweenEnd)
+        if (MyBranch.WhenToMove == WhenToMove.AfterEndOfTween)
         {
             _navigation.MoveAfterTween();
         }

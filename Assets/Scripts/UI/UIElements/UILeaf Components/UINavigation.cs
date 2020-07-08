@@ -213,19 +213,19 @@ public class UINavigation : IUINavigation
 
     private void ToChildBranch_AfterTween()
     {
-        if (!_myBranch.DontTurnOff) { _myBranch.MyCanvas.enabled = false; }
+        if (!_myBranch.StayOn) { _myBranch.MyCanvas.enabled = false; }
         _childBranch.MoveToNextLevel(_myBranch);
     }
 
     private void ToChildBranch_OnClick()
     {
-        if (!_myBranch.DontTurnOff) { _myBranch.MyCanvas.enabled = false; }
+        if (!_myBranch.StayOn) { _myBranch.MyCanvas.enabled = false; }
         _childBranch.MoveToNextLevel(_myBranch);
     }
 
     public void TurnOffChildren()
     {
-        if (_childBranch.WhenToMove == WhenToMove.OnClick)
+        if (_childBranch.WhenToMove == WhenToMove.Immediately)
         {
             _childBranch.StartOutTween();
             _childBranch.LastSelected.Deactivate();

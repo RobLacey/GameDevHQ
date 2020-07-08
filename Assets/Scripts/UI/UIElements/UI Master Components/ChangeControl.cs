@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ChangeControl: IChangeControl
+public class ChangeControl
 {
-    private readonly IHubData _hubData;
+    private readonly UIHub _uIHub;
     private Vector3 _mousePos = Vector3.zero;
     private readonly string _cancel;
     private readonly string _switch;
@@ -14,12 +14,12 @@ public class ChangeControl: IChangeControl
     //Properties
     public bool UsingMouse { get; private set; }
     public bool UsingKeysOrCtrl { get; set; }
-    public IAllowKeys[] AllowKeyClasses { get; set; }
+    public UIBranch[] AllowKeyClasses { get; set; }
 
     //Internal Class
-    public ChangeControl(IHubData newHubDataData, ControlMethod controlMethod, string cancelButton, string switchButton)
+    public ChangeControl(UIHub newUiHub, ControlMethod controlMethod, string cancelButton, string switchButton)
     {
-        _hubData = newHubDataData;
+        _uIHub = newUiHub;
         _cancel = cancelButton;
         _switch = switchButton;
         _controlMethod = controlMethod;
@@ -40,14 +40,14 @@ public class ChangeControl: IChangeControl
 
     public void ChangeControlType()
     {
-        if(CheckIfAllowedInput()) return;
+        //if(CheckIfAllowedInput()) return;
         if (_mousePos != Input.mousePosition && _controlMethod != ControlMethod.KeysOrController)
         {
             _mousePos = Input.mousePosition;
             if (UsingMouse) return;
             ActivateMouse();
         }
-        else if(Input.anyKeyDown && /*!UsingKeysOrCtrl && */_controlMethod != ControlMethod.Mouse)
+        else if(Input.anyKeyDown &&_controlMethod != ControlMethod.Mouse)
         {
             if (!(!Input.GetMouseButton(0) & !Input.GetMouseButton(1))) return;
             ActivateKeysOrControl();
@@ -56,45 +56,47 @@ public class ChangeControl: IChangeControl
 
     private void ActivateMouse()
     {
+        Cursor.visible = true;
         UsingMouse = true;
         UsingKeysOrCtrl = false;
         SetAllowKeys();
-        _hubData.LastHighlighted.SetNotHighlighted();
+        _uIHub.LastHighlighted.SetNotHighlighted();
     }
 
     public void ActivateKeysOrControl()
     {
-        if (!_hubData.CanStart) return;
+        if (!_uIHub.CanStart) return;
         if (!UsingKeysOrCtrl)
         {
+            Cursor.visible = false;
             UsingKeysOrCtrl = true;
             UsingMouse = false;
             SetAllowKeys();
             SetHighlightedForKeys();
         }
-        EventSystem.current.SetSelectedGameObject(_hubData.LastHighlighted.gameObject);
+        EventSystem.current.SetSelectedGameObject(_uIHub.LastHighlighted.gameObject);
     }
 
     private void SetHighlightedForKeys()
     {
-        if (_hubData.GameIsPaused || _hubData.ActivePopUps_Resolve.Count > 0)
+        if (_uIHub.GameIsPaused || _uIHub.ActivePopUpsResolve.Count > 0)
         {
-            _hubData.LastHighlighted.SetAsHighlighted();
+            _uIHub.LastHighlighted.SetAsHighlighted();
         }
-        else if (_hubData.ActivePopUps_NonResolve.Count > 0)
+        else if (_uIHub.ActivePopUpsNonResolve.Count > 0)
         {
-            _hubData.HandleActivePopUps();
+            _uIHub.HandleActivePopUps();
         }
         else
         {
-            _hubData.LastHighlighted.SetAsHighlighted();
+            _uIHub.LastHighlighted.SetAsHighlighted();
         }
     }
 
-    private bool CheckIfAllowedInput()
-    {
-        return Input.GetButtonDown(_cancel) || Input.GetButtonDown(_switch);
-    }
+    // private bool CheckIfAllowedInput()
+    // {
+    //     return Input.GetButtonDown(_cancel) || Input.GetButtonDown(_switch);
+    // }
 
     public void SetAllowKeys()
     {
