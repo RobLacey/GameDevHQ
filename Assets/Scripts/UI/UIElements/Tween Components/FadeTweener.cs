@@ -40,7 +40,7 @@ public class FadeTweener
         return Reset;
     }
 
-    public void DoCanvasFade(FadeTween fadeTween, float globalTime, bool isIn, TweenCallback tweenCallback = null)
+    public void DoCanvasFade(FadeTween fadeTween, float globalTime, TweenType isIn, TweenCallback tweenCallback = null)
     {
         if (fadeTween == FadeTween.NoTween) return;
 
@@ -48,7 +48,7 @@ public class FadeTweener
 
         if (fadeTween == FadeTween.FadeIn)
         {
-            if (isIn)
+            if (isIn == TweenType.In)
             {
                 MyCanvasGroup.alpha = _startAlpha;
                 SetInTime(globalTime);
@@ -62,7 +62,7 @@ public class FadeTweener
         }
         if (fadeTween == FadeTween.FadeOut)
         {
-            if (isIn)
+            if (isIn == TweenType.In)
             {
                 MyCanvasGroup.alpha = _startAlpha;
                 tweenCallback.Invoke();
@@ -75,7 +75,7 @@ public class FadeTweener
         }
         if (fadeTween == FadeTween.FadeInAndOut)
         {
-            if (isIn)
+            if (isIn == TweenType.In)
             {
                 MyCanvasGroup.alpha = _startAlpha;
                 SetInTime(globalTime);

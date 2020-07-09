@@ -5,21 +5,22 @@ using UnityEngine;
 
 public class UIHomeGroup
 {
-    List<UIBranch> _homeGroup;
-    UIBranch[] _allBranches;
-    UIHub _uIHub;
+    readonly UIBranch[] _homeGroup;
+    readonly UIBranch[] _allBranches;
+    readonly UIHub _uIHub;
 
-    public UIHomeGroup(UIHub uIHub)
+    public UIHomeGroup(UIHub uIHub, UIBranch[] homeBranches)
     {
         _uIHub = uIHub;
         _allBranches = _uIHub.AllBranches;
-        _homeGroup = _uIHub.HomeGroupBranches;
+        _homeGroup = homeBranches;
+        
     }
 
     public void SwitchHomeGroups(SwitchType switchType)
     {
         var index = ReturnNewIndex(switchType);
-        _uIHub.GroupIndex = index;
+        _uIHub.HomeGroupIndex = index;
         _homeGroup[index].TweenOnChange = false;
 
         if (_homeGroup[index].LastSelected.Function == ButtonFunction.HoverToActivate && _homeGroup[index].AllowKeys)
@@ -28,29 +29,29 @@ public class UIHomeGroup
         }
         else
         {
-            _homeGroup[index].MoveToNextLevel();
+            _homeGroup[index].MoveToThisBranch();
         }
     }
 
     private int ReturnNewIndex(SwitchType switchType)
     {
-        int index = _uIHub.GroupIndex;
+        int index = _uIHub.HomeGroupIndex;
         _homeGroup[index].LastSelected.Deactivate();
 
         if (switchType == SwitchType.Positive)
         {
-            return index.PositiveIterate(_homeGroup.Count);
+            return index.PositiveIterate(_homeGroup.Length);
         }
-        return index.NegativeIterate(_homeGroup.Count);
+        return index.NegativeIterate(_homeGroup.Length);
     }
 
     public void SetHomeGroupIndex(UIBranch uIBranch)
     {
-        for (int i = 0; i < _homeGroup.Count; i++)
+        for (int i = 0; i < _homeGroup.Length; i++)
         {
             if (_homeGroup[i] == uIBranch)
             {
-                _uIHub.GroupIndex = i;
+                _uIHub.HomeGroupIndex = i;
             }
         }
     }
@@ -79,7 +80,7 @@ public class UIHomeGroup
             foreach (var item in _homeGroup)
             {
                 _uIHub.OnHomeScreen = true;
-                item.ResetHomeScreenBranch(_homeGroup[_uIHub.GroupIndex]);
+                item.ResetHomeScreenBranch(_homeGroup[_uIHub.HomeGroupIndex]);
             }
         }
     }

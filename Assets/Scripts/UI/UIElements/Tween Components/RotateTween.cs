@@ -43,7 +43,7 @@ public class RotateTween
         return Reset;
     }
 
-    public void RotationTween(RotationTweenType rotationTweenType, float globalTime, bool isIn, TweenCallback tweenCallback = null)
+    public void RotationTween(RotationTweenType rotationTweenType, float globalTime, TweenType isIn, TweenCallback tweenCallback = null)
     {
         if (rotationTweenType == RotationTweenType.NoTween) return;
 
@@ -51,7 +51,7 @@ public class RotateTween
 
         if (rotationTweenType == RotationTweenType.In)
         {
-            if (isIn)
+            if (isIn == TweenType.In)
             {
                 RewindTweens();
                 SetInTime(globalTime);
@@ -66,7 +66,7 @@ public class RotateTween
 
         if (rotationTweenType == RotationTweenType.Out)
         {
-            if (isIn)
+            if (isIn == TweenType.In)
             {
                 RewindTweens();
                 SetOutTime(globalTime);
@@ -81,7 +81,7 @@ public class RotateTween
 
         if (rotationTweenType == RotationTweenType.InAndOut)
         {
-            if (isIn)
+            if (isIn ==TweenType.In)
             {
                 SetInTime(globalTime);
                 InSettings();

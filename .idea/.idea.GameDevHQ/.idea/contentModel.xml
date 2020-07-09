@@ -253,14 +253,7 @@
                 <e p="ShakeTweener.cs" t="Include" />
                 <e p="TweenSettings.cs" t="Include" />
                 <e p="UITweener.cs" t="Include" />
-              </e>
-              <e p="UI Master Components" t="Include">
-                <e p="ChangeControl.cs" t="Include" />
-                <e p="HotKeys.cs" t="Include" />
-                <e p="UIAudioManager.cs" t="Include" />
-                <e p="UICancel.cs" t="Include" />
-                <e p="UIHomeGroup.cs" t="Include" />
-                <e p="UIHubInterfaces.cs" t="Include" />
+                <e p="UITweener.EditorScripts.cs" t="Include" />
               </e>
               <e p="UI Scritpables" t="Include">
                 <e p="AudioScheme.cs" t="Include" />
@@ -270,14 +263,31 @@
                 <e p="StaticCoroutine.cs" t="Include" />
                 <e p="UIEnums.cs" t="Include" />
               </e>
-              <e p="UIBranch.cs" t="Include" />
-              <e p="UIComponents" t="Include">
+              <e p="UIBranch Components" t="Include">
                 <e p="GroupList.cs" t="Include" />
                 <e p="UIBranchGroups.cs" t="Include" />
                 <e p="UIPopUp.cs" t="Include" />
               </e>
+              <e p="UIBranch.cs" t="Include" />
+              <e p="UIBranch.EditorScripts.cs" t="Include" />
+              <e p="UIBranch.Properties.cs" t="Include" />
+              <e p="UIBranch.TweenHandler.cs" t="Include" />
+              <e p="UIHub Components" t="Include">
+                <e p="ChangeControl.cs" t="Include" />
+                <e p="HotKeys.cs" t="Include" />
+                <e p="UIAudioManager.cs" t="Include" />
+                <e p="UICancel.cs" t="Include" />
+                <e p="UIHomeGroup.cs" t="Include" />
+                <e p="UIHub Partial Classes" t="Include">
+                  <e p="UIHub.EditorScripts.cs" t="Include" />
+                  <e p="UIHub.PopUpData.cs" t="Include" />
+                  <e p="UIHub.UIHistory.cs" t="Include" />
+                  <e p="UIHub.UpdateMethods.cs" t="Include" />
+                </e>
+                <e p="UIHubInterfaces.cs" t="Include" />
+              </e>
               <e p="UIHub.cs" t="Include" />
-              <e p="UILeaf Components" t="Include">
+              <e p="UINode Components" t="Include">
                 <e p="IUIAudio.cs" t="Include" />
                 <e p="IUINavigation.cs" t="Include" />
                 <e p="UIAccessories.cs" t="Include" />

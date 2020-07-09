@@ -58,9 +58,8 @@ public class ChangeControl
         _uIHub.LastHighlighted.SetNotHighlighted();
     }
 
-    public void ActivateKeysOrControl()
+    private void ActivateKeysOrControl()
     {
-        if (!_uIHub.CanStart) return;
         if (!UsingKeysOrCtrl)
         {
             Cursor.visible = false;
@@ -80,7 +79,7 @@ public class ChangeControl
         }
         else if (_uIHub.ActivePopUpsNonResolve.Count > 0)
         {
-            _uIHub.HandleActivePopUps();
+            _uIHub.ActiveNextPopUp();
         }
         else
         {

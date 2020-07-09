@@ -133,7 +133,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     private void Start()
     {
         _navigation.SetChildsParentBranch();
-        _toggleGroups.SetUpToggleGroup(MyBranch.ThisGroupsUINodes);
+        _toggleGroups.SetUpToggleGroup(MyBranch.ThisGroupsUiNodes);
         _isToggleGroup = _buttonFunction == ButtonFunction.ToggleGroup;
         _isToggleNotLinked = _buttonFunction == ButtonFunction.Toggle_NotLinked;
         if (MyBranch.IsAPopUpBranch() || MyBranch.IsPause())

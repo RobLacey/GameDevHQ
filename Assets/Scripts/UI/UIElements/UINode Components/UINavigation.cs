@@ -180,7 +180,7 @@ public class UINavigation : IUINavigation
 
     public void MoveAfterTween()
     {
-        if (_childBranch.ScreenType == ScreenType.ToFullScreen)
+        if (_childBranch.ScreenType == ScreenType.FullScreen)
         {
             _myBranch.StartOutTween(() => ToFullScreen_AfterTween());
         }
@@ -188,7 +188,7 @@ public class UINavigation : IUINavigation
         {
             if (_childBranch.MyBranchType == BranchType.Internal)
             {
-                _childBranch.MoveToNextLevel(_myBranch);
+                _childBranch.MoveToThisBranch(_myBranch);
             }
             else
             {
@@ -199,7 +199,7 @@ public class UINavigation : IUINavigation
 
     public void MoveOnClick()
     {
-        if (_childBranch.ScreenType == ScreenType.ToFullScreen)
+        if (_childBranch.ScreenType == ScreenType.FullScreen)
         {
             _myBranch.StartOutTween();
         }
@@ -214,13 +214,13 @@ public class UINavigation : IUINavigation
     private void ToChildBranch_AfterTween()
     {
         if (!_myBranch.StayOn) { _myBranch.MyCanvas.enabled = false; }
-        _childBranch.MoveToNextLevel(_myBranch);
+        _childBranch.MoveToThisBranch(_myBranch);
     }
 
     private void ToChildBranch_OnClick()
     {
         if (!_myBranch.StayOn) { _myBranch.MyCanvas.enabled = false; }
-        _childBranch.MoveToNextLevel(_myBranch);
+        _childBranch.MoveToThisBranch(_myBranch);
     }
 
     public void TurnOffChildren()

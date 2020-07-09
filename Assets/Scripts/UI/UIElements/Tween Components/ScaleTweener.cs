@@ -43,7 +43,7 @@ public class ScaleTweener
         return Reset;
     }
 
-    public void DoScaleTween(ScaleTween scaleTweenType, float globalTime, bool isIn, TweenCallback tweenCallback = null)
+    public void DoScaleTween(ScaleTween scaleTweenType, float globalTime, TweenType isIn, TweenCallback tweenCallback = null)
     {
         if (scaleTweenType == ScaleTween.NoTween) return;
 
@@ -51,7 +51,7 @@ public class ScaleTweener
 
         if (scaleTweenType == ScaleTween.Scale_InOnly)
         {
-            if (isIn)
+            if (isIn == TweenType.In)
             {
                 ResetScaleTweens();
                 SetInTime(globalTime);
@@ -66,7 +66,7 @@ public class ScaleTweener
 
         if (scaleTweenType == ScaleTween.Scale_OutOnly)
         {
-            if (isIn)
+            if (isIn == TweenType.In)
             {
                 ResetScaleTweens();
                 tweenCallback.Invoke();
@@ -81,7 +81,7 @@ public class ScaleTweener
 
         if (scaleTweenType == ScaleTween.Scale_InAndOut)
         {
-            if (isIn)
+            if (isIn == TweenType.In)
             {
                 SetInTime(globalTime);
                 InSettings();

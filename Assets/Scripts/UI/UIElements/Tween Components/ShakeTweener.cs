@@ -37,13 +37,13 @@ public class ShakeTweener
         }
     }
 
-    public void DoShake(PunchShakeTween scaleTween, bool isIn, TweenCallback tweenCallback = null)
+    public void DoShake(PunchShakeTween scaleTween, TweenType isIn, TweenCallback tweenCallback = null)
     {
         if (scaleTween == PunchShakeTween.NoTween || scaleTween != PunchShakeTween.Shake) return;
 
         StopRunningTweens();
 
-        if (isIn)
+        if (isIn == TweenType.In)
         {
             if (CheckInEffectType())
             {

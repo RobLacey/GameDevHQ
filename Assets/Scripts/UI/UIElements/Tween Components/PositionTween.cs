@@ -44,7 +44,7 @@ public class PositionTween
         return Reset;
     }
 
-    public void DoPositionTween(PositionTweenType positionTween, float globalTime, bool isIn, TweenCallback tweenCallback = null)
+    public void DoPositionTween(PositionTweenType positionTween, float globalTime, TweenType isIn, TweenCallback tweenCallback = null)
     {
         _tweenTypeStore = positionTween;
 
@@ -54,7 +54,7 @@ public class PositionTween
 
         if (positionTween == PositionTweenType.In)
         {
-            if (isIn)
+            if (isIn == TweenType.In)
             {
                 ResetStartPosition();
                 SetInTime(globalTime);
@@ -70,7 +70,7 @@ public class PositionTween
         if (positionTween == PositionTweenType.Out)
         {
 
-            if (isIn)
+            if (isIn == TweenType.In)
             {
                 ResetStartPosition();
                 tweenCallback.Invoke();
@@ -85,7 +85,7 @@ public class PositionTween
 
         if (positionTween == PositionTweenType.InAndOut)
         {
-            if (isIn)
+            if (isIn == TweenType.In)
             {
                 ResetStartPosition();
                 SetInTime(globalTime);

@@ -776,6 +776,18 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 7713156616522297107, guid: 883e6b769f6167a4794fc142b77d057b, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 883e6b769f6167a4794fc142b77d057b, type: 3}
+--- !u!114 &92043181 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+    type: 3}
+  m_PrefabInstance: {fileID: 178147818}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f5dfd11c59dde44c933280df0ae6aea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &126504087 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7472274104007262572, guid: 889858f9542a04a41801cc9b56665611,
@@ -1838,7 +1850,7 @@ PrefabInstance:
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: _navigation._setNavigation
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
@@ -1951,6 +1963,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 547a8a0ebb4e7b542af91cd3d2c07f2f,
         type: 2}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _navigation.left
+      value: 
+      objectReference: {fileID: 1541690463}
     m_RemovedComponents:
     - {fileID: 3688934388505339738, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
@@ -3379,10 +3396,10 @@ MonoBehaviour:
   _userDefinedStartPosition: {fileID: 0}
   _groupsList: []
   _branchEvents:
-    OnBranchEnabled:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchDisabled:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &274292516
@@ -3412,7 +3429,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartscale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTweenTime: 0
+  _useGlobalTime: 1
   _globalInTime: 1
   _globalOutTime: 1
   _positionTween: 1
@@ -3420,8 +3437,8 @@ MonoBehaviour:
   _canvasGroupFade: 0
   _scaleTransition: 0
   _punchShakeTween: 0
-  _shakeOrPunchAtEnd: 0
-  _addTweenEventTriggers: 0
+  _shakeOrPunchAtEnd: 1
+  _addTweenEventTriggers: 1
   _middleOfTweenAction:
     m_PersistentCalls:
       m_Calls: []
@@ -4769,7 +4786,7 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _saveExitSelection
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -4871,6 +4888,11 @@ PrefabInstance:
       propertyPath: _stayOn
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _userDefinedStartPosition
+      value: 
+      objectReference: {fileID: 987943930}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _applyEffectsTo.Array.size
@@ -5090,6 +5112,26 @@ PrefabInstance:
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._tweenTargetPosition.y
       value: -357
+      objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _useGlobalTweenTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _useGlobalTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _globalInTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _globalOutTime
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -6965,7 +7007,7 @@ PrefabInstance:
     - target: {fileID: 7472274104007262572, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
       propertyPath: _startAsSelected
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7472274104007262572, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
@@ -9652,7 +9694,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 5
+  _branchType: 3
   _timer: 2
   _screenType: 0
   _turnOffPopUps: 1
@@ -9664,10 +9706,10 @@ MonoBehaviour:
   _userDefinedStartPosition: {fileID: 1541690463}
   _groupsList: []
   _branchEvents:
-    OnBranchEnabled:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchDisabled:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &620683491
@@ -9697,7 +9739,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartscale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTweenTime: 0
+  _useGlobalTime: 1
   _globalInTime: 1
   _globalOutTime: 1
   _positionTween: 2
@@ -9706,7 +9748,7 @@ MonoBehaviour:
   _scaleTransition: 1
   _punchShakeTween: 2
   _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 0
+  _addTweenEventTriggers: 1
   _middleOfTweenAction:
     m_PersistentCalls:
       m_Calls: []
@@ -10470,7 +10512,7 @@ PrefabInstance:
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: _navigation._setNavigation
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
@@ -10566,7 +10608,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _navigation.right
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 92043181}
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: _navigation._moveAfter
@@ -11571,6 +11613,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2,
         type: 2}
+    - target: {fileID: 7472274104007262572, guid: 889858f9542a04a41801cc9b56665611,
+        type: 3}
+      propertyPath: _startAsSelected
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7472274104007262574, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -16025,6 +16072,21 @@ PrefabInstance:
       propertyPath: _buildObjectsList.Array.data[0]._tweenTargetPosition.x
       value: 934
       objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _useGlobalTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _globalInTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _globalOutTime
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -20416,10 +20478,10 @@ MonoBehaviour:
   _userDefinedStartPosition: {fileID: 0}
   _groupsList: []
   _branchEvents:
-    OnBranchEnabled:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchDisabled:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1478859610
@@ -20449,7 +20511,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartscale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTweenTime: 0
+  _useGlobalTime: 1
   _globalInTime: 1
   _globalOutTime: 1
   _positionTween: 0
@@ -20458,7 +20520,7 @@ MonoBehaviour:
   _scaleTransition: 3
   _punchShakeTween: 2
   _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 0
+  _addTweenEventTriggers: 1
   _middleOfTweenAction:
     m_PersistentCalls:
       m_Calls: []
@@ -24341,10 +24403,10 @@ MonoBehaviour:
   _userDefinedStartPosition: {fileID: 457656681}
   _groupsList: []
   _branchEvents:
-    OnBranchEnabled:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchDisabled:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1743252784
@@ -24374,7 +24436,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartscale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTweenTime: 0
+  _useGlobalTime: 1
   _globalInTime: 1
   _globalOutTime: 1
   _positionTween: 0
@@ -24383,7 +24445,7 @@ MonoBehaviour:
   _scaleTransition: 1
   _punchShakeTween: 2
   _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 0
+  _addTweenEventTriggers: 1
   _middleOfTweenAction:
     m_PersistentCalls:
       m_Calls: []
@@ -24788,6 +24850,21 @@ PrefabInstance:
         type: 3}
       propertyPath: _posTween._outTime
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _useGlobalTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _globalOutTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _globalInTime
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
@@ -25738,6 +25815,16 @@ PrefabInstance:
       propertyPath: _moveType
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _stayOn
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _userDefinedStartPosition
+      value: 
+      objectReference: {fileID: 987943930}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.size
@@ -26988,7 +27075,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 5
+  _branchType: 4
   _timer: 5
   _screenType: 0
   _turnOffPopUps: 1
@@ -27000,10 +27087,10 @@ MonoBehaviour:
   _userDefinedStartPosition: {fileID: 717249547}
   _groupsList: []
   _branchEvents:
-    OnBranchEnabled:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchDisabled:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &2018220712
@@ -27033,7 +27120,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartscale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTweenTime: 0
+  _useGlobalTime: 1
   _globalInTime: 1
   _globalOutTime: 1
   _positionTween: 2
@@ -27042,7 +27129,7 @@ MonoBehaviour:
   _scaleTransition: 1
   _punchShakeTween: 2
   _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 0
+  _addTweenEventTriggers: 1
   _middleOfTweenAction:
     m_PersistentCalls:
       m_Calls: []
@@ -28291,6 +28378,7 @@ GameObject:
   - component: {fileID: 2113496482}
   - component: {fileID: 2113496481}
   - component: {fileID: 2113496480}
+  - component: {fileID: 2113496483}
   m_Layer: 0
   m_Name: Player Sprite
   m_TagString: Untagged
@@ -28378,6 +28466,102 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &2113496483
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2113496479}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &2120817974
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30559,7 +30743,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _userDefinedStartPosition
       value: 
-      objectReference: {fileID: 1332049459}
+      objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _onHomeScreen

@@ -96,7 +96,7 @@ public enum EventType
 
 public enum CurrentRoatationIs { StartRotateAt, MidPointForInAndOut, EndRotateAt }
 
-public enum ScreenType { Normal, ToFullScreen }
+public enum ScreenType { Normal, FullScreen }
 
 public enum StartInMenu { InMenu, InGameControl }
 public enum BranchType { HomeScreenUI, StandardUI, Internal, PopUp_Resolve, PopUp_NonResolve, PopUp_Timed, PauseMenu }
@@ -105,4 +105,5 @@ public enum WhenToMove { Immediately, AfterEndOfTween }
 public enum PauseOptionsOnEscape { EnterPauseOrEscapeMenu, DoNothing }
 public  enum ControlMethod { Mouse, KeysOrController, BothStartAsMouse, BothStartAsKeys }
 public enum SwitchType { Positive, Negative }
+public enum TweenType { In, Out }
 

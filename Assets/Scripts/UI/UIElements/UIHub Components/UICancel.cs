@@ -5,6 +5,9 @@ using UnityEngine;
 public class UICancel
 {
     private readonly UIHub _uIHub;
+    private readonly EscapeKey _globalEscapeSetting;
+    private readonly UIBranch[] _homeGroup;
+
     private bool DontAllowTween => _uIHub.LastSelected.MyBranch.StayOn 
                                    || _uIHub.LastSelected.ChildBranch.MyBranchType == BranchType.Internal;
     private bool NotPausedAndIsNonResolvePopUp => _uIHub.LastHighlighted.MyBranch.IsNonResolvePopUp 
@@ -14,15 +17,17 @@ public class UICancel
     private bool IsPausedAndPauseMenu => _uIHub.GameIsPaused 
                                          && _uIHub.ActiveBranch.MyBranchType == BranchType.PauseMenu;
 
-    public UICancel(UIHub uIHub)
+    public UICancel(UIHub uIHub, EscapeKey globalSetting, UIBranch[] homeBranches)
     {
         _uIHub = uIHub;
+        _globalEscapeSetting = globalSetting;
+        _homeGroup = homeBranches;
     }
     public void CancelPressed()
     {
         if(_uIHub.ActiveBranch.IsResolvePopUp) return;
         
-        if (_uIHub.ActiveBranch.FromHotkey)
+        if (_uIHub.ActiveBranch.FromHotKey)
         {
             CancelOrBack(EscapeKey.BackToHome);
         }
@@ -32,7 +37,7 @@ public class UICancel
         }
         else if (CanEnterPauseOptionsScreen())
         {
-            _uIHub.PauseOptionMenu();
+            _uIHub.PauseOptionMenuPressed();
         }
         else
         {
@@ -42,9 +47,9 @@ public class UICancel
     
     public void CancelOrBack(EscapeKey escapeKey)
     {
-        if (_uIHub.ActiveBranch.FromHotkey)
+        if (_uIHub.ActiveBranch.FromHotKey)
         {
-            _uIHub.ActiveBranch.FromHotkey = false;
+            _uIHub.ActiveBranch.FromHotKey = false;
             _uIHub.LastSelected.SetNotSelected_NoEffects();
         }
         OnCancel(escapeKey);
@@ -53,7 +58,7 @@ public class UICancel
 
     private void OnCancel(EscapeKey escapeKey)
     {
-        if (escapeKey == EscapeKey.GlobalSetting) escapeKey = _uIHub.GlobalEscape;
+        if (escapeKey == EscapeKey.GlobalSetting) escapeKey = _globalEscapeSetting;
         
         switch (escapeKey)
         {
@@ -108,7 +113,7 @@ public class UICancel
         if (IsPausedAndPauseMenu)
         {
             lastSelected.MyBranch.TweenOnChange = true;
-            _uIHub.PauseOptionMenu();
+            _uIHub.PauseOptionMenuPressed();
         }
         else
         {
@@ -126,7 +131,7 @@ public class UICancel
                 {
                     lastSelected.SetNotSelected_NoEffects();
                     lastSelected.MyBranch.SaveLastSelected(lastSelected.MyBranch.MyParentBranch.LastSelected);
-                    lastSelected.MyBranch.MoveToNextLevel();
+                    lastSelected.MyBranch.MoveToThisBranch();
                 }
              }
         }
@@ -134,14 +139,14 @@ public class UICancel
 
     private void BackToHome()
     {
-        int index = _uIHub.GroupIndex;
-        List<UIBranch> homeGroup = _uIHub.HomeGroupBranches;
+        int index = _uIHub.HomeGroupIndex;
+        //List<UIBranch> homeGroup = _uIHub.HomeGroupBranches;
         if (_uIHub.OnHomeScreen) 
-            homeGroup[index].TweenOnChange = false;
+            _homeGroup[index].TweenOnChange = false;
         //homeGroup[index].LastSelected.SetNotSelected_NoEffects();
-        homeGroup[index].LastSelected.Deactivate();
-        homeGroup[index].LastSelected.MyBranch.SaveLastSelected(homeGroup[index].LastSelected);
-        homeGroup[index].MoveToNextLevel();
+        _homeGroup[index].LastSelected.Deactivate();
+        _homeGroup[index].LastSelected.MyBranch.SaveLastSelected(_homeGroup[index].LastSelected);
+        _homeGroup[index].MoveToThisBranch();
     }
 
     private void HandleRemovingPopUps_Resolve()

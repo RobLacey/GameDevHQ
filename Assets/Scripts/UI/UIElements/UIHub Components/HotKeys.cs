@@ -38,7 +38,7 @@ public class HotKeys
     {
         if (_uiBranch.MyCanvas.enabled) return;
 
-        foreach (UINode node in _uiBranch.MyParentBranch.ThisGroupsUINodes)
+        foreach (UINode node in _uiBranch.MyParentBranch.ThisGroupsUiNodes)
         {
             if (node.ChildBranch != _uiBranch) continue;
             if (TweenToHotKey(node))
@@ -75,9 +75,9 @@ public class HotKeys
 
     private void SetUpNextBranch(UINode parentNode)
     {
-        if (_uiBranch.MyBranchType != BranchType.HomeScreenUI) { _uiBranch.FromHotkey = true; }                //Ensures back to home is used on cancel
+        if (_uiBranch.MyBranchType != BranchType.HomeScreenUI) { _uiBranch.FromHotKey = true; }                //Ensures back to home is used on cancel
 
-        if (_uiBranch.ScreenType == ScreenType.ToFullScreen)
+        if (_uiBranch.ScreenType == ScreenType.FullScreen)
         {
             parentNode.IsSelected = true;
         }
@@ -93,6 +93,6 @@ public class HotKeys
     {
         _homeGroup.SetHomeGroupIndex(parentNode.MyBranch);
         _uiBranch.MyParentBranch.SaveLastSelected(parentNode);
-        _uiBranch.MoveToNextLevel();
+        _uiBranch.MoveToThisBranch();
     }
 }

@@ -171,10 +171,10 @@ public static class ExtensionsMethods
     
     public static int NegativeIterate(this int pointer, int size)
     {
-        if (size - 1 == pointer)
+        if (pointer == 0)
         {
-            return 0;
+            return size - 1;
         }
-        return pointer + 1;
+        return pointer - 1;
     }
 }
