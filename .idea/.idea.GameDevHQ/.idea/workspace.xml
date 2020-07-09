@@ -23,16 +23,13 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/ChangeControl.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/ChangeControl.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/HotKeys.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/HotKeys.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/UICancel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/UICancel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/UIHomeGroup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/UIHomeGroup.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/UIHubInterfaces.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/UIHubInterfaces.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIComponents/UIPopUp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIComponents/UIPopUp.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIComponents/UIBranchGroups.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIComponents/UIBranchGroups.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UILeaf Components/UINavigation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UILeaf Components/UINavigation.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Utilities/ExtensionsMethods.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Utilities/ExtensionsMethods.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/InputManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/InputManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,12 +73,14 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UILeaf Components/UINavigation.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/UICancel.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/UIHomeGroup.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIComponents/UIPopUp.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/ChangeControl.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIComponents/UIBranchGroups.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/UIHomeGroup.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Utilities/ExtensionsMethods.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" />
       </list>
     </option>
   </component>
@@ -144,6 +143,7 @@
       <workItem from="1593870914687" duration="7832000" />
       <workItem from="1594197298982" duration="66000" />
       <workItem from="1594197510883" duration="22082000" />
+      <workItem from="1594282849969" duration="6046000" />
     </task>
     <servers />
   </component>
@@ -316,32 +316,6 @@
             </endOffsets>
           </properties>
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs</url>
-          <line>352</line>
-          <properties documentPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" initialLine="311">
-            <startOffsets>
-              <option value="11745" />
-            </startOffsets>
-            <endOffsets>
-              <option value="11746" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs</url>
-          <line>228</line>
-          <properties documentPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" initialLine="225">
-            <startOffsets>
-              <option value="8449" />
-            </startOffsets>
-            <endOffsets>
-              <option value="8468" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

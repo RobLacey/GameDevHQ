@@ -26,7 +26,8 @@ public class UIHub : MonoBehaviour
     [SerializeField] [Label("Pause / Option Button")] [InputAxis] string _pauseOptionButton;
     [SerializeField] [Label("Pause / Option Menu")] UIBranch _pauseOptionMenu;
     [Header("Home Branch Switch Settings")]
-    [SerializeField] [HideIf("MouseOnly")] [InputAxis] string _branchSwitchButton;
+    [SerializeField] [HideIf("MouseOnly")] [InputAxis] string _posSwitchButton;
+    [SerializeField] [HideIf("MouseOnly")] [InputAxis] string _negSwitchButton;
     [SerializeField] [HideIf("MouseOnly")] [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")] 
     List<UIBranch> _homeBranches;
     [SerializeField] [ReorderableList] [Label("Hot Keys (CAN'T have PopUps as Hot keys)")] 
@@ -48,7 +49,8 @@ public class UIHub : MonoBehaviour
     private UIAudioManager _uiAudio; //Used to hold instance of class
     private UICancel _myUiCancel;
     private bool _hasPauseAxis;
-    private bool _hasSwitchAxis;
+    private bool _hasPosSwitchAxis;
+    private bool _hasNegSwitchAxis;
     private ChangeControl _changeControl;
     private bool _hasCancelAxis;
     private bool _hasToMenuAxis;
@@ -118,21 +120,32 @@ public class UIHub : MonoBehaviour
 
     private void Awake()
     {
-        _hasPauseAxis = _pauseOptionButton != string.Empty;
-        _hasSwitchAxis = _branchSwitchButton != string.Empty;
-        _hasCancelAxis = _cancelButton != string.Empty;
-        _hasToMenuAxis = _switchToMenusButton != string.Empty;
+        CheckForControls();
         AllBranches = FindObjectsOfType<UIBranch>();
-        _returnToGameControl.Invoke(InMenu);
-        _changeControl = new ChangeControl(this, _mainControlType, _cancelButton, _branchSwitchButton);
-        _changeControl.AllowKeyClasses = FindObjectsOfType<UIBranch>();
-        _uiAudio = new UIAudioManager(GetComponent<AudioSource>());
-        _myUiCancel = new UICancel(this);
-        UiHomeGroup = new UIHomeGroup(this);
+        CreateSubClasses();
+
         foreach (UIBranch branch in AllBranches)
         {
             branch.OnAwake(this, UiHomeGroup);
         }
+    }
+
+    private void CreateSubClasses()
+    {
+        _changeControl = new ChangeControl(this, _mainControlType);
+        _changeControl.AllowKeyClasses = FindObjectsOfType<UIBranch>();
+        _uiAudio = new UIAudioManager(GetComponent<AudioSource>());
+        _myUiCancel = new UICancel(this);
+        UiHomeGroup = new UIHomeGroup(this);
+    }
+
+    private void CheckForControls()
+    {
+        _hasPauseAxis = _pauseOptionButton != string.Empty;
+        _hasPosSwitchAxis = _posSwitchButton != string.Empty;
+        _hasNegSwitchAxis = _negSwitchButton != string.Empty;
+        _hasCancelAxis = _cancelButton != string.Empty;
+        _hasToMenuAxis = _switchToMenusButton != string.Empty;
     }
 
     private void OnEnable()
@@ -157,7 +170,8 @@ public class UIHub : MonoBehaviour
             hotKey.OnAwake(this, UiHomeGroup);
         }
         OnHomeScreen = true;
-        
+        _returnToGameControl.Invoke(InMenu);
+
         if (ActiveInGameSystem && _startGameWhere == StartInMenu.InGameControl)
         {
             InMenu = true;
@@ -214,7 +228,7 @@ public class UIHub : MonoBehaviour
         }
     }
 
-    private void Update() // Review how keys work as hot keys and pause shouldn't activate keyboard. Maybe hard setting rather than auto
+    private void Update() 
     {
         if (!CanStart) return;
         if (_hasPauseAxis)
@@ -249,16 +263,14 @@ public class UIHub : MonoBehaviour
     private bool HotKeys()
     {
         //Checks
+        if (_hotKeySettings.Count <= 0) return false;
         if (ActivePopUpsResolve.Count > 0 || GameIsPaused) return false;
-        if (_changeControl.UsingKeysOrCtrl && !NoActivePopUps) return false; 
-        
-        if (_hotKeySettings.Count > 0)
+        if (_changeControl.UsingKeysOrCtrl && !NoActivePopUps) return false;
+
+        activatedHotKey = _hotKeySettings.Any(hotKeys => hotKeys.CheckHotKeys());
+        if (activatedHotKey)
         {
-            activatedHotKey = _hotKeySettings.Any(hotKeys => hotKeys.CheckHotKeys());
-            if (activatedHotKey)
-            {
-                if (!InMenu) GameToMenuSwitching();
-            }
+            if (!InMenu) GameToMenuSwitching();
         }
         return activatedHotKey;
     }
@@ -271,37 +283,41 @@ public class UIHub : MonoBehaviour
     
     private void HandleInMenu()
     {
-        
-        //if (Input.anyKeyDown)
-        //{
-            if (_hasCancelAxis)
+        if (_hasCancelAxis)
+        {
+            if (Input.GetButtonDown(_cancelButton))
             {
-                if (Input.GetButtonDown(_cancelButton))
+                _myUiCancel.CancelPressed();
+                return;
+            }
+        }
+
+        if (CanSwitchBranches())
+        {
+            if (_hasPosSwitchAxis)
+            {
+                if (Input.GetButtonDown(_posSwitchButton))
                 {
-                    _myUiCancel.CancelPressed();
+                    SwitchingGroups(SwitchType.Positive);
                     return;
                 }
             }
 
-           // if (Input.anyKeyDown)
-            //{
-                _changeControl.ChangeControlType();
-           // }
-            
-            if (CanSwitchBranches())
+            if (_hasNegSwitchAxis)
             {
-                Debug.Log(CanSwitchBranches());
-               if (Input.GetButtonDown(_branchSwitchButton))
-               {
-                   SwitchingGroups();
-               }
+                if (Input.GetButtonDown(_negSwitchButton))
+                {
+                    SwitchingGroups(SwitchType.Negative);
+                    return;
+                }
             }
-        //}
+            _changeControl.ChangeControlType();
+        }
     }
 
     private bool CanSwitchBranches()
     {
-        return _hasSwitchAxis && ActivePopUpsResolve.Count == 0 && !MouseOnly();
+        return ActivePopUpsResolve.Count == 0 && !MouseOnly();
     }
 
     public void GameToMenuSwitching() //TODO Review in light of popUps, pause should work and returns to any popups first
@@ -324,7 +340,7 @@ public class UIHub : MonoBehaviour
         _returnToGameControl.Invoke(InMenu);
     }
 
-    private void SwitchingGroups()
+    private void SwitchingGroups(SwitchType switchType)
     {
         if (ActivePopUpsNonResolve.Count > 0)
         {
@@ -333,11 +349,11 @@ public class UIHub : MonoBehaviour
         else if (OnHomeScreen && _homeBranches.Count > 1)
         {
             LastHighlighted.Audio.Play(UIEventTypes.Selected);
-            UiHomeGroup.SwitchHomeGroups();
+            UiHomeGroup.SwitchHomeGroups(switchType);
         }
         else if (ActiveBranch.GroupListCount > 1)
         {
-            ActiveBranch.SwitchBranchGroup();
+            ActiveBranch.SwitchBranchGroup(switchType);
         }
     }
 
@@ -346,7 +362,7 @@ public class UIHub : MonoBehaviour
         int groupLength = ActivePopUpsNonResolve.Count;
         SetLastHighlighted(ActivePopUpsNonResolve[PopIndex].LastHighlighted);
         ActivePopUpsNonResolve[PopIndex].LastHighlighted.SetNodeAsActive();
-        PopIndex = PopIndex.Iterate(groupLength);
+        PopIndex = PopIndex.PositiveIterate(groupLength);
     }
     
     public void SetLastSelected(UINode newNode)
@@ -403,15 +419,4 @@ public class UIHub : MonoBehaviour
             UiHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch);
         EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
     }
-    
-    // public bool IsUsingMouse()
-    // {
-    //     if (!_changeControl.UsingMouse)
-    //     {
-    //         _changeControl.ActivateKeysOrControl();
-    //         return false;
-    //     }
-    //     return true;
-    // }
-
 }

@@ -144,8 +144,6 @@ public static class ExtensionsMethods
         return Color.Lerp(color, targetColor, perc); ;
     }
 
-
-
     //Pooling Agent
 
     public static PoolingAgent SetUpPoolingAgent(this PoolingAgent agentToSet, PoolingAgent[] array, PoolingID poolingID)
@@ -160,17 +158,18 @@ public static class ExtensionsMethods
         return null;
     }
 
-    //UI ElementColourChange
+    //Iterate collection
 
-    public static ColorBlock SwapUIColour(this ColorBlock colorBlock, Color newColour)
+    public static int PositiveIterate(this int pointer, int size)
     {
-        colorBlock.normalColor = newColour;
-        return colorBlock;
+        if (size - 1 == pointer)
+        {
+            return 0;
+        }
+        return pointer + 1;
     }
-
-    //Numerat collection
-
-    public static int Iterate(this int pointer, int size)
+    
+    public static int NegativeIterate(this int pointer, int size)
     {
         if (size - 1 == pointer)
         {

@@ -27,20 +27,40 @@ public static class UIBranchGroups
         return groupIndex;
     }
 
-    public static int SwitchBranchGroup(List<GroupList> groupsList, int index)
+    public static int SwitchBranchGroup(List<GroupList> groupsList, int groupIndex, SwitchType switchType)
     {
-        groupsList[index]._startNode.SetNotHighlighted(); 
-
-        if (index == groupsList.Count - 1)
+        int newIndex;
+        groupsList[groupIndex]._startNode.SetNotHighlighted();
+        
+        if (switchType == SwitchType.Positive)
         {
-            index = 0;
+            //newIndex = PositveSwitch(groupsList, groupIndex);
+            newIndex = groupIndex.PositiveIterate(groupsList.Count);
         }
         else
         {
-            index++;
+            //newIndex = NegativeSwitch(groupsList, groupIndex);
+            newIndex = groupIndex.NegativeIterate(groupsList.Count);
         }
-        groupsList[index]._startNode.Navigation.NavigateToNextNode();
-        return index;
+        groupsList[newIndex]._startNode.Navigation.NavigateToNextNode();
+        return newIndex;
     }
 
+    // private static int PositveSwitch(List<GroupList> groupsList, int groupIndex)
+    // {
+    //     if (groupIndex == groupsList.Count - 1)
+    //     {
+    //         return 0;
+    //     }
+    //     return groupIndex + 1;
+    // }
+    //
+    // private static int NegativeSwitch(List<GroupList> groupsList, int groupIndex)
+    // {
+    //     if (groupIndex == 0)
+    //     {
+    //         return groupsList.Count - 1;
+    //     }
+    //     return groupIndex - 1;
+    // }
 }

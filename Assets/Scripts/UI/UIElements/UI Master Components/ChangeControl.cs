@@ -6,8 +6,6 @@ public class ChangeControl
 {
     private readonly UIHub _uIHub;
     private Vector3 _mousePos = Vector3.zero;
-    private readonly string _cancel;
-    private readonly string _switch;
     private readonly ControlMethod _controlMethod;
     private bool _gameStarted;
 
@@ -17,11 +15,9 @@ public class ChangeControl
     public UIBranch[] AllowKeyClasses { get; set; }
 
     //Internal Class
-    public ChangeControl(UIHub newUiHub, ControlMethod controlMethod, string cancelButton, string switchButton)
+    public ChangeControl(UIHub newUiHub, ControlMethod controlMethod)
     {
         _uIHub = newUiHub;
-        _cancel = cancelButton;
-        _switch = switchButton;
         _controlMethod = controlMethod;
     }
     
@@ -40,7 +36,6 @@ public class ChangeControl
 
     public void ChangeControlType()
     {
-        //if(CheckIfAllowedInput()) return;
         if (_mousePos != Input.mousePosition && _controlMethod != ControlMethod.KeysOrController)
         {
             _mousePos = Input.mousePosition;
@@ -92,11 +87,6 @@ public class ChangeControl
             _uIHub.LastHighlighted.SetAsHighlighted();
         }
     }
-
-    // private bool CheckIfAllowedInput()
-    // {
-    //     return Input.GetButtonDown(_cancel) || Input.GetButtonDown(_switch);
-    // }
 
     public void SetAllowKeys()
     {

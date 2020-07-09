@@ -104,5 +104,5 @@ public enum BranchType { HomeScreenUI, StandardUI, Internal, PopUp_Resolve, PopU
 public enum WhenToMove { Immediately, AfterEndOfTween }
 public enum PauseOptionsOnEscape { EnterPauseOrEscapeMenu, DoNothing }
 public  enum ControlMethod { Mouse, KeysOrController, BothStartAsMouse, BothStartAsKeys }
-
+public enum SwitchType { Positive, Negative }
 

@@ -288,9 +288,9 @@ public class UIBranch : MonoBehaviour
         DontSetAsActive = false;
     }
 
-    public void SwitchBranchGroup()
+    public void SwitchBranchGroup(SwitchType switchType)
     {
-        _groupIndex = UIBranchGroups.SwitchBranchGroup(_groupsList, _groupIndex);
+        _groupIndex = UIBranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, switchType);
     }
 
     public void StartPopUpScreen()

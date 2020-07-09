@@ -16,16 +16,9 @@ public class UIHomeGroup
         _homeGroup = _uIHub.HomeGroupBranches;
     }
 
-    public void SwitchHomeGroups()
+    public void SwitchHomeGroups(SwitchType switchType)
     {
-        int index = _uIHub.GroupIndex;
-        _homeGroup[index].LastSelected.Deactivate();
-        index++;
-
-        if (index > _homeGroup.Count - 1)
-        {
-            index = 0;
-        }
+        var index = ReturnNewIndex(switchType);
         _uIHub.GroupIndex = index;
         _homeGroup[index].TweenOnChange = false;
 
@@ -39,6 +32,18 @@ public class UIHomeGroup
         }
     }
 
+    private int ReturnNewIndex(SwitchType switchType)
+    {
+        int index = _uIHub.GroupIndex;
+        _homeGroup[index].LastSelected.Deactivate();
+
+        if (switchType == SwitchType.Positive)
+        {
+            return index.PositiveIterate(_homeGroup.Count);
+        }
+        return index.NegativeIterate(_homeGroup.Count);
+    }
+
     public void SetHomeGroupIndex(UIBranch uIBranch)
     {
         for (int i = 0; i < _homeGroup.Count; i++)
@@ -48,7 +53,6 @@ public class UIHomeGroup
                 _uIHub.GroupIndex = i;
             }
         }
-        //return 0;
     }
 
     public void ClearHomeScreen(UIBranch ignoreBranch, IsActive turnOffPopUps)
@@ -56,14 +60,14 @@ public class UIHomeGroup
         if (!_uIHub.OnHomeScreen) return;
         _uIHub.OnHomeScreen = false;
 
-        foreach (var item in _allBranches)
+        foreach (var branch in _allBranches)
         {
-            if(item.IsNonResolvePopUp && turnOffPopUps == IsActive.Yes) continue;
-            if (item == ignoreBranch) continue;
+            if(branch.IsNonResolvePopUp && turnOffPopUps == IsActive.Yes) continue;
+            if (branch == ignoreBranch) continue;
 
-            if (item.MyCanvas.enabled)
+            if (branch.MyCanvas.enabled)
             {
-                item.MyCanvas.enabled = false;
+                branch.MyCanvas.enabled = false;
             }
         }
     }
