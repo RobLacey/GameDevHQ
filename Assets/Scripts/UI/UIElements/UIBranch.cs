@@ -160,6 +160,12 @@ public partial class UIBranch : MonoBehaviour
         SetNewParentBranch(newParentController);
     }
 
+    public void SetNewParentBranch(UIBranch newParentController) 
+    {
+        if(newParentController is null) return;
+        if (!newParentController.IsAPopUpBranch()) MyParentBranch = newParentController;
+    }
+
     private void ClearOrRestoreHomeScreen()
     {
         if (MyBranchType == BranchType.HomeScreenUI && _uIHub.OnHomeScreen == false)
@@ -173,12 +179,6 @@ public partial class UIBranch : MonoBehaviour
         {
             HomeGroup.ClearHomeScreen(this, _turnOffPopUps);
         }
-    }
-
-    public void SetNewParentBranch(UIBranch newParentController) 
-    {
-        if(newParentController is null) return;
-        if (!newParentController.IsAPopUpBranch()) MyParentBranch = newParentController;
     }
 
     public void ResetHomeScreenBranch(UIBranch lastBranch)

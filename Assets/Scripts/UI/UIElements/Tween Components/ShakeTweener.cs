@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using NaughtyAttributes;
-using System;
 
 [System.Serializable]
 public class ShakeTweener 
 {
     [SerializeField]
-    [InfoBox("DOESN'T use Gloabal Tween Time. Changing settings DOESN'T work in RUNTIME")]
+    [InfoBox("DOESN'T use Global Tween Time. Changing settings DOESN'T work in RUNTIME")]
     [AllowNesting] public EffectType _shakeWhen = EffectType.In;
     [SerializeField] [AllowNesting] Vector3 _strength = new Vector3(0.2f, 0.2f, 0.2f);
     [SerializeField] [AllowNesting] [Range(0, 2)] float _duration = 0.5f;
@@ -19,16 +18,14 @@ public class ShakeTweener
 
     //Variables
     List<TweenSettings> _buildList = new List<TweenSettings>();
-    int _id;
-    Action<IEnumerator> _startCoroutine;
+    private Coroutine _coroutine;
 
-    public bool CheckInEffectType() { return _shakeWhen == EffectType.In || _shakeWhen == EffectType.Both; }
+    //Properties
+    private bool CheckInEffectType => _shakeWhen == EffectType.In || _shakeWhen == EffectType.Both;
+    private bool CheckOutEffectType => _shakeWhen == EffectType.Out || _shakeWhen == EffectType.Both;
 
-    public bool CheckOutEffectType() { return _shakeWhen == EffectType.Out || _shakeWhen == EffectType.Both;  }
-
-    public void SetUpShakeTween(List<TweenSettings> buildSettings, Action<IEnumerator> startCoroutine)
+    public void SetUpShakeTween(List<TweenSettings> buildSettings)
     {
-        _startCoroutine = startCoroutine;
         _buildList = buildSettings;
 
         foreach (var item in _buildList)
@@ -37,39 +34,38 @@ public class ShakeTweener
         }
     }
 
-    public void DoShake(PunchShakeTween scaleTween, TweenType isIn, TweenCallback tweenCallback = null)
+    public void DoShake(PunchShakeTween scaleTween, TweenType isIn, TweenCallback tweenCallback)
     {
-        if (scaleTween == PunchShakeTween.NoTween || scaleTween != PunchShakeTween.Shake) return;
-
+        if (scaleTween != PunchShakeTween.Shake) return;
         StopRunningTweens();
+        ResetForTween();
 
         if (isIn == TweenType.In)
         {
-            if (CheckInEffectType())
-            {
-                RewindTweens();
-                _startCoroutine.Invoke(ShakeSequence(tweenCallback));
-            }
-            else
-            {
-                RewindTweens();
-                tweenCallback.Invoke();
-            }
+            RunTween(tweenCallback, CheckInEffectType);
         }
         else
         {
-            if (CheckOutEffectType())
-            {
-                RewindTweens();
-                _startCoroutine.Invoke(ShakeSequence(tweenCallback));
-            }
-            else
-            {
-                tweenCallback.Invoke();
-            }
+            Debug.Log(isIn);
+
+            RunTween(tweenCallback,CheckOutEffectType);
         }
     }
 
+    private void RunTween(TweenCallback tweenCallback, bool checkForTween)
+    {
+        if (checkForTween)
+        {
+            StaticCoroutine.StopCoroutines(_coroutine);
+            _coroutine = StaticCoroutine.StartCoroutine(ShakeSequence(tweenCallback));
+        }
+        else
+        {
+            tweenCallback?.Invoke();
+        }
+    }
+
+    // ReSharper disable once IdentifierTypo
     private void StopRunningTweens()
     {
         foreach (var item in _buildList)
@@ -78,7 +74,8 @@ public class ShakeTweener
         }
     }
 
-    private void RewindTweens()
+    // ReSharper disable once IdentifierTypo
+    private void ResetForTween()
     {
         foreach (var item in _buildList)
         {
@@ -117,29 +114,18 @@ public class ShakeTweener
         yield return null;
     }
 
-    public void EndEffect(RectTransform rectTransform, bool isIn)
+    public void EndEffect(RectTransform rectTransform, IsActive isIn)
     {
-        if (isIn)
-        {
-            if (CheckInEffectType())
-            {
-                RewindTweens();
-                rectTransform.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut)
-                                        .SetId("shake" + rectTransform.gameObject.GetInstanceID())
-                                        .SetAutoKill(true)
-                                        .Play();
-            }
-        }
-        else
-        {
-            if (CheckOutEffectType())
-            {
-                RewindTweens();
-                rectTransform.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut)
-                                        .SetId("shake" + rectTransform.gameObject.GetInstanceID())
-                                        .SetAutoKill(true)
-                                        .Play();
-            }
-        }
+        if (isIn == IsActive.Yes) DoEndEffectTween(rectTransform, CheckInEffectType);
+    }
+
+    private void DoEndEffectTween(RectTransform rectTransform, bool checkForTween)
+    {
+        if (!checkForTween) return;
+        ResetForTween();
+        rectTransform.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut)
+                     .SetId("shake" + rectTransform.gameObject.GetInstanceID())
+                     .SetAutoKill(true)
+                     .Play();
     }
 }

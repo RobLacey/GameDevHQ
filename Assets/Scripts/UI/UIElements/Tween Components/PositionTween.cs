@@ -5,103 +5,111 @@ using DG.Tweening;
 using NaughtyAttributes;
 using System;
 
-[System.Serializable]
+[Serializable]
 public class PositionTween
 {
     [SerializeField] [AllowNesting] [HideIf("UsingGlobalTime")] float _inTime = 1;
     [SerializeField] [AllowNesting] [HideIf("UsingGlobalTime")] float _outTime = 1;
     [SerializeField] Ease _easeIn = Ease.Linear;
     [SerializeField] Ease _easeOut = Ease.Linear;
-    [SerializeField] [AllowNesting] bool _pixelSnapping = false;
+    [SerializeField] [AllowNesting] bool _pixelSnapping;
 
     //Variables
-    float _tweenTime;
-    Ease _tweenEase;
-    List<TweenSettings> _listToUse;
-    List<TweenSettings> _reversedBuild = new List<TweenSettings>();
-    List<TweenSettings> _buildList = new List<TweenSettings>();
-    int _id;
-    Action<IEnumerator> _startCoroutine;
-    Action<RectTransform> _effectCallback;
-    PositionTweenType _tweenTypeStore;
+    private float _tweenTime;
+    private Ease _tweenEase;
+    private List<TweenSettings> _listToUse;
+    private List<TweenSettings> _reversedBuild = new List<TweenSettings>();
+    private List<TweenSettings> _buildList = new List<TweenSettings>();
+
+    //Delegates
+    private Action<RectTransform> _endEffectTrigger;
+    private Coroutine _coroutine;
+    private TweenCallback _callback;
 
     //Properties
     public bool UsingGlobalTime { get; set; }
 
-    public Action SetUpPositionTweens(List<TweenSettings> buildObjectsList, 
-                                    Action<IEnumerator> startCoroutine, 
-                                    Action<RectTransform> effectCall)
+    // ReSharper disable once IdentifierTypo
+    public void SetUpPositionTweens(List<TweenSettings> buildObjectsList, Action<RectTransform> effectCall)
     {
-        _effectCallback = effectCall;
-        _startCoroutine = startCoroutine;
+        _endEffectTrigger = effectCall;
         _buildList = buildObjectsList;
-        foreach (var item in _buildList)
+        foreach (var uIObject in _buildList)
         {
-            item._element.anchoredPosition3D = item._tweenStartPosition;
+            uIObject._element.anchoredPosition3D = uIObject._tweenStartPosition;
         }
         _reversedBuild = new List<TweenSettings>(_buildList);
         _reversedBuild.Reverse();
-        return Reset;
     }
 
-    public void DoPositionTween(PositionTweenType positionTween, float globalTime, TweenType isIn, TweenCallback tweenCallback = null)
+    public void DoPositionTween(PositionTweenType positionTween, float tweenTime, 
+                                TweenType isIn, TweenCallback tweenCallback)
     {
-        _tweenTypeStore = positionTween;
-
         if (positionTween == PositionTweenType.NoTween) return;
-
         StopRunningTweens();
+        StaticCoroutine.StopCoroutines(_coroutine);
+        _callback = tweenCallback;
+        InTween(positionTween, isIn, tweenTime);
+        OutTween(positionTween, isIn, tweenTime);
+        InAndOutTween(positionTween, isIn, tweenTime);
+    }
 
-        if (positionTween == PositionTweenType.In)
+    private void InTween(PositionTweenType positionTween, TweenType isIn, float tweenTime)
+    {
+        if (positionTween != PositionTweenType.In) return;
+        if (isIn == TweenType.In)
         {
-            if (isIn == TweenType.In)
-            {
-                ResetStartPosition();
-                SetInTime(globalTime);
-                InSettings(positionTween);
-                _startCoroutine.Invoke(MoveSequence(tweenCallback));
-            }
-            else
-            {
-                tweenCallback.Invoke();
-            }
+            DoInTween(positionTween, tweenTime);
         }
-
-        if (positionTween == PositionTweenType.Out)
+        else
         {
-
-            if (isIn == TweenType.In)
-            {
-                ResetStartPosition();
-                tweenCallback.Invoke();
-            }
-            else
-            {
-                SetOutTime(globalTime);
-                OutSettings();
-                _startCoroutine.Invoke(MoveSequence(tweenCallback));
-            }
-        }
-
-        if (positionTween == PositionTweenType.InAndOut)
-        {
-            if (isIn == TweenType.In)
-            {
-                ResetStartPosition();
-                SetInTime(globalTime);
-                InSettings(positionTween);
-                _startCoroutine.Invoke(MoveSequence(tweenCallback));
-            }
-            else
-            {
-                SetOutTime(globalTime);
-                InOutSettings();
-                _startCoroutine.Invoke(MoveSequence(tweenCallback));
-            }
+            _callback?.Invoke();
         }
     }
 
-    public IEnumerator MoveSequence(TweenCallback callback)
+    private void OutTween(PositionTweenType positionTween, TweenType isIn, float tweenTime)
+    {
+        if (positionTween != PositionTweenType.Out) return;
+        if (isIn == TweenType.In)
+        {
+            ResetStartPosition();
+            _callback?.Invoke();
+        }
+        else
+        {
+            DoOutTween(_buildList, tweenTime);
+        }
+    }
+
+    private void InAndOutTween(PositionTweenType tweenType, TweenType isIn, float tweenTime)
+    {
+        if (tweenType != PositionTweenType.InAndOut) return;
+        if (isIn == TweenType.In)
+        {
+            DoInTween(tweenType, tweenTime);
+        }
+        else
+        {
+            DoOutTween(_reversedBuild, tweenTime);
+        }
+    }
+
+    private void DoInTween(PositionTweenType tweenType, float tweenTime)
+    {
+        ResetStartPosition();
+        SetInTime(tweenTime);
+        InTweenTargetSettings(tweenType);
+        _coroutine = StaticCoroutine.StartCoroutine(PositionTweenSequence());
+    }
+
+    private void DoOutTween(List<TweenSettings> outList, float tweenTime)
+    {
+        SetOutTime(tweenTime);
+        OutTweenTargetSettings(outList);
+        _coroutine = StaticCoroutine.StartCoroutine(PositionTweenSequence());
+    }
+
+    public IEnumerator PositionTweenSequence()
     {
         bool finished = false;
         int index = 0;
@@ -115,9 +123,9 @@ public class PositionTween
                                                 .SetId("position" + item._element.GetInstanceID())
                                                 .SetEase(_tweenEase).SetAutoKill(true)
                                                 .Play()
-                                                .OnComplete(callback);
+                                                .OnComplete(_callback);
                     yield return tween.WaitForCompletion();
-                    _effectCallback?.Invoke(item._element);
+                    _endEffectTrigger?.Invoke(item._element);
                 }
                 else
                 {
@@ -125,8 +133,7 @@ public class PositionTween
                                                 .SetId("position" + item._element.GetInstanceID())
                                                 .SetEase(_tweenEase).SetAutoKill(true)
                                                 .Play()
-                                                .OnComplete(() => _effectCallback?.Invoke(item._element));
-                    
+                                                .OnComplete(() => _endEffectTrigger?.Invoke(item._element));
                     yield return new WaitForSeconds(item._buildNextAfterDelay);
                     index++;
                 }
@@ -144,6 +151,7 @@ public class PositionTween
         }
     }
 
+    // ReSharper disable once IdentifierTypo
     private void StopRunningTweens()
     {
         foreach (var item in _buildList)
@@ -152,87 +160,38 @@ public class PositionTween
         }
     }
 
-    private void InSettings(PositionTweenType positionTween)
+    private void InTweenTargetSettings(PositionTweenType positionTween)
     {
         _tweenEase = _easeIn;
         _listToUse = _buildList;
 
         if (positionTween == PositionTweenType.InAndOut)
         {
-            foreach (var item in _listToUse)
+            foreach (var uIObject in _listToUse)
             {
-                item._moveTo = item._tweenMiddlePosition;
+                uIObject._moveTo = uIObject._tweenMiddlePosition;
             }
         }
         else
         {
-            foreach (var item in _listToUse)
+            foreach (var uIObject in _listToUse)
             {
-                item._moveTo = item._tweenTargetPosition;
+                uIObject._moveTo = uIObject._tweenTargetPosition;
             }
         }
     }
-    private void OutSettings()
+    private void OutTweenTargetSettings(List<TweenSettings> outList)
     {
         _tweenEase = _easeOut;
-        _listToUse = _buildList;
+        _listToUse = outList;
 
-        foreach (var item in _listToUse)
+        foreach (var uIObject in _listToUse)
         {
-            item._moveTo = item._tweenTargetPosition;
+            uIObject._moveTo = uIObject._tweenTargetPosition;
         }
     }
 
-    private void InOutSettings()
-    {
-        _tweenEase = _easeOut;
-        _listToUse = _reversedBuild;
+    private void SetInTime(float globalTime) => _tweenTime = globalTime > 0 ? globalTime : _inTime;
 
-        foreach (var item in _listToUse)
-        {
-            item._moveTo = item._tweenTargetPosition;
-        }
-    }
-
-    private void SetInTime(float globalTime) //Need to fix
-    {
-        if (globalTime > 0)
-        {
-            _tweenTime = globalTime;
-        }
-        else
-        {
-            _tweenTime = _inTime;
-        }
-    }
-
-    private void SetOutTime(float globalTime) //Need to fix
-    {
-        if (globalTime > 0)
-        {
-            _tweenTime = globalTime;
-        }
-        else
-        {
-            _tweenTime = _outTime;
-        }
-    }
-
-    private void Reset()
-    {
-        if (_tweenTypeStore == PositionTweenType.In)
-        {
-            foreach (var item in _buildList)
-            {
-                item._element.anchoredPosition3D = item._tweenTargetPosition;
-            }
-        }
-        if (_tweenTypeStore == PositionTweenType.InAndOut)
-        {
-            foreach (var item in _buildList)
-            {
-                item._element.anchoredPosition3D = item._tweenMiddlePosition;
-            }
-        }
-    }
+    private void SetOutTime(float globalTime) => _tweenTime = globalTime > 0 ? globalTime : _outTime;
 }

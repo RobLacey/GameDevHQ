@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using NaughtyAttributes;
-using System;
 
 [System.Serializable]
 public class PunchTweener
 {
     [SerializeField]
-    [InfoBox("DOESN'T use Gloabal Tween Time. Changing settings DOESN'T work in RUNTIME")]
+    [InfoBox("DOESN'T use Global Tween Time. Changing settings DOESN'T work in RUNTIME")]
     [AllowNesting] public EffectType _punchWhen = EffectType.In;
     [SerializeField] [AllowNesting] Vector3 _strength = new Vector3(0.1f, 0.1f, 0f);
     [SerializeField] [AllowNesting] [Range(0, 2)] float _duration = 0.5f;
@@ -18,57 +17,52 @@ public class PunchTweener
 
     //Variables
     List<TweenSettings> _buildList = new List<TweenSettings>();
-    int _id;
-    Action<IEnumerator> _startCoroutine;
+    private Coroutine _coroutine;
 
-    public bool CheckInEffectType() {  return _punchWhen == EffectType.In || _punchWhen == EffectType.Both;  }
+    //Properties
+    public bool CheckInEffectType => _punchWhen == EffectType.In || _punchWhen == EffectType.Both;
+    public bool CheckOutEffectType => _punchWhen == EffectType.Out || _punchWhen == EffectType.Both;
 
-    public bool CheckOutEffectType() { return _punchWhen == EffectType.Out || _punchWhen == EffectType.Both; }
-
-    public void SetUpPunchTween(List<TweenSettings> buildSettings, Action<IEnumerator> startCoroutine)
+    public void SetUpPunchTween(List<TweenSettings> buildSettings)
     {
-        _startCoroutine = startCoroutine;
         _buildList = buildSettings;
 
         foreach (var item in _buildList)
         {
-            item._startScale = item._element.transform.localScale;
+            item._punchStartscale = item._element.localScale;
         }
     }
 
-    public void DoPunch(PunchShakeTween scaleTween, TweenType isIn, TweenCallback tweenCallback = null)
+    public void DoPunch(PunchShakeTween scaleTween, TweenType isIn, TweenCallback tweenCallback)
     {
-        if (scaleTween == PunchShakeTween.NoTween || scaleTween != PunchShakeTween.Punch) return;
-
+        if (scaleTween != PunchShakeTween.Punch) return;
         StopRunningTweens();
+        ResetForTweens();
 
         if (isIn == TweenType.In)
         {
-            if (CheckInEffectType())
-            {
-                RewindTweens();
-                _startCoroutine.Invoke(PunchSequence(tweenCallback));
-            }
-            else
-            {
-                RewindTweens();
-                tweenCallback.Invoke();
-            }
+            RunTween(tweenCallback, CheckInEffectType);
         }
         else
         {
-            if (CheckOutEffectType())
-            {
-                RewindTweens();
-                _startCoroutine.Invoke(PunchSequence(tweenCallback));
-            }
-            else
-            {
-                tweenCallback.Invoke();
-            }
+            RunTween(tweenCallback,CheckOutEffectType);
+        }
+    }
+    
+    private void RunTween(TweenCallback tweenCallback, bool checkForTween)
+    {
+        if (checkForTween)
+        {
+            StaticCoroutine.StopCoroutines(_coroutine);
+            _coroutine = StaticCoroutine.StartCoroutine(PunchSequence(tweenCallback));
+        }
+        else
+        {
+            tweenCallback?.Invoke();
         }
     }
 
+    // ReSharper disable once IdentifierTypo
     private void StopRunningTweens()
     {
         foreach (var item in _buildList)
@@ -77,19 +71,20 @@ public class PunchTweener
         }
     }
 
-    private void RewindTweens()
+    // ReSharper disable once IdentifierTypo
+    private void ResetForTweens()
     {
         foreach (var item in _buildList)
         {
-            item._element.transform.localScale = item._startScale;
+            item._element.localScale = item._punchStartscale;
         }
     }
 
     public IEnumerator PunchSequence(TweenCallback tweenCallback = null)
     {
-        bool _finished = false;
+        bool finished = false;
         int index = 0;
-        while (!_finished)
+        while (!finished)
         {
             foreach (var item in _buildList)
             {
@@ -111,39 +106,23 @@ public class PunchTweener
                     index++;
                 }
             }
-            _finished = true;
+            finished = true;
         }
         yield return null;
     }
 
-    public void EndEffect(RectTransform rectTransform, bool isIn)
+    public void EndEffect(RectTransform rectTransform, IsActive isIn)
     {
-        if (isIn)
-        {
-            if (CheckInEffectType())
-            {
-                Debug.Log("Punch In or InOut");
-
-                RewindTweens();
-                rectTransform.DOPunchScale(_strength, _duration, _vibrato, _elasticity)
-                                        .SetId("punch" + rectTransform.gameObject.GetInstanceID())
-                                        .SetAutoKill(true)
-                                        .Play();
-            }
-        }
-        else
-        {
-            if (CheckOutEffectType())
-            {
-                Debug.Log("Punch Out");
-
-                RewindTweens();
-                rectTransform.DOPunchScale(_strength, _duration, _vibrato, _elasticity)
-                                        .SetId("punch" + rectTransform.gameObject.GetInstanceID())
-                                        .SetAutoKill(true)
-                                        .Play();
-            }
-        }
+        if (isIn == IsActive.Yes) DoEndEffect(rectTransform, CheckInEffectType);
     }
 
+    private void DoEndEffect(RectTransform rectTransform, bool checkTweenType)
+    {
+        if (!checkTweenType) return;
+        ResetForTweens();
+        rectTransform.DOPunchScale(_strength, _duration, _vibrato, _elasticity)
+                     .SetId("punch" + rectTransform.gameObject.GetInstanceID())
+                     .SetAutoKill(true)
+                     .Play();
+    }
 }

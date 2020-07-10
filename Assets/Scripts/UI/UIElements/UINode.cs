@@ -188,8 +188,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         if (AmSlider)        //TODO Need to check this still works properly
         {
             AmSlider.interactable = IsSelected;
-            if (!IsSelected)
-                InvokeClickEvents();
+            if (!IsSelected) InvokeClickEvents();
         }
         PressedActions();
     }

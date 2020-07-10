@@ -265,13 +265,15 @@
               </e>
               <e p="UIBranch Components" t="Include">
                 <e p="GroupList.cs" t="Include" />
+                <e p="UIBranch Partial Classes" t="Include">
+                  <e p="UIBranch.EditorScripts.cs" t="Include" />
+                  <e p="UIBranch.Properties.cs" t="Include" />
+                  <e p="UIBranch.TweenHandler.cs" t="Include" />
+                </e>
                 <e p="UIBranchGroups.cs" t="Include" />
                 <e p="UIPopUp.cs" t="Include" />
               </e>
               <e p="UIBranch.cs" t="Include" />
-              <e p="UIBranch.EditorScripts.cs" t="Include" />
-              <e p="UIBranch.Properties.cs" t="Include" />
-              <e p="UIBranch.TweenHandler.cs" t="Include" />
               <e p="UIHub Components" t="Include">
                 <e p="ChangeControl.cs" t="Include" />
                 <e p="HotKeys.cs" t="Include" />

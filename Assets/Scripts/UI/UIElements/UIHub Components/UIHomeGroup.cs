@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 
+/// <summary>
+/// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
+/// is for keyboard or controller. Differ from internal branch groups as involve Branches not Nodes
+/// </summary>
 public class UIHomeGroup
 {
     readonly UIBranch[] _homeGroup;
@@ -49,10 +53,7 @@ public class UIHomeGroup
     {
         for (int i = 0; i < _homeGroup.Length; i++)
         {
-            if (_homeGroup[i] == uIBranch)
-            {
-                _uIHub.HomeGroupIndex = i;
-            }
+            if (_homeGroup[i] == uIBranch) _uIHub.HomeGroupIndex = i;
         }
     }
 
@@ -63,25 +64,19 @@ public class UIHomeGroup
 
         foreach (var branch in _allBranches)
         {
-            if(branch.IsNonResolvePopUp && turnOffPopUps == IsActive.Yes) continue;
-            if (branch == ignoreBranch) continue;
-
-            if (branch.MyCanvas.enabled)
-            {
-                branch.MyCanvas.enabled = false;
-            }
+            if (!branch.MyCanvas.enabled || branch == ignoreBranch ) continue;
+            if(branch.IsNonResolvePopUp && turnOffPopUps == IsActive.No) continue;
+            branch.MyCanvas.enabled = false;
         }
     }
 
     public void RestoreHomeScreen()
     {
-        if (!_uIHub.OnHomeScreen)
+        if (_uIHub.OnHomeScreen) return;
+        foreach (var item in _homeGroup)
         {
-            foreach (var item in _homeGroup)
-            {
-                _uIHub.OnHomeScreen = true;
-                item.ResetHomeScreenBranch(_homeGroup[_uIHub.HomeGroupIndex]);
-            }
+            _uIHub.OnHomeScreen = true;
+            item.ResetHomeScreenBranch(_homeGroup[_uIHub.HomeGroupIndex]);
         }
     }
 }

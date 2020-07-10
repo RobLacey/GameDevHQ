@@ -7,27 +7,28 @@ public static class StaticCoroutine
     private class CoroutineHolder : MonoBehaviour { }
 
     //lazy singleton pattern. Note it's not set to dontdestroyonload - you usually want corotuines to stop when you load a new scene.
-    private static CoroutineHolder _runner;
-    private static CoroutineHolder runner
+    private static CoroutineHolder runner;
+    private static CoroutineHolder Runner
     {
         get
         {
-            if (_runner == null)
+            if (runner == null)
             {
-                _runner = new GameObject("Static Corouine Holder").AddComponent<CoroutineHolder>();
+                runner = new GameObject("Static Coroutine Holder").AddComponent<CoroutineHolder>();
             }
-            return _runner;
+            return runner;
         }
     }
 
-    public static Coroutine StartCoroutine(IEnumerator corotuine)
+    public static Coroutine StartCoroutine(IEnumerator coroutine)
     {
-        return runner.StartCoroutine(corotuine);
+        return Runner.StartCoroutine(coroutine);
     }
 
     public static void StopCoroutines(Coroutine coroutine)
     {
-        runner.StopCoroutine(coroutine);
+        if (coroutine is null) return;
+        Runner.StopCoroutine(coroutine);
     }
 }
 

@@ -94,6 +94,7 @@ public partial class UIHub : MonoBehaviour
     private void OnDisable()
     {
         UINode.DoCancel -= _myUiCancel.CancelOrBack;
+        _uiAudio.OnDisable();
     }
 
     private void CreateSubClasses()

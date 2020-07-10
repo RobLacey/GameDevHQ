@@ -2,6 +2,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// Class that handles switching control from the mouse to a keyboard or controller
+/// </summary>
 public class ChangeControl
 {
     private readonly UIHub _uIHub;
@@ -10,7 +13,7 @@ public class ChangeControl
     private bool _gameStarted;
 
     //Properties
-    public bool UsingMouse { get; private set; }
+    private bool UsingMouse { get; set; }
     public bool UsingKeysOrCtrl { get; set; }
     public UIBranch[] AllowKeyClasses { get; set; }
 
@@ -66,12 +69,12 @@ public class ChangeControl
             UsingKeysOrCtrl = true;
             UsingMouse = false;
             SetAllowKeys();
-            SetHighlightedForKeys();
+            SetNextHighlightedForKeys();
         }
         EventSystem.current.SetSelectedGameObject(_uIHub.LastHighlighted.gameObject);
     }
 
-    private void SetHighlightedForKeys()
+    private void SetNextHighlightedForKeys()
     {
         if (_uIHub.GameIsPaused || _uIHub.ActivePopUpsResolve.Count > 0)
         {

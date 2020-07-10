@@ -22,11 +22,16 @@ public class TweenSettings
     [HideInInspector] public Vector3 _punchStartscale;
     [HideInInspector] public Vector3 _shakeStartScale;
 
+    //EditorScripts
     private bool PositionTween { get; set; }
     private bool MiddleTween { get; set; }
     public bool ScaleTween { get; set; }
     public bool RotationTween { get; set; }
 
+    /// <summary>
+    /// Helper Method to set up Property draws correctly
+    /// </summary>
+    /// <param name="positionTween"></param>
     public void SetPositionTween(PositionTweenType positionTween)
     {
         if (positionTween != PositionTweenType.NoTween)

@@ -21,16 +21,17 @@ public class ScaleTweener
     List<TweenSettings> _buildList = new List<TweenSettings>();
     int _id;
     Action<IEnumerator> _startCoroutine;
-    Action<RectTransform> _effectCallback;
+    Action<RectTransform> _inCallback;
 
 
     //Properties
     public bool UsingGlobalTime { get; set; }
 
     public Action SetUpScaleTweens(List<TweenSettings> buildObjectsList, 
-                                 Action<IEnumerator> startCoroutine, Action<RectTransform> effectCall)
+                                 Action<IEnumerator> startCoroutine, 
+                                 Action<RectTransform> inEffectCall)
     {
-        _effectCallback = effectCall;
+        _inCallback = inEffectCall;
         _startCoroutine = startCoroutine;
         _buildList = buildObjectsList;
 
@@ -43,7 +44,7 @@ public class ScaleTweener
         return Reset;
     }
 
-    public void DoScaleTween(ScaleTween scaleTweenType, float globalTime, TweenType isIn, TweenCallback tweenCallback = null)
+    public void DoScaleTween(ScaleTween scaleTweenType, float globalTime, TweenType isIn, TweenCallback tweenCallback)
     {
         if (scaleTweenType == ScaleTween.NoTween) return;
 
@@ -97,7 +98,7 @@ public class ScaleTweener
         }
     }
 
-    public IEnumerator ScaleSequence(TweenCallback tweenCallback = null)
+    private IEnumerator ScaleSequence(TweenCallback tweenCallback)
     {
         bool finished = false;
         int index = 0;
@@ -113,7 +114,7 @@ public class ScaleTweener
                                                 .Play()
                                                 .OnComplete(tweenCallback);
                     yield return tween.WaitForCompletion();
-                    _effectCallback?.Invoke(item._element);
+                    _inCallback?.Invoke(item._element);
                 }
                 else
                 {
@@ -121,7 +122,7 @@ public class ScaleTweener
                                                 .SetId("scale" + item._element.GetInstanceID())
                                                 .SetEase(_tweenEase).SetAutoKill(true)
                                                 .Play()
-                                                .OnComplete(() => _effectCallback?.Invoke(item._element));
+                                                .OnComplete(() => _inCallback?.Invoke(item._element));
 
                     yield return new WaitForSeconds(item._buildNextAfterDelay);
                     index++;
@@ -209,5 +210,4 @@ public class ScaleTweener
             item._element.transform.localScale = Vector3.one;
         }
     }
-
 }
