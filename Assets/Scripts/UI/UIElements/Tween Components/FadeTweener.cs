@@ -1,11 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using DG.Tweening;
 using NaughtyAttributes;
 using System;
+using System.Collections;
 
-[System.Serializable]
+// ReSharper disable IdentifierTypo
+[Serializable]
 public class FadeTweener
 {
     [SerializeField] [AllowNesting] [HideIf("UsingGlobalTime")] float _inTime = 1;
@@ -13,123 +13,126 @@ public class FadeTweener
     [SerializeField] Ease _fadeEase = Ease.Linear;
 
     //Variables
-    float _startAlpha;
-    float _tweenTime;
-    public Tweener _canvasInTweener;
-    public Tweener _canvasOutTweener;
-    int _id;
+    private float _startAlpha;
+    private FadeTween _tweenType;
+    private float _tweenTime;
+    private float _globalTime;
+    private TweenCallback _callback;
+    protected Coroutine _coroutine;
 
-    //Delegates & Properties
     public CanvasGroup MyCanvasGroup { get; set; }
     public bool UsingGlobalTime { get; set; }
 
-    public CanvasRenderer[] MyCanvases { get; set; }
-
-    public Action SetUpFadeTweens(FadeTween fadeTween)
+    public void SetUpTweens(FadeTween fadeTween, CanvasGroup canvasGroup)
     {
+        MyCanvasGroup = canvasGroup;
+        
         if (fadeTween == FadeTween.FadeIn || fadeTween == FadeTween.FadeInAndOut)
         {
             MyCanvasGroup.alpha = 0;
             _startAlpha = 0;
         }
-        if (fadeTween == FadeTween.FadeOut)
+        else
         {
             MyCanvasGroup.alpha = 1;
             _startAlpha = 1;
         }
-        return Reset;
     }
 
-    public void DoCanvasFade(FadeTween fadeTween, float globalTime, TweenType isIn, TweenCallback tweenCallback = null)
+    public void StartTween(Enum tweenType, float tweenTime, TweenType isIn, TweenCallback tweenCallback)
     {
-        if (fadeTween == FadeTween.NoTween) return;
-
+        _tweenType = (FadeTween) tweenType;
+        if (_tweenType == FadeTween.NoTween) return;
         StopRunningTweens();
-
-        if (fadeTween == FadeTween.FadeIn)
+        StaticCoroutine.StopCoroutines(_coroutine);
+        _callback = tweenCallback;
+        _globalTime = tweenTime;
+        
+        switch (_tweenType)
         {
-            if (isIn == TweenType.In)
-            {
-                MyCanvasGroup.alpha = _startAlpha;
-                SetInTime(globalTime);
-                Tween(1, tweenCallback);
-            }
-            else
-            {
-                tweenCallback.Invoke();
-            }
+            case FadeTween.FadeIn:
+                InTween(isIn);
+                break;
+            case FadeTween.FadeOut:
+                OutTween(isIn);
+                break;
+            case FadeTween.FadeInAndOut:
+                InAndOutTween(isIn);
+                break;
+        }
+    }
 
-        }
-        if (fadeTween == FadeTween.FadeOut)
+    private void InTween(TweenType isIn)
+    {
+        if (isIn == TweenType.In)
         {
-            if (isIn == TweenType.In)
-            {
-                MyCanvasGroup.alpha = _startAlpha;
-                tweenCallback.Invoke();
-            }
-            else
-            {
-                SetOutTime(globalTime);
-                Tween(0, tweenCallback);
-            }
+            DoInTween();
         }
-        if (fadeTween == FadeTween.FadeInAndOut)
+        else
         {
-            if (isIn == TweenType.In)
-            {
-                MyCanvasGroup.alpha = _startAlpha;
-                SetInTime(globalTime);
-                Tween(1, tweenCallback);
-            }
-            else
-            {
-                SetOutTime(globalTime);
-                Tween(0, tweenCallback);
-            }
+            RewindTweens();
+            _callback.Invoke();
+        }
+    }
+    
+    private void OutTween(TweenType isIn)
+    {
+        if (isIn == TweenType.In)
+        {
+            RewindTweens();
+            _callback.Invoke();
+        }
+        else
+        {
+            DoOutTween();
+        }
+    }
+    
+    private void InAndOutTween(TweenType isIn)
+    {
+        if (isIn == TweenType.In)
+        {
+            DoInTween();
+        }
+        else
+        {
+            DoOutTween();
+        }
+    }
 
-        }
+    private void DoInTween()
+    {
+        SetInTime();
+        _coroutine = StaticCoroutine.StartCoroutine(TweenSequence(1));
+    }
+
+    private void DoOutTween()
+    {
+        SetOutTime();
+        _coroutine = StaticCoroutine.StartCoroutine(TweenSequence(0));
+    }
+    
+    private IEnumerator TweenSequence(float targetAlpha)
+    {
+        MyCanvasGroup.DOFade(targetAlpha, _tweenTime)
+                     .SetId($"fade{MyCanvasGroup.GetInstanceID()}")
+                     .SetEase(_fadeEase).SetAutoKill(true)
+                     .Play()
+                     .OnComplete(_callback);
+        yield return null;
+    }
+
+    private void RewindTweens()
+    {
+        MyCanvasGroup.alpha = _startAlpha;
     }
 
     private void StopRunningTweens()
     {
-        DOTween.Kill("fade" + MyCanvasGroup.GetInstanceID());
+        DOTween.Kill($"fade{MyCanvasGroup.GetInstanceID()}");
     }
 
-    private void Tween(float targetAlpha, TweenCallback tweenCallback)
-    {
-        MyCanvasGroup.DOFade(targetAlpha, _tweenTime)
-                                .SetId("fade" + MyCanvasGroup.GetInstanceID())
-                                .SetEase(_fadeEase).SetAutoKill(true)
-                                .Play()
-                                .OnComplete(tweenCallback);
-    }
-
-    private void SetInTime(float globalTime) 
-    {
-        if (globalTime > 0)
-        {
-            _tweenTime = globalTime;
-        }
-        else
-        {
-            _tweenTime = _inTime;
-        }
-    }
-
-    private void SetOutTime(float globalTime) 
-    {
-        if (globalTime > 0)
-        {
-            _tweenTime = globalTime;
-        }
-        else
-        {
-            _tweenTime = _outTime;
-        }
-    }
-
-    private void Reset()
-    {
-        MyCanvasGroup.alpha = 1;
-    }
+    private void SetInTime() => _tweenTime = _globalTime > 0 ? _globalTime : _inTime;
+    
+    private void SetOutTime() => _tweenTime = _globalTime > 0 ? _globalTime : _outTime;
 }

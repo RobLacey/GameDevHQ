@@ -251,6 +251,7 @@
                 <e p="RotateTween.cs" t="Include" />
                 <e p="ScaleTweener.cs" t="Include" />
                 <e p="ShakeTweener.cs" t="Include" />
+                <e p="TweenBase.cs" t="Include" />
                 <e p="TweenSettings.cs" t="Include" />
                 <e p="UITweener.cs" t="Include" />
                 <e p="UITweener.EditorScripts.cs" t="Include" />

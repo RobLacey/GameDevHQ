@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -12,7 +11,7 @@ public partial class UITweener : MonoBehaviour
 {
     [SerializeField] [ReorderableList] [Label("List Of Objects To Apply Effects To")] 
     List<TweenSettings> _buildObjectsList = new List<TweenSettings>();
-    [InfoBox("Add PARENT to apply effects as a whole or add each CHILD for a build effect. List is DRAG & DROP orderable", order = 0)]
+    [InfoBox("Add PARENT to apply effects as a whole or add each CHILD for a build effect. List is DRAG & DROP", order = 0)]
     [Header("Effect Tween Settings", order = 1)] [HorizontalLine(4, color: EColor.Blue, order = 2)]
     [Header("Time Settings", order = 3)]
     [SerializeField] IsActive _useGlobalTime = IsActive.No;
@@ -57,13 +56,6 @@ public partial class UITweener : MonoBehaviour
 
     public void OnAwake() 
     {
-        _fadeTween.MyCanvases = GetComponentsInChildren<CanvasRenderer>();
-        _fadeTween.MyCanvasGroup = GetComponent<CanvasGroup>();
-        SetUpTweeners();
-    }
-
-    private void SetUpTweeners()
-    {
         SetUpPositionTween();
         SetUpRotationTween();
         SetUpPunchShakeTween();
@@ -73,20 +65,23 @@ public partial class UITweener : MonoBehaviour
 
     private void SetUpPositionTween()
     {
-        if (_positionTween != PositionTweenType.NoTween)
-        {
-            _counter++;
-            _posTween.SetUpPositionTweens(_buildObjectsList, InEndEffect);
-        }
+        if (_positionTween == PositionTweenType.NoTween) return;
+        _counter++;
+        _posTween.SetUpTweens(_buildObjectsList, InEndEffect);
     }
 
     private void SetUpRotationTween()
     {
-        if (_rotationTween != RotationTweenType.NoTween)
-        {
-            _counter++;
-            _rotateTween.SetUpRotateTweens(_buildObjectsList, StartCoroutines, InEndEffect);
-        }
+        if (_rotationTween == RotationTweenType.NoTween) return;
+        _counter++;
+        _rotateTween.SetUpTweens(_buildObjectsList, InEndEffect);
+    }
+
+    private void SetUpScaleTween()
+    {
+        if (_scaleTransition == ScaleTween.NoTween) return;
+        _counter++;
+        _scaleTween.SetUpTweens(_buildObjectsList, InEndEffect);
     }
 
     private void SetUpPunchShakeTween()
@@ -103,22 +98,11 @@ public partial class UITweener : MonoBehaviour
         }
     }
 
-    private void SetUpScaleTween()
-    {
-        if (_scaleTransition != ScaleTween.NoTween)
-        {
-            _counter++;
-            _scaleTween.SetUpScaleTweens(_buildObjectsList, StartCoroutines, InEndEffect);
-        }
-    }
-
     private void SetUpFadeTween()
     {
-        if (_canvasGroupFade != FadeTween.NoTween)
-        {
-            _counter++;
-            _fadeTween.SetUpFadeTweens(_canvasGroupFade);
-        }
+        if (_canvasGroupFade == FadeTween.NoTween) return;
+        _counter++;
+        _fadeTween.SetUpTweens(_canvasGroupFade, GetComponent<CanvasGroup>());
     }
 
     public void ActivateTweens(Action callBack)
@@ -154,21 +138,16 @@ public partial class UITweener : MonoBehaviour
 
     private void DoTweens(float tweenTime, TweenType tweenType, TweenCallback endaction)
     {
-        _posTween.DoPositionTween(_positionTween, tweenTime, tweenType, endaction);
-        _scaleTween.DoScaleTween(_scaleTransition, tweenTime, tweenType, endaction);
-        _rotateTween.RotationTween(_rotationTween, tweenTime, tweenType, endaction);
-        _fadeTween.DoCanvasFade(_canvasGroupFade, tweenTime, tweenType, endaction);
+        _posTween.StartTween(_positionTween, tweenTime, tweenType, endaction);
+        _scaleTween.StartTween(_scaleTransition, tweenTime, tweenType, endaction);
+        _rotateTween.StartTween(_rotationTween, tweenTime, tweenType, endaction);
+        _fadeTween.StartTween(_canvasGroupFade, tweenTime, tweenType, endaction);
         
         if (_shakeOrPunchAtEnd == IsActive.No)
         {
             _punchTween.DoPunch(_punchShakeTween, tweenType, endaction);
             _shakeTween.DoShake(_punchShakeTween, tweenType, endaction);
         }
-    }
-
-    private void StartCoroutines(IEnumerator enumerator) // todo Replcae with corutine starter method
-    {
-        StartCoroutine(enumerator);
     }
     
     private void InTweenEndAction()
@@ -186,6 +165,7 @@ public partial class UITweener : MonoBehaviour
         _endOfTweenAction.Invoke();
         _finishedTweenCallback.Invoke();
     }
+    
     private float TimeToUseForTween(float timeToUse)
     {
         if (_useGlobalTime == IsActive.Yes)

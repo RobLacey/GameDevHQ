@@ -29,7 +29,7 @@ public class PunchTweener
 
         foreach (var item in _buildList)
         {
-            item._punchStartscale = item._element.localScale;
+            item._punchStartScale = item._element.localScale;
         }
     }
 
@@ -76,7 +76,7 @@ public class PunchTweener
     {
         foreach (var item in _buildList)
         {
-            item._element.localScale = item._punchStartscale;
+            item._element.localScale = item._punchStartScale;
         }
     }
 
