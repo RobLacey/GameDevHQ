@@ -24,7 +24,7 @@ public class UIToggles
         {
             if (node.Function == ButtonFunction.ToggleGroup)
             {
-                if (node != _myNode && _myNode.ID == node.ID)
+                if (node != _myNode && _myNode.Id == node.Id)
                 {
                     _toggleGroupMembers.Add(node);
                 }

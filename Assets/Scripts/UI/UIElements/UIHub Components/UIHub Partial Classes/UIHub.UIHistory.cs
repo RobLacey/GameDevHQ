@@ -38,8 +38,8 @@ public partial class UIHub
 
     private void WhenNotOnHomeScreen()
     {
-        if (!LastSelected.ChildBranch) return; //Stops Tween Error when no child
-        if (LastSelected.ChildBranch.MyBranchType == BranchType.Internal) LastSelected.Deactivate();
+        if (!LastSelected.HasChildBranch) return; //Stops Tween Error when no child
+        if (LastSelected.HasChildBranch.MyBranchType == BranchType.Internal) LastSelected.Deactivate();
     }
 
     private void WhenOnHomeScreen(UINode newNode)

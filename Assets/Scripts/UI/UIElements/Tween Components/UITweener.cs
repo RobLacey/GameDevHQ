@@ -106,32 +106,34 @@ public partial class UITweener : MonoBehaviour
     }
 
     public void ActivateTweens(Action callBack)
-    {
+    {        
+        _finishedTweenCallback = callBack;
+
         if (_counter <= 0)
         {
             InTweenEndAction();
             return;
         }
-        SetTweensUp(callBack, _globalInTime, TweenType.In, InTweenEndAction, IsActive.Yes);
+        SetTweensUp(_globalInTime, TweenType.In, InTweenEndAction, IsActive.Yes);
     }
 
     public void DeactivateTweens(Action callBack)
     {
+        _finishedTweenCallback = callBack;
         if (_counter <= 0)
         {
             OutTweenEndAction();
             _endOfTweenAction.Invoke();
             return;
         }
-        SetTweensUp(callBack, _globalOutTime, TweenType.Out, OutTweenEndAction, IsActive.No);
+        SetTweensUp(_globalOutTime, TweenType.Out, OutTweenEndAction, IsActive.No);
     }
 
-    private void SetTweensUp(Action callBack, float globalTime, TweenType tweenType, 
+    private void SetTweensUp(float globalTime, TweenType tweenType, 
                          TweenCallback callback, IsActive allowInTweenEffect)
     {
         StopAllCoroutines();
         _effectCounter = _counter;
-        _finishedTweenCallback = callBack;
         _doEffectOnInTween = allowInTweenEffect;
         DoTweens(TimeToUseForTween(globalTime), tweenType, callback);
     }
@@ -154,16 +156,16 @@ public partial class UITweener : MonoBehaviour
     {
         _effectCounter--;
         if (_effectCounter > 0) return;
-        _middleOfTweenAction.Invoke();
-        _finishedTweenCallback.Invoke();
+        _middleOfTweenAction?.Invoke();
+        _finishedTweenCallback?.Invoke();
     }
 
     private void OutTweenEndAction()
     {
         _effectCounter--;
         if (_effectCounter > 0) return;
-        _endOfTweenAction.Invoke();
-        _finishedTweenCallback.Invoke();
+        _endOfTweenAction?.Invoke();
+        _finishedTweenCallback?.Invoke();
     }
     
     private float TimeToUseForTween(float timeToUse)

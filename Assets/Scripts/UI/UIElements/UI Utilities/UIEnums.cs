@@ -67,6 +67,7 @@ public enum Setting
 
 public enum NavigationType { RightAndLeft, UpAndDown, AllDirections, None }
 
+[Flags]
 public enum AccessoryEventType
 {
     None = 0,
@@ -86,6 +87,7 @@ public enum ToolTipAnchor
 
 public enum TooltipType { Fixed, Follow }
 
+[Flags]
 public enum EventType
 {
     None = 0,

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
@@ -9,39 +7,50 @@ using NaughtyAttributes;
 [RequireComponent(typeof(Slider))]
 [RequireComponent(typeof(RectTransform))]
 
-public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
-                                     IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
+public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
+                              IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
 {
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] [Label("Is Cancel or Back Button")] bool _isCancelOrBackButton;
-    [SerializeField] [ShowIf("_isCancelOrBackButton")] EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
-    [SerializeField] [HideIf("_isCancelOrBackButton")] [ValidateInput("SetChildBranch")] [Label("Button/Toggle Function")] 
+    [SerializeField] [Label("Is Cancel or Back Button")] 
+    bool _isCancelOrBack;
+    [SerializeField] [ShowIf("_isCancelOrBack")] 
+    EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
+    [SerializeField] [HideIf("_isCancelOrBack")] [ValidateInput("SetChildBranch")] [Label("Button/Toggle Function")] 
     ButtonFunction _buttonFunction;
-    [SerializeField] [HideIf(EConditionOperator.Or, "GroupSettings", "_isCancelOrBackButton")] 
-    ToggleGroup _toggleGroupID = ToggleGroup.None;
-    [SerializeField] [HideIf(EConditionOperator.Or, "GroupSettings", "_isCancelOrBackButton")] bool _startAsSelected;
+    [SerializeField] [HideIf(EConditionOperator.Or, "GroupSettings", "_isCancelOrBack")] 
+    ToggleGroup _toggleGroupId = ToggleGroup.None;
+    [SerializeField] [HideIf(EConditionOperator.Or, "GroupSettings", "_isCancelOrBack")] 
+    bool _startAsSelected;
 
     [Header("Settings (Click Arrows To Expand)")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [EnumFlags] [Label("UI Functions To Use")] [SerializeField] public Setting _enabledFunctions;
-    [SerializeField] [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")] UINavigation _navigation;
-    [SerializeField] [Label("Colour Settings")] [ShowIf("NeedColour")] UIColour _colours;
-    [SerializeField] [Label("Invert Colour when Highlighted or Selected")] [ShowIf("NeedInvert")] UIInvertColours _invertColourCorrection;
-    [SerializeField] [Label("Swap Images, Text or SetUp Toggle Image List")] [ShowIf("NeedSwap")] UISwapper _swapImageOrText;
-    [SerializeField] [Label("Size And Position Effect Settings")] [ShowIf("NeedSize")] UISizeAndPosition _sizeAndPos;
-    [SerializeField] [Label("Accessories, Outline Or Shadow Settings")] [ShowIf("NeedAccessories")] UIAccessories _accessories;
-    [SerializeField] [Label("Audio Settings")] [ShowIf("NeedAudio")] UIAudio _audio;
-    [SerializeField] [Label("Tooltip Settings")] [ShowIf("NeedTooltip")] UITooltip _tooltips;
-    [SerializeField] [Label("Event Settings")] [ShowIf("NeedEvents")] UIEvents _events;
+    [SerializeField] [EnumFlags] [Label("UI Functions To Use")] 
+    public Setting _enabledFunctions;
+    [SerializeField] [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")] 
+    UINavigation _navigation;
+    [SerializeField] [Label("Colour Settings")] [ShowIf("NeedColour")] 
+    UIColour _colours;
+    [SerializeField] [Label("Invert Colour when Highlighted or Selected")] [ShowIf("NeedInvert")] 
+    UIInvertColours _invertColourCorrection;
+    [SerializeField] [Label("Swap Images, Text or SetUp Toggle Image List")] [ShowIf("NeedSwap")] 
+    UISwapper _swapImageOrText;
+    [SerializeField] [Label("Size And Position Effect Settings")] [ShowIf("NeedSize")] 
+    UISizeAndPosition _sizeAndPos;
+    [SerializeField] [Label("Accessories, Outline Or Shadow Settings")] [ShowIf("NeedAccessories")] 
+    UIAccessories _accessories;
+    [SerializeField] [Label("Audio Settings")] [ShowIf("NeedAudio")] 
+    UIAudio _audio;
+    [SerializeField] [Label("Tooltip Settings")] [ShowIf("NeedTooltip")] 
+    UITooltip _tooltips;
+    [SerializeField] [Label("Event Settings")] [ShowIf("NeedEvents")] 
+    UIEvents _events;
 
     //Variables
     private bool _isDisabled;
     private RectTransform _rectForTooltip;
     private UIToggles _toggleGroups;
-    private bool _isToggleGroup;
-    private bool _isToggleNotLinked;
-    
+    private bool _pointerOver;
 
     //Delegates
     private Action<UIEventTypes, bool> _startUiFunctions;
@@ -50,14 +59,17 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     //Properties & Enums
     public Slider AmSlider { get; private set; }
     public ButtonFunction Function => _buttonFunction;
-    public ToggleGroup ID => _toggleGroupID;
+    public ToggleGroup Id => _toggleGroupId;
     public UIBranch MyBranch { get; private set; }
     public bool IsSelected { get; set; }
-    private bool IsCancel => _isCancelOrBackButton;
-    public UIBranch ChildBranch => _navigation.Child;
-    public IUINavigation Navigation { get; private set; }
-    public IUIAudio Audio { get; private set; }
-    //public bool AllowKeys { get; set; } = false;
+    public UIBranch HasChildBranch => _navigation.Child;
+    public UINavigation Navigation => _navigation;
+    public UIAudio Audio => _audio;
+    private bool NotActiveSlider => IsDisabled || _isCancelOrBack || !AmSlider || MyBranch.AllowKeys;
+    private bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
+    private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.Toggle_NotLinked;
+    private bool CanGoToChildBranch => HasChildBranch & _navigation.CanNaviagte;
+
 
     public bool IsDisabled
     {
@@ -69,49 +81,22 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
     }
 
-    //Editor Scripts
-    #region Editor Scripts
-
-    private bool SetChildBranch(ButtonFunction buttonFunction) 
-    {
-        if (buttonFunction == ButtonFunction.ToggleGroup
-            || buttonFunction == ButtonFunction.Toggle_NotLinked)
-        {
-            _navigation.NotAToggle = true; 
-        }
-        else
-        {
-            _navigation.NotAToggle = false;
-        }
-        return true;
-    }
-    private bool UseNavigation() { return (_enabledFunctions & Setting.NavigationAndOnClick) != 0; }
-    private bool NeedColour() { return (_enabledFunctions & Setting.Colours) != 0;  }
-    private bool NeedSize(){ return (_enabledFunctions & Setting.SizeAndPosition) != 0; } 
-    private bool NeedInvert(){ return (_enabledFunctions & Setting.InvertColourCorrection) != 0; } 
-    private bool NeedSwap() { return (_enabledFunctions & Setting.SwapImageOrText) != 0; } 
-    private bool NeedAccessories(){ return (_enabledFunctions & Setting.Accessories) != 0; } 
-    private bool NeedAudio(){ return (_enabledFunctions & Setting.Audio) != 0; } 
-    private bool NeedTooltip(){ return (_enabledFunctions & Setting.TooplTip) != 0; } 
-    private bool NeedEvents(){ return (_enabledFunctions & Setting.Events) != 0; } 
-    private bool GroupSettings() { return _buttonFunction != ButtonFunction.ToggleGroup; }
-
-    #endregion
-
     private void Awake()
     {
-        _audio.OnAwake(_enabledFunctions);
         _rectForTooltip = GetComponent<RectTransform>();
         AmSlider = GetComponent<Slider>();
         MyBranch = GetComponentInParent<UIBranch>();
-        _colours.OnAwake(gameObject.GetInstanceID(), _enabledFunctions); //Do I need This
+        SetUpUiFunctions();
+        _toggleGroups = new UIToggles(this, _buttonFunction, _startAsSelected);
+    }
+
+    private void SetUpUiFunctions()
+    {
+        _audio.OnAwake(_enabledFunctions);
+        _colours.OnAwake(gameObject.GetInstanceID(), _enabledFunctions);
         _tooltips.OnAwake(_enabledFunctions, gameObject.name);
         _events.OnAwake(_enabledFunctions);
         _navigation.OnAwake(this, MyBranch, _enabledFunctions);
-        if (AmSlider) AmSlider.interactable = false;
-        _toggleGroups = new UIToggles(this, _buttonFunction, _startAsSelected);
-        Navigation = _navigation;
-        Audio = _audio;
     }
 
     private void OnEnable()
@@ -132,65 +117,17 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     private void Start()
     {
+        if (AmSlider) AmSlider.interactable = false;
         _navigation.SetChildsParentBranch();
         _toggleGroups.SetUpToggleGroup(MyBranch.ThisGroupsUiNodes);
-        _isToggleGroup = _buttonFunction == ButtonFunction.ToggleGroup;
-        _isToggleNotLinked = _buttonFunction == ButtonFunction.Toggle_NotLinked;
-        if (MyBranch.IsAPopUpBranch() || MyBranch.IsPause())
-        {
+        
+        if (MyBranch.IsAPopUpBranch() || MyBranch.IsPause()) 
             _escapeKeyFunction = EscapeKey.BackOneLevel;
-        }
 
         if (_colours.CanActivate && _colours.NoSettings)
         {
             Debug.LogError("No Image or Text set on Colour settings on " + gameObject.name);
         }
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        if (IsDisabled || MyBranch.AllowKeys) return;
-        TriggerEnterEvent();
-        _navigation.PointerEnter(eventData);
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        if (IsDisabled || MyBranch.AllowKeys) return;
-        TriggerExitEvent();
-        _navigation.PointerExit(eventData);
-    }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        if (IsDisabled || MyBranch.AllowKeys) return;
-        PressedActions();
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        if (IsDisabled || IsCancel || !AmSlider || MyBranch.AllowKeys) return;
-
-        InvokeClickEvents();
-        TurnNodeOnOff();
-    }
-
-    public void OnMove(AxisEventData eventData)
-    {
-        _navigation.KeyBoardOrController(eventData);
-    }
-
-    public void OnSubmit(BaseEventData eventData)
-    {
-        if (IsDisabled) return;
-        if (_buttonFunction == ButtonFunction.HoverToActivate) return;
-
-        if (AmSlider)        //TODO Need to check this still works properly
-        {
-            AmSlider.interactable = IsSelected;
-            if (!IsSelected) InvokeClickEvents();
-        }
-        PressedActions();
     }
 
     private void InvokeClickEvents()
@@ -200,12 +137,15 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         _events._OnToggleEvent?.Invoke(IsSelected);
     }
 
-
     public void SetNodeAsActive()
     {
-        if (IsDisabled) { HandleIfDisabled(); return; }
+        if (IsDisabled)
+        {
+            HandleIfDisabled(); 
+            return;
+        }
 
-        if (/*MyBranch.HighlightFirstOption &&*/ MyBranch.AllowKeys)
+        if ( MyBranch.AllowKeys)
         {
             SetAsHighlighted();
         }
@@ -220,7 +160,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         if (IsDisabled) return;
         HandleAudio();
 
-        if (_isCancelOrBackButton) 
+        if (_isCancelOrBack) 
         {
             DoCancel?.Invoke(_escapeKeyFunction); 
             return; 
@@ -240,8 +180,8 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
         if (IsSelected)
         {
-            if (_isToggleGroup && MyBranch.LastHighlighted == this) return;
-            if (_isToggleNotLinked) { IsSelected = false; }
+            if (IsToggleGroup && MyBranch.LastHighlighted == this) return;
+            if (IsToggleNotLinked) { IsSelected = false; }
             Deactivate();
             MyBranch.SaveLastSelected(MyBranch.MyParentBranch.LastSelected);
         }
@@ -260,30 +200,25 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         if (!IsSelected) return;
         
-        if (ChildBranch && _navigation.CanNaviagte)
+        if (CanGoToChildBranch)
         {
             IsSelected = false;
             _navigation.TurnOffChildren();
         }
-        SetNotHighlighted();
-
+        if(!_pointerOver) SetNotHighlighted();
         SetSlider(false);
     }
 
     private void Activate()
     {
         IsSelected = true;
-        if (!AmSlider)  { InvokeClickEvents(); }
-        _tooltips.HideToolTip();
         StopAllCoroutines();
+        _tooltips.HideToolTip();
         SetSlider(true);
-
-        if (ChildBranch && _navigation.CanNaviagte)
-        {
-            MoveToChildBranch();
-        }
+        if(!AmSlider) InvokeClickEvents();
+        if (CanGoToChildBranch) MoveToChildBranch();
     }
-
+    
     private void MoveToChildBranch()
     {
         MyBranch.SaveLastSelected(this);
@@ -303,7 +238,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         if (IsDisabled) return;
         _colours.SetColourOnEnter(IsSelected);
         _startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
-        StartCoroutine(StartToolTip());
+        StartCoroutine(_tooltips.StartToolTip(MyBranch, _rectForTooltip));
     }
 
     public void SetNotHighlighted()
@@ -315,13 +250,28 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
         if (IsSelected)
         {
-            _startUiFunctions.Invoke(UIEventTypes.Selected, IsSelected);
+            if (_pointerOver)
+            {
+                _startUiFunctions.Invoke(UIEventTypes.Selected, IsSelected);
+            }
+            else
+            {
+                _startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
+            }
             _colours.SetColourOnExit(IsSelected);
         }
         else
         {
-            _startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
-            _colours.ResetToNormal();
+            if (_pointerOver)
+            {
+                _startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
+                _colours.SetColourOnEnter(IsSelected);
+            }
+            else
+            {
+                _startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
+                _colours.ResetToNormalColour();
+            }
         }
     }
 
@@ -329,6 +279,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         IsSelected = true;
         SetNotHighlighted();
+        _sizeAndPos.WhenPressed(IsSelected);
         _swapImageOrText.CycleToggle(IsSelected);
     }
 
@@ -336,6 +287,7 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
     {
         IsSelected = false;
         SetNotHighlighted();
+        _sizeAndPos.WhenPressed(IsSelected);
         _swapImageOrText.CycleToggle(IsSelected);
     }
 
@@ -350,29 +302,15 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
         }
         else
         {
-            _colours.ResetToNormal();
+            _colours.ResetToNormalColour();
         }
-    }
-
-    private IEnumerator StartToolTip()
-    {
-        if (_tooltips.CanActivate)
-        {
-            yield return new WaitForSeconds(_tooltips._delay);
-            _tooltips.IsActive = true;
-            StartCoroutine(_tooltips.ToolTipBuild(_rectForTooltip));
-            StartCoroutine(_tooltips.StartTooltip(MyBranch.AllowKeys));
-        }
-        yield return null;
     }
 
     private void SetSlider(bool selected)
     {
-        if (AmSlider)
-        {
-            IsSelected = selected;
-            AmSlider.interactable = IsSelected;
-        }
+        if (!AmSlider) return;
+        IsSelected = selected;
+        AmSlider.interactable = IsSelected;
     }
 
     // ReSharper disable once UnusedMember.Global - Used to Disable Object
@@ -382,12 +320,14 @@ public class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
 
     public void TriggerExitEvent()
     {
-        if (_events.CanActivate) _events.OnExitEvent?.Invoke();
+        if (_events.CanActivate) 
+            _events.OnExitEvent?.Invoke();
     }
 
     public void TriggerEnterEvent()
     {
-        if (_events.CanActivate) _events.OnEnterEvent?.Invoke();
+        if (_events.CanActivate) 
+            _events.OnEnterEvent?.Invoke();
     }
 }
 

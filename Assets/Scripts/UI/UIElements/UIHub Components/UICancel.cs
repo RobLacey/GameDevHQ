@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Class handles all UI cancel behaviour from cancel type to context sensitive cases
@@ -11,7 +12,7 @@ public class UICancel
 
     //Properties
     private bool IsStayOnOrInternalBranch => _uIHub.LastSelected.MyBranch.StayOn 
-                                   || _uIHub.LastSelected.ChildBranch.MyBranchType == BranchType.Internal;
+                                   || _uIHub.LastSelected.HasChildBranch.MyBranchType == BranchType.Internal;
     private bool IsANonResolvePopUp => _uIHub.LastHighlighted.MyBranch.IsNonResolvePopUp 
                                                   && !_uIHub.GameIsPaused;
     private bool ActiveResolvePopUps => _uIHub.ActivePopUpsResolve.Count > 0 
@@ -19,7 +20,7 @@ public class UICancel
     private bool IsPausedAndPauseMenu => _uIHub.GameIsPaused 
                                          && _uIHub.ActiveBranch.MyBranchType == BranchType.PauseMenu;
     private bool CanEnterPauseOptionsScreen =>
-        (_uIHub.NoActivePopUps && _uIHub.LastSelected.ChildBranch.MyCanvas.enabled == false)
+        (_uIHub.NoActivePopUps && _uIHub.LastSelected.HasChildBranch.MyCanvas.enabled == false)
         && _uIHub.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
 
 
@@ -48,7 +49,7 @@ public class UICancel
         }
         else
         {
-            ProcessCancelType(_uIHub.LastSelected.ChildBranch.EscapeKeySetting);
+            ProcessCancelType(_uIHub.LastSelected.HasChildBranch.EscapeKeySetting);
         }
     }
     
@@ -88,15 +89,15 @@ public class UICancel
             return;
         }
         
-        if(!_uIHub.LastSelected.ChildBranch) return; //Stops Tween Error when no child
+        if(!_uIHub.LastSelected.HasChildBranch) return; //Stops Tween Error when no child
         
-        if (_uIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.AfterEndOfTween)
+        if (_uIHub.LastSelected.HasChildBranch.WhenToMove == WhenToMove.AfterEndOfTween)
         {
-            _uIHub.LastSelected.ChildBranch.StartOutTween(endAction.Invoke);
+            _uIHub.LastSelected.HasChildBranch.StartOutTween(endAction.Invoke);
         }
         else
         {
-            _uIHub.LastSelected.ChildBranch.StartOutTween();
+            _uIHub.LastSelected.HasChildBranch.StartOutTween();
             endAction.Invoke();
         }
     }
@@ -105,7 +106,7 @@ public class UICancel
     {
         var lastSelected = _uIHub.LastSelected;
 
-        if (lastSelected.ChildBranch && IsStayOnOrInternalBranch) lastSelected.MyBranch.TweenOnChange = false;
+        if (lastSelected.HasChildBranch && IsStayOnOrInternalBranch) lastSelected.MyBranch.TweenOnChange = false;
 
         if (IsPausedAndPauseMenu)
         {
@@ -125,7 +126,7 @@ public class UICancel
         else
         {
             lastSelected.SetNotSelected_NoEffects();
-            lastSelected.MyBranch.SaveLastSelected(lastSelected.MyBranch.MyParentBranch.LastSelected);
+            lastSelected.MyBranch.SaveLastSelected(lastSelected);
             lastSelected.MyBranch.MoveToThisBranch();
         }
     }

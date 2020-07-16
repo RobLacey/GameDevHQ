@@ -1,11 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 using DG.Tweening;
+// ReSharper disable IdentifierTypo
 
-[System.Serializable]
+[Serializable]
 public class UIColour 
 {
     [SerializeField] [AllowNesting] [Label("Colour Scheme")] ColourScheme _scheme;
@@ -14,7 +14,8 @@ public class UIColour
     [SerializeField] Image[] _imageElements;
 
     //Variables
-    Color _normalColour = Color.white;
+    Color _textNormalColour = Color.white;
+    Color _imageNormalColour = Color.white;
     int _id;
 
     //Editor Methods
@@ -28,19 +29,21 @@ public class UIColour
     {
         CanActivate = (setting & Setting.Colours) != 0;
         _id = objectId;
-        if (_imageElements.Length > 0)
-        { 
-            if(_imageElements[0] == null)
-            {
-                _imageElements = new Image[0];
-            }
-            else
-            {
-                _normalColour = _imageElements[0].color; 
-            }
-        }
-        if (_textElements) _normalColour = _textElements.color;
+        SetNormalColours();
         if (_imageElements.Length == 0 && !_textElements) { NoSettings = true; }
+    }
+
+    private void SetNormalColours()
+    {
+        if (_imageElements.Length > 0)
+        {
+            _imageNormalColour = _imageElements[0].color;
+        }
+
+        if (_textElements)
+        {
+            _textNormalColour = _textElements.color;
+        }
     }
 
     public void SetColourOnEnter(bool isSelected)
@@ -52,10 +55,12 @@ public class UIColour
             if ((_scheme.ColourSettings & EventType.Selected) != 0 && isSelected)
             {
                 ColourChangesProcesses(SelectedHighlight(), _scheme.TweenTime);
+                TextColourChangeProcess(SelectedHighlight(), _scheme.TweenTime);
             }
             else
             {
                 ColourChangesProcesses(_scheme.HighlightedColour, _scheme.TweenTime);
+                TextColourChangeProcess(_scheme.HighlightedColour, _scheme.TweenTime);
             }
         }    
     }
@@ -66,19 +71,22 @@ public class UIColour
 
         if ((_scheme.ColourSettings & EventType.Selected) == 0 || !isSelected)
         {
-            ColourChangesProcesses(_normalColour, _scheme.TweenTime);
+            ColourChangesProcesses(_imageNormalColour, _scheme.TweenTime);
+            TextColourChangeProcess(_textNormalColour, _scheme.TweenTime);
         }
 
         if ((_scheme.ColourSettings & EventType.Selected) != 0 && isSelected)
         {
             ColourChangesProcesses(_scheme.SelectedColour, _scheme.TweenTime);
+            TextColourChangeProcess(_scheme.SelectedColour, _scheme.TweenTime);
         }
     }
 
-    public void ResetToNormal()
+    public void ResetToNormalColour()
     {
         if (!CanActivate || _scheme == null) return;
-        ColourChangesProcesses(_normalColour, _scheme.TweenTime);
+        ColourChangesProcesses(_imageNormalColour, _scheme.TweenTime);
+        TextColourChangeProcess(_textNormalColour, _scheme.TweenTime);
     }
 
     public void ProcessPress(bool isSelected)
@@ -104,40 +112,51 @@ public class UIColour
 
     private void PressedEffect_NotSelected()
     {
-        Color flashtoo;
+        Color flashtooImage;
+        Color flashtooText;
 
         if ((_scheme.ColourSettings & EventType.Highlighted) != 0)
         {
-            flashtoo = _scheme.HighlightedColour;
+            flashtooImage = _scheme.HighlightedColour;
+            flashtooText = _scheme.HighlightedColour;
         }
         else
         {
-            flashtoo = _normalColour;
+            flashtooImage = _imageNormalColour;
+            flashtooText = _textNormalColour;
         }
 
         ColourChangesProcesses(_scheme.PressedColour, _scheme.FlashTime,
-                                () => ColourChangesProcesses(flashtoo, _scheme.FlashTime));
+                                () => ColourChangesProcesses(flashtooImage, _scheme.FlashTime));
+        TextColourChangeProcess(_scheme.PressedColour, _scheme.FlashTime,
+                                () => ColourChangesProcesses(flashtooText, _scheme.FlashTime));
     }
 
     private void PressedEffect_IsSelected()
     {
-        Color flashtoo;
+        Color flashtooImage;
+        Color flashtooText;
 
         if ((_scheme.ColourSettings & EventType.Selected) != 0)
         {
-            flashtoo = _scheme.SelectedColour;
+            flashtooImage = _scheme.SelectedColour;
+            flashtooText = _scheme.SelectedColour;
         }
         else if ((_scheme.ColourSettings & EventType.Highlighted) != 0)
         {
-            flashtoo = _scheme.HighlightedColour;
+            flashtooImage = _scheme.HighlightedColour;
+            flashtooText = _scheme.HighlightedColour;
         }
         else
         {
-            flashtoo = _normalColour;
+            flashtooImage = _imageNormalColour;
+            flashtooText = _textNormalColour;
         }
 
         ColourChangesProcesses(_scheme.PressedColour, _scheme.FlashTime,
-                               () => ColourChangesProcesses(flashtoo, _scheme.FlashTime));
+                               () => ColourChangesProcesses(flashtooImage, _scheme.FlashTime));
+        TextColourChangeProcess(_scheme.PressedColour, _scheme.FlashTime,
+                               () => ColourChangesProcesses(flashtooText, _scheme.FlashTime));
     }
 
     private void SetAsSelected(bool isSelected)
@@ -147,6 +166,7 @@ public class UIColour
         if (isSelected)
         {
             ColourChangesProcesses(_scheme.SelectedColour, _scheme.TweenTime);
+            TextColourChangeProcess(_scheme.SelectedColour, _scheme.TweenTime);
         }
 
         if (!isSelected)
@@ -154,10 +174,12 @@ public class UIColour
             if ((_scheme.ColourSettings & EventType.Highlighted) != 0)
             {
                 ColourChangesProcesses(_scheme.HighlightedColour, _scheme.TweenTime);
+                TextColourChangeProcess(_scheme.HighlightedColour, _scheme.TweenTime);
             }
             else
             {
-                ColourChangesProcesses(_normalColour, _scheme.TweenTime);
+                ColourChangesProcesses(_imageNormalColour, _scheme.TweenTime);
+                TextColourChangeProcess(_textNormalColour, _scheme.TweenTime);
             }
         }
     }
@@ -179,15 +201,20 @@ public class UIColour
                                                 .Play();
             }               
         }
+    }
+
+    private void TextColourChangeProcess(Color newColour, float time, TweenCallback tweenCallback = null)
+    {
+        DOTween.Kill("_mainText" + _id);
 
         if (_textElements)
         {
             _textElements.DOColor(newColour, time)
-                        .SetId("_mainText" + _id)
-                        .SetEase(Ease.Linear)
-                        .SetAutoKill(true)
-                        .OnComplete(tweenCallback)
-                        .Play();
+                         .SetId("_mainText" + _id)
+                         .SetEase(Ease.Linear)
+                         .SetAutoKill(true)
+                         .OnComplete(tweenCallback)
+                         .Play();
         }
     }
 
@@ -238,8 +265,6 @@ public class UIColour
 
     private void KillTweens()
     {
-        DOTween.Kill("_mainText" + _id);
-
         for (int i = 0; i < _imageElements.Length; i++)
         {
             DOTween.Kill("_images" + _id + i);

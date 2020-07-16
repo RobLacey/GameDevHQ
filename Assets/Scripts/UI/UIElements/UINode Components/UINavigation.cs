@@ -7,9 +7,9 @@ using UnityEngine.Events;
 using System;
 
 [System.Serializable]
-public class UINavigation : IUINavigation
+public class UINavigation
 {
-    [SerializeField] [AllowNesting] [Label("Move To When Clicked")] [HideIf("NotAToggle")] UIBranch _childBranch;
+[SerializeField] [AllowNesting] [Label("Move To When Clicked")] [HideIf("NotAToggle")] UIBranch _childBranch;
     [SerializeField] NavigationType _setNavigation = NavigationType.UpAndDown;
     [SerializeField] [AllowNesting] [ShowIf("UpDownNav")] UINode up;
     [SerializeField] [AllowNesting] [ShowIf("UpDownNav")] UINode down;

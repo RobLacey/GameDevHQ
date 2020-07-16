@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
+using UnityEngine.EventSystems;
 
 [Serializable]
 public class UIAccessories
@@ -14,7 +13,7 @@ public class UIAccessories
     [SerializeField] Image[] _accessoriesList;
 
     //Variables
-    bool canActivate;
+    bool _canActivate;
 
     //Editor Script
     public bool Activate()
@@ -28,7 +27,7 @@ public class UIAccessories
 
     public Action<UIEventTypes, bool> OnAwake(Setting setting)
     {
-        canActivate = (setting & Setting.Accessories) != 0;
+        _canActivate = (setting & Setting.Accessories) != 0;
         ActivatePointer(UIEventTypes.Normal, false);
         return ActivatePointer;
     }
@@ -40,11 +39,12 @@ public class UIAccessories
 
     private void ActivatePointer(UIEventTypes uIEventTypes, bool active)
     {
-        if (!canActivate) { ActivateAccessories(false); return; }
+        if (!_canActivate) { ActivateAccessories(false); return; }
 
         switch (uIEventTypes)
         {
             case UIEventTypes.Normal:
+                //ebug.Log(EventSystem.cur.isFocused()rent);
                 ActivateAccessories(false);
                 break;
             case UIEventTypes.Highlighted:
@@ -69,13 +69,11 @@ public class UIAccessories
     {
         if(_useOutline) _useOutline.enabled = active;
         if(_useShadow) _useShadow.enabled = active;
-
-        if (_accessoriesList.Length > 0)
+        if (_accessoriesList.Length <= 0) return;
+        
+        foreach (var item in _accessoriesList)
         {
-            foreach (var item in _accessoriesList)
-            {
-                item.enabled = active;
-            }
+            item.enabled = active;
         }
     }
 }

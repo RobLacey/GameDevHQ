@@ -40,7 +40,7 @@ public class HotKeys
 
         foreach (UINode node in _uiBranch.MyParentBranch.ThisGroupsUiNodes)
         {
-            if (node.ChildBranch != _uiBranch) continue;
+            if (node.HasChildBranch != _uiBranch) continue;
             if (TweenToHotKey(node))
             {
                 StartOutTweenOnLastSelected(node);
@@ -56,20 +56,20 @@ public class HotKeys
 
     private bool TweenToHotKey(UINode node)
     {
-        return _uIHub.LastSelected != node && _uIHub.LastSelected.ChildBranch != null
+        return _uIHub.LastSelected != node && _uIHub.LastSelected.HasChildBranch != null
                             && _uIHub.LastSelected.IsSelected;
     }
 
     private void StartOutTweenOnLastSelected(UINode parentNode)
     {
-        if (_uIHub.LastSelected.ChildBranch.WhenToMove == WhenToMove.Immediately)
+        if (_uIHub.LastSelected.HasChildBranch.WhenToMove == WhenToMove.Immediately)
         {
-            _uIHub.LastSelected.ChildBranch.StartOutTween();
+            _uIHub.LastSelected.HasChildBranch.StartOutTween();
             StartHotKeyBranch(parentNode);
         }
         else
         {
-            _uIHub.LastSelected.ChildBranch.StartOutTween(() => StartHotKeyBranch(parentNode));
+            _uIHub.LastSelected.HasChildBranch.StartOutTween(() => StartHotKeyBranch(parentNode));
         }
     }
 

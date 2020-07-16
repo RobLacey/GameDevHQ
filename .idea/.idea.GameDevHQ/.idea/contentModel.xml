@@ -291,15 +291,16 @@
               </e>
               <e p="UIHub.cs" t="Include" />
               <e p="UINode Components" t="Include">
-                <e p="IUIAudio.cs" t="Include" />
-                <e p="IUINavigation.cs" t="Include" />
                 <e p="UIAccessories.cs" t="Include" />
                 <e p="UIAudio.cs" t="Include" />
                 <e p="UIColour.cs" t="Include" />
                 <e p="UIEvents.cs" t="Include" />
-                <e p="UIInterfaces.cs" t="Include" />
                 <e p="UIInvertColours.cs" t="Include" />
                 <e p="UINavigation.cs" t="Include" />
+                <e p="UiNode Partial Classes" t="Include">
+                  <e p="UINode.EditorScripts.cs" t="Include" />
+                  <e p="UINode.InputInterfaces.cs" t="Include" />
+                </e>
                 <e p="UISizeAndPosition.cs" t="Include" />
                 <e p="UISwapper.cs" t="Include" />
                 <e p="UIToggles.cs" t="Include" />

@@ -4449,7 +4449,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _enabledFunctions
-      value: 483
+      value: 487
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -4475,6 +4475,26 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2,
         type: 2}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._ChangeSizeOn
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._scaledType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._changeSizeOn
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._loop
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6790820044368940565, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: m_Text
@@ -9253,7 +9273,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _enabledFunctions
-      value: 483
+      value: 487
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -9279,6 +9299,26 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2,
         type: 2}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._ChangeSizeOn
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._scaledType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._changeSizeOn
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._loop
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6790820044368940565, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: m_Text
@@ -29517,7 +29557,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _enabledFunctions
-      value: 483
+      value: 487
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -29556,7 +29596,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _sizeAndPos._scaledType
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -29576,7 +29616,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _sizeAndPos._loop
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -29697,6 +29737,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _events._OnToggleEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._changeSizeOn
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6790820044368940565, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -30578,10 +30623,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f5dfd11c59dde44c933280df0ae6aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isCancelOrBackButton: 0
+  _isCancelOrBack: 0
   _escapeKeyFunction: 2
   _buttonFunction: 0
-  _toggleGroupID: 0
+  _toggleGroupId: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -30613,13 +30658,13 @@ MonoBehaviour:
     _swapToThisText: 
     _textToSwap: {fileID: 0}
   _sizeAndPos:
-    _ChangeSizeOn: 0
+    _changeSizeOn: 0
     _scaledType: 1
     _punchTime: 0.5
     _punchScaleByX: 0.1
     _punchScaleByY: 0.2
-    _punchvibrato: 6
-    _elastisity: 0.5
+    _punchVibrato: 6
+    _elasticity: 0.5
     _shakeScaleByX: 0.1
     _shakeScaleByY: 0.2
     _shakeTime: 0.5
@@ -30639,13 +30684,12 @@ MonoBehaviour:
     _accessoriesList: []
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
-    _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
-      type: 3}
-    _volume_Highlighted: 0.1
-    _sound_Select: {fileID: 8300000, guid: 8683ee9a71e6d7444bb4f800f5ac6b75, type: 3}
-    _volume_Select: 0.1
-    _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
-    _volume_Cancel: 0.1
+    _soundHighlighted: {fileID: 0}
+    _volumeHighlighted: 0
+    _soundSelect: {fileID: 0}
+    _volumeSelect: 0
+    _soundCancel: {fileID: 0}
+    _volumeCancel: 0
   _tooltips:
     _mainCanvas: {fileID: 0}
     _UICamera: {fileID: 0}
@@ -31849,10 +31893,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f5dfd11c59dde44c933280df0ae6aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isCancelOrBackButton: 0
+  _isCancelOrBack: 0
   _escapeKeyFunction: 2
   _buttonFunction: 0
-  _toggleGroupID: 0
+  _toggleGroupId: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -31883,13 +31927,13 @@ MonoBehaviour:
     _swapToThisText: 
     _textToSwap: {fileID: 0}
   _sizeAndPos:
-    _ChangeSizeOn: 0
+    _changeSizeOn: 0
     _scaledType: 1
     _punchTime: 0.5
     _punchScaleByX: 0.1
     _punchScaleByY: 0.2
-    _punchvibrato: 6
-    _elastisity: 0.5
+    _punchVibrato: 6
+    _elasticity: 0.5
     _shakeScaleByX: 0.1
     _shakeScaleByY: 0.2
     _shakeTime: 0.5
@@ -31909,13 +31953,12 @@ MonoBehaviour:
     _accessoriesList: []
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
-    _sound_Highlighted: {fileID: 8300000, guid: f903495aad283cf4f9bcc65b900165c1,
-      type: 3}
-    _volume_Highlighted: 0.1
-    _sound_Select: {fileID: 8300000, guid: 8683ee9a71e6d7444bb4f800f5ac6b75, type: 3}
-    _volume_Select: 0.1
-    _sound_Cancel: {fileID: 8300000, guid: bba5e6e16196cfe4b8c9343c19d2fd15, type: 3}
-    _volume_Cancel: 0.1
+    _soundHighlighted: {fileID: 0}
+    _volumeHighlighted: 0
+    _soundSelect: {fileID: 0}
+    _volumeSelect: 0
+    _soundCancel: {fileID: 0}
+    _volumeCancel: 0
   _tooltips:
     _mainCanvas: {fileID: 0}
     _UICamera: {fileID: 0}

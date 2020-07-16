@@ -35,9 +35,11 @@ public abstract class TweenBase
 
     public bool UsingGlobalTime { get; set; }
 
-    public abstract void SetUpTweens(List<TweenSettings> buildObjectsList, Action<RectTransform> effectCall);
+    public abstract void SetUpTweens(List<TweenSettings> buildObjectsList, 
+                                     Action<RectTransform> effectCall);
 
-    protected void SetUpTweensCommon(List<TweenSettings> buildObjectsList, Action<RectTransform> effectCall)
+    protected void SetUpTweensCommon(List<TweenSettings> buildObjectsList, 
+                                     Action<RectTransform> effectCall)
     {
         _endEffectTrigger = effectCall;
         _buildList = buildObjectsList;

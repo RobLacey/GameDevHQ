@@ -40,6 +40,8 @@ public class UITooltip
     float _canvasWidth;
     float _canvasHeight;
     Vector3[] _myCorners = new Vector3[4];
+    private Coroutine _coroutineBuild;
+    private Coroutine _coroutineStart;
 
     //Enums & Properties
     enum UseSide { ToTheRightOf, ToTheLeftOf, GameObjectAsPosition  }
@@ -53,7 +55,7 @@ public class UITooltip
     public bool UseGameObject() { return _positionToUse == UseSide.GameObjectAsPosition && _tooltipType != TooltipType.Fixed; }
 
     //TODO Change size calcs to work from camera size rather than canvas so still works when aspect changes
-
+    
     public void OnAwake(Setting setting, string parent) //Make OnAwake
     {
         CanActivate = (setting & Setting.TooplTip) != 0;
@@ -67,7 +69,6 @@ public class UITooltip
             }
 
             CreateBucket();
-
             SetUpTooltips();
 
             //Debug.Log(Camera.main.pixelWidth + "Camera");
@@ -76,6 +77,24 @@ public class UITooltip
             _canvasHeight = (_mainCanvas.rect.height / 2) - _screenSafeZone;
 
         }    
+    }
+
+    private void CreateBucket()
+    {
+        _tooltipsParent = GameObject.Find(_toolTipBucketName);
+        if (!_tooltipsParent)
+        {
+            _tooltipsParent = new GameObject();
+            _tooltipsParent.AddComponent<RectTransform>();
+            _tooltipsParent.transform.SetParent(_mainCanvas.transform);
+            _tooltipsParent.name = _toolTipBucketName;
+            _tooltipsParent.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+
+        }
+        foreach (var tooltip in _listOfTooltips)
+        {
+            tooltip.transform.SetParent(_tooltipsParent.transform);
+        }
     }
 
     private void SetUpTooltips()
@@ -96,30 +115,26 @@ public class UITooltip
     }
 
 
-    private void CreateBucket()
-    {
-        _tooltipsParent = GameObject.Find(_toolTipBucketName);
-        if (!_tooltipsParent)
-        {
-            _tooltipsParent = new GameObject();
-            _tooltipsParent.AddComponent<RectTransform>();
-            _tooltipsParent.transform.SetParent(_mainCanvas.transform);
-            _tooltipsParent.name = _toolTipBucketName;
-            _tooltipsParent.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-
-        }
-        foreach (var tooltip in _listOfTooltips)
-        {
-            tooltip.transform.SetParent(_tooltipsParent.transform);
-        }
-    }
-
     public void HideToolTip()
     {
         if (!CanActivate) return;
-        
+        StaticCoroutine.StopCoroutines(_coroutineBuild);
+        StaticCoroutine.StopCoroutines(_coroutineStart);
+
         _toolTipCanvas.enabled = false;
         IsActive = false;
+    }
+
+    public IEnumerator StartToolTip(UIBranch branch, RectTransform rectForTooltip)
+    {
+        if (CanActivate)
+        {
+            yield return new WaitForSeconds(_delay);
+            IsActive = true;
+            _coroutineBuild = StaticCoroutine.StartCoroutine(ToolTipBuild(rectForTooltip));
+            _coroutineStart = StaticCoroutine.StartCoroutine(ActivateTooltip(branch.AllowKeys));
+        }
+        yield return null;
     }
 
     public IEnumerator ToolTipBuild(RectTransform rect)
@@ -137,7 +152,7 @@ public class UITooltip
     }
 
 
-    public IEnumerator StartTooltip(bool isKeyboard)
+    public IEnumerator ActivateTooltip(bool isKeyboard)
     {
         while (IsActive)
         {
