@@ -55,6 +55,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     //Delegates
     private Action<UIEventTypes, bool> _startUiFunctions;
     public static event Action<EscapeKey> DoCancel;
+    public static event Action<UINode> DoHighlighted; 
+    public static event Action<UINode> DoSelected; 
 
     //Properties & Enums
     public Slider AmSlider { get; private set; }
@@ -144,8 +146,9 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             HandleIfDisabled(); 
             return;
         }
+        DoHighlighted?.Invoke(this);
 
-        if ( MyBranch.AllowKeys)
+        if ( MyBranch.AllowKeys && FindObjectOfType<UIHub>().InMenu) //ToDO Decouple ******
         {
             SetAsHighlighted();
         }
@@ -183,11 +186,13 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             if (IsToggleGroup && MyBranch.LastHighlighted == this) return;
             if (IsToggleNotLinked) { IsSelected = false; }
             Deactivate();
-            MyBranch.SaveLastSelected(MyBranch.MyParentBranch.LastSelected);
+            DoSelected?.Invoke(MyBranch.MyParentBranch.LastSelected);
+            //MyBranch.SaveLastSelected(MyBranch.MyParentBranch.LastSelected);
         }
         else
         {
             Activate();
+            //DoSelected?.Invoke(this);
         }
 
         _startUiFunctions.Invoke(UIEventTypes.Selected, IsSelected);
@@ -221,7 +226,9 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     
     private void MoveToChildBranch()
     {
-        MyBranch.SaveLastSelected(this);
+        DoSelected?.Invoke(this);
+
+        //MyBranch.SaveLastSelected(this);
 
         if (MyBranch.WhenToMove == WhenToMove.AfterEndOfTween)
         {
@@ -239,6 +246,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _colours.SetColourOnEnter(IsSelected);
         _startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
         StartCoroutine(_tooltips.StartToolTip(MyBranch, _rectForTooltip));
+        DoHighlighted?.Invoke(this);
     }
 
     public void SetNotHighlighted()
@@ -275,7 +283,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         }
     }
 
-    public void SetSelected_NoEffects()
+    public void SetSelected_NoEffects() //TODO Review - Add DoSelect
     {
         IsSelected = true;
         SetNotHighlighted();
@@ -328,6 +336,16 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     {
         if (_events.CanActivate) 
             _events.OnEnterEvent?.Invoke();
+    }
+
+    public void SetAsSelected()
+    {
+        DoSelected?.Invoke(this);
+    }
+    
+    public void SetThisAsHighLighted()
+    {
+        DoHighlighted?.Invoke(this);
     }
 }
 

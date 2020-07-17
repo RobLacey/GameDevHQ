@@ -20,36 +20,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf145f6b-d551-4e26-8fbc-722270da7110" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Colour Schemes/Test Scheme.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Colour Schemes/Test Scheme.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/UINode.EditorScripts.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/UINode.EditorScripts.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/UINode.InputInterfaces.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/UINode.InputInterfaces.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/INodeData.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/riderModule.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/riderModule.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTweener.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTweener.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ShakeTweener.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ShakeTweener.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.TweenHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.TweenHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIPopUp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIPopUp.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.PopUpData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.PopUpData.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.UIHistory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.UIHistory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/IUIAudio.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/IUIAudio.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/IUINavigation.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/IUINavigation.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIAccessories.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIAccessories.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIAudio.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIAudio.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIColour.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIColour.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIInterfaces.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIInterfaces.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UISizeAndPosition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UISizeAndPosition.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIToggles.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIToggles.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UITooltip.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UITooltip.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -61,56 +47,60 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UITooltip.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/RotateTween.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ShakeTweener.cs.meta" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/UINode.InputInterfaces.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/58A34B0A-618D-424B-B5FC-18BB9BCDAC20/96/1124d6d7/MonoBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/INodeData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIEvents.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.EditorScripts.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PunchTweener.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ShakeTweener.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.TweenHandler.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UISwapper.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/RotateTween.cs.meta" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/3a/7b27e858/DOTweenComponent.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/ef/5a8c33f5/Tween.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIPopUp.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UISizeAndPosition.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/9e/0b1582b9/Debugger.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.UIHistory.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/58A34B0A-618D-424B-B5FC-18BB9BCDAC20/ca/e1841fc6/SetupCoroutine.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIColour.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Utilities/ExtensionsMethods.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/StaticCoroutine.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/3c/ed406a2a/TweenManager.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ScaleTweener.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components.meta" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/NaughtyAttributes/Scripts/Editor/Utility/ReflectionUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIAudioManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenSettings.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PunchTweener.cs.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/ColourScheme.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UITooltip.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/RotateTween.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PunchTweener.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.UpdateMethods.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.PopUpData.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/RotateTween.cs.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/ef/5a8c33f5/Tween.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.UIHistory.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/58A34B0A-618D-424B-B5FC-18BB9BCDAC20/ca/e1841fc6/SetupCoroutine.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/3c/ed406a2a/TweenManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ScaleTweener.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenSettings.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIAudio.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIAccessories.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTweener.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/ColourScheme.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PositionTween.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/ChangeControl.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/HotKeys.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Master Components/UIHubInterfaces.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UILeaf Components/UINavigation.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIComponents/UIBranchGroups.cs" />
@@ -128,22 +118,15 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.TweenHandler.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.Properties.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIAudioManager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PunchTweener.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ShakeTweener.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.EditorScripts.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenSettings.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PositionTween.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTweener.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ScaleTweener.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/RotateTween.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.EditorScripts.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.InputInterfaces.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/StaticCoroutine.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UITooltip.cs" />
@@ -151,10 +134,24 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIAccessories.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/UINode.InputInterfaces.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UISizeAndPosition.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIColour.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.TweenHandler.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ShakeTweener.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTweener.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIPopUp.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.PopUpData.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/IData.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/INodeData.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.UIHistory.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" />
       </list>
     </option>
   </component>
@@ -228,6 +225,8 @@
       <workItem from="1594900174011" duration="13221000" />
       <workItem from="1594913945500" duration="42000" />
       <workItem from="1594914023255" duration="3567000" />
+      <workItem from="1594978524626" duration="15701000" />
+      <workItem from="1594996756352" duration="5492000" />
     </task>
     <servers />
   </component>
@@ -265,104 +264,104 @@
       <screen x="1920" y="0" width="1536" height="864" />
     </state>
     <state x="2516" y="124" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593766038299" />
-    <state width="1515" height="218" key="GridCell.Tab.0.bottom" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.0.bottom/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.0.bottom/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.0.center" timestamp="1593878753648">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.0.center/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753648" />
-    <state width="1515" height="218" key="GridCell.Tab.0.center/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.0.left" timestamp="1593878753648">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.0.left/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753648" />
-    <state width="1515" height="218" key="GridCell.Tab.0.left/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.0.right" timestamp="1593878753648">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.0.right/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753648" />
-    <state width="1515" height="218" key="GridCell.Tab.0.right/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.1.bottom" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.1.bottom/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.1.bottom/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.1.center" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.1.center/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.1.center/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.1.left" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.1.left/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.1.left/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.1.right" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.1.right/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.1.right/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.2.bottom" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.2.bottom/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.2.bottom/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.2.center" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.2.center/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.2.center/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.2.left" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.2.left/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.2.left/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.2.right" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.2.right/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.2.right/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.3.bottom" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.3.bottom/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.3.bottom/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676525" />
-    <state width="1515" height="218" key="GridCell.Tab.3.center" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.3.center/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.3.center/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.3.left" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.3.left/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.3.left/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676524" />
-    <state width="1515" height="218" key="GridCell.Tab.3.right" timestamp="1593878753649">
-      <screen x="0" y="0" width="1536" height="864" />
-    </state>
-    <state width="1515" height="218" key="GridCell.Tab.3.right/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
-    <state width="1515" height="218" key="GridCell.Tab.3.right/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1593793676525" />
-    <state x="2455" y="157" key="RiderGenerateDialog" timestamp="1594656067341">
+    <state width="1515" height="218" key="GridCell.Tab.0.bottom" timestamp="1594996698090">
       <screen x="1920" y="0" width="1536" height="864" />
     </state>
-    <state x="2455" y="157" key="RiderGenerateDialog/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594656067341" />
-    <state x="2197" y="77" key="SettingsEditor" timestamp="1594827665835">
+    <state width="1515" height="218" key="GridCell.Tab.0.bottom/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.0.bottom/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.0.center" timestamp="1594996698089">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.0.center/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753648" />
+    <state width="1515" height="218" key="GridCell.Tab.0.center/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698089" />
+    <state width="1515" height="218" key="GridCell.Tab.0.left" timestamp="1594996698089">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.0.left/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753648" />
+    <state width="1515" height="218" key="GridCell.Tab.0.left/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698089" />
+    <state width="1515" height="218" key="GridCell.Tab.0.right" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.0.right/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753648" />
+    <state width="1515" height="218" key="GridCell.Tab.0.right/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.1.bottom" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.1.bottom/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.1.bottom/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.1.center" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.1.center/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.1.center/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.1.left" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.1.left/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.1.left/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.1.right" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.1.right/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.1.right/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.2.bottom" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.2.bottom/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.2.bottom/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.2.center" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.2.center/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.2.center/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.2.left" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.2.left/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.2.left/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.2.right" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.2.right/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.2.right/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.3.bottom" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.3.bottom/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.3.bottom/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.3.center" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.3.center/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.3.center/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.3.left" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.3.left/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.3.left/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state width="1515" height="218" key="GridCell.Tab.3.right" timestamp="1594996698090">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state width="1515" height="218" key="GridCell.Tab.3.right/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593878753649" />
+    <state width="1515" height="218" key="GridCell.Tab.3.right/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594996698090" />
+    <state x="2455" y="157" key="RiderGenerateDialog" timestamp="1595002063166">
+      <screen x="1920" y="0" width="1536" height="864" />
+    </state>
+    <state x="2455" y="157" key="RiderGenerateDialog/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1595002063166" />
+    <state x="2197" y="77" key="SettingsEditor" timestamp="1594978624228">
       <screen x="1920" y="0" width="1536" height="864" />
     </state>
     <state x="277" y="77" key="SettingsEditor/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593506737224" />
-    <state x="2197" y="77" key="SettingsEditor/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594827665835" />
+    <state x="2197" y="77" key="SettingsEditor/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594978624228" />
     <state x="277" y="77" key="SettingsEditor/0.0.1536.864@0.0.1536.864" timestamp="1593723473487" />
     <state width="498" height="446" key="SwitcherDM" timestamp="1593723352373">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
     <state width="498" height="446" key="SwitcherDM/0.0.1536.864@0.0.1536.864" timestamp="1593723352373" />
-    <state x="2013" y="93" width="1350" height="678" key="VCS.FileHistoryDialog" timestamp="1594902447163">
+    <state x="2013" y="93" width="1350" height="678" key="VCS.FileHistoryDialog" timestamp="1594978624624">
       <screen x="1920" y="0" width="1536" height="864" />
     </state>
-    <state x="2013" y="93" width="1350" height="678" key="VCS.FileHistoryDialog/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594902447163" />
+    <state x="2013" y="93" width="1350" height="678" key="VCS.FileHistoryDialog/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1594978624624" />
     <state width="775" height="439" key="XDebugger.FullValuePopup" timestamp="1593875209628">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
@@ -387,6 +386,23 @@
     <state x="431" y="185" width="672" height="678" key="search.everywhere.popup/0.0.1536.864@0.0.1536.864" timestamp="1593722697110" />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs</url>
+          <line>71</line>
+          <properties documentPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" initialLine="56">
+            <startOffsets>
+              <option value="2627" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2628" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <watches-manager>
       <configuration name="UNITY_DEBUG_RUN_CONFIGURATION">
         <watch expression="LastSelected" />

@@ -158,8 +158,8 @@ public class UIPopUp
         {
             myBranch.DontSetAsActive = true;
         }
-        if(myBranch.IsPause()) myBranch.SaveLastSelected(myBranch.LastSelected);
         myBranch.LastSelected.Audio.Play(UIEventTypes.Selected);
+        //if(myBranch.IsPause()) myBranch.LastSelected.SetAsSelected();    
         myBranch.MoveToThisBranch();
     }
     
@@ -178,6 +178,7 @@ public class UIPopUp
 
     private void RestoreLastPosition(UINode lastHomeGroupNode = null)
     {
+        
         if (myBranch.WhenToMove == WhenToMove.AfterEndOfTween)
         {
             myBranch.StartOutTween(()=> EndOfTweenActions(lastHomeGroupNode));
@@ -195,14 +196,17 @@ public class UIPopUp
         
         if (lastHomeGroupNode.MyBranch.MyParentBranch)
         {
-            _uIHub.SetLastSelected(lastHomeGroupNode.MyBranch.MyParentBranch.LastSelected);                            
+            //_uIHub.SetLastSelected(lastHomeGroupNode.MyBranch.MyParentBranch.LastSelected);                            
+            lastHomeGroupNode.MyBranch.MyParentBranch.LastSelected.SetAsSelected();                            
         }
         else
         {
-            _uIHub.SetLastSelected(ClearedScreenData.lastSelected);
+            //_uIHub.SetLastSelected(ClearedScreenData.lastSelected);
+            ClearedScreenData.lastSelected.SetAsSelected();
         }
 
-        _uIHub.SetLastHighlighted(lastHomeGroupNode);
+        //TODO Check there is a highlight action
+        //_uIHub.SetLastHighlighted(lastHomeGroupNode);
 
         if (_uIHub.NoActivePopUps && !inMenuBeforePopUp)
         {
@@ -210,7 +214,9 @@ public class UIPopUp
             inMenuBeforePopUp = true;
         }
 
-        if (myBranch.AllowKeys && _uIHub.InMenu) lastHomeGroupNode.SetNodeAsActive();
+        lastHomeGroupNode.MyBranch.TweenOnChange = false;
+        lastHomeGroupNode.MyBranch.MoveToThisBranch();
+        /*if (myBranch.AllowKeys && _uIHub.InMenu)*/ //lastHomeGroupNode.SetNodeAsActive();
     }
 
     private void RestoreScreen()

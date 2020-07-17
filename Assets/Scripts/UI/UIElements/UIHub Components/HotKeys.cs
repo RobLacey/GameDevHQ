@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using NaughtyAttributes;
 
 [System.Serializable]
-public class HotKeys 
+public class HotKeys : INodeData, IBranchData
 {
     [InputAxis] [AllowNesting] public string _hotKeyAxis;
     [ValidateInput("IsAllowedType", "Can't have PopUp as HotKey as HotKey")] public UIBranch _uiBranch;
@@ -10,6 +11,12 @@ public class HotKeys
     //Variables
     private UIHub _uIHub;
     private UIHomeGroup _homeGroup;
+
+    //Properties
+    public UINode LastHighlighted { get; private set; }
+    public UINode LastSelected { get; private set; }
+    public UIBranch ActiveBranch { get; private set; }
+
 
     //Editor Script
     #region Editor Script
@@ -25,7 +32,18 @@ public class HotKeys
     {
         _uIHub = hubData;
         _homeGroup = homeGroup;
+        UINode.DoHighlighted += SaveHighlighted;
+        UINode.DoSelected += SaveSelected;
+        UIBranch.DoActiveBranch += SaveActiveBranch;
     }
+    
+    public void OnDisabled()
+    {
+        UINode.DoHighlighted -= SaveHighlighted;
+        UINode.DoSelected -= SaveSelected;
+        UIBranch.DoActiveBranch -= SaveActiveBranch;
+    }
+
 
     public bool CheckHotKeys()
     {
@@ -56,21 +74,30 @@ public class HotKeys
 
     private bool TweenToHotKey(UINode node)
     {
-        return _uIHub.LastSelected != node && _uIHub.LastSelected.HasChildBranch != null
-                            && _uIHub.LastSelected.IsSelected;
+        return /*_uIHub.*/LastSelected != node && /*_uIHub.*/LastSelected.HasChildBranch != null
+                            && /*_uIHub.*/LastSelected.IsSelected;
     }
 
-    private void StartOutTweenOnLastSelected(UINode parentNode)
+    private void StartOutTweenOnLastSelected(UINode parentNode)  
     {
-        if (_uIHub.LastSelected.HasChildBranch.WhenToMove == WhenToMove.Immediately)
+        if (ActiveBranch.WhenToMove == WhenToMove.Immediately)
         {
-            _uIHub.LastSelected.HasChildBranch.StartOutTween();
+            ActiveBranch.StartOutTween();
             StartHotKeyBranch(parentNode);
         }
         else
         {
-            _uIHub.LastSelected.HasChildBranch.StartOutTween(() => StartHotKeyBranch(parentNode));
+            ActiveBranch.StartOutTween(() => StartHotKeyBranch(parentNode));
         }
+        // if (/*_uIHub.*/LastSelected.HasChildBranch.WhenToMove == WhenToMove.Immediately)
+        // {
+        //     /*_uIHub.*/LastSelected.HasChildBranch.StartOutTween();
+        //     StartHotKeyBranch(parentNode);
+        // }
+        // else
+        // {
+        //     /*_uIHub.*/LastSelected.HasChildBranch.StartOutTween(() => StartHotKeyBranch(parentNode));
+        // }
     }
 
     private void SetUpNextBranch(UINode parentNode)
@@ -80,19 +107,36 @@ public class HotKeys
         if (_uiBranch.ScreenType == ScreenType.FullScreen)
         {
             parentNode.IsSelected = true;
+            parentNode.SetAsSelected();
         }
         else
         {
             parentNode.SetSelected_NoEffects();
         }
         _uiBranch.DefaultStartPosition.Audio.Play(UIEventTypes.Selected);
-        _uiBranch.MyParentBranch.SaveLastHighlighted(parentNode);
+        //_uiBranch.MyParentBranch.SaveLastHighlighted(parentNode);
     }
 
     private void StartHotKeyBranch(UINode parentNode)
     {
         _homeGroup.SetHomeGroupIndex(parentNode.MyBranch);
-        _uiBranch.MyParentBranch.SaveLastSelected(parentNode);
+        //_uiBranch.MyParentBranch.SaveLastSelected(parentNode); // Special case
+        parentNode.SetAsSelected();
         _uiBranch.MoveToThisBranch();
+    }
+
+    public void SaveHighlighted(UINode newNode)
+    {
+        LastHighlighted = newNode;
+    }
+
+    public void SaveSelected(UINode newNode)
+    {
+        LastSelected = newNode;
+    }
+
+    public void SaveActiveBranch(UIBranch newBranch)
+    {
+        ActiveBranch = newBranch;
     }
 }

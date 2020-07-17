@@ -12,7 +12,7 @@ using NaughtyAttributes;
 
 [RequireComponent(typeof(AudioSource))]
 
-public partial class UIHub : MonoBehaviour
+public partial class UIHub : MonoBehaviour, INodeData, IBranchData
 {
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
@@ -40,6 +40,7 @@ public partial class UIHub : MonoBehaviour
     [SerializeField] [ShowIf("ActiveInGameSystem")] [Label("Switch To/From Game Menus")] 
     [InputAxis] string _switchToMenusButton;
     [SerializeField] [ShowIf("ActiveInGameSystem")] InGameOrInMenu _returnToGameControl;
+    
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
 
@@ -89,12 +90,40 @@ public partial class UIHub : MonoBehaviour
     private void OnEnable()
     {
         UINode.DoCancel += _myUiCancel.CancelOrBack;
+        UINode.DoHighlighted += SaveHighlighted;
+        UINode.DoSelected += SaveSelected;
+        UIBranch.DoActiveBranch += SaveActiveBranch;
     }
 
     private void OnDisable()
     {
         UINode.DoCancel -= _myUiCancel.CancelOrBack;
+        UINode.DoHighlighted -= SaveHighlighted;
+        UINode.DoSelected -= SaveSelected;
+        UIBranch.DoActiveBranch -= SaveActiveBranch;
         _uiAudio.OnDisable();
+        _myUiCancel.OnDisabled();
+        _changeControl.OnDisabled();
+        foreach (var hotKey in _hotKeySettings)
+        {
+            hotKey.OnDisabled();
+        }
+    }
+
+    public void SaveHighlighted(UINode newNode)
+    {
+        SetLastHighlighted(newNode);
+    }
+    
+    public void SaveSelected(UINode newNode)
+    {
+        SetLastSelected(newNode);
+    }
+
+    public void SaveActiveBranch(UIBranch newBranch)
+    {
+        //Set on home from here;
+        ActiveBranch = newBranch;
     }
 
     private void CreateSubClasses()
@@ -105,6 +134,10 @@ public partial class UIHub : MonoBehaviour
         _uiAudio = new UIAudioManager(GetComponent<AudioSource>());
         _myUiCancel = new UICancel(this, _globalCancelFunction, _homeBranches.ToArray());
         _uiHomeGroup = new UIHomeGroup(this, _homeBranches.ToArray());
+        foreach (var hotKey in _hotKeySettings)
+        {
+            hotKey.OnAwake(this, _uiHomeGroup);
+        }
     }
 
     private void CheckForControls()
@@ -119,16 +152,14 @@ public partial class UIHub : MonoBehaviour
     private void Start()
     {
         LastHighlighted = _homeBranches[0].DefaultStartPosition;
+        _homeBranches[0].DefaultStartPosition.SetThisAsHighLighted();
         LastSelected = _homeBranches[0].DefaultStartPosition;
-        LastNodeBeforePopUp = LastHighlighted;
-        ActiveBranch = _homeBranches[0];
+        _homeBranches[0].DefaultStartPosition.SetAsSelected();
+        LastNodeBeforePopUp = _homeBranches[0].DefaultStartPosition;
+        //ActiveBranch = _homeBranches[0];
         OnHomeScreen = true;
         _returnToGameControl.Invoke(InMenu);
         
-        foreach (var hotKey in _hotKeySettings)
-        {
-            hotKey.OnAwake(this, _uiHomeGroup);
-        }
 
         CheckIfStartingInGame();
         StartCoroutine(EnableControlsStartDelay());

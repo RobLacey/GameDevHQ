@@ -261,6 +261,7 @@
                 <e p="ColourScheme.cs" t="Include" />
               </e>
               <e p="UI Utilities" t="Include">
+                <e p="INodeData.cs" t="Include" />
                 <e p="StaticCoroutine.cs" t="Include" />
                 <e p="UIEnums.cs" t="Include" />
               </e>

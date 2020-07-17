@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -9,9 +10,9 @@ using UnityEngine.EventSystems;
 public partial class UIHub
 {
     //Properties
-    public UINode LastSelected { get; private set; }
-    public UINode LastHighlighted { get; private set; }
-    public UIBranch ActiveBranch { get; private set; }
+    [ShowNativeProperty] public UINode LastSelected { get; private set; }
+    [ShowNativeProperty] public UINode LastHighlighted { get; private set; }
+    [ShowNativeProperty] public UIBranch ActiveBranch { get; private set; }
     public bool GameIsPaused { get; set; }
     public UINode LastNodeBeforePopUp { get; private set; }
     public int HomeGroupIndex { get; set; }
@@ -19,7 +20,7 @@ public partial class UIHub
     public bool InMenu { get; private set; } = true;
     public bool CanStart { get; private set; }
 
-    public void SetLastSelected(UINode newNode)
+    private void SetLastSelected(UINode newNode)
     {
         if (_lastHomeScreenNode is null) _lastHomeScreenNode = newNode;
         if (LastSelected == newNode) return;
@@ -57,12 +58,12 @@ public partial class UIHub
         _lastHomeScreenNode = newNode;
     }
 
-    public void SetLastHighlighted(UINode newNode)
+    private void SetLastHighlighted(UINode newNode)
     {
         if (newNode == LastHighlighted) return;
         LastHighlighted.SetNotHighlighted();
         LastHighlighted = newNode;
-        ActiveBranch = newNode.MyBranch;
+        //ActiveBranch = newNode.MyBranch;
         if (!newNode.MyBranch.IsAPopUpBranch() && !GameIsPaused) LastNodeBeforePopUp = newNode;
         if (OnHomeScreen) _uiHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch);
         EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);

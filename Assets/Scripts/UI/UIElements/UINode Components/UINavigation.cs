@@ -74,7 +74,7 @@ public class UINavigation
         else
         {
             _myNode.Audio.Play(UIEventTypes.Highlighted);
-            _myBranch.SaveLastHighlighted(_myNode);
+            //_myBranch.SaveLastHighlighted(_myNode);
             _myNode.SetAsHighlighted();
         }
     }
@@ -174,7 +174,7 @@ public class UINavigation
             _myNode.Audio.Play(UIEventTypes.Highlighted);
         }
         _myNode.TriggerEnterEvent();
-        _myBranch.SaveLastHighlighted(_myNode);
+        //_myBranch.SaveLastHighlighted(_myNode);
         _myNode.SetAsHighlighted();
     }
 

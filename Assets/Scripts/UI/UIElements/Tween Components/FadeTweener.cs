@@ -66,11 +66,11 @@ public class FadeTweener
     {
         if (isIn == TweenType.In)
         {
+            RewindTweens();
             DoInTween();
         }
         else
         {
-            RewindTweens();
             _callback.Invoke();
         }
     }

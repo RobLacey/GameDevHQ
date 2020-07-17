@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
@@ -11,7 +12,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
-public partial class UIBranch : MonoBehaviour
+public partial class UIBranch : MonoBehaviour, INodeData
 {
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
@@ -35,12 +36,18 @@ public partial class UIBranch : MonoBehaviour
     [ReorderableList] List<GroupList> _groupsList;
     [SerializeField] BranchEvents _branchEvents;
 
+    [SerializeField] private UINode _highlighted;
+    [SerializeField] private UINode _selected;
+
     //Variables
     // ReSharper disable once IdentifierTypo
     UITweener _uiTweener;
     int _groupIndex;
     Action _onFinishedTrigger;
     UIHub _uIHub;
+    
+    //Delegates
+    public static event Action<UIBranch> DoActiveBranch; 
 
   //InternalClasses
     [Serializable]
@@ -59,6 +66,18 @@ public partial class UIBranch : MonoBehaviour
         _uiTweener.OnAwake();
         SetNewParentBranch(this);
         SetStartPositions();
+    }
+
+    private void OnEnable()
+    {
+        UINode.DoHighlighted += SaveHighlighted;
+        UINode.DoSelected += SaveSelected;
+    }
+
+    private void OnDisable()
+    {
+        UINode.DoHighlighted -= SaveHighlighted;
+        UINode.DoSelected -= SaveSelected;
     }
 
     public void OnAwake(UIHub uiHub, UIHomeGroup homeGroup)
@@ -135,8 +154,8 @@ public partial class UIBranch : MonoBehaviour
     public void MoveToThisBranch(UIBranch newParentController = null)
     {
         BasicSetUp(newParentController);
-        
-        if (TweenOnChange)
+
+        if (TweenOnChange) //TODO Replace when ActiveBranch is done
         {
             ActivateInTweens();
         }
@@ -150,8 +169,10 @@ public partial class UIBranch : MonoBehaviour
     private void BasicSetUp(UIBranch newParentController = null)
     {
         MyCanvas.enabled = true;
+        DoActiveBranch?.Invoke(this);
+        
         ClearOrRestoreHomeScreen();
-
+        
         if (_saveExitSelection == IsActive.No)
         {
             _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartPosition, _groupsList);
@@ -194,17 +215,17 @@ public partial class UIBranch : MonoBehaviour
         MyCanvas.enabled = true;
     }
 
-    public void SaveLastHighlighted(UINode newNode)
-    {
-        _uIHub.SetLastHighlighted(newNode);
-        LastHighlighted = newNode;
-    }
+    // public void SaveLastHighlighted(UINode newNode)
+    // {
+    //     _uIHub.SetLastHighlighted(newNode);
+    //     LastHighlighted = newNode;
+    // }
 
-    public void SaveLastSelected(UINode lastSelected)
-    {
-        _uIHub.SetLastSelected(lastSelected);
-        LastSelected = lastSelected;
-    }
+    // public void SaveLastSelected(UINode lastSelected)
+    // {
+    //     _uIHub.SetLastSelected(lastSelected);
+    //     LastSelected = lastSelected;
+    // }
 
     public void SwitchBranchGroup(SwitchType switchType)
     {
@@ -213,4 +234,40 @@ public partial class UIBranch : MonoBehaviour
 
     // ReSharper disable once UnusedMember.Global
     public void StartPopUpScreen() => PopUpClass.StartPopUp();
+    
+    public void SaveHighlighted(UINode newNode)
+    {
+        if(_uIHub.ActiveBranch != this) return;
+        for (var i = ThisGroupsUiNodes.Length - 1; i >= 0; i--)
+        {
+            if (ThisGroupsUiNodes[i] == newNode)
+            {
+                _highlighted = newNode;
+                LastHighlighted = newNode;
+            }
+            else
+            {
+                //Debug.Log("Unhighlight : " + _highlighted);
+            }
+        
+        }
+
+    }
+
+    public void SaveSelected(UINode newNode)
+    {
+        //if (_uIHub.ActiveBranch != this) return;
+        for (var i = ThisGroupsUiNodes.Length - 1; i >= 0; i--)
+        {
+            if (ThisGroupsUiNodes[i] == newNode)
+            {
+                _selected = newNode;
+                LastSelected = newNode;
+            }
+            else
+            {
+                //Debug.Log("Unhighlight : " + _highlighted);
+            }
+        }
+    }
 }

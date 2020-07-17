@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// This partial Class looks after calling to the UITweener
@@ -33,7 +34,7 @@ public partial class UIBranch
 
         if (!DontSetAsActive)
         {
-            SaveLastHighlighted(LastHighlighted);
+            //SaveLastHighlighted(LastHighlighted);
             LastHighlighted.SetNodeAsActive();
         }
 

@@ -46,8 +46,6 @@ public class ShakeTweener
         }
         else
         {
-            Debug.Log(isIn);
-
             RunTween(tweenCallback,CheckOutEffectType);
         }
     }

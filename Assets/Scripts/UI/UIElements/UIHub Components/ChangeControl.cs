@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// Class that handles switching control from the mouse to a keyboard or controller
 /// </summary>
-public class ChangeControl
+public class ChangeControl : INodeData, IBranchData
 {
     private readonly UIHub _uIHub;
     private Vector3 _mousePos = Vector3.zero;
@@ -16,13 +16,27 @@ public class ChangeControl
     private bool UsingMouse { get; set; }
     public bool UsingKeysOrCtrl { get; set; }
     public UIBranch[] AllowKeyClasses { get; set; }
+    public UINode LastHighlighted { get; private set; }
+    public UINode LastSelected { get; private set; }
+    public UIBranch ActiveBranch { get; private set; }
 
     //Internal Class
     public ChangeControl(UIHub newUiHub, ControlMethod controlMethod)
     {
         _uIHub = newUiHub;
         _controlMethod = controlMethod;
+        UINode.DoHighlighted += SaveHighlighted;
+        UINode.DoSelected += SaveSelected;
+        UIBranch.DoActiveBranch += SaveActiveBranch;
     }
+    
+    public void OnDisabled()
+    {
+        UINode.DoHighlighted -= SaveHighlighted;
+        UINode.DoSelected -= SaveSelected;
+        UIBranch.DoActiveBranch -= SaveActiveBranch;
+    }
+
     
     public void StartGame()
     {
@@ -58,7 +72,7 @@ public class ChangeControl
         UsingMouse = true;
         UsingKeysOrCtrl = false;
         SetAllowKeys();
-        _uIHub.LastHighlighted.SetNotHighlighted();
+        /*_uIHub.*/LastHighlighted.SetNotHighlighted();
     }
 
     private void ActivateKeysOrControl()
@@ -78,7 +92,7 @@ public class ChangeControl
     {
         if (_uIHub.GameIsPaused || _uIHub.ActivePopUpsResolve.Count > 0)
         {
-            _uIHub.LastHighlighted.SetAsHighlighted();
+            /*_uIHub.*/LastHighlighted.SetAsHighlighted();
         }
         else if (_uIHub.ActivePopUpsNonResolve.Count > 0)
         {
@@ -86,7 +100,8 @@ public class ChangeControl
         }
         else
         {
-            _uIHub.LastHighlighted.SetAsHighlighted();
+            /*_uIHub.*/ActiveBranch.TweenOnChange = false; //TODO Review after changes
+            /*_uIHub.*/ ActiveBranch.MoveToThisBranch();
         }
     }
 
@@ -98,5 +113,20 @@ public class ChangeControl
         {
             item.AllowKeys = UsingKeysOrCtrl;
         }
+    }
+
+    public void SaveHighlighted(UINode newNode)
+    {
+        LastHighlighted = newNode;
+    }
+
+    public void SaveSelected(UINode newNode)
+    {
+        LastSelected = newNode;
+    }
+
+    public void SaveActiveBranch(UIBranch newBranch)
+    {
+        ActiveBranch = newBranch;
     }
 }

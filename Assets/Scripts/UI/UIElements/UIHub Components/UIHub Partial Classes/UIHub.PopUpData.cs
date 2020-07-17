@@ -15,7 +15,7 @@ public partial class UIHub
     public void ActiveNextPopUp()
     {
         int groupLength = ActivePopUpsNonResolve.Count;
-        SetLastHighlighted(ActivePopUpsNonResolve[PopIndex].LastHighlighted);
+        //SetLastHighlighted(ActivePopUpsNonResolve[PopIndex].LastHighlighted);
         ActivePopUpsNonResolve[PopIndex].LastHighlighted.SetNodeAsActive();
         PopIndex = PopIndex.PositiveIterate(groupLength);
     }
