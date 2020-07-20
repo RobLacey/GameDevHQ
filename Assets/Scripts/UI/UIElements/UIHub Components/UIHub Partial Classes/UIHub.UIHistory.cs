@@ -13,7 +13,7 @@ public partial class UIHub
     [ShowNativeProperty] public UINode LastSelected { get; private set; }
     [ShowNativeProperty] public UINode LastHighlighted { get; private set; }
     [ShowNativeProperty] public UIBranch ActiveBranch { get; private set; }
-    public bool GameIsPaused { get; set; }
+    [ShowNativeProperty] private bool GameIsPaused { get; set; }
     public UINode LastNodeBeforePopUp { get; private set; }
     public int HomeGroupIndex { get; set; }
     public bool OnHomeScreen { get; set; }

@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using EnhancedHierarchy;
 using UnityEngine;
 
-public class UIPopUp
+public class UIPopUp : IHUbData, IMono
 {
     public UIPopUp(UIBranch branch, UIBranch[] branchList, UIHub newHub)
     {
         _uIHub = newHub;
         myBranch = branch;
         _allBranches = branchList;
+        OnEnable();
     }
 
     //Variables
@@ -19,6 +20,10 @@ public class UIPopUp
     UIBranch[] _allBranches;
     bool _running;
     Coroutine _coroutine;
+    
+    public static event Action<UIBranch> AddToResolvePopUp;
+    public static event Action<UIBranch> RemoveResolvePopUp;
+
 
     //Internal Classes
     private class Data
@@ -31,13 +36,25 @@ public class UIPopUp
 
     //Properties
     private Data ClearedScreenData { get; set; } = new Data();
-    public bool inMenuBeforePopUp { get; set; }
+    private bool InMenuBeforePopUp { get; set; }
+    public bool GameIsPaused { get; private set; }
+
+    public void OnEnable()
+    {
+        UIHub.GamePaused += IsGamePaused;
+    }
+    public void OnDisable( )
+    {
+        UIHub.GamePaused -= IsGamePaused;
+    }
+
+    public void IsGamePaused(bool paused) => GameIsPaused = paused;
 
 
     /// <summary> Starts any PopUp from other classes or Inpsector Event calls </summary>     
     public void StartPopUp()
     {
-        if (_uIHub.GameIsPaused) return;
+        if (/*_uIHub.*/GameIsPaused) return;
         
         if (!myBranch.MyCanvas.enabled)
         {
@@ -57,7 +74,7 @@ public class UIPopUp
     {
         if (!_uIHub.InMenu && _uIHub.NoActivePopUps)
         {
-            inMenuBeforePopUp = false;
+            InMenuBeforePopUp = false;
             _uIHub.GameToMenuSwitching();
         }
 
@@ -79,7 +96,9 @@ public class UIPopUp
     {
         if (!_uIHub.ActivePopUpsResolve.Contains(myBranch))
         {
-            _uIHub.ActivePopUpsResolve.Add(myBranch);
+            //_uIHub.ActivePopUpsResolve.Add(myBranch);
+            AddToResolvePopUp?.Invoke(myBranch);
+            //AddToResolvePopUp?.Invoke(myBranch);
         }
         PopUpStartProcess();
     }
@@ -95,15 +114,15 @@ public class UIPopUp
 
     public void PauseMenu()
     {
-        if (_uIHub.GameIsPaused)
+        if (/*_uIHub.*/GameIsPaused)
         {
-            _uIHub.GameIsPaused = false;
-            RestoreLastPosition(ClearedScreenData.lastHighlighted);
+            //_uIHub.GameIsPaused = false;
+            PopUpStartProcess();
         }
         else
         {
-            _uIHub.GameIsPaused = true;
-            PopUpStartProcess();
+            RestoreLastPosition(ClearedScreenData.lastHighlighted);
+            //_uIHub.GameIsPaused = true;
         }
     }
 
@@ -208,10 +227,10 @@ public class UIPopUp
         //TODO Check there is a highlight action
         //_uIHub.SetLastHighlighted(lastHomeGroupNode);
 
-        if (_uIHub.NoActivePopUps && !inMenuBeforePopUp)
+        if (_uIHub.NoActivePopUps && !InMenuBeforePopUp)
         {
             _uIHub.GameToMenuSwitching();
-            inMenuBeforePopUp = true;
+            InMenuBeforePopUp = true;
         }
 
         lastHomeGroupNode.MyBranch.TweenOnChange = false;
@@ -223,7 +242,7 @@ public class UIPopUp
     {
         foreach (var branch in ClearedScreenData._clearedBranches)
         {
-            if (_uIHub.GameIsPaused) continue;
+            if (/*_uIHub.*/GameIsPaused) continue;
             if (_uIHub.ActivePopUpsResolve.Count == 0)
             {
                 branch.MyCanvasGroup.blocksRaycasts = true;
@@ -246,11 +265,13 @@ public class UIPopUp
             item.MyCanvas.enabled = true;
         }
     }
+    
     public void RemoveFromActiveList_Resolve()
     {
         if(_uIHub.ActivePopUpsResolve.Contains(myBranch))
         {
-            _uIHub.ActivePopUpsResolve.Remove(myBranch);
+            //_uIHub.ActivePopUpsResolve.Remove(myBranch);
+            RemoveResolvePopUp?.Invoke(myBranch);
 
             if (_uIHub.ActivePopUpsResolve.Count > 0)
             {
@@ -280,8 +301,6 @@ public class UIPopUp
 
         if (_uIHub.ActivePopUpsNonResolve.Count > 0)
         {
-            Debug.Log("More");
-
             _uIHub.PopIndex = 0;
             _uIHub.ActiveNextPopUp();
             RestoreLastPosition(_uIHub.ActivePopUpsNonResolve[0].LastHighlighted);

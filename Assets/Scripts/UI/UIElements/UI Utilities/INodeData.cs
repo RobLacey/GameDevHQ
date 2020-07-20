@@ -1,4 +1,6 @@
-﻿interface INodeData
+﻿// ReSharper disable once CheckNamespace
+
+internal interface INodeData
 {
     UINode LastHighlighted { get; }
     UINode LastSelected { get; }
@@ -6,8 +8,21 @@
     void SaveSelected(UINode newNode);
 }
 
-interface IBranchData
+internal interface IBranchData
 {
     UIBranch ActiveBranch { get; }
     void SaveActiveBranch(UIBranch newBranch);
 }
+
+public interface IHUbData
+{
+    bool GameIsPaused { get; }
+   void IsGamePaused(bool paused);
+}
+
+public interface IMono
+{
+    void OnEnable();
+    void OnDisable();
+}
+

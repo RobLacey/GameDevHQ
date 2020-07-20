@@ -46,7 +46,7 @@ public partial class UIHub : MonoBehaviour, INodeData, IBranchData
 
     //Events
     // ReSharper disable once EventNeverSubscribedTo.Global
-    public static event Action<bool> IsPaused; // Subscribe To to trigger pause operations
+    public static event Action<bool> GamePaused; // Subscribe To to trigger pause operations
 
     //Variables
     private UINode _lastHomeScreenNode;
@@ -93,6 +93,8 @@ public partial class UIHub : MonoBehaviour, INodeData, IBranchData
         UINode.DoHighlighted += SaveHighlighted;
         UINode.DoSelected += SaveSelected;
         UIBranch.DoActiveBranch += SaveActiveBranch;
+        UIPopUp.RemoveResolvePopUp += RemoveFromResolveList;
+        UIPopUp.AddToResolvePopUp += AddToResolveList;
     }
 
     private void OnDisable()
@@ -101,31 +103,19 @@ public partial class UIHub : MonoBehaviour, INodeData, IBranchData
         UINode.DoHighlighted -= SaveHighlighted;
         UINode.DoSelected -= SaveSelected;
         UIBranch.DoActiveBranch -= SaveActiveBranch;
+        UIPopUp.RemoveResolvePopUp -= RemoveFromResolveList;
+        UIPopUp.AddToResolvePopUp -= AddToResolveList;
+
+        
         _uiAudio.OnDisable();
-        _myUiCancel.OnDisabled();
-        _changeControl.OnDisabled();
+        _myUiCancel.OnDisable();
+        _changeControl.OnDisable();
         foreach (var hotKey in _hotKeySettings)
         {
-            hotKey.OnDisabled();
+            hotKey.OnDisable();
         }
     }
-
-    public void SaveHighlighted(UINode newNode)
-    {
-        SetLastHighlighted(newNode);
-    }
     
-    public void SaveSelected(UINode newNode)
-    {
-        SetLastSelected(newNode);
-    }
-
-    public void SaveActiveBranch(UIBranch newBranch)
-    {
-        //Set on home from here;
-        ActiveBranch = newBranch;
-    }
-
     private void CreateSubClasses()
     {
         // ReSharper disable once UseObjectOrCollectionInitializer
@@ -284,4 +274,10 @@ public partial class UIHub : MonoBehaviour, INodeData, IBranchData
 
         return false;
     }
+    
+    public void SaveHighlighted(UINode newNode) => SetLastHighlighted(newNode);
+
+    public void SaveSelected(UINode newNode) => SetLastSelected(newNode);
+
+    public void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 using NaughtyAttributes;
 
 [System.Serializable]
-public class HotKeys : INodeData, IBranchData
+public class HotKeys : INodeData, IBranchData, IMono
 {
     [InputAxis] [AllowNesting] public string _hotKeyAxis;
     [ValidateInput("IsAllowedType", "Can't have PopUp as HotKey as HotKey")] public UIBranch _uiBranch;
@@ -32,18 +32,22 @@ public class HotKeys : INodeData, IBranchData
     {
         _uIHub = hubData;
         _homeGroup = homeGroup;
+        OnEnable();
+    }
+    
+    public void OnEnable()
+    {
         UINode.DoHighlighted += SaveHighlighted;
         UINode.DoSelected += SaveSelected;
         UIBranch.DoActiveBranch += SaveActiveBranch;
     }
-    
-    public void OnDisabled()
+
+    public void OnDisable()
     {
         UINode.DoHighlighted -= SaveHighlighted;
         UINode.DoSelected -= SaveSelected;
         UIBranch.DoActiveBranch -= SaveActiveBranch;
     }
-
 
     public bool CheckHotKeys()
     {
@@ -125,18 +129,9 @@ public class HotKeys : INodeData, IBranchData
         _uiBranch.MoveToThisBranch();
     }
 
-    public void SaveHighlighted(UINode newNode)
-    {
-        LastHighlighted = newNode;
-    }
+    public void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
 
-    public void SaveSelected(UINode newNode)
-    {
-        LastSelected = newNode;
-    }
+    public void SaveSelected(UINode newNode) => LastSelected = newNode;
 
-    public void SaveActiveBranch(UIBranch newBranch)
-    {
-        ActiveBranch = newBranch;
-    }
+    public void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
 }

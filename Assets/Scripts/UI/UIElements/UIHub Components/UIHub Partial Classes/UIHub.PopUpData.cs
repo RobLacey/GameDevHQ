@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// This partial class handles the tracking of PopUpdata for project wise use
@@ -11,8 +13,11 @@ public partial class UIHub
     public int PopIndex { get; set; }
     public bool NoActivePopUps => ActivePopUpsResolve.Count == 0
                                   & ActivePopUpsNonResolve.Count == 0;
-    
-    public void ActiveNextPopUp()
+
+    public static event Action<bool> NoResolvePopUps;
+    public static event Action<bool> NoNonResolvePopUps;
+
+    public void ActiveNextPopUp() //Todo Move to popup 
     {
         int groupLength = ActivePopUpsNonResolve.Count;
         //SetLastHighlighted(ActivePopUpsNonResolve[PopIndex].LastHighlighted);
@@ -20,4 +25,42 @@ public partial class UIHub
         PopIndex = PopIndex.PositiveIterate(groupLength);
     }
 
+    public void AddToResolveList(UIBranch newResolve)
+    {
+        ActivePopUpsResolve.Add(newResolve);
+        NoResolvePopUps?.Invoke(false);
+        Debug.Log(ActivePopUpsResolve.Count + " : Add");
+    }
+    public void RemoveFromResolveList(UIBranch oldResolve)
+    {
+        ActivePopUpsResolve.Remove(oldResolve);
+        if (ActivePopUpsResolve.Count == 0)
+        {
+            NoResolvePopUps?.Invoke(true);
+            Debug.Log(ActivePopUpsResolve.Count + " : remove");
+
+        }
+    }
+    
+    public void AddToNonResolveList(UIBranch newNonResolve)
+    {
+        ActivePopUpsNonResolve.Add(newNonResolve);
+        NoResolvePopUps?.Invoke(false);
+        Debug.Log(ActivePopUpsNonResolve.Count + " : Add");
+    }
+    public void RemoveFromNonResolveList(UIBranch oldNonResolve)
+    {
+        ActivePopUpsNonResolve.Remove(oldNonResolve);
+        if (ActivePopUpsNonResolve.Count == 0)
+        {
+            NoResolvePopUps?.Invoke(true);
+            Debug.Log(ActivePopUpsNonResolve.Count + " : remove");
+
+        }
+    }
+
+    public bool ReturnResolveList()
+    {
+        return ActivePopUpsResolve.Count == 0;
+    }
 }

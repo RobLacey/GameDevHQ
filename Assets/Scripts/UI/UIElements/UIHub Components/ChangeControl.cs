@@ -5,13 +5,14 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// Class that handles switching control from the mouse to a keyboard or controller
 /// </summary>
-public class ChangeControl : INodeData, IBranchData
+public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
 {
     private readonly UIHub _uIHub;
     private Vector3 _mousePos = Vector3.zero;
     private readonly ControlMethod _controlMethod;
     private bool _gameStarted;
-
+    private bool noResolvePopUpsActive;
+    
     //Properties
     private bool UsingMouse { get; set; }
     public bool UsingKeysOrCtrl { get; set; }
@@ -19,25 +20,35 @@ public class ChangeControl : INodeData, IBranchData
     public UINode LastHighlighted { get; private set; }
     public UINode LastSelected { get; private set; }
     public UIBranch ActiveBranch { get; private set; }
+    
+    public bool GameIsPaused { get; private set; }
 
     //Internal Class
     public ChangeControl(UIHub newUiHub, ControlMethod controlMethod)
     {
         _uIHub = newUiHub;
         _controlMethod = controlMethod;
+        OnEnable();
+    }
+
+    public void OnEnable()
+    {
         UINode.DoHighlighted += SaveHighlighted;
         UINode.DoSelected += SaveSelected;
         UIBranch.DoActiveBranch += SaveActiveBranch;
+        UIHub.GamePaused += IsGamePaused;
+        UIHub.NoResolvePopUps += SetNoResolvePopUps;
     }
     
-    public void OnDisabled()
+    public void OnDisable()
     {
         UINode.DoHighlighted -= SaveHighlighted;
         UINode.DoSelected -= SaveSelected;
         UIBranch.DoActiveBranch -= SaveActiveBranch;
+        UIHub.GamePaused -= IsGamePaused;
+        UIHub.NoResolvePopUps -= SetNoResolvePopUps;
     }
 
-    
     public void StartGame()
     {
         if (_controlMethod == ControlMethod.Mouse || _controlMethod == ControlMethod.BothStartAsMouse)
@@ -72,7 +83,7 @@ public class ChangeControl : INodeData, IBranchData
         UsingMouse = true;
         UsingKeysOrCtrl = false;
         SetAllowKeys();
-        /*_uIHub.*/LastHighlighted.SetNotHighlighted();
+        LastHighlighted.SetNotHighlighted();
     }
 
     private void ActivateKeysOrControl()
@@ -85,14 +96,14 @@ public class ChangeControl : INodeData, IBranchData
             SetAllowKeys();
             SetNextHighlightedForKeys();
         }
-        EventSystem.current.SetSelectedGameObject(_uIHub.LastHighlighted.gameObject);
+        EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
     }
 
     private void SetNextHighlightedForKeys()
     {
-        if (_uIHub.GameIsPaused || _uIHub.ActivePopUpsResolve.Count > 0)
+        if (GameIsPaused ||/* _uIHub.ActivePopUpsResolve.Count > 0*/ noResolvePopUpsActive)
         {
-            /*_uIHub.*/LastHighlighted.SetAsHighlighted();
+            LastHighlighted.SetAsHighlighted();
         }
         else if (_uIHub.ActivePopUpsNonResolve.Count > 0)
         {
@@ -100,8 +111,8 @@ public class ChangeControl : INodeData, IBranchData
         }
         else
         {
-            /*_uIHub.*/ActiveBranch.TweenOnChange = false; //TODO Review after changes
-            /*_uIHub.*/ ActiveBranch.MoveToThisBranch();
+            ActiveBranch.TweenOnChange = false; //TODO Review after changes
+            ActiveBranch.MoveToThisBranch();
         }
     }
 
@@ -115,18 +126,11 @@ public class ChangeControl : INodeData, IBranchData
         }
     }
 
-    public void SaveHighlighted(UINode newNode)
-    {
-        LastHighlighted = newNode;
-    }
+    public void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
 
-    public void SaveSelected(UINode newNode)
-    {
-        LastSelected = newNode;
-    }
+    public void SaveSelected(UINode newNode) => LastSelected = newNode;
 
-    public void SaveActiveBranch(UIBranch newBranch)
-    {
-        ActiveBranch = newBranch;
-    }
+    public void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
+    public void IsGamePaused(bool paused) => GameIsPaused = paused;
+    private void SetNoResolvePopUps(bool activePopUps) => noResolvePopUpsActive = activePopUps;
 }

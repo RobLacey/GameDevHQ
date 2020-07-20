@@ -78,6 +78,8 @@ public partial class UIBranch : MonoBehaviour, INodeData
     {
         UINode.DoHighlighted -= SaveHighlighted;
         UINode.DoSelected -= SaveSelected;
+        PopUpClass?.OnDisable();
+        PauseMenuClass?.OnDisable();
     }
 
     public void OnAwake(UIHub uiHub, UIHomeGroup homeGroup)

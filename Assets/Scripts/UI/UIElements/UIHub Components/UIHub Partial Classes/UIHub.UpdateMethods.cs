@@ -25,8 +25,9 @@ public partial class UIHub
 
     public void PauseOptionMenuPressed()
     {
+        GameIsPaused = !GameIsPaused;
+        GamePaused?.Invoke(GameIsPaused);
         _pauseOptionMenu.PauseMenuClass.PauseMenu();
-        IsPaused?.Invoke(GameIsPaused);
     }
 
     public void GameToMenuSwitching()
