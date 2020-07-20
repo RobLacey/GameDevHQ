@@ -16,13 +16,19 @@ public class UIPopUp : IHUbData, IMono
 
     //Variables
     UIHub _uIHub;
-    UIBranch myBranch;
+    private UIBranch myBranch;
     UIBranch[] _allBranches;
     bool _running;
     Coroutine _coroutine;
+     private bool _noActiveResolvePopUps;
+     private bool _noActiveNonResolvePopUps;
     
     public static event Action<UIBranch> AddToResolvePopUp;
-    public static event Action<UIBranch> RemoveResolvePopUp;
+   // public static event Action<UIBranch> RemoveResolvePopUp;
+    public static event Action<UIBranch> AddToNonResolvePopUp;
+    //public static event Action<UIBranch> RemoveNonResolvePopUp;
+   // public static event Func<UIBranch> ReturnNextResolve;
+    //public static event Func<UIBranch> ReturnNextNonResolve;
 
 
     //Internal Classes
@@ -42,14 +48,19 @@ public class UIPopUp : IHUbData, IMono
     public void OnEnable()
     {
         UIHub.GamePaused += IsGamePaused;
+        UIHub.NoResolvePopUps += SetResolveCount;
+        UIHub.NoNonResolvePopUps += SetNonResolveCount;
     }
     public void OnDisable( )
     {
         UIHub.GamePaused -= IsGamePaused;
+        UIHub.NoResolvePopUps -= SetResolveCount;
+        UIHub.NoNonResolvePopUps -= SetNonResolveCount;
     }
 
     public void IsGamePaused(bool paused) => GameIsPaused = paused;
-
+    private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
+    private void SetNonResolveCount(bool activeNonResolvePopUps) => _noActiveNonResolvePopUps = activeNonResolvePopUps;
 
     /// <summary> Starts any PopUp from other classes or Inpsector Event calls </summary>     
     public void StartPopUp()
@@ -94,21 +105,21 @@ public class UIPopUp : IHUbData, IMono
 
     private void StartActivePopUps_Resolve()
     {
-        if (!_uIHub.ActivePopUpsResolve.Contains(myBranch))
-        {
+        //if (!_uIHub.ActivePopUpsResolve.Contains(myBranch))
+        //{
             //_uIHub.ActivePopUpsResolve.Add(myBranch);
             AddToResolvePopUp?.Invoke(myBranch);
-            //AddToResolvePopUp?.Invoke(myBranch);
-        }
+       // }
         PopUpStartProcess();
     }
 
     private void StartActivePopUp_NonResolve()
     {
-        if (!_uIHub.ActivePopUpsNonResolve.Contains(myBranch))
-        {
-            _uIHub.ActivePopUpsNonResolve.Add(myBranch);
-        }
+        //if (!_uIHub.ActivePopUpsNonResolve.Contains(myBranch))
+         // {
+            //_uIHub.ActivePopUpsNonResolve.Add(myBranch);
+            AddToNonResolvePopUp?.Invoke(myBranch);
+         // }
         PopUpStartProcess();
     }
 
@@ -173,7 +184,8 @@ public class UIPopUp : IHUbData, IMono
     
     private void ActivatePopUp() //Todo maybe add to wait list
     {
-        if (myBranch.IsNonResolvePopUp && _uIHub.ActivePopUpsResolve.Count > 0)
+        //if (myBranch.IsNonResolvePopUp && _uIHub.ActivePopUpsResolve.Count > 0)
+        if (myBranch.IsNonResolvePopUp && _noActiveNonResolvePopUps)
         {
             myBranch.DontSetAsActive = true;
         }
@@ -195,9 +207,8 @@ public class UIPopUp : IHUbData, IMono
         myBranch.StartOutTween();
     }
 
-    private void RestoreLastPosition(UINode lastHomeGroupNode = null)
+    public void RestoreLastPosition(UINode lastHomeGroupNode = null)
     {
-        
         if (myBranch.WhenToMove == WhenToMove.AfterEndOfTween)
         {
             myBranch.StartOutTween(()=> EndOfTweenActions(lastHomeGroupNode));
@@ -243,83 +254,28 @@ public class UIPopUp : IHUbData, IMono
         foreach (var branch in ClearedScreenData._clearedBranches)
         {
             if (/*_uIHub.*/GameIsPaused) continue;
-            if (_uIHub.ActivePopUpsResolve.Count == 0)
+            //if (_uIHub.ActivePopUpsResolve.Count == 0)
+            if (_noActiveResolvePopUps)
             {
                 branch.MyCanvasGroup.blocksRaycasts = true;
             }
             branch.MyCanvas.enabled = true;
         }
 
-        foreach (var item in _uIHub.ActivePopUpsResolve)
-        {
-            item.MyCanvasGroup.blocksRaycasts = true;
-            item.MyCanvas.enabled = true;
-        }
-
-        foreach (var item in _uIHub.ActivePopUpsNonResolve)
-        {
-            if (_uIHub.ActivePopUpsResolve.Count == 0)
-            {
-                item.MyCanvasGroup.blocksRaycasts = true;
-            }
-            item.MyCanvas.enabled = true;
-        }
+        _uIHub.ActiveResolvePopUps();
+        _uIHub.ActivateNonResolvePopUps();
     }
     
-    public void RemoveFromActiveList_Resolve()
-    {
-        if(_uIHub.ActivePopUpsResolve.Contains(myBranch))
-        {
-            //_uIHub.ActivePopUpsResolve.Remove(myBranch);
-            RemoveResolvePopUp?.Invoke(myBranch);
-
-            if (_uIHub.ActivePopUpsResolve.Count > 0)
-            {
-                int lastIndexItem = _uIHub.ActivePopUpsResolve.Count - 1;
-                RestoreLastPosition(_uIHub.ActivePopUpsResolve[lastIndexItem].LastHighlighted);
-            }
-            else
-            {
-                if (_uIHub.ActivePopUpsNonResolve.Count > 0)
-                {
-                    int lastIndexItem = _uIHub.ActivePopUpsNonResolve.Count - 1;
-                    _uIHub.PopIndex = lastIndexItem;
-                    RestoreLastPosition(_uIHub.ActivePopUpsNonResolve[lastIndexItem].LastHighlighted);
-                }
-                else
-                {
-                    RestoreLastPosition(_uIHub.LastNodeBeforePopUp);
-                }
-            }
-        }
-    }
-
-    public void RemoveFromActiveList_NonResolve()
-    {
-        if (!_uIHub.ActivePopUpsNonResolve.Contains(myBranch)) return;
-        _uIHub.ActivePopUpsNonResolve.Remove(myBranch);
-
-        if (_uIHub.ActivePopUpsNonResolve.Count > 0)
-        {
-            _uIHub.PopIndex = 0;
-            _uIHub.ActiveNextPopUp();
-            RestoreLastPosition(_uIHub.ActivePopUpsNonResolve[0].LastHighlighted);
-        }
-        else
-        {
-            RestoreLastPosition(_uIHub.LastNodeBeforePopUp);
-        }
-    }
-
     public void ManagePopUpResolve()
     {
-        if (_uIHub.ActivePopUpsResolve.Count > 0 && !myBranch.IsResolvePopUp)
+        //if (_uIHub.ActivePopUpsResolve.Count > 0 && !myBranch.IsResolvePopUp)
+        if (!_noActiveResolvePopUps || myBranch.IsResolvePopUp)
         {
-            myBranch.MyCanvasGroup.blocksRaycasts = false;
+            myBranch.MyCanvasGroup.blocksRaycasts = true;
         }
         else
         {
-            myBranch.MyCanvasGroup.blocksRaycasts = true;
+            myBranch.MyCanvasGroup.blocksRaycasts = false;
         }
     }
 }

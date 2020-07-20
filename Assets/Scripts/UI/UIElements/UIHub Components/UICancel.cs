@@ -151,11 +151,14 @@ public class UICancel : INodeData, IBranchData, IHUbData, IMono
 
         if (ActiveResolvePopUps)
         {
-            HandleRemovingPopUps_Resolve();
+            _uIHub.RemoveFromActiveList_Resolve();
+
+            //HandleRemovingPopUps_Resolve();
         }
         else if (IsANonResolvePopUp)
         {
-            /*_uIHub.*/LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_NonResolve();
+            //*_uIHub.*/LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_NonResolve();
+            /*_uIHub.*/ _uIHub.RemoveFromActiveList_NonResolve(/*LastHighlighted.MyBranch*/);
         }
         else
         {
@@ -174,19 +177,6 @@ public class UICancel : INodeData, IBranchData, IHUbData, IMono
         //_homeGroup[index].LastSelected.MyBranch.SaveLastSelected(_homeGroup[index].LastSelected);
         _homeGroup[index].LastSelected.SetAsSelected();
         _homeGroup[index].MoveToThisBranch();
-    }
-
-    private void HandleRemovingPopUps_Resolve()
-    {
-        if (/*_uIHub.*/LastHighlighted.MyBranch.IsResolvePopUp)
-        {
-            /*_uIHub.*/LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_Resolve();
-        }
-        else
-        {
-            int lastIndexItem = _uIHub.ActivePopUpsResolve.Count - 1;
-            _uIHub.ActivePopUpsResolve[lastIndexItem].PopUpClass.RemoveFromActiveList_Resolve();
-        }
     }
     
     public void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;

@@ -59,7 +59,7 @@ public partial class UIHub
     {
         if (ActivePopUpsNonResolve.Count > 0)
         {
-            ActiveNextPopUp();
+            ActiveNextPopUp(ActivePopUpsNonResolve);
         }
         else if (OnHomeScreen && _homeBranches.Count > 1)
         {

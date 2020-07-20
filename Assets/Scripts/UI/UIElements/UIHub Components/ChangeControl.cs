@@ -11,7 +11,6 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
     private Vector3 _mousePos = Vector3.zero;
     private readonly ControlMethod _controlMethod;
     private bool _gameStarted;
-    private bool noResolvePopUpsActive;
     
     //Properties
     private bool UsingMouse { get; set; }
@@ -37,7 +36,6 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
         UINode.DoSelected += SaveSelected;
         UIBranch.DoActiveBranch += SaveActiveBranch;
         UIHub.GamePaused += IsGamePaused;
-        UIHub.NoResolvePopUps += SetNoResolvePopUps;
     }
     
     public void OnDisable()
@@ -46,7 +44,6 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
         UINode.DoSelected -= SaveSelected;
         UIBranch.DoActiveBranch -= SaveActiveBranch;
         UIHub.GamePaused -= IsGamePaused;
-        UIHub.NoResolvePopUps -= SetNoResolvePopUps;
     }
 
     public void StartGame()
@@ -101,13 +98,17 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
 
     private void SetNextHighlightedForKeys()
     {
-        if (GameIsPaused ||/* _uIHub.ActivePopUpsResolve.Count > 0*/ noResolvePopUpsActive)
+        if (GameIsPaused)
         {
             LastHighlighted.SetAsHighlighted();
         }
+        else if (_uIHub.ActivePopUpsResolve.Count > 0)
+        {
+            _uIHub.ActiveNextPopUp(_uIHub.ActivePopUpsResolve);
+        }
         else if (_uIHub.ActivePopUpsNonResolve.Count > 0)
         {
-            _uIHub.ActiveNextPopUp();
+            _uIHub.ActiveNextPopUp(_uIHub.ActivePopUpsNonResolve);
         }
         else
         {
@@ -132,5 +133,4 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
 
     public void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
     public void IsGamePaused(bool paused) => GameIsPaused = paused;
-    private void SetNoResolvePopUps(bool activePopUps) => noResolvePopUpsActive = activePopUps;
 }

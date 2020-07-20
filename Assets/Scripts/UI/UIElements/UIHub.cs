@@ -93,8 +93,10 @@ public partial class UIHub : MonoBehaviour, INodeData, IBranchData
         UINode.DoHighlighted += SaveHighlighted;
         UINode.DoSelected += SaveSelected;
         UIBranch.DoActiveBranch += SaveActiveBranch;
-        UIPopUp.RemoveResolvePopUp += RemoveFromResolveList;
         UIPopUp.AddToResolvePopUp += AddToResolveList;
+        //UIPopUp.RemoveResolvePopUp += RemoveFromResolveList;
+        UIPopUp.AddToNonResolvePopUp += AddToNonResolveList;
+        //UIPopUp.RemoveNonResolvePopUp += RemoveFromNonResolveList;
     }
 
     private void OnDisable()
@@ -103,8 +105,10 @@ public partial class UIHub : MonoBehaviour, INodeData, IBranchData
         UINode.DoHighlighted -= SaveHighlighted;
         UINode.DoSelected -= SaveSelected;
         UIBranch.DoActiveBranch -= SaveActiveBranch;
-        UIPopUp.RemoveResolvePopUp -= RemoveFromResolveList;
         UIPopUp.AddToResolvePopUp -= AddToResolveList;
+        //UIPopUp.RemoveResolvePopUp -= RemoveFromResolveList;
+        UIPopUp.AddToNonResolvePopUp -= AddToNonResolveList;
+        //UIPopUp.RemoveNonResolvePopUp -= RemoveFromNonResolveList;
 
         
         _uiAudio.OnDisable();

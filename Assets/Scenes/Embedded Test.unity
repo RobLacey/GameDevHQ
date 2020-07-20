@@ -10571,7 +10571,7 @@ PrefabInstance:
     - target: {fileID: 3688934388505339717, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: m_Name
-      value: Next Button - Auto
+      value: Next Button - Resolve
       objectReference: {fileID: 0}
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
