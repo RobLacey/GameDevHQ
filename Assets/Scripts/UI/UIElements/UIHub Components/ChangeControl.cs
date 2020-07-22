@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
 {
     private readonly UIHub _uIHub;
+    private readonly PopUpController _popUpController;
     private Vector3 _mousePos = Vector3.zero;
     private readonly ControlMethod _controlMethod;
     private bool _gameStarted;
@@ -23,9 +24,10 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
     public bool GameIsPaused { get; private set; }
 
     //Internal Class
-    public ChangeControl(UIHub newUiHub, ControlMethod controlMethod)
+    public ChangeControl(UIHub newUiHub, ControlMethod controlMethod, PopUpController popUpController)
     {
         _uIHub = newUiHub;
+        _popUpController = popUpController;
         _controlMethod = controlMethod;
         OnEnable();
     }
@@ -102,13 +104,13 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
         {
             LastHighlighted.SetAsHighlighted();
         }
-        else if (_uIHub.ActivePopUpsResolve.Count > 0)
+        else if (_popUpController.ActivePopUpsResolve.Count > 0)
         {
-            _uIHub.ActiveNextPopUp(_uIHub.ActivePopUpsResolve);
+            _popUpController.ActiveNextPopUp(_popUpController.ActivePopUpsResolve);
         }
-        else if (_uIHub.ActivePopUpsNonResolve.Count > 0)
+        else if (_popUpController.ActivePopUpsNonResolve.Count > 0)
         {
-            _uIHub.ActiveNextPopUp(_uIHub.ActivePopUpsNonResolve);
+            _popUpController.ActiveNextPopUp(_popUpController.ActivePopUpsNonResolve);
         }
         else
         {

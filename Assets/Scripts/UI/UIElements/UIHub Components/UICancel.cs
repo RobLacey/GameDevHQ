@@ -7,31 +7,38 @@ using UnityEngine;
 public class UICancel : INodeData, IBranchData, IHUbData, IMono
 {
     private readonly UIHub _uIHub;
+    private readonly PopUpController _popUpController;
     private readonly EscapeKey _globalEscapeSetting;
     private readonly UIBranch[] _homeGroup;
+    private bool _noActiveResolvePopUps = true;
+    private bool _noActiveNonResolvePopUps = true;
+
 
     //Properties
     private bool IsStayOnOrInternalBranch => LastSelected.MyBranch.StayOn 
                                    || LastSelected.HasChildBranch.MyBranchType == BranchType.Internal;
     private bool IsANonResolvePopUp => LastHighlighted.MyBranch.IsNonResolvePopUp 
                                                   && !/*_uIHub.*/GameIsPaused;
-    private bool ActiveResolvePopUps => _uIHub.ActivePopUpsResolve.Count > 0 
-                                                && !/*_uIHub.*/GameIsPaused;
+    private bool ActiveResolvePopUps => !_noActiveResolvePopUps  && !/*_uIHub.*/GameIsPaused;
     private bool IsPausedAndPauseMenu => /*_uIHub.*/GameIsPaused 
                                          && _uIHub.ActiveBranch.MyBranchType == BranchType.PauseMenu;
     private bool CanEnterPauseOptionsScreen =>
-        (_uIHub.NoActivePopUps && LastSelected.HasChildBranch.MyCanvas.enabled == false)
+        (NoActivePopUps && LastSelected.HasChildBranch.MyCanvas.enabled == false)
         && _uIHub.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
     
      public UINode LastHighlighted { get; private set; }
      public UINode LastSelected { get; private set; }
      public UIBranch ActiveBranch { get; private set; }
      public bool GameIsPaused { get; private set; }
+     private bool NoActivePopUps => _noActiveResolvePopUps && _noActiveNonResolvePopUps;
+     private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
+     private void SetNonResolveCount(bool activeNonResolvePopUps) => _noActiveNonResolvePopUps = activeNonResolvePopUps;
 
 
-     public UICancel(UIHub uIHub, EscapeKey globalSetting, UIBranch[] homeBranches)
+     public UICancel(UIHub uIHub, EscapeKey globalSetting, UIBranch[] homeBranches, PopUpController popUpController)
     {
         _uIHub = uIHub;
+        _popUpController = popUpController;
         _globalEscapeSetting = globalSetting;
         _homeGroup = homeBranches;
         OnEnable();
@@ -43,6 +50,9 @@ public class UICancel : INodeData, IBranchData, IHUbData, IMono
         UINode.DoSelected += SaveSelected;
         UIBranch.DoActiveBranch += SaveActiveBranch;
         UIHub.GamePaused += IsGamePaused;
+        PopUpController.NoResolvePopUps += SetResolveCount;
+        PopUpController.NoNonResolvePopUps += SetNonResolveCount;
+
     }
 
     public void OnDisable()
@@ -51,6 +61,8 @@ public class UICancel : INodeData, IBranchData, IHUbData, IMono
         UINode.DoSelected -= SaveSelected;
         UIBranch.DoActiveBranch -= SaveActiveBranch;
         UIHub.GamePaused -= IsGamePaused;
+        PopUpController.NoResolvePopUps -= SetResolveCount;
+        PopUpController.NoNonResolvePopUps -= SetNonResolveCount;
 
     }
 
@@ -151,14 +163,15 @@ public class UICancel : INodeData, IBranchData, IHUbData, IMono
 
         if (ActiveResolvePopUps)
         {
-            _uIHub.RemoveFromActiveList_Resolve();
+            _popUpController.RemoveFromActiveList_Resolve();
 
             //HandleRemovingPopUps_Resolve();
         }
         else if (IsANonResolvePopUp)
         {
+            Debug.Log("Here");
             //*_uIHub.*/LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_NonResolve();
-            /*_uIHub.*/ _uIHub.RemoveFromActiveList_NonResolve(/*LastHighlighted.MyBranch*/);
+            /*_uIHub.*/ _popUpController.RemoveFromActiveList_NonResolve(/*LastHighlighted.MyBranch*/);
         }
         else
         {

@@ -6,9 +6,10 @@ using UnityEngine;
 
 public class UIPopUp : IHUbData, IMono
 {
-    public UIPopUp(UIBranch branch, UIBranch[] branchList, UIHub newHub)
+    public UIPopUp(UIBranch branch, UIBranch[] branchList, UIHub newHub, PopUpController popUpController)
     {
         _uIHub = newHub;
+        _popUpController = popUpController;
         myBranch = branch;
         _allBranches = branchList;
         OnEnable();
@@ -16,20 +17,16 @@ public class UIPopUp : IHUbData, IMono
 
     //Variables
     UIHub _uIHub;
+    private PopUpController _popUpController;
     private UIBranch myBranch;
     UIBranch[] _allBranches;
     bool _running;
     Coroutine _coroutine;
-     private bool _noActiveResolvePopUps;
+     private bool _noActiveResolvePopUps = true;
      private bool _noActiveNonResolvePopUps;
     
     public static event Action<UIBranch> AddToResolvePopUp;
-   // public static event Action<UIBranch> RemoveResolvePopUp;
     public static event Action<UIBranch> AddToNonResolvePopUp;
-    //public static event Action<UIBranch> RemoveNonResolvePopUp;
-   // public static event Func<UIBranch> ReturnNextResolve;
-    //public static event Func<UIBranch> ReturnNextNonResolve;
-
 
     //Internal Classes
     private class Data
@@ -44,18 +41,19 @@ public class UIPopUp : IHUbData, IMono
     private Data ClearedScreenData { get; set; } = new Data();
     private bool InMenuBeforePopUp { get; set; }
     public bool GameIsPaused { get; private set; }
+    private bool NoActivePopUps => _noActiveResolvePopUps && _noActiveNonResolvePopUps;
 
     public void OnEnable()
     {
         UIHub.GamePaused += IsGamePaused;
-        UIHub.NoResolvePopUps += SetResolveCount;
-        UIHub.NoNonResolvePopUps += SetNonResolveCount;
+        PopUpController.NoResolvePopUps += SetResolveCount;
+        PopUpController.NoNonResolvePopUps += SetNonResolveCount;
     }
     public void OnDisable( )
     {
         UIHub.GamePaused -= IsGamePaused;
-        UIHub.NoResolvePopUps -= SetResolveCount;
-        UIHub.NoNonResolvePopUps -= SetNonResolveCount;
+        PopUpController.NoResolvePopUps -= SetResolveCount;
+        PopUpController.NoNonResolvePopUps -= SetNonResolveCount;
     }
 
     public void IsGamePaused(bool paused) => GameIsPaused = paused;
@@ -83,7 +81,7 @@ public class UIPopUp : IHUbData, IMono
 
     private void SetUpPopUp()
     {
-        if (!_uIHub.InMenu && _uIHub.NoActivePopUps)
+        if (!_uIHub.InMenu && NoActivePopUps)
         {
             InMenuBeforePopUp = false;
             _uIHub.GameToMenuSwitching();
@@ -161,6 +159,7 @@ public class UIPopUp : IHUbData, IMono
         //ClearedScreenData._wasInMenu = _uIHub.inMenuBeforePopUp;
         ClearedScreenData._clearedBranches.Clear();
         ClearedScreenData.lastSelected = _uIHub.LastSelected;
+        Debug.Log(_uIHub.LastHighlighted);
         ClearedScreenData.lastHighlighted = _uIHub.ActiveBranch.LastHighlighted;
     }
 
@@ -177,7 +176,7 @@ public class UIPopUp : IHUbData, IMono
             branch.MyCanvasGroup.blocksRaycasts = false;
         }
 
-        if (!myBranch.IsPause() && !branch.IsPause()) return;
+        if (!myBranch.IsPause() && !branch.IsPause()) return; //To do with pause
         branch.MyCanvasGroup.blocksRaycasts = false;
         myBranch.MyCanvasGroup.blocksRaycasts = true; //Ensures Pause can't be acciently deactivated
     }
@@ -222,7 +221,7 @@ public class UIPopUp : IHUbData, IMono
 
     private void EndOfTweenActions(UINode lastHomeGroupNode)
     {
-        if (myBranch.ScreenType == ScreenType.FullScreen) RestoreScreen();
+        /*if (myBranch.ScreenType == ScreenType.FullScreen)*/ RestoreScreen();
         
         if (lastHomeGroupNode.MyBranch.MyParentBranch)
         {
@@ -238,7 +237,7 @@ public class UIPopUp : IHUbData, IMono
         //TODO Check there is a highlight action
         //_uIHub.SetLastHighlighted(lastHomeGroupNode);
 
-        if (_uIHub.NoActivePopUps && !InMenuBeforePopUp)
+        if (NoActivePopUps && !InMenuBeforePopUp)
         {
             _uIHub.GameToMenuSwitching();
             InMenuBeforePopUp = true;
@@ -262,8 +261,8 @@ public class UIPopUp : IHUbData, IMono
             branch.MyCanvas.enabled = true;
         }
 
-        _uIHub.ActiveResolvePopUps();
-        _uIHub.ActivateNonResolvePopUps();
+        _popUpController.ActiveResolvePopUps();
+        _popUpController.ActivateNonResolvePopUps();
     }
     
     public void ManagePopUpResolve()

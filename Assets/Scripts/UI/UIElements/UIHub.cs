@@ -54,6 +54,7 @@ public partial class UIHub : MonoBehaviour, INodeData, IBranchData
     private UIAudioManager _uiAudio; //Used to hold instance of class
     private UICancel _myUiCancel;
     private UIHomeGroup _uiHomeGroup;
+    private PopUpController _popUpController;
     private bool _hasPauseAxis;
     private bool _hasPosSwitchAxis;
     private bool _hasNegSwitchAxis;
@@ -69,6 +70,7 @@ public partial class UIHub : MonoBehaviour, INodeData, IBranchData
     private bool ActiveInGameSystem => _inGameMenuSystem == InGameSystem.On;
     private bool StartInGame => _startGameWhere == StartInMenu.InGameControl;
     public PauseOptionsOnEscape PauseOptions => _pauseOptionsOnEscape;
+    public PopUpController ReturnPopUpController => _popUpController;
     private bool MouseOnly()
     {
         if(_mainControlType == ControlMethod.Mouse) _inGameMenuSystem = InGameSystem.Off;
@@ -93,9 +95,9 @@ public partial class UIHub : MonoBehaviour, INodeData, IBranchData
         UINode.DoHighlighted += SaveHighlighted;
         UINode.DoSelected += SaveSelected;
         UIBranch.DoActiveBranch += SaveActiveBranch;
-        UIPopUp.AddToResolvePopUp += AddToResolveList;
+        // UIPopUp.AddToResolvePopUp += AddToResolveList;
         //UIPopUp.RemoveResolvePopUp += RemoveFromResolveList;
-        UIPopUp.AddToNonResolvePopUp += AddToNonResolveList;
+        //UIPopUp.AddToNonResolvePopUp += AddToNonResolveList;
         //UIPopUp.RemoveNonResolvePopUp += RemoveFromNonResolveList;
     }
 
@@ -105,15 +107,16 @@ public partial class UIHub : MonoBehaviour, INodeData, IBranchData
         UINode.DoHighlighted -= SaveHighlighted;
         UINode.DoSelected -= SaveSelected;
         UIBranch.DoActiveBranch -= SaveActiveBranch;
-        UIPopUp.AddToResolvePopUp -= AddToResolveList;
+        // UIPopUp.AddToResolvePopUp -= AddToResolveList;
         //UIPopUp.RemoveResolvePopUp -= RemoveFromResolveList;
-        UIPopUp.AddToNonResolvePopUp -= AddToNonResolveList;
+        // UIPopUp.AddToNonResolvePopUp -= AddToNonResolveList;
         //UIPopUp.RemoveNonResolvePopUp -= RemoveFromNonResolveList;
 
         
         _uiAudio.OnDisable();
         _myUiCancel.OnDisable();
         _changeControl.OnDisable();
+        _popUpController.OnDisable();
         foreach (var hotKey in _hotKeySettings)
         {
             hotKey.OnDisable();
@@ -123,10 +126,11 @@ public partial class UIHub : MonoBehaviour, INodeData, IBranchData
     private void CreateSubClasses()
     {
         // ReSharper disable once UseObjectOrCollectionInitializer
-        _changeControl = new ChangeControl(this, _mainControlType);
+        _popUpController = new PopUpController(this);
+        _changeControl = new ChangeControl(this, _mainControlType, _popUpController);
         _changeControl.AllowKeyClasses = FindObjectsOfType<UIBranch>();
         _uiAudio = new UIAudioManager(GetComponent<AudioSource>());
-        _myUiCancel = new UICancel(this, _globalCancelFunction, _homeBranches.ToArray());
+        _myUiCancel = new UICancel(this, _globalCancelFunction, _homeBranches.ToArray(), _popUpController);
         _uiHomeGroup = new UIHomeGroup(this, _homeBranches.ToArray());
         foreach (var hotKey in _hotKeySettings)
         {
@@ -235,7 +239,7 @@ public partial class UIHub : MonoBehaviour, INodeData, IBranchData
             }
 
         if (_hasSwitchToMenuAxis)
-            if (Input.GetButtonDown(_switchToMenusButton) && NoActivePopUps)
+            if (Input.GetButtonDown(_switchToMenusButton) && _popUpController.NoActivePopUps)
             {
                 GameToMenuSwitching();
                 return;

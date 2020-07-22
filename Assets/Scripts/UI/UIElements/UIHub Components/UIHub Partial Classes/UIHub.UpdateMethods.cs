@@ -18,8 +18,8 @@ public partial class UIHub
     private bool CheckIfHotKeyAllowed()
     {
         if (_hotKeySettings.Count <= 0) return false;
-        if (ActivePopUpsResolve.Count > 0 || GameIsPaused) return false;
-        if (_changeControl.UsingKeysOrCtrl && !NoActivePopUps) return false;
+        if (_popUpController.ActivePopUpsResolve.Count > 0 || GameIsPaused) return false;
+        if (_changeControl.UsingKeysOrCtrl && !_popUpController.NoActivePopUps) return false;
         return true;
     }
 
@@ -52,14 +52,14 @@ public partial class UIHub
 
     private bool CanSwitchBranches()
     {
-        return ActivePopUpsResolve.Count == 0 && !MouseOnly();
+        return _popUpController.ActivePopUpsResolve.Count == 0 && !MouseOnly();
     }
 
     private void SwitchingGroups(SwitchType switchType)
     {
-        if (ActivePopUpsNonResolve.Count > 0)
+        if (_popUpController.ActivePopUpsNonResolve.Count > 0)
         {
-            ActiveNextPopUp(ActivePopUpsNonResolve);
+            _popUpController.ActiveNextPopUp(_popUpController.ActivePopUpsNonResolve);
         }
         else if (OnHomeScreen && _homeBranches.Count > 1)
         {

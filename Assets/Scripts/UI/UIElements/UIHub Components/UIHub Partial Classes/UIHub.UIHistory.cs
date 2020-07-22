@@ -64,7 +64,7 @@ public partial class UIHub
         LastHighlighted.SetNotHighlighted();
         LastHighlighted = newNode;
         //ActiveBranch = newNode.MyBranch;
-        if (!newNode.MyBranch.IsAPopUpBranch() && !GameIsPaused) LastNodeBeforePopUp = newNode;
+        if (!newNode.MyBranch.IsAPopUpBranch() && !GameIsPaused) LastNodeBeforePopUp = newNode; //Move
         if (OnHomeScreen) _uiHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch);
         EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
     }

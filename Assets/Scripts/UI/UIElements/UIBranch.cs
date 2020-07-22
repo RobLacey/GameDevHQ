@@ -113,14 +113,14 @@ public partial class UIBranch : MonoBehaviour, INodeData
     private void CheckIfPause()
     {
         if (_branchType != BranchType.PauseMenu) return;
-        PauseMenuClass = new UIPopUp(this, _uIHub.AllBranches, _uIHub);
+        PauseMenuClass = new UIPopUp(this, _uIHub.AllBranches, _uIHub, _uIHub.ReturnPopUpController);
         _escapeKeyFunction = EscapeKey.BackOneLevel;
     }
 
     private void CheckIfPopUp()
     {
         if (!IsAPopUpBranch()) return;
-        PopUpClass = new UIPopUp(this, _uIHub.AllBranches, _uIHub);
+        PopUpClass = new UIPopUp(this, _uIHub.AllBranches, _uIHub, _uIHub.ReturnPopUpController);
         _escapeKeyFunction = EscapeKey.BackOneLevel;
     }
 
