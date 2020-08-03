@@ -3407,8 +3407,6 @@ MonoBehaviour:
     _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
-  _highlighted: {fileID: 0}
-  _selected: {fileID: 0}
 --- !u!114 &274292516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7342,7 +7340,9 @@ PrefabInstance:
     - target: {fileID: 7472274104923999175, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
       propertyPath: m_Text
-      value: Is Indie Pane
+      value: 'Is NonResolve
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 7472274104923999175, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
@@ -9774,8 +9774,6 @@ MonoBehaviour:
     _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
-  _highlighted: {fileID: 0}
-  _selected: {fileID: 0}
 --- !u!114 &620683491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20798,8 +20796,6 @@ MonoBehaviour:
     _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
-  _highlighted: {fileID: 0}
-  _selected: {fileID: 0}
 --- !u!114 &1478859610
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24736,8 +24732,6 @@ MonoBehaviour:
     _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
-  _highlighted: {fileID: 0}
-  _selected: {fileID: 0}
 --- !u!114 &1743252784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27447,8 +27441,6 @@ MonoBehaviour:
     _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
-  _highlighted: {fileID: 0}
-  _selected: {fileID: 0}
 --- !u!114 &2018220712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28682,7 +28674,9 @@ PrefabInstance:
     - target: {fileID: 7472274104923999175, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
       propertyPath: m_Text
-      value: Is Indie Pane
+      value: 'Is Resolve
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 7472274104923999175, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}

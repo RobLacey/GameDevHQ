@@ -51,6 +51,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private RectTransform _rectForTooltip;
     private UIToggles _toggleGroups;
     private bool _pointerOver;
+    private bool _inMenu;
 
     //Delegates
     private Action<UIEventTypes, bool> _startUiFunctions;
@@ -71,6 +72,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.Toggle_NotLinked;
     private bool CanGoToChildBranch => HasChildBranch & _navigation.CanNaviagte;
+    private void SetInMenu(bool isInMenu) => _inMenu = isInMenu;
 
 
     public bool IsDisabled
@@ -107,6 +109,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions += _sizeAndPos.OnAwake(transform, _enabledFunctions);
         _startUiFunctions += _swapImageOrText.OnAwake(IsSelected, _enabledFunctions);
         _startUiFunctions += _invertColourCorrection.OnAwake(_enabledFunctions);
+        UIHub.SetInMenu += SetInMenu;
     }
 
     private void OnDisable()
@@ -115,6 +118,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions -= _sizeAndPos.OnDisable();
         _startUiFunctions -= _swapImageOrText.OnDisable();
         _startUiFunctions -= _invertColourCorrection.OnDisable();
+        UIHub.SetInMenu -= SetInMenu;
     }
 
     private void Start()
@@ -123,7 +127,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _navigation.SetChildsParentBranch();
         _toggleGroups.SetUpToggleGroup(MyBranch.ThisGroupsUiNodes);
         
-        if (MyBranch.IsAPopUpBranch() || MyBranch.IsPause()) 
+        if (MyBranch.IsAPopUpBranch() || MyBranch.IsPauseMenuBranch()) 
             _escapeKeyFunction = EscapeKey.BackOneLevel;
 
         if (_colours.CanActivate && _colours.NoSettings)
@@ -148,7 +152,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         }
         DoHighlighted?.Invoke(this);
 
-        if ( MyBranch.AllowKeys && FindObjectOfType<UIHub>().InMenu) //ToDO Decouple ******
+        if ( MyBranch.AllowKeys && _inMenu)
         {
             SetAsHighlighted();
         }

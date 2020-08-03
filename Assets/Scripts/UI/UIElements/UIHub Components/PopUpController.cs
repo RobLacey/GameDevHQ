@@ -5,122 +5,119 @@ using UnityEngine;
 
 public class PopUpController : IMono
 {
-    private UIHub _uiHub;
-    public List<UIBranch> ActivePopUpsResolve { get; } = new List<UIBranch>();
-    public List<UIBranch> ActivePopUpsNonResolve { get; } = new List<UIBranch>();
-    //private int PopIndex { get; set; }
-    public bool NoActivePopUps => ActivePopUpsResolve.Count == 0
-                                  & ActivePopUpsNonResolve.Count == 0;
-
-    public static event Action<bool> NoResolvePopUps;
-    public static event Action<bool> NoNonResolvePopUps;
-
+    private readonly UIHub _uiHub;
+    
     public PopUpController(UIHub uiHub)
     {
         _uiHub = uiHub;
         OnEnable();
     }
     
+    //Properties
+    private List<UIBranch> ActiveResolvePopUpsList { get; } = new List<UIBranch>();
+    private List<UIBranch> ActiveNonResolvePopUpsList { get; } = new List<UIBranch>();
+    public bool NoActivePopUps => ActiveResolvePopUpsList.Count == 0
+                                  & ActiveNonResolvePopUpsList.Count == 0;
+    public bool NoActiveResolvePopUps => ActiveResolvePopUpsList.Count == 0;
+    public bool NoActiveNonResolvePopUps => ActiveNonResolvePopUpsList.Count == 0;
+    private UINode LastNodeBeforePopUp { get; set; }
+
+
+    //Deleagtes
+    public static event Action<bool> NoResolvePopUps;
+    public static event Action<bool> NoNonResolvePopUps;
+    
     public void OnEnable()
     {
-        UIPopUp.AddToResolvePopUp += AddToResolveList;
-        UIPopUp.AddToNonResolvePopUp += AddToNonResolveList;
+        Resolve.AddToResolvePopUp += AddToResolveList;
+        NonResolve.AddToNonResolvePopUp += AddToNonResolveList;
     }
 
     public void OnDisable()
     {
-        UIPopUp.AddToResolvePopUp -= AddToResolveList;
-        UIPopUp.AddToNonResolvePopUp -= AddToNonResolveList;
+        Resolve.AddToResolvePopUp -= AddToResolveList;
+        NonResolve.AddToNonResolvePopUp -= AddToNonResolveList;
     }
 
-    public void ActiveNextPopUp(List<UIBranch> popUpList)
+    public void ActiveNextPopUp()
     {
-        int index = popUpList.Count -1;
-        popUpList[index].LastHighlighted.SetNodeAsActive();
+        if (!NoActiveResolvePopUps)
+        {
+            int index = ActiveResolvePopUpsList.Count - 1;
+            ActiveResolvePopUpsList[index].LastHighlighted.SetNodeAsActive();
+        }
+        else if(!NoActiveNonResolvePopUps)
+        {
+            int index = ActiveNonResolvePopUpsList.Count - 1;
+            ActiveNonResolvePopUpsList[index].LastHighlighted.SetNodeAsActive();
+        }
     }
 
     private void AddToResolveList(UIBranch newResolve)
     {
-        if (ActivePopUpsResolve.Contains(newResolve)) return;
-        ActivePopUpsResolve.Add(newResolve);
+        if (ActiveResolvePopUpsList.Contains(newResolve)) return;
+        ActiveResolvePopUpsList.Add(newResolve);
         NoResolvePopUps?.Invoke(false);
     }
     
     private void AddToNonResolveList(UIBranch newNonResolve)
     {
-        if (ActivePopUpsNonResolve.Contains(newNonResolve)) return;
-        ActivePopUpsNonResolve.Add(newNonResolve);
+        if (ActiveNonResolvePopUpsList.Contains(newNonResolve)) return;
+        ActiveNonResolvePopUpsList.Add(newNonResolve);
         NoNonResolvePopUps?.Invoke(false);
     }
     
     public void RemoveFromActiveList_Resolve()
     {
-        int lastIndexItem = ActivePopUpsResolve.Count - 1;
-        var nextPopUp = ActivePopUpsResolve[lastIndexItem];
-        ActivePopUpsResolve.Remove(nextPopUp);
-    
-        if (ActivePopUpsResolve.Count > 0)
-        {
-            lastIndexItem = ActivePopUpsResolve.Count - 1;
-            nextPopUp.PopUpClass.RestoreLastPosition(ActivePopUpsResolve[lastIndexItem].LastHighlighted);
-        }
-        else
+        int lastIndexItem = ActiveResolvePopUpsList.Count - 1;
+        var nextPopUp = ActiveResolvePopUpsList[lastIndexItem];
+        ActiveResolvePopUpsList.Remove(nextPopUp);
+
+        if (NoActiveResolvePopUps)
         {
             NoResolvePopUps?.Invoke(true);
-
-            if (ActivePopUpsNonResolve.Count > 0)
-            {
-                lastIndexItem = ActivePopUpsNonResolve.Count - 1;
-                //PopIndex = lastIndexItem;
-                nextPopUp.PopUpClass.RestoreLastPosition(ActivePopUpsNonResolve[lastIndexItem].LastHighlighted);
-            }
-            else
-            {
-                nextPopUp.PopUpClass.RestoreLastPosition(_uiHub.LastNodeBeforePopUp);
-            }
-        }
-    }
-    
-    public void RemoveFromActiveList_NonResolve(/*UIBranch PopUp*/)
-    {
-        UIBranch nextPopUp = _uiHub.LastHighlighted.MyBranch;
-        ActivePopUpsNonResolve.Remove(nextPopUp);
-
-        if (ActivePopUpsNonResolve.Count > 0)
-        {
-            //PopIndex = 0;
-            ActiveNextPopUp(ActivePopUpsNonResolve);
-            nextPopUp.PopUpClass.RestoreLastPosition(ActivePopUpsNonResolve[0].LastHighlighted);
+            ActivateNextNonResolvePopUp(nextPopUp);
         }
         else
         {
+            lastIndexItem = ActiveResolvePopUpsList.Count - 1;
+            nextPopUp.PopUpBranch.RestoreLastPosition(ActiveResolvePopUpsList[lastIndexItem].LastHighlighted);
+        }
+    }
+
+    private void ActivateNextNonResolvePopUp(UIBranch nextPopUp)
+    {
+        if (NoActiveNonResolvePopUps)
+        {
+            nextPopUp.PopUpBranch.RestoreLastPosition(LastNodeBeforePopUp);
+        }
+        else
+        {
+            var lastIndexItem = ActiveNonResolvePopUpsList.Count - 1;
+            nextPopUp.PopUpBranch.RestoreLastPosition(ActiveNonResolvePopUpsList[lastIndexItem].LastHighlighted);
+        }
+    }
+
+    public void RemoveFromActiveList_NonResolve()
+    {
+        int lastIndexItem = ActiveNonResolvePopUpsList.Count - 1;
+        var nextPopUp = ActiveNonResolvePopUpsList[lastIndexItem];
+        ActiveNonResolvePopUpsList.Remove(nextPopUp);
+
+        if (NoActiveNonResolvePopUps)
+        {
             NoNonResolvePopUps?.Invoke(true);
-            nextPopUp.PopUpClass.RestoreLastPosition(_uiHub.LastNodeBeforePopUp);
+            nextPopUp.PopUpBranch.RestoreLastPosition(LastNodeBeforePopUp);
         }
-    }
-
-    public void ActivateNonResolvePopUps()
-    {
-        foreach (var item in ActivePopUpsNonResolve)
+        else
         {
-            //if (_uIHub.ActivePopUpsResolve.Count == 0)
-            if (ActivePopUpsResolve.Count == 0)
-            {
-                item.MyCanvasGroup.blocksRaycasts = true;
-            }
-
-            item.MyCanvas.enabled = true;
+            ActiveNextPopUp();
+            nextPopUp.PopUpBranch.RestoreLastPosition(ActiveNonResolvePopUpsList[0].LastHighlighted);
         }
     }
 
-    public void ActiveResolvePopUps()
+    public void SetLastNodeBeforePopUp(UINode lastNode)
     {
-        foreach (var item in ActivePopUpsResolve)
-        {
-            item.MyCanvasGroup.blocksRaycasts = true;
-            item.MyCanvas.enabled = true;
-        }
+        if (!lastNode.MyBranch.IsAPopUpBranch()) LastNodeBeforePopUp = lastNode;
     }
-
-
 }

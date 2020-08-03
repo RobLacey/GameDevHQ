@@ -12,7 +12,17 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
     private Vector3 _mousePos = Vector3.zero;
     private readonly ControlMethod _controlMethod;
     private bool _gameStarted;
+    private bool _noActiveResolvePopUps = true;
+    private bool _noActiveNonResolvePopUps;
     
+    public ChangeControl(UIHub newUiHub, ControlMethod controlMethod, PopUpController popUpController)
+    {
+        _uIHub = newUiHub;
+        _popUpController = popUpController;
+        _controlMethod = controlMethod;
+        OnEnable();
+    }
+
     //Properties
     private bool UsingMouse { get; set; }
     public bool UsingKeysOrCtrl { get; set; }
@@ -22,15 +32,13 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
     public UIBranch ActiveBranch { get; private set; }
     
     public bool GameIsPaused { get; private set; }
+    private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
+    private void SetNonResolveCount(bool activeNonResolvePopUps) => _noActiveNonResolvePopUps = activeNonResolvePopUps;
+    public void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
+    public void SaveSelected(UINode newNode) => LastSelected = newNode;
+    public void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
+    public void IsGamePaused(bool paused) => GameIsPaused = paused;
 
-    //Internal Class
-    public ChangeControl(UIHub newUiHub, ControlMethod controlMethod, PopUpController popUpController)
-    {
-        _uIHub = newUiHub;
-        _popUpController = popUpController;
-        _controlMethod = controlMethod;
-        OnEnable();
-    }
 
     public void OnEnable()
     {
@@ -38,6 +46,8 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
         UINode.DoSelected += SaveSelected;
         UIBranch.DoActiveBranch += SaveActiveBranch;
         UIHub.GamePaused += IsGamePaused;
+        PopUpController.NoResolvePopUps += SetResolveCount;
+        PopUpController.NoNonResolvePopUps += SetNonResolveCount;
     }
     
     public void OnDisable()
@@ -46,6 +56,8 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
         UINode.DoSelected -= SaveSelected;
         UIBranch.DoActiveBranch -= SaveActiveBranch;
         UIHub.GamePaused -= IsGamePaused;
+        PopUpController.NoResolvePopUps -= SetResolveCount;
+        PopUpController.NoNonResolvePopUps -= SetNonResolveCount;
     }
 
     public void StartGame()
@@ -104,13 +116,9 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
         {
             LastHighlighted.SetAsHighlighted();
         }
-        else if (_popUpController.ActivePopUpsResolve.Count > 0)
+        else if(!_noActiveResolvePopUps || !_noActiveNonResolvePopUps)
         {
-            _popUpController.ActiveNextPopUp(_popUpController.ActivePopUpsResolve);
-        }
-        else if (_popUpController.ActivePopUpsNonResolve.Count > 0)
-        {
-            _popUpController.ActiveNextPopUp(_popUpController.ActivePopUpsNonResolve);
+            _popUpController.ActiveNextPopUp();
         }
         else
         {
@@ -119,7 +127,7 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
         }
     }
 
-    public void SetAllowKeys()
+    private void SetAllowKeys()
     {
         if (_controlMethod == ControlMethod.Mouse) return;
         
@@ -129,10 +137,4 @@ public class ChangeControl : INodeData, IBranchData, IHUbData, IMono
         }
     }
 
-    public void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
-
-    public void SaveSelected(UINode newNode) => LastSelected = newNode;
-
-    public void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
-    public void IsGamePaused(bool paused) => GameIsPaused = paused;
 }

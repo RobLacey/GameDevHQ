@@ -30,11 +30,16 @@ public partial class UIBranch
     private void InTweenCallback()
     {
         if (!IsAPopUpBranch() && _uIHub.CanStart) MyCanvasGroup.blocksRaycasts = true;
-        if (IsAPopUpBranch()) PopUpClass.ManagePopUpResolve();
+        if (IsNonResolvePopUp && !_noActiveResolvePopUps)
+        {
+            DontSetAsActive = true;
+        }
+
+        //if (IsAPopUpBranch()) PopUpClass.ManagePopUpResolve();
 
         if (!DontSetAsActive)
         {
-            //SaveLastHighlighted(LastHighlighted);
+            MyCanvasGroup.blocksRaycasts = true;
             LastHighlighted.SetNodeAsActive();
         }
 

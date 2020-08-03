@@ -261,12 +261,17 @@
                 <e p="ColourScheme.cs" t="Include" />
               </e>
               <e p="UI Utilities" t="Include">
-                <e p="INodeData.cs" t="Include" />
+                <e p="Interfaces.cs" t="Include" />
                 <e p="StaticCoroutine.cs" t="Include" />
                 <e p="UIEnums.cs" t="Include" />
               </e>
               <e p="UIBranch Components" t="Include">
                 <e p="GroupList.cs" t="Include" />
+                <e p="NonResolve.cs" t="Include" />
+                <e p="PauseMenu.cs" t="Include" />
+                <e p="Resolve.cs" t="Include" />
+                <e p="ScreenData.cs" t="Include" />
+                <e p="Timed.cs" t="Include" />
                 <e p="UIBranch Partial Classes" t="Include">
                   <e p="UIBranch.EditorScripts.cs" t="Include" />
                   <e p="UIBranch.Properties.cs" t="Include" />

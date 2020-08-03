@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
@@ -12,13 +11,14 @@ using UnityEngine.Events;
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
-public partial class UIBranch : MonoBehaviour, INodeData
+public partial class UIBranch : MonoBehaviour, INodeData, IHUbData
 {
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [SerializeField] BranchType _branchType = BranchType.StandardUI;
     [SerializeField] [ShowIf("IsTimedPopUp")] float _timer = 1f;
-    [SerializeField] ScreenType _screenType = ScreenType.FullScreen;
+    [SerializeField] [HideIf(EConditionOperator.Or, "IsNonResolvePopUp", "IsTimedPopUp")] 
+    ScreenType _screenType = ScreenType.FullScreen;
     [SerializeField] [ShowIf("TurnOffPopUps")] IsActive _turnOffPopUps = IsActive.No;
     [SerializeField] [HideIf("IsAPopUpBranch")] IsActive _stayOn = IsActive.No;
     [SerializeField] [ShowIf("IsHome")] [Label("Tween on Return To Home")] IsActive _tweenOnHome = IsActive.No;
@@ -36,16 +36,21 @@ public partial class UIBranch : MonoBehaviour, INodeData
     [ReorderableList] List<GroupList> _groupsList;
     [SerializeField] BranchEvents _branchEvents;
 
-    [SerializeField] private UINode _highlighted;
-    [SerializeField] private UINode _selected;
-
     //Variables
     // ReSharper disable once IdentifierTypo
     UITweener _uiTweener;
     int _groupIndex;
     Action _onFinishedTrigger;
     UIHub _uIHub;
-    
+    private bool _noActiveResolvePopUps = true;
+
+    public bool GameIsPaused { get; private set; }
+
+    public IPopUp PopUpBranch { get; private set; }
+    private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
+
+    public void IsGamePaused(bool paused) => GameIsPaused = paused;
+
     //Delegates
     public static event Action<UIBranch> DoActiveBranch; 
 
@@ -66,19 +71,27 @@ public partial class UIBranch : MonoBehaviour, INodeData
         _uiTweener.OnAwake();
         SetNewParentBranch(this);
         SetStartPositions();
+        CheckIfPause();
+        CheckIfResolvePopUp();
+        CheckIfNonResolvePopUp();
+        CheckIfTimedPopUp();
     }
 
     private void OnEnable()
     {
+        UIHub.GamePaused += IsGamePaused;
         UINode.DoHighlighted += SaveHighlighted;
         UINode.DoSelected += SaveSelected;
+        PopUpController.NoResolvePopUps += SetResolveCount;
     }
 
     private void OnDisable()
     {
+        UIHub.GamePaused -= IsGamePaused;
         UINode.DoHighlighted -= SaveHighlighted;
         UINode.DoSelected -= SaveSelected;
-        PopUpClass?.OnDisable();
+        PopUpController.NoResolvePopUps -= SetResolveCount;
+        PopUpBranch?.OnDisable();
         PauseMenuClass?.OnDisable();
     }
 
@@ -92,8 +105,6 @@ public partial class UIBranch : MonoBehaviour, INodeData
     {
         MyCanvasGroup.blocksRaycasts = false;
         CheckIfHomeScreen();
-        CheckIfPause();
-        CheckIfPopUp();
     }
 
     private void CheckIfHomeScreen()
@@ -113,15 +124,37 @@ public partial class UIBranch : MonoBehaviour, INodeData
     private void CheckIfPause()
     {
         if (_branchType != BranchType.PauseMenu) return;
-        PauseMenuClass = new UIPopUp(this, _uIHub.AllBranches, _uIHub, _uIHub.ReturnPopUpController);
+        PauseMenuClass = new PauseMenu(this, _uIHub.AllBranches);
         _escapeKeyFunction = EscapeKey.BackOneLevel;
     }
 
-    private void CheckIfPopUp()
+    private void CheckIfResolvePopUp()
     {
-        if (!IsAPopUpBranch()) return;
-        PopUpClass = new UIPopUp(this, _uIHub.AllBranches, _uIHub, _uIHub.ReturnPopUpController);
-        _escapeKeyFunction = EscapeKey.BackOneLevel;
+        if (IsResolvePopUp)
+        {
+            PopUpBranch = new Resolve(this, _uIHub.AllBranches, _uIHub);
+            _escapeKeyFunction = EscapeKey.BackOneLevel;
+        }
+    }
+    
+    private void CheckIfNonResolvePopUp()
+    {
+        if (IsNonResolvePopUp)
+        {
+            PopUpBranch = new NonResolve(this, _uIHub.AllBranches, _uIHub);
+            _screenType = ScreenType.Normal;
+            _escapeKeyFunction = EscapeKey.BackOneLevel;
+        }
+    }
+    
+    private void CheckIfTimedPopUp()
+    {
+        if (IsTimedPopUp)
+        {
+            PopUpBranch = new Timed(this);
+            _screenType = ScreenType.Normal;
+            _escapeKeyFunction = EscapeKey.BackOneLevel;
+        }
     }
 
     private void SetStartPositions()
@@ -198,7 +231,7 @@ public partial class UIBranch : MonoBehaviour, INodeData
         }
 
         if (ScreenType != ScreenType.FullScreen) return;
-        if (_uIHub.OnHomeScreen && !IsAPopUpBranch() && !IsPause())
+        if (_uIHub.OnHomeScreen && !IsAPopUpBranch() && !IsPauseMenuBranch())
         {
             HomeGroup.ClearHomeScreen(this, _turnOffPopUps);
         }
@@ -217,59 +250,53 @@ public partial class UIBranch : MonoBehaviour, INodeData
         MyCanvas.enabled = true;
     }
 
-    // public void SaveLastHighlighted(UINode newNode)
-    // {
-    //     _uIHub.SetLastHighlighted(newNode);
-    //     LastHighlighted = newNode;
-    // }
-
-    // public void SaveLastSelected(UINode lastSelected)
-    // {
-    //     _uIHub.SetLastSelected(lastSelected);
-    //     LastSelected = lastSelected;
-    // }
-
     public void SwitchBranchGroup(SwitchType switchType)
     {
         _groupIndex = UIBranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, switchType);
     }
 
     // ReSharper disable once UnusedMember.Global
-    public void StartPopUpScreen() => PopUpClass.StartPopUp();
-    
+    public void StartPopUpScreen()
+    {
+        PopUpBranch?.StartPopUp();
+    }
+
     public void SaveHighlighted(UINode newNode)
     {
         if(_uIHub.ActiveBranch != this) return;
         for (var i = ThisGroupsUiNodes.Length - 1; i >= 0; i--)
         {
-            if (ThisGroupsUiNodes[i] == newNode)
-            {
-                _highlighted = newNode;
-                LastHighlighted = newNode;
-            }
-            else
-            {
-                //Debug.Log("Unhighlight : " + _highlighted);
-            }
-        
+            if (ThisGroupsUiNodes[i] != newNode) continue;
+            LastHighlighted = newNode;
         }
-
     }
 
     public void SaveSelected(UINode newNode)
     {
-        //if (_uIHub.ActiveBranch != this) return;
         for (var i = ThisGroupsUiNodes.Length - 1; i >= 0; i--)
         {
             if (ThisGroupsUiNodes[i] == newNode)
             {
-                _selected = newNode;
                 LastSelected = newNode;
             }
-            else
-            {
-                //Debug.Log("Unhighlight : " + _highlighted);
-            }
         }
+    }
+
+    public bool CheckAndDisableBranchCanvas(ScreenType myBranchScreenType)
+    {
+        if (MyCanvas.enabled)
+        {
+            if (myBranchScreenType == ScreenType.FullScreen)
+            {
+                MyCanvas.enabled = false;
+            }
+
+            if (GameIsPaused || !IsResolvePopUp)
+            {
+                MyCanvasGroup.blocksRaycasts = false;
+            }
+            return true;
+        }
+        return false;
     }
 }

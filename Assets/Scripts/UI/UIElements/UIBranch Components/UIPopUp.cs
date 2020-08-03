@@ -1,281 +1,160 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using EnhancedHierarchy;
+﻿
 using UnityEngine;
 
-public class UIPopUp : IHUbData, IMono
+public class UIPopUp : IPopUp, IHUbData, INodeData
 {
-    public UIPopUp(UIBranch branch, UIBranch[] branchList, UIHub newHub, PopUpController popUpController)
-    {
-        _uIHub = newHub;
-        _popUpController = popUpController;
-        myBranch = branch;
-        _allBranches = branchList;
-        OnEnable();
-    }
-
-    //Variables
-    UIHub _uIHub;
-    private PopUpController _popUpController;
-    private UIBranch myBranch;
-    UIBranch[] _allBranches;
-    bool _running;
-    Coroutine _coroutine;
-     private bool _noActiveResolvePopUps = true;
-     private bool _noActiveNonResolvePopUps;
-    
-    public static event Action<UIBranch> AddToResolvePopUp;
-    public static event Action<UIBranch> AddToNonResolvePopUp;
-
-    //Internal Classes
-    private class Data
-    {
-        //public bool _wasInMenu;
-        public List<UIBranch> _clearedBranches = new List<UIBranch>();
-        public UINode lastHighlighted;
-        public UINode lastSelected;
-    }
+    protected IGameToMenuSwitching _gameToMenuSwitching;
+    protected UIBranch _myBranch;
+    protected UIBranch[] _allBranches;
+    protected bool _noActiveResolvePopUps = true;
+    private bool _noActiveNonResolvePopUps = true;
+    private bool _isInMenu;
 
     //Properties
-    private Data ClearedScreenData { get; set; } = new Data();
-    private bool InMenuBeforePopUp { get; set; }
+    protected ScreenData ScreenData { get; } = new ScreenData();
+    private bool InGameBeforePopUp { get; set; }
     public bool GameIsPaused { get; private set; }
     private bool NoActivePopUps => _noActiveResolvePopUps && _noActiveNonResolvePopUps;
+    public void IsGamePaused(bool paused) => GameIsPaused = paused;
+    private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
+    private void SetNonResolveCount(bool activeNonResolvePopUps) => _noActiveNonResolvePopUps = activeNonResolvePopUps;
+    private void SetSetInMenu(bool inMenu) => _isInMenu = inMenu;
+    public UINode LastHighlighted { get; private set; }
+    public UINode LastSelected { get; private set; }
+    public void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
+    public void SaveSelected(UINode newNode) => LastSelected = newNode;
 
     public void OnEnable()
     {
         UIHub.GamePaused += IsGamePaused;
+        UIHub.SetInMenu += SetSetInMenu;
+        UINode.DoHighlighted += SaveHighlighted;
+        UINode.DoSelected += SaveSelected;
         PopUpController.NoResolvePopUps += SetResolveCount;
         PopUpController.NoNonResolvePopUps += SetNonResolveCount;
     }
-    public void OnDisable( )
+
+    public void OnDisable()
     {
         UIHub.GamePaused -= IsGamePaused;
+        UIHub.SetInMenu -= SetSetInMenu;
+        UINode.DoHighlighted -= SaveHighlighted;
+        UINode.DoSelected -= SaveSelected;
         PopUpController.NoResolvePopUps -= SetResolveCount;
         PopUpController.NoNonResolvePopUps -= SetNonResolveCount;
     }
-
-    public void IsGamePaused(bool paused) => GameIsPaused = paused;
-    private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
-    private void SetNonResolveCount(bool activeNonResolvePopUps) => _noActiveNonResolvePopUps = activeNonResolvePopUps;
-
-    /// <summary> Starts any PopUp from other classes or Inpsector Event calls </summary>     
+    
     public void StartPopUp()
     {
-        if (/*_uIHub.*/GameIsPaused) return;
-        
-        if (!myBranch.MyCanvas.enabled)
+        if (GameIsPaused) return;
+        if (!_myBranch.MyCanvas.enabled)
         {
             SetUpPopUp();
         }
-        else
+    }
+    
+    protected virtual void SetUpPopUp()
+    {
+        if (!_isInMenu && NoActivePopUps)
         {
-            if (myBranch.IsTimedPopUp)
-            {
-                StaticCoroutine.StopCoroutines(_coroutine);
-                _coroutine = StaticCoroutine.StartCoroutine(TimedPopUpProcess());
-            }
+            InGameBeforePopUp = true;
+            _gameToMenuSwitching.SwitchBetweenGameAndMenu();
         }
     }
-
-    private void SetUpPopUp()
+    
+    protected void PopUpStartProcess()
     {
-        if (!_uIHub.InMenu && NoActivePopUps)
-        {
-            InMenuBeforePopUp = false;
-            _uIHub.GameToMenuSwitching();
-        }
-
-        if (myBranch.IsResolvePopUp)
-        {
-            StartActivePopUps_Resolve();
-        }
-        else if (myBranch.IsNonResolvePopUp)
-        {
-            StartActivePopUp_NonResolve();
-        }
-        else if (myBranch.IsTimedPopUp)
-        {
-            _coroutine = StaticCoroutine.StartCoroutine(TimedPopUpProcess());
-        }
-    }
-
-    private void StartActivePopUps_Resolve()
-    {
-        //if (!_uIHub.ActivePopUpsResolve.Contains(myBranch))
-        //{
-            //_uIHub.ActivePopUpsResolve.Add(myBranch);
-            AddToResolvePopUp?.Invoke(myBranch);
-       // }
-        PopUpStartProcess();
-    }
-
-    private void StartActivePopUp_NonResolve()
-    {
-        //if (!_uIHub.ActivePopUpsNonResolve.Contains(myBranch))
-         // {
-            //_uIHub.ActivePopUpsNonResolve.Add(myBranch);
-            AddToNonResolvePopUp?.Invoke(myBranch);
-         // }
-        PopUpStartProcess();
-    }
-
-    public void PauseMenu()
-    {
-        if (/*_uIHub.*/GameIsPaused)
-        {
-            //_uIHub.GameIsPaused = false;
-            PopUpStartProcess();
-        }
-        else
-        {
-            RestoreLastPosition(ClearedScreenData.lastHighlighted);
-            //_uIHub.GameIsPaused = true;
-        }
-    }
-
-    /// <summary> Directly Starts up the popup. Stores data, clears screen, deactivates raycasts etc </summary>     
-    private void PopUpStartProcess()
-    {
-        StoreClearScreenData();
+        StoreScreenData();
         
-        //if (!_uIHub.InMenu)
-
         foreach (var branch in _allBranches)
         {
-            if (branch.MyCanvas.enabled && branch != myBranch)
-            {
-                if (!branch.IsAPopUpBranch()) ClearedScreenData._clearedBranches.Add(branch);
-                IfBranchIsFullscreen(branch);
-                HandlePopUpTypes(branch);
-            }
+            if (branch == _myBranch) continue;
+            if (!branch.CheckAndDisableBranchCanvas(_myBranch.ScreenType)) continue;
+            ScreenData._clearedBranches.Add(branch);
         }
         ActivatePopUp();
     }
-    private void StoreClearScreenData()
+    
+    private void StoreScreenData()
     {
-        //ClearedScreenData._wasInMenu = _uIHub.InMenu;
-        //ClearedScreenData._wasInMenu = _uIHub.inMenuBeforePopUp;
-        ClearedScreenData._clearedBranches.Clear();
-        ClearedScreenData.lastSelected = _uIHub.LastSelected;
-        Debug.Log(_uIHub.LastHighlighted);
-        ClearedScreenData.lastHighlighted = _uIHub.ActiveBranch.LastHighlighted;
-    }
-
-    private void IfBranchIsFullscreen(UIBranch branch)
-    {
-        if (myBranch.ScreenType != ScreenType.FullScreen) return;
-        branch.MyCanvas.enabled = false;
-    }
-
-    private void HandlePopUpTypes(UIBranch branch)
-    {
-        if (myBranch.IsResolvePopUp && !branch.IsResolvePopUp)
-        {
-            branch.MyCanvasGroup.blocksRaycasts = false;
-        }
-
-        if (!myBranch.IsPause() && !branch.IsPause()) return; //To do with pause
-        branch.MyCanvasGroup.blocksRaycasts = false;
-        myBranch.MyCanvasGroup.blocksRaycasts = true; //Ensures Pause can't be acciently deactivated
+        ScreenData._clearedBranches.Clear();
+        ScreenData._lastSelected = LastSelected;
+        ScreenData._lastHighlighted = LastHighlighted;
     }
     
-    private void ActivatePopUp() //Todo maybe add to wait list
+    private void ActivatePopUp()
     {
-        //if (myBranch.IsNonResolvePopUp && _uIHub.ActivePopUpsResolve.Count > 0)
-        if (myBranch.IsNonResolvePopUp && _noActiveNonResolvePopUps)
-        {
-            myBranch.DontSetAsActive = true;
-        }
-        myBranch.LastSelected.Audio.Play(UIEventTypes.Selected);
-        //if(myBranch.IsPause()) myBranch.LastSelected.SetAsSelected();    
-        myBranch.MoveToThisBranch();
+        _myBranch.LastSelected.Audio.Play(UIEventTypes.Selected);
+        _myBranch.MoveToThisBranch();
     }
     
-    private IEnumerator TimedPopUpProcess()
+    public void RestoreLastPosition(UINode lastNode)
     {
-        if (!_running)
+        if (_myBranch.WhenToMove == WhenToMove.AfterEndOfTween)
         {
-            myBranch.DontSetAsActive = true;
-            myBranch.MoveToThisBranch();
-            _running = true;
-        }
-        yield return new WaitForSeconds(myBranch.Timer);
-        _running = false;
-        myBranch.StartOutTween();
-    }
-
-    public void RestoreLastPosition(UINode lastHomeGroupNode = null)
-    {
-        if (myBranch.WhenToMove == WhenToMove.AfterEndOfTween)
-        {
-            myBranch.StartOutTween(()=> EndOfTweenActions(lastHomeGroupNode));
+            _myBranch.StartOutTween(() => EndOfTweenActions(lastNode));
         }
         else
         {
-            myBranch.StartOutTween();
-            EndOfTweenActions(lastHomeGroupNode);
+            _myBranch.StartOutTween();
+            EndOfTweenActions(lastNode);
         }
     }
 
-    private void EndOfTweenActions(UINode lastHomeGroupNode)
+    private void EndOfTweenActions(UINode lastNode)
     {
-        /*if (myBranch.ScreenType == ScreenType.FullScreen)*/ RestoreScreen();
-        
-        if (lastHomeGroupNode.MyBranch.MyParentBranch)
+        RestoreScreen();
+        SetLastSelected(lastNode);
+        if (NoActivePopUps && InGameBeforePopUp)
         {
-            //_uIHub.SetLastSelected(lastHomeGroupNode.MyBranch.MyParentBranch.LastSelected);                            
-            lastHomeGroupNode.MyBranch.MyParentBranch.LastSelected.SetAsSelected();                            
+            ReturnToGame();
         }
         else
         {
-            //_uIHub.SetLastSelected(ClearedScreenData.lastSelected);
-            ClearedScreenData.lastSelected.SetAsSelected();
+            ToLastActiveNode(lastNode);
         }
-
-        //TODO Check there is a highlight action
-        //_uIHub.SetLastHighlighted(lastHomeGroupNode);
-
-        if (NoActivePopUps && !InMenuBeforePopUp)
-        {
-            _uIHub.GameToMenuSwitching();
-            InMenuBeforePopUp = true;
-        }
-
-        lastHomeGroupNode.MyBranch.TweenOnChange = false;
-        lastHomeGroupNode.MyBranch.MoveToThisBranch();
-        /*if (myBranch.AllowKeys && _uIHub.InMenu)*/ //lastHomeGroupNode.SetNodeAsActive();
     }
 
-    private void RestoreScreen()
+    private void ReturnToGame()
     {
-        foreach (var branch in ClearedScreenData._clearedBranches)
+        _gameToMenuSwitching.SwitchBetweenGameAndMenu();
+        InGameBeforePopUp = false;
+    }
+
+    private void ToLastActiveNode(UINode lastNode)
+    {
+        lastNode.MyBranch.TweenOnChange = false;
+        lastNode.MyBranch.MoveToThisBranch();
+    }
+
+    private void SetLastSelected(UINode lastNode)
+    {
+        if (IfLastNodeHasParent(lastNode))
         {
-            if (/*_uIHub.*/GameIsPaused) continue;
-            //if (_uIHub.ActivePopUpsResolve.Count == 0)
+            lastNode.MyBranch.MyParentBranch.LastSelected.SetAsSelected();
+        }
+        else
+        {
+            ScreenData._lastSelected.SetAsSelected();
+        }
+    }
+
+    private bool IfLastNodeHasParent(UINode lastHomeGroupNode)
+    {
+        return lastHomeGroupNode.MyBranch.MyParentBranch;
+    }
+
+    protected virtual void RestoreScreen()
+    {
+        foreach (var branch in ScreenData._clearedBranches)
+        {
+            if (GameIsPaused) continue;
             if (_noActiveResolvePopUps)
             {
                 branch.MyCanvasGroup.blocksRaycasts = true;
             }
-            branch.MyCanvas.enabled = true;
         }
+    }
 
-        _popUpController.ActiveResolvePopUps();
-        _popUpController.ActivateNonResolvePopUps();
-    }
-    
-    public void ManagePopUpResolve()
-    {
-        //if (_uIHub.ActivePopUpsResolve.Count > 0 && !myBranch.IsResolvePopUp)
-        if (!_noActiveResolvePopUps || myBranch.IsResolvePopUp)
-        {
-            myBranch.MyCanvasGroup.blocksRaycasts = true;
-        }
-        else
-        {
-            myBranch.MyCanvasGroup.blocksRaycasts = false;
-        }
-    }
 }
 

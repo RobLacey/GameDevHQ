@@ -14,10 +14,9 @@ public partial class UIHub
     [ShowNativeProperty] public UINode LastHighlighted { get; private set; }
     [ShowNativeProperty] public UIBranch ActiveBranch { get; private set; }
     [ShowNativeProperty] private bool GameIsPaused { get; set; }
-    public UINode LastNodeBeforePopUp { get; private set; }
     public int HomeGroupIndex { get; set; }
     public bool OnHomeScreen { get; set; }
-    public bool InMenu { get; private set; } = true;
+    private bool InMenu { get; set; } = true;
     public bool CanStart { get; private set; }
 
     private void SetLastSelected(UINode newNode)
@@ -45,7 +44,7 @@ public partial class UIHub
 
     private void WhenOnHomeScreen(UINode newNode)
     {
-        if (newNode.MyBranch.IsAPopUpBranch() || newNode.MyBranch.IsPause()) return;
+        if (newNode.MyBranch.IsAPopUpBranch() || newNode.MyBranch.IsPauseMenuBranch()) return;
 
         while (newNode.MyBranch != newNode.MyBranch.MyParentBranch)
         {
@@ -63,8 +62,7 @@ public partial class UIHub
         if (newNode == LastHighlighted) return;
         LastHighlighted.SetNotHighlighted();
         LastHighlighted = newNode;
-        //ActiveBranch = newNode.MyBranch;
-        if (!newNode.MyBranch.IsAPopUpBranch() && !GameIsPaused) LastNodeBeforePopUp = newNode; //Move
+        if(!GameIsPaused)_popUpController.SetLastNodeBeforePopUp(newNode);
         if (OnHomeScreen) _uiHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch);
         EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
     }

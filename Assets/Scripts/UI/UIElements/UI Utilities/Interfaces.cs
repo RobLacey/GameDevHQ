@@ -26,3 +26,24 @@ public interface IMono
     void OnDisable();
 }
 
+public interface IStartPopUp
+{
+    void StartPopUp();
+    void RestoreLastPosition(UINode lastHomeGroupNode = null);
+}
+
+public interface IPauseMenu
+{
+    void StartPauseMenu(bool isGamePaused);
+}
+
+public interface IPopUp : IMono
+{
+    void StartPopUp();
+    void RestoreLastPosition(UINode lastNode = null);
+}
+
+public interface IGameToMenuSwitching
+{
+    void SwitchBetweenGameAndMenu();
+}

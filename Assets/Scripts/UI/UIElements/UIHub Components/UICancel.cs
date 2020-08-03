@@ -13,15 +13,17 @@ public class UICancel : INodeData, IBranchData, IHUbData, IMono
     private bool _noActiveResolvePopUps = true;
     private bool _noActiveNonResolvePopUps = true;
 
+    public UICancel(UIHub uIHub, EscapeKey globalSetting, UIBranch[] homeBranches, PopUpController popUpController)
+    {
+        _uIHub = uIHub;
+        _popUpController = popUpController;
+        _globalEscapeSetting = globalSetting;
+        _homeGroup = homeBranches;
+        OnEnable();
+    }
 
     //Properties
-    private bool IsStayOnOrInternalBranch => LastSelected.MyBranch.StayOn 
-                                   || LastSelected.HasChildBranch.MyBranchType == BranchType.Internal;
-    private bool IsANonResolvePopUp => LastHighlighted.MyBranch.IsNonResolvePopUp 
-                                                  && !/*_uIHub.*/GameIsPaused;
-    private bool ActiveResolvePopUps => !_noActiveResolvePopUps  && !/*_uIHub.*/GameIsPaused;
-    private bool IsPausedAndPauseMenu => /*_uIHub.*/GameIsPaused 
-                                         && _uIHub.ActiveBranch.MyBranchType == BranchType.PauseMenu;
+    private bool IsStayOnOrInternalBranch => LastSelected.MyBranch.StayOn; 
     private bool CanEnterPauseOptionsScreen =>
         (NoActivePopUps && LastSelected.HasChildBranch.MyCanvas.enabled == false)
         && _uIHub.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
@@ -33,17 +35,11 @@ public class UICancel : INodeData, IBranchData, IHUbData, IMono
      private bool NoActivePopUps => _noActiveResolvePopUps && _noActiveNonResolvePopUps;
      private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
      private void SetNonResolveCount(bool activeNonResolvePopUps) => _noActiveNonResolvePopUps = activeNonResolvePopUps;
-
-
-     public UICancel(UIHub uIHub, EscapeKey globalSetting, UIBranch[] homeBranches, PopUpController popUpController)
-    {
-        _uIHub = uIHub;
-        _popUpController = popUpController;
-        _globalEscapeSetting = globalSetting;
-        _homeGroup = homeBranches;
-        OnEnable();
-    }
-    
+     public void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
+     public void SaveSelected(UINode newNode) => LastSelected = newNode;
+     public void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
+     public void IsGamePaused(bool paused) => GameIsPaused = paused;
+     
     public void OnEnable()
     {
         UINode.DoHighlighted += SaveHighlighted;
@@ -52,7 +48,6 @@ public class UICancel : INodeData, IBranchData, IHUbData, IMono
         UIHub.GamePaused += IsGamePaused;
         PopUpController.NoResolvePopUps += SetResolveCount;
         PopUpController.NoNonResolvePopUps += SetNonResolveCount;
-
     }
 
     public void OnDisable()
@@ -63,18 +58,17 @@ public class UICancel : INodeData, IBranchData, IHUbData, IMono
         UIHub.GamePaused -= IsGamePaused;
         PopUpController.NoResolvePopUps -= SetResolveCount;
         PopUpController.NoNonResolvePopUps -= SetNonResolveCount;
-
     }
 
     public void CancelPressed()
     {
-        if(/*_uIHub.*/ActiveBranch.IsResolvePopUp) return; //Can't just cancel a resolve PopUp
+        if(ActiveBranch.IsResolvePopUp) return; //Can't just cancel a resolve PopUp
         
-        if (/*_uIHub.*/ActiveBranch.FromHotKey)
+        if (ActiveBranch.FromHotKey)
         {
             CancelOrBack(EscapeKey.BackToHome);
         }
-        else if (/*_uIHub.*/GameIsPaused || /*_uIHub.*/ActiveBranch.IsNonResolvePopUp)
+        else if (GameIsPaused || ActiveBranch.IsNonResolvePopUp)
         {
             ProcessCancelType(EscapeKey.BackOneLevel);
         }
@@ -84,16 +78,16 @@ public class UICancel : INodeData, IBranchData, IHUbData, IMono
         }
         else
         {
-            ProcessCancelType(/*_uIHub.*/LastSelected.HasChildBranch.EscapeKeySetting);
+            ProcessCancelType(LastSelected.HasChildBranch.EscapeKeySetting);
         }
     }
     
     public void CancelOrBack(EscapeKey escapeKey)
     {
-        if (/*_uIHub.*/ActiveBranch.FromHotKey)
+        if (ActiveBranch.FromHotKey)
         {
-            /*_uIHub.*/ActiveBranch.FromHotKey = false;
-            /*_uIHub.*/LastSelected.SetNotSelected_NoEffects();
+            ActiveBranch.FromHotKey = false;
+            LastSelected.SetNotSelected_NoEffects();
         }
         ProcessCancelType(escapeKey);
     }
@@ -116,69 +110,48 @@ public class UICancel : INodeData, IBranchData, IHUbData, IMono
 
     private void StartCancelProcess(Action endAction) 
     {
-        /*_uIHub.*/LastSelected.Audio.Play(UIEventTypes.Cancelled);
+        LastSelected.Audio.Play(UIEventTypes.Cancelled);
 
-        if ( /*_uIHub.*/ActiveBranch.IsAPopUpBranch() || /*_uIHub.*/ActiveBranch.IsPause())
+        if (ActiveBranch.IsAPopUpBranch() || ActiveBranch.IsPauseMenuBranch())
         {
             endAction.Invoke();
             return;
         }
         
-        if(/*_uIHub.*/ActiveBranch == /*_uIHub.*/ActiveBranch.MyParentBranch) return; //Stops Tween Error when no child
+        if(ActiveBranch == ActiveBranch.MyParentBranch) return; //Stops Tween Error when no child
         
-        if (/*_uIHub.*/ActiveBranch.WhenToMove == WhenToMove.AfterEndOfTween)
+        if (ActiveBranch.WhenToMove == WhenToMove.AfterEndOfTween)
         {
-            /*_uIHub.*/ActiveBranch.StartOutTween(endAction.Invoke);
+            ActiveBranch.StartOutTween(endAction.Invoke);
         }
         else
         {
-            /*_uIHub.*/ActiveBranch.StartOutTween();
+            ActiveBranch.StartOutTween();
             endAction.Invoke();
         }
-        // if(!_uIHub.LastSelected.HasChildBranch) return; //Stops Tween Error when no child
-        //
-        // if (_uIHub.LastSelected.HasChildBranch.WhenToMove == WhenToMove.AfterEndOfTween)
-        // {
-        //     _uIHub.LastSelected.HasChildBranch.StartOutTween(endAction.Invoke);
-        // }
-        // else
-        // {
-        //     _uIHub.LastSelected.HasChildBranch.StartOutTween();
-        //     endAction.Invoke();
-        // }
     }
 
     private void BackOneLevel()
     {
-       // var lastSelected = _uIHub.LastSelected;
+        if (LastSelected.HasChildBranch && IsStayOnOrInternalBranch) LastSelected.MyBranch.TweenOnChange = false;
 
-        if (/*lastSelected.*/ LastSelected.HasChildBranch && IsStayOnOrInternalBranch) /*lastSelected.*/ LastSelected.MyBranch.TweenOnChange = false;
-
-        if (IsPausedAndPauseMenu)
+        if (GameIsPaused)
         {
-            //lastSelected.MyBranch.TweenOnChange = true;
             _uIHub.PauseOptionMenuPressed();
-            return;
         }
-
-        if (ActiveResolvePopUps)
+        else if (!_noActiveResolvePopUps)
         {
             _popUpController.RemoveFromActiveList_Resolve();
-
-            //HandleRemovingPopUps_Resolve();
         }
-        else if (IsANonResolvePopUp)
+        else if (!_noActiveNonResolvePopUps)
         {
-            Debug.Log("Here");
-            //*_uIHub.*/LastHighlighted.MyBranch.PopUpClass.RemoveFromActiveList_NonResolve();
-            /*_uIHub.*/ _popUpController.RemoveFromActiveList_NonResolve(/*LastHighlighted.MyBranch*/);
+            _popUpController.RemoveFromActiveList_NonResolve();
         }
         else
         {
-            /*lastSelected*/LastSelected.SetNotSelected_NoEffects();
-            //lastSelected.MyBranch.SaveLastSelected(lastSelected);
-            /*lastSelected*/LastSelected.SetAsSelected();
-            /*lastSelected*/LastSelected.MyBranch.MoveToThisBranch();
+            LastSelected.SetNotSelected_NoEffects();
+            LastSelected.SetAsSelected();
+            LastSelected.MyBranch.MoveToThisBranch();
         }
     }
 
@@ -187,15 +160,7 @@ public class UICancel : INodeData, IBranchData, IHUbData, IMono
         int index = _uIHub.HomeGroupIndex;
         if (_uIHub.OnHomeScreen) _homeGroup[index].TweenOnChange = false;
         _homeGroup[index].LastSelected.Deactivate();
-        //_homeGroup[index].LastSelected.MyBranch.SaveLastSelected(_homeGroup[index].LastSelected);
         _homeGroup[index].LastSelected.SetAsSelected();
         _homeGroup[index].MoveToThisBranch();
     }
-    
-    public void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
-
-    public void SaveSelected(UINode newNode) => LastSelected = newNode;
-
-    public void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
-    public void IsGamePaused(bool paused) => GameIsPaused = paused;
 }

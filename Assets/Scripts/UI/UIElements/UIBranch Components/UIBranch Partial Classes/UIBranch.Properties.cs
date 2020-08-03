@@ -12,7 +12,7 @@ public partial class UIBranch
                || _branchType == BranchType.PopUp_Timed;
     }
 
-    public bool IsPause()
+    public bool IsPauseMenuBranch()
     {
         return _branchType == BranchType.PauseMenu;
     }
@@ -37,10 +37,9 @@ public partial class UIBranch
     public bool FromHotKey { get; set; }
     public bool IsResolvePopUp => _branchType == BranchType.PopUp_Resolve;
     public bool IsNonResolvePopUp => _branchType == BranchType.PopUp_NonResolve;
-    public bool IsTimedPopUp => _branchType == BranchType.PopUp_Timed;
+    private bool IsTimedPopUp => _branchType == BranchType.PopUp_Timed;
     public ScreenType ScreenType => _screenType;
-    public UIPopUp PopUpClass { get; private set; }
-    public UIPopUp PauseMenuClass { get; private set; }
+    private PauseMenu PauseMenuClass { get; set; }
     public int GroupListCount => _groupsList.Count;
     public float Timer => _timer;
     private UIHomeGroup HomeGroup { get; set; }
