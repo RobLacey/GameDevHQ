@@ -42,6 +42,7 @@ public class UINavigation
     //Variables
     UINode _myNode;
     UIBranch _myBranch;
+    private bool _allowKeys;
     public bool CanNaviagte { get; private set; }
 
     public UIBranch Child { get { return _childBranch; } }
@@ -51,6 +52,12 @@ public class UINavigation
         _myNode = node;
         _myBranch = branch;
         CanNaviagte = (setting & Setting.NavigationAndOnClick) != 0;
+        ChangeControl.DoAllowKeys += SaveAllowKeys;
+    }
+
+    private void SaveAllowKeys(bool allow)
+    {
+        _allowKeys = allow;
     }
 
     public void SetChildsParentBranch()
@@ -164,7 +171,7 @@ public class UINavigation
 
     public void NavigateToNextNode()
     {
-        if(!_myBranch.AllowKeys) return;
+        if(!_allowKeys) return;
         if (_myNode.Function == ButtonFunction.HoverToActivate)
         {
             _myNode.PressedActions();

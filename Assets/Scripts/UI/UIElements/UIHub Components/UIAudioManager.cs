@@ -6,7 +6,7 @@ using UnityEngine;
 public class UIAudioManager : IMono
 {
     private readonly AudioSource _myAudioSource;
-    public static Action<AudioClip, float> AudioPlay;
+    public static Action<AudioClip, float> PlayAudio;
 
     public UIAudioManager(AudioSource audioSource)
     {
@@ -16,12 +16,12 @@ public class UIAudioManager : IMono
 
     public void OnEnable()
     {
-        AudioPlay += Play;
+        PlayAudio += Play;
     }
 
     public void OnDisable()
     {
-        AudioPlay -= Play;
+        PlayAudio -= Play;
     }
 
     private void Play(AudioClip audioClip, float volume)

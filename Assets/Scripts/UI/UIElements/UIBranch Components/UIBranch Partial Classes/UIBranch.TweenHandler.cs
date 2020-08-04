@@ -29,18 +29,17 @@ public partial class UIBranch
 
     private void InTweenCallback()
     {
-        if (!IsAPopUpBranch() && _uIHub.CanStart) MyCanvasGroup.blocksRaycasts = true;
+        if (!IsAPopUpBranch()) MyCanvasGroup.blocksRaycasts = true;
         if (IsNonResolvePopUp && !_noActiveResolvePopUps)
         {
             DontSetAsActive = true;
         }
 
-        //if (IsAPopUpBranch()) PopUpClass.ManagePopUpResolve();
-
         if (!DontSetAsActive)
         {
             MyCanvasGroup.blocksRaycasts = true;
             LastHighlighted.SetNodeAsActive();
+            SetAsActiveBranch();
         }
 
         _branchEvents?._onBranchEnter.Invoke();

@@ -42,6 +42,7 @@ public class UITooltip
     Vector3[] _myCorners = new Vector3[4];
     private Coroutine _coroutineBuild;
     private Coroutine _coroutineStart;
+    private bool _allowKeys;
 
     //Enums & Properties
     enum UseSide { ToTheRightOf, ToTheLeftOf, GameObjectAsPosition  }
@@ -75,8 +76,13 @@ public class UITooltip
             //Debug.Log(_mainCanvas.rect.width + "Canvas");
             _canvasWidth = (_mainCanvas.rect.width / 2) - _screenSafeZone;
             _canvasHeight = (_mainCanvas.rect.height / 2) - _screenSafeZone;
-
+            ChangeControl.DoAllowKeys += SaveAllowKeys;
         }    
+    }
+
+    private void SaveAllowKeys(bool allow)
+    {
+        _allowKeys = allow;
     }
 
     private void CreateBucket()
@@ -132,7 +138,7 @@ public class UITooltip
             yield return new WaitForSeconds(_delay);
             IsActive = true;
             _coroutineBuild = StaticCoroutine.StartCoroutine(ToolTipBuild(rectForTooltip));
-            _coroutineStart = StaticCoroutine.StartCoroutine(ActivateTooltip(branch.AllowKeys));
+            _coroutineStart = StaticCoroutine.StartCoroutine(ActivateTooltip(_allowKeys));
         }
         yield return null;
     }

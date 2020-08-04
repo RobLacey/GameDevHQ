@@ -26,6 +26,7 @@ public partial class UIBranch
     public Canvas MyCanvas { get; private set; }
     public UINode LastHighlighted { get; private set; }
     public UINode LastSelected { get; private set; }
+    private UIBranch ActiveBranch { get; set; }
     public UIBranch MyParentBranch { get; private set; }
     public bool DontSetAsActive { get; set; }
     public UINode[] ThisGroupsUiNodes { get; private set; }
@@ -43,8 +44,7 @@ public partial class UIBranch
     public int GroupListCount => _groupsList.Count;
     public float Timer => _timer;
     private UIHomeGroup HomeGroup { get; set; }
-    public bool AllowKeys { get; set; }
-    public bool TweenOnChange { get; set; } = true;
+    private bool TweenOnChange { get; set; } = true;
     private bool TweenOnHome => _tweenOnHome == IsActive.Yes;
 
 }

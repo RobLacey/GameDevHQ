@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
@@ -6,24 +7,15 @@ using UnityEngine.EventSystems;
 /// </summary>
 public partial class UIHub 
 {
-    private bool HotKeyPressed()
-    {
-        if (!CheckIfHotKeyAllowed()) return false;
-        _activatedHotKey = _hotKeySettings.Any(hotKeys => hotKeys.CheckHotKeys());
-        if (!_activatedHotKey) return _activatedHotKey;
-        if (!InMenu) SwitchBetweenGameAndMenu();
-        return _activatedHotKey;
-    }
-
     private bool CheckIfHotKeyAllowed()
     {
         if (_hotKeySettings.Count <= 0) return false;
-        if (_popUpController.NoActiveResolvePopUps || GameIsPaused) return false;
-        if (_changeControl.UsingKeysOrCtrl && !_popUpController.NoActivePopUps) return false;
-        return true;
+        if (GameIsPaused) return false;
+        if (!_popUpController.NoActivePopUps) return false;
+        return _hotKeySettings.Any(hotKeys => hotKeys.CheckHotKeys());
     }
 
-    public void PauseOptionMenuPressed()
+    private void PauseOptionMenuPressed()
     {
         GameIsPaused = !GameIsPaused;
         GamePaused?.Invoke(GameIsPaused);
@@ -36,18 +28,28 @@ public partial class UIHub
 
         if (InMenu)
         {
-            InMenu = false;
-            LastHighlighted.SetNotHighlighted();
-            EventSystem.current.SetSelectedGameObject(null);
+            SwitchToGame();
         }
         else
         {
-            InMenu = true;
-            LastHighlighted.SetAsHighlighted();
-            EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
+            SwitchToMenu();
         }
         _returnToGameControl.Invoke(InMenu);
         SetInMenu?.Invoke(InMenu);
+    }
+
+    private void SwitchToGame()
+    {
+        InMenu = false;
+        LastHighlighted.SetNotHighlighted();
+        EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    private void SwitchToMenu()
+    {
+        InMenu = true;
+        LastHighlighted.SetAsHighlighted();
+        EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
     }
 
     private bool CanSwitchBranches()
@@ -57,7 +59,7 @@ public partial class UIHub
 
     private void SwitchingGroups(SwitchType switchType)
     {
-        if (OnHomeScreen && _homeBranches.Count > 1)
+        if (_onHomeScreen && _homeBranches.Count > 1)
         {
             LastHighlighted.Audio.Play(UIEventTypes.Selected);
             _uiHomeGroup.SwitchHomeGroups(switchType);
@@ -67,4 +69,55 @@ public partial class UIHub
             ActiveBranch.SwitchBranchGroup(switchType);
         }
     }
+    
+    private bool CanSwitchBetweenInGameAndMenu()
+    {
+        return _hasSwitchToMenuAxis && Input.GetButtonDown(_switchToMenusButton) && _popUpController.NoActivePopUps;
+    }
+    
+    private bool CanEnterPauseWithNothingSelected()
+    {
+        return (_popUpController.NoActivePopUps && 
+                LastSelected.HasChildBranch.MyCanvas.enabled == false)
+               && PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
+    }
+
+    private bool SwitchGroupProcess()
+    {
+        if (_hasPosSwitchAxis && Input.GetButtonDown(_posSwitchButton))
+        {
+            SwitchingGroups(SwitchType.Positive);
+            return true;
+        }
+
+        if (_hasNegSwitchAxis && Input.GetButtonDown(_negSwitchButton))
+        {
+            SwitchingGroups(SwitchType.Negative);
+            return true;
+        }
+        return false;
+    }
+    
+    private void WhenCancelPressed()
+    {
+        if (CanEnterPauseWithNothingSelected() || GameIsPaused)
+        {
+            PauseOptionMenuPressed();
+        }
+        else
+        {
+            _myUiCancel.CancelPressed();
+        }
+    }
+    
+    private bool CanPauseGame()
+    {
+        return _hasPauseAxis && Input.GetButtonDown(_pauseOptionButton);
+    }
+    
+    private bool CanDoCancel()
+    {
+        return _hasCancelAxis && Input.GetButtonDown(_cancelButton);
+    }
+
 }

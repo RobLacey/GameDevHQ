@@ -4,7 +4,7 @@ public partial class UINode
 {
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (IsDisabled || MyBranch.AllowKeys) return;
+        if (IsDisabled || _allowKeys) return;
         _pointerOver = true;
         TriggerEnterEvent();
         _navigation.PointerEnter(eventData);
@@ -12,7 +12,7 @@ public partial class UINode
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (IsDisabled || MyBranch.AllowKeys) return;
+        if (IsDisabled || _allowKeys) return;
         _pointerOver = false;
         TriggerExitEvent();
         _navigation.PointerExit(eventData);
@@ -20,7 +20,7 @@ public partial class UINode
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (IsDisabled || MyBranch.AllowKeys) return;
+        if (IsDisabled || _allowKeys) return;
         PressedActions();
     }
 

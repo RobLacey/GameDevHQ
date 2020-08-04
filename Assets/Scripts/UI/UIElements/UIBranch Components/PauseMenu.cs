@@ -1,4 +1,6 @@
-﻿
+﻿/// <summary>
+/// Need To Make this a singleton or check thee is only one of these
+/// </summary>
 public class PauseMenu : IPauseMenu, INodeData, IMono
 {
     public PauseMenu(UIBranch branch, UIBranch[] branchList)
@@ -14,7 +16,7 @@ public class PauseMenu : IPauseMenu, INodeData, IMono
 
     private ScreenData ClearedScreenData { get; } = new ScreenData();
     private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
-    public UINode LastHighlighted { get; set; }
+    public UINode LastHighlighted { get; private set; }
     public UINode LastSelected { get; private set; }
     public void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
     public void SaveSelected(UINode newNode) => LastSelected = newNode;
@@ -56,7 +58,7 @@ public class PauseMenu : IPauseMenu, INodeData, IMono
         ActivatePopUp();
     }
     
-    private void ActivatePopUp() //Todo maybe add to wait list
+    private void ActivatePopUp()
     {
         _myBranch.LastSelected.Audio.Play(UIEventTypes.Selected);
         _myBranch.MoveToThisBranch();
@@ -73,7 +75,7 @@ public class PauseMenu : IPauseMenu, INodeData, IMono
     {
         if (_myBranch.WhenToMove == WhenToMove.AfterEndOfTween)
         {
-            _myBranch.StartOutTween(()=> EndOfTweenActions());
+            _myBranch.StartOutTween(EndOfTweenActions);
         }
         else
         {
@@ -86,9 +88,8 @@ public class PauseMenu : IPauseMenu, INodeData, IMono
     {
         var nextNode = ClearedScreenData._lastHighlighted;
         RestoreScreen();
-        ClearedScreenData._lastSelected.SetAsSelected();
-        nextNode.MyBranch.TweenOnChange = false;
-        nextNode.MyBranch.MoveToThisBranch();
+        ClearedScreenData._lastSelected.ThisNodeIsSelected();
+        nextNode.MyBranch.MoveToBranchWithoutTween();
     }
 
     private void RestoreScreen()

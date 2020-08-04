@@ -10,21 +10,19 @@ using UnityEngine.EventSystems;
 public partial class UIHub
 {
     //Properties
-    [ShowNativeProperty] public UINode LastSelected { get; private set; }
-    [ShowNativeProperty] public UINode LastHighlighted { get; private set; }
-    [ShowNativeProperty] public UIBranch ActiveBranch { get; private set; }
+    [ShowNativeProperty] private UINode LastSelected { get; set; }
+    [ShowNativeProperty] private UINode LastHighlighted { get; set; }
+    [ShowNativeProperty] private UIBranch ActiveBranch { get; set; }
     [ShowNativeProperty] private bool GameIsPaused { get; set; }
-    public int HomeGroupIndex { get; set; }
-    public bool OnHomeScreen { get; set; }
     private bool InMenu { get; set; } = true;
-    public bool CanStart { get; private set; }
+    private bool CanStart { get; set; }
 
     private void SetLastSelected(UINode newNode)
     {
         if (_lastHomeScreenNode is null) _lastHomeScreenNode = newNode;
         if (LastSelected == newNode) return;
         
-        if (OnHomeScreen)
+        if (_onHomeScreen)
         {
             WhenOnHomeScreen(newNode);
         }
@@ -63,7 +61,6 @@ public partial class UIHub
         LastHighlighted.SetNotHighlighted();
         LastHighlighted = newNode;
         if(!GameIsPaused)_popUpController.SetLastNodeBeforePopUp(newNode);
-        if (OnHomeScreen) _uiHomeGroup.SetHomeGroupIndex(LastHighlighted.MyBranch);
         EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
     }
 }

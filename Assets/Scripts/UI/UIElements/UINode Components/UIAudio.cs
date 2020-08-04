@@ -35,31 +35,31 @@ public class UIAudio
             case UIEventTypes.Highlighted:
                 if (UsingScheme())
                 {
-                    UIAudioManager.AudioPlay.Invoke(_audioScheme.HighlightedClip, _audioScheme.HighlighVolume);
+                    UIAudioManager.PlayAudio.Invoke(_audioScheme.HighlightedClip, _audioScheme.HighlighVolume);
                 }
                 else
                 {
-                    UIAudioManager.AudioPlay.Invoke(_soundHighlighted, _volumeHighlighted);
+                    UIAudioManager.PlayAudio.Invoke(_soundHighlighted, _volumeHighlighted);
                 }
                 break;
             case UIEventTypes.Cancelled:
                 if (UsingScheme())
                 {
-                    UIAudioManager.AudioPlay.Invoke(_audioScheme.CancelledClip, _audioScheme.CancelledVolume);
+                    UIAudioManager.PlayAudio.Invoke(_audioScheme.CancelledClip, _audioScheme.CancelledVolume);
                 }
                 else
                 {
-                    UIAudioManager.AudioPlay.Invoke(_soundCancel, _volumeCancel);
+                    UIAudioManager.PlayAudio.Invoke(_soundCancel, _volumeCancel);
                 }
                 break;
             case UIEventTypes.Selected:
                 if (UsingScheme())
                 {
-                    UIAudioManager.AudioPlay.Invoke(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
+                    UIAudioManager.PlayAudio.Invoke(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
                 }
                 else
                 {
-                    UIAudioManager.AudioPlay.Invoke(_soundSelect, _volumeSelect);
+                    UIAudioManager.PlayAudio.Invoke(_soundSelect, _volumeSelect);
                 }
                 break;
         }

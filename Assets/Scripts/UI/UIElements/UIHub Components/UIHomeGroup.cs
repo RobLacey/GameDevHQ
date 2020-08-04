@@ -7,76 +7,120 @@ using UnityEngine;
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
 /// is for keyboard or controller. Differ from internal branch groups as involve Branches not Nodes
 /// </summary>
-public class UIHomeGroup
+public class UIHomeGroup : IMono
 {
-    readonly UIBranch[] _homeGroup;
-    readonly UIBranch[] _allBranches;
-    readonly UIHub _uIHub;
+    private readonly UIBranch[] _homeGroup;
+    private readonly UIBranch[] _allBranches;
+    private bool _allowKeys;
 
-    public UIHomeGroup(UIHub uIHub, UIBranch[] homeBranches)
+    public UIHomeGroup(UIBranch[] homeBranches, UIBranch[] allBranches)
     {
-        _uIHub = uIHub;
-        _allBranches = _uIHub.AllBranches;
+        _allBranches = allBranches;
         _homeGroup = homeBranches;
-        
+        OnEnable();
     }
+    
+    public void OnEnable()
+    {
+        UIBranch.DoActiveBranch += SaveActiveBranch;
+        UICancel.ReturnHomeBranch += CurrentHomeBranch;
+        ChangeControl.DoAllowKeys += SaveAllowKeys;
+    }
+
+    public void OnDisable()
+    {
+        UIBranch.DoActiveBranch -= SaveActiveBranch;
+        UICancel.ReturnHomeBranch -= CurrentHomeBranch;
+        ChangeControl.DoAllowKeys -= SaveAllowKeys;
+    }
+
+    //Delegate
+    public static event Action<bool> DoOnHomeScreen; // Subscribe To track if on Home Screen
+    
+    //Properties
+    private UIBranch CurrentHomeBranch() => _homeGroup[Index];
+    private void SaveAllowKeys(bool allow) => _allowKeys = allow;
+    private bool OnHomeScreen { get; set; } = true;
+    private int Index { get; set; }
+
 
     public void SwitchHomeGroups(SwitchType switchType)
     {
-        var index = ReturnNewIndex(switchType);
-        _uIHub.HomeGroupIndex = index;
-        _homeGroup[index].TweenOnChange = false;
-
-        if (_homeGroup[index].LastSelected.Function == ButtonFunction.HoverToActivate && _homeGroup[index].AllowKeys)
+        SetNewIndex(switchType);
+        if (ActivateHoverOverIfKeysAllowed())
         {
-            _homeGroup[index].LastSelected.PressedActions();
+            _homeGroup[Index].LastSelected.PressedActions();
         }
         else
         {
-            _homeGroup[index].MoveToThisBranch();
+            _homeGroup[Index].MoveToBranchWithoutTween();
         }
     }
 
-    private int ReturnNewIndex(SwitchType switchType)
-    {
-        int index = _uIHub.HomeGroupIndex;
-        _homeGroup[index].LastSelected.Deactivate();
+    private bool ActivateHoverOverIfKeysAllowed() 
+        => _homeGroup[Index].LastSelected.Function == ButtonFunction.HoverToActivate && _allowKeys;
 
+    private void SetNewIndex(SwitchType switchType)
+    {
+        _homeGroup[Index].LastSelected.Deactivate();
         if (switchType == SwitchType.Positive)
         {
-            return index.PositiveIterate(_homeGroup.Length);
+            Index = Index.PositiveIterate(_homeGroup.Length);
         }
-        return index.NegativeIterate(_homeGroup.Length);
-    }
-
-    public void SetHomeGroupIndex(UIBranch uIBranch)
-    {
-        for (int i = 0; i < _homeGroup.Length; i++)
+        else
         {
-            if (_homeGroup[i] == uIBranch) _uIHub.HomeGroupIndex = i;
+            Index = Index.NegativeIterate(_homeGroup.Length);
         }
     }
 
-    public void ClearHomeScreen(UIBranch ignoreBranch, IsActive turnOffPopUps)
+    public void ClearHomeScreen(UIBranch ignoreThisBranch, IsActive turnOffPopUps)
     {
-        if (!_uIHub.OnHomeScreen) return;
-        _uIHub.OnHomeScreen = false;
+        if (!OnHomeScreen) return;
+        OnHomeScreen = false;
+        DoOnHomeScreen?.Invoke(OnHomeScreen);
+        ProcessAllBranches(ignoreThisBranch, turnOffPopUps);
+    }
 
+    private void ProcessAllBranches(UIBranch ignoreThisBranch, IsActive turnOffPopUps)
+    {
         foreach (var branch in _allBranches)
         {
-            if (!branch.MyCanvas.enabled || branch == ignoreBranch ) continue;
-            if(branch.IsNonResolvePopUp && turnOffPopUps == IsActive.No) continue;
+            if (AlreadyOffOrCanIgnore(ignoreThisBranch, branch)) continue;
+            if (CanTurnOffPopUps(turnOffPopUps, branch.IsNonResolvePopUp)) continue;
             branch.MyCanvas.enabled = false;
         }
     }
 
+    private static bool CanTurnOffPopUps(IsActive turnOffPopUps, bool isPopUp)
+    {
+        return isPopUp && turnOffPopUps == IsActive.No;
+    }
+
+    private static bool AlreadyOffOrCanIgnore(UIBranch ignoreThisBranch, UIBranch branch)
+    {
+        return !branch.MyCanvas.enabled || branch == ignoreThisBranch;
+    }
+
     public void RestoreHomeScreen()
     {
-        if (_uIHub.OnHomeScreen) return;
+        if (OnHomeScreen) return;
+        OnHomeScreen = true;
+        DoOnHomeScreen?.Invoke(OnHomeScreen);
+        
         foreach (var item in _homeGroup)
         {
-            _uIHub.OnHomeScreen = true;
-            item.ResetHomeScreenBranch(_homeGroup[_uIHub.HomeGroupIndex]);
+            item.ResetHomeScreenBranch();
+        }
+    }
+
+    private void SaveActiveBranch(UIBranch newBranch)
+    {
+        if (!OnHomeScreen) return;
+        for (var index = 0; index < _homeGroup.Length; index++)
+        {
+            if (_homeGroup[index] != newBranch) continue;
+            Index = index;
+            break;
         }
     }
 }

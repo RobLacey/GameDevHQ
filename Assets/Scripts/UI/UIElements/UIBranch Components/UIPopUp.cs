@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 
-public class UIPopUp : IPopUp, IHUbData, INodeData
+public class UIPopUp : IPopUp
 {
     protected IGameToMenuSwitching _gameToMenuSwitching;
     protected UIBranch _myBranch;
@@ -13,16 +13,16 @@ public class UIPopUp : IPopUp, IHUbData, INodeData
     //Properties
     protected ScreenData ScreenData { get; } = new ScreenData();
     private bool InGameBeforePopUp { get; set; }
-    public bool GameIsPaused { get; private set; }
+    protected bool GameIsPaused { get; private set; }
     private bool NoActivePopUps => _noActiveResolvePopUps && _noActiveNonResolvePopUps;
-    public void IsGamePaused(bool paused) => GameIsPaused = paused;
+    private void IsGamePaused(bool paused) => GameIsPaused = paused;
     private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
     private void SetNonResolveCount(bool activeNonResolvePopUps) => _noActiveNonResolvePopUps = activeNonResolvePopUps;
     private void SetSetInMenu(bool inMenu) => _isInMenu = inMenu;
-    public UINode LastHighlighted { get; private set; }
-    public UINode LastSelected { get; private set; }
-    public void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
-    public void SaveSelected(UINode newNode) => LastSelected = newNode;
+    private UINode LastHighlighted { get; set; }
+    private UINode LastSelected { get; set; }
+    private void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
+    private void SaveSelected(UINode newNode) => LastSelected = newNode;
 
     public void OnEnable()
     {
@@ -121,25 +121,24 @@ public class UIPopUp : IPopUp, IHUbData, INodeData
         InGameBeforePopUp = false;
     }
 
-    private void ToLastActiveNode(UINode lastNode)
+    private static void ToLastActiveNode(UINode lastNode)
     {
-        lastNode.MyBranch.TweenOnChange = false;
-        lastNode.MyBranch.MoveToThisBranch();
+        lastNode.MyBranch.MoveToBranchWithoutTween();
     }
 
     private void SetLastSelected(UINode lastNode)
     {
         if (IfLastNodeHasParent(lastNode))
         {
-            lastNode.MyBranch.MyParentBranch.LastSelected.SetAsSelected();
+            lastNode.MyBranch.MyParentBranch.LastSelected.ThisNodeIsSelected();
         }
         else
         {
-            ScreenData._lastSelected.SetAsSelected();
+            ScreenData._lastSelected.ThisNodeIsSelected();
         }
     }
 
-    private bool IfLastNodeHasParent(UINode lastHomeGroupNode)
+    private static bool IfLastNodeHasParent(UINode lastHomeGroupNode)
     {
         return lastHomeGroupNode.MyBranch.MyParentBranch;
     }

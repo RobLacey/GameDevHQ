@@ -1,15 +1,17 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class PopUpController : IMono
+public interface IPopUpControls
 {
-    private readonly UIHub _uiHub;
-    
-    public PopUpController(UIHub uiHub)
+    bool NoActivePopUps { get; }
+    void ActiveNextPopUp();
+    void RemoveNextPopUp();
+}
+
+public class PopUpController : IMono, IPopUpControls
+{
+    public PopUpController()
     {
-        _uiHub = uiHub;
         OnEnable();
     }
     
@@ -18,12 +20,12 @@ public class PopUpController : IMono
     private List<UIBranch> ActiveNonResolvePopUpsList { get; } = new List<UIBranch>();
     public bool NoActivePopUps => ActiveResolvePopUpsList.Count == 0
                                   & ActiveNonResolvePopUpsList.Count == 0;
-    public bool NoActiveResolvePopUps => ActiveResolvePopUpsList.Count == 0;
-    public bool NoActiveNonResolvePopUps => ActiveNonResolvePopUpsList.Count == 0;
+
+    private bool NoActiveResolvePopUps => ActiveResolvePopUpsList.Count == 0;
+    private bool NoActiveNonResolvePopUps => ActiveNonResolvePopUpsList.Count == 0;
     private UINode LastNodeBeforePopUp { get; set; }
 
-
-    //Deleagtes
+    //Delegates
     public static event Action<bool> NoResolvePopUps;
     public static event Action<bool> NoNonResolvePopUps;
     
@@ -52,6 +54,17 @@ public class PopUpController : IMono
             ActiveNonResolvePopUpsList[index].LastHighlighted.SetNodeAsActive();
         }
     }
+    public void RemoveNextPopUp()
+    {
+        if (!NoActiveResolvePopUps)
+        {
+            RemoveFromActiveList_Resolve();
+        }
+        else if(!NoActiveNonResolvePopUps)
+        {
+            RemoveFromActiveList_NonResolve();
+        }
+    }
 
     private void AddToResolveList(UIBranch newResolve)
     {
@@ -67,7 +80,7 @@ public class PopUpController : IMono
         NoNonResolvePopUps?.Invoke(false);
     }
     
-    public void RemoveFromActiveList_Resolve()
+    private void RemoveFromActiveList_Resolve()
     {
         int lastIndexItem = ActiveResolvePopUpsList.Count - 1;
         var nextPopUp = ActiveResolvePopUpsList[lastIndexItem];
@@ -98,7 +111,7 @@ public class PopUpController : IMono
         }
     }
 
-    public void RemoveFromActiveList_NonResolve()
+    private void RemoveFromActiveList_NonResolve()
     {
         int lastIndexItem = ActiveNonResolvePopUpsList.Count - 1;
         var nextPopUp = ActiveNonResolvePopUpsList[lastIndexItem];

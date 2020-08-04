@@ -52,10 +52,11 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private UIToggles _toggleGroups;
     private bool _pointerOver;
     private bool _inMenu;
+    private bool _allowKeys;
 
     //Delegates
     private Action<UIEventTypes, bool> _startUiFunctions;
-    public static event Action<EscapeKey> DoCancel;
+    public static event Action<EscapeKey> DoCancelButtonPressed;
     public static event Action<UINode> DoHighlighted; 
     public static event Action<UINode> DoSelected; 
 
@@ -68,7 +69,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     public UIBranch HasChildBranch => _navigation.Child;
     public UINavigation Navigation => _navigation;
     public UIAudio Audio => _audio;
-    private bool NotActiveSlider => IsDisabled || _isCancelOrBack || !AmSlider || MyBranch.AllowKeys;
+    private bool NotActiveSlider => IsDisabled || _isCancelOrBack || !AmSlider || _allowKeys;
     private bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.Toggle_NotLinked;
     private bool CanGoToChildBranch => HasChildBranch & _navigation.CanNaviagte;
@@ -110,6 +111,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions += _swapImageOrText.OnAwake(IsSelected, _enabledFunctions);
         _startUiFunctions += _invertColourCorrection.OnAwake(_enabledFunctions);
         UIHub.SetInMenu += SetInMenu;
+        ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
 
     private void OnDisable()
@@ -119,6 +121,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions -= _swapImageOrText.OnDisable();
         _startUiFunctions -= _invertColourCorrection.OnDisable();
         UIHub.SetInMenu -= SetInMenu;
+        ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
 
     private void Start()
@@ -152,7 +155,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         }
         DoHighlighted?.Invoke(this);
 
-        if ( MyBranch.AllowKeys && _inMenu)
+        if (_allowKeys && _inMenu)
         {
             SetAsHighlighted();
         }
@@ -169,7 +172,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
 
         if (_isCancelOrBack) 
         {
-            DoCancel?.Invoke(_escapeKeyFunction); 
+            DoCancelButtonPressed?.Invoke(_escapeKeyFunction); 
             return; 
         }
 
@@ -342,14 +345,20 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             _events.OnEnterEvent?.Invoke();
     }
 
-    public void SetAsSelected()
+    public void ThisNodeIsSelected()
     {
         DoSelected?.Invoke(this);
     }
     
-    public void SetThisAsHighLighted()
+    public void ThisNodeIsHighLighted()
     {
         DoHighlighted?.Invoke(this);
+        MyBranch.SetAsActiveBranch();
+    }
+
+    private void SaveAllowKeys(bool allow)
+    {
+        _allowKeys = allow;
     }
 }
 

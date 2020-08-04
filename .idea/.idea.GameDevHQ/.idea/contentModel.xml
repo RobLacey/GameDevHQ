@@ -290,7 +290,6 @@
                 <e p="UIHomeGroup.cs" t="Include" />
                 <e p="UIHub Partial Classes" t="Include">
                   <e p="UIHub.EditorScripts.cs" t="Include" />
-                  <e p="UIHub.PopUpData.cs" t="Include" />
                   <e p="UIHub.UIHistory.cs" t="Include" />
                   <e p="UIHub.UpdateMethods.cs" t="Include" />
                 </e>
