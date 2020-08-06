@@ -3,12 +3,17 @@ using UnityEngine;
 
 public class UIPopUp : IPopUp
 {
-    protected IGameToMenuSwitching _gameToMenuSwitching;
+    //protected IGameToMenuSwitching _gameToMenuSwitching;
     protected UIBranch _myBranch;
     protected UIBranch[] _allBranches;
     protected bool _noActiveResolvePopUps = true;
     private bool _noActiveNonResolvePopUps = true;
     private bool _isInMenu;
+    private readonly UIData _uiData;
+    protected UIPopUp()
+    {
+        _uiData = new UIData();
+    }
 
     //Properties
     protected ScreenData ScreenData { get; } = new ScreenData();
@@ -18,30 +23,20 @@ public class UIPopUp : IPopUp
     private void IsGamePaused(bool paused) => GameIsPaused = paused;
     private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
     private void SetNonResolveCount(bool activeNonResolvePopUps) => _noActiveNonResolvePopUps = activeNonResolvePopUps;
-    private void SetSetInMenu(bool inMenu) => _isInMenu = inMenu;
+    private void SaveSwitchBetweenGameAndMenu(bool inMenu) => _isInMenu = inMenu;
     private UINode LastHighlighted { get; set; }
     private UINode LastSelected { get; set; }
     private void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
     private void SaveSelected(UINode newNode) => LastSelected = newNode;
 
-    public void OnEnable()
+    protected void OnEnable()
     {
-        UIHub.GamePaused += IsGamePaused;
-        UIHub.SetInMenu += SetSetInMenu;
-        UINode.DoHighlighted += SaveHighlighted;
-        UINode.DoSelected += SaveSelected;
-        PopUpController.NoResolvePopUps += SetResolveCount;
-        PopUpController.NoNonResolvePopUps += SetNonResolveCount;
-    }
-
-    public void OnDisable()
-    {
-        UIHub.GamePaused -= IsGamePaused;
-        UIHub.SetInMenu -= SetSetInMenu;
-        UINode.DoHighlighted -= SaveHighlighted;
-        UINode.DoSelected -= SaveSelected;
-        PopUpController.NoResolvePopUps -= SetResolveCount;
-        PopUpController.NoNonResolvePopUps -= SetNonResolveCount;
+        _uiData.IsGamePaused = IsGamePaused;
+        _uiData.AmImMenu = SaveSwitchBetweenGameAndMenu;
+        _uiData.NewHighLightedNode = SaveHighlighted;
+        _uiData.NewSelectedNode = SaveSelected;
+        _uiData.NoResolvePopUps = SetResolveCount;
+        _uiData.NoNonResolvePopUps = SetNonResolveCount;
     }
     
     public void StartPopUp()
@@ -58,7 +53,7 @@ public class UIPopUp : IPopUp
         if (!_isInMenu && NoActivePopUps)
         {
             InGameBeforePopUp = true;
-            _gameToMenuSwitching.SwitchBetweenGameAndMenu();
+            //_gameToMenuSwitching.SwitchBetweenGameAndMenu();
         }
     }
     
@@ -117,7 +112,7 @@ public class UIPopUp : IPopUp
 
     private void ReturnToGame()
     {
-        _gameToMenuSwitching.SwitchBetweenGameAndMenu();
+        //_gameToMenuSwitching.SwitchBetweenGameAndMenu();
         InGameBeforePopUp = false;
     }
 

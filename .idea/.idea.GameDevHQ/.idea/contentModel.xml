@@ -263,6 +263,7 @@
               <e p="UI Utilities" t="Include">
                 <e p="Interfaces.cs" t="Include" />
                 <e p="StaticCoroutine.cs" t="Include" />
+                <e p="UIData.cs" t="Include" />
                 <e p="UIEnums.cs" t="Include" />
               </e>
               <e p="UIBranch Components" t="Include">
@@ -284,6 +285,7 @@
               <e p="UIHub Components" t="Include">
                 <e p="ChangeControl.cs" t="Include" />
                 <e p="HotKeys.cs" t="Include" />
+                <e p="MenuAndGameSwitching.cs" t="Include" />
                 <e p="PopUpController.cs" t="Include" />
                 <e p="UIAudioManager.cs" t="Include" />
                 <e p="UICancel.cs" t="Include" />

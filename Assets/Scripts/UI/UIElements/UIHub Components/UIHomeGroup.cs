@@ -12,26 +12,27 @@ public class UIHomeGroup : IMono
     private readonly UIBranch[] _homeGroup;
     private readonly UIBranch[] _allBranches;
     private bool _allowKeys;
+    private readonly UIData _uiData;
 
     public UIHomeGroup(UIBranch[] homeBranches, UIBranch[] allBranches)
     {
         _allBranches = allBranches;
         _homeGroup = homeBranches;
+        _uiData = new UIData();
         OnEnable();
     }
     
     public void OnEnable()
     {
-        UIBranch.DoActiveBranch += SaveActiveBranch;
+        _uiData.NewActiveBranch = SaveActiveBranch;
+        _uiData.OnStartUp = OnStart;
+        _uiData.AllowKeys = SaveAllowKeys;
         UICancel.ReturnHomeBranch += CurrentHomeBranch;
-        ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
-
+    
     public void OnDisable()
     {
-        UIBranch.DoActiveBranch -= SaveActiveBranch;
         UICancel.ReturnHomeBranch -= CurrentHomeBranch;
-        ChangeControl.DoAllowKeys -= SaveAllowKeys;
     }
 
     //Delegate
@@ -43,6 +44,10 @@ public class UIHomeGroup : IMono
     private bool OnHomeScreen { get; set; } = true;
     private int Index { get; set; }
 
+    private void OnStart()
+    {
+        DoOnHomeScreen?.Invoke(OnHomeScreen);
+    }
 
     public void SwitchHomeGroups(SwitchType switchType)
     {

@@ -53,6 +53,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool _pointerOver;
     private bool _inMenu;
     private bool _allowKeys;
+    private UIData _uiData;
 
     //Delegates
     private Action<UIEventTypes, bool> _startUiFunctions;
@@ -73,7 +74,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.Toggle_NotLinked;
     private bool CanGoToChildBranch => HasChildBranch & _navigation.CanNaviagte;
-    private void SetInMenu(bool isInMenu) => _inMenu = isInMenu;
+    private void SwitchBetweenGameAndMenu(bool isInMenu) => _inMenu = isInMenu;
 
 
     public bool IsDisabled
@@ -91,6 +92,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _rectForTooltip = GetComponent<RectTransform>();
         AmSlider = GetComponent<Slider>();
         MyBranch = GetComponentInParent<UIBranch>();
+        _uiData = new UIData();
         SetUpUiFunctions();
         _toggleGroups = new UIToggles(this, _buttonFunction, _startAsSelected);
     }
@@ -110,8 +112,10 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions += _sizeAndPos.OnAwake(transform, _enabledFunctions);
         _startUiFunctions += _swapImageOrText.OnAwake(IsSelected, _enabledFunctions);
         _startUiFunctions += _invertColourCorrection.OnAwake(_enabledFunctions);
-        UIHub.SetInMenu += SetInMenu;
-        ChangeControl.DoAllowKeys += SaveAllowKeys;
+        _uiData.AmImMenu = SwitchBetweenGameAndMenu;
+        _uiData.AllowKeys = SaveAllowKeys;
+        //UIHub.SwitchBetweenGmaeAndMenu += SwitchBetweenGmaeAndMenu;
+        //ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
 
     private void OnDisable()
@@ -120,8 +124,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions -= _sizeAndPos.OnDisable();
         _startUiFunctions -= _swapImageOrText.OnDisable();
         _startUiFunctions -= _invertColourCorrection.OnDisable();
-        UIHub.SetInMenu -= SetInMenu;
-        ChangeControl.DoAllowKeys += SaveAllowKeys;
+        //UIHub.SwitchBetweenGmaeAndMenu -= SwitchBetweenGmaeAndMenu;
+        //ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
 
     private void Start()
@@ -153,7 +157,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             HandleIfDisabled(); 
             return;
         }
-        DoHighlighted?.Invoke(this);
+        
+        ThisNodeIsHighLighted();
 
         if (_allowKeys && _inMenu)
         {
@@ -233,7 +238,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     
     private void MoveToChildBranch()
     {
-        DoSelected?.Invoke(this);
+        //DoSelected?.Invoke(this);
+        ThisNodeIsSelected();
 
         //MyBranch.SaveLastSelected(this);
 
@@ -253,7 +259,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _colours.SetColourOnEnter(IsSelected);
         _startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
         StartCoroutine(_tooltips.StartToolTip(MyBranch, _rectForTooltip));
-        DoHighlighted?.Invoke(this);
+        ThisNodeIsHighLighted();
     }
 
     public void SetNotHighlighted()

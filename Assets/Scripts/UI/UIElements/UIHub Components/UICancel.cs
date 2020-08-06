@@ -8,11 +8,13 @@ public class UICancel : IMono
 {
     private readonly IPopUpControls _popUpControls;
     private readonly EscapeKey _globalEscapeSetting;
+    private readonly UIData _uiData;
 
     public UICancel(EscapeKey globalSetting, IPopUpControls popUpControls)
     {
         _popUpControls = popUpControls;
         _globalEscapeSetting = globalSetting;
+        _uiData = new UIData();
         OnEnable();
     }
 
@@ -26,16 +28,14 @@ public class UICancel : IMono
      
     public void OnEnable()
     {
+        _uiData.NewSelectedNode = SaveSelected;
+        _uiData.NewActiveBranch = SaveActiveBranch;
         UINode.DoCancelButtonPressed += CancelOrBackButtonPressed;
-        UINode.DoSelected += SaveSelected;
-        UIBranch.DoActiveBranch += SaveActiveBranch;
     }
 
     public void OnDisable()
     {
         UINode.DoCancelButtonPressed -= CancelOrBackButtonPressed;
-        UINode.DoSelected -= SaveSelected;
-        UIBranch.DoActiveBranch -= SaveActiveBranch;
     }
 
     public void CancelPressed()

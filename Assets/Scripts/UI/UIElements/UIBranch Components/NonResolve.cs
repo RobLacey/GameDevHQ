@@ -2,9 +2,9 @@
 
 public class NonResolve : UIPopUp
 {
-    public NonResolve(UIBranch branch, UIBranch[] branchList, IGameToMenuSwitching gameToMenu)
+    public NonResolve(UIBranch branch, UIBranch[] branchList/*, IGameToMenuSwitching gameToMenu*/)
     {
-        _gameToMenuSwitching = gameToMenu;
+        //_gameToMenuSwitching = gameToMenu;
         _myBranch = branch;
         _allBranches = branchList;
         OnEnable();

@@ -40,7 +40,7 @@ public partial class UIBranch
     public bool IsNonResolvePopUp => _branchType == BranchType.PopUp_NonResolve;
     private bool IsTimedPopUp => _branchType == BranchType.PopUp_Timed;
     public ScreenType ScreenType => _screenType;
-    private PauseMenu PauseMenuClass { get; set; }
+    public IPauseMenu PauseMenuClass { get; private set; }
     public int GroupListCount => _groupsList.Count;
     public float Timer => _timer;
     private UIHomeGroup HomeGroup { get; set; }

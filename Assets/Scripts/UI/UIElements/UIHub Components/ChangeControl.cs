@@ -5,38 +5,28 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// Class that handles switching control from the mouse to a keyboard or controller
 /// </summary>
-public class ChangeControl : IMono
+public class ChangeControl
 {
     private readonly IPopUpControls _popUpControls;
     private Vector3 _mousePos = Vector3.zero;
     private readonly ControlMethod _controlMethod;
-    private bool _gameStarted;
-    
+
     public ChangeControl(ControlMethod controlMethod, IPopUpControls popUpControls)
     {
         _popUpControls = popUpControls;
         _controlMethod = controlMethod;
-        OnEnable();
+        var uiData = new UIData();
+        uiData.NewHighLightedNode = SaveHighlighted;
     }
 
     //Delegates
-    public static event Action<bool> DoAllowKeys; 
+    public static event Action<bool> DoAllowKeys;
 
     //Properties
     private bool UsingMouse { get; set; }
     private bool UsingKeysOrCtrl { get; set; }
     private UINode LastHighlighted { get; set; }
     private void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
-
-    public void OnEnable()
-    {
-        UINode.DoHighlighted += SaveHighlighted;
-    }
-    
-    public void OnDisable()
-    {
-        UINode.DoHighlighted -= SaveHighlighted;
-    }
 
     public void StartGame()
     {

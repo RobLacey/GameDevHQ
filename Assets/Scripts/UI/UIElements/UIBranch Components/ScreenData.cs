@@ -7,4 +7,5 @@ public class ScreenData
     public List<UIBranch> _clearedBranches = new List<UIBranch>();
     public UINode _lastHighlighted;
     public UINode _lastSelected;
+    public bool  _wasInTheMenu;
 }

@@ -1,12 +1,17 @@
 ﻿using System;
 using UnityEngine;
 using NaughtyAttributes;
+using UnityEngine.Serialization;
 
 [Serializable]
-public class HotKeys : IMono
+public class HotKeys
 {
     [InputAxis] [AllowNesting] public string _hotKeyAxis;
-    [ValidateInput("IsAllowedType", "Can't have PopUp as HotKey as HotKey")] public UIBranch _uiBranch;
+    [ValidateInput("IsAllowedType", "Can't have PopUp as HotKey as HotKey")] 
+    public UIBranch _myBranch;
+    
+    //Variables
+    private UIData _uiData;
 
     //Properties
     private UINode LastHighlighted { get; set; }
@@ -19,43 +24,37 @@ public class HotKeys : IMono
     //Editor Script
     public bool IsAllowedType()
     {
-        if (!_uiBranch.IsAPopUpBranch()) return true;
+        if (!_myBranch.IsAPopUpBranch()) return true;
         Debug.Log("Can't have PopUp as Hot Key as Hot Key");
         return false;
     }
 
     public void OnAwake()
     {
+        _uiData = new UIData();
         OnEnable();
     }
     
     public void OnEnable()
     {
-        UINode.DoHighlighted += SaveHighlighted;
-        UINode.DoSelected += SaveSelected;
-        UIBranch.DoActiveBranch += SaveActiveBranch;
-    }
-
-    public void OnDisable()
-    {
-        UINode.DoHighlighted -= SaveHighlighted;
-        UINode.DoSelected -= SaveSelected;
-        UIBranch.DoActiveBranch -= SaveActiveBranch;
+        _uiData.NewHighLightedNode = SaveHighlighted;
+        _uiData.NewSelectedNode = SaveSelected;
+        _uiData.NewActiveBranch = SaveActiveBranch;
     }
 
     public bool CheckHotKeys()
     {
         if (!Input.GetButtonDown(_hotKeyAxis)) return false;
-        if (_uiBranch.MyCanvas.enabled) return false;
+        if (_myBranch.MyCanvas.enabled) return false;
         HotKeyActivation();
         return true;
     }
 
     private void HotKeyActivation()
     {
-        foreach (UINode parentNode in _uiBranch.MyParentBranch.ThisGroupsUiNodes)
+        foreach (UINode parentNode in _myBranch.MyParentBranch.ThisGroupsUiNodes)
         {
-            if (parentNode.HasChildBranch == _uiBranch)
+            if (parentNode.HasChildBranch == _myBranch)
             {
                 StartHotKeyProcess(parentNode);
                 SetHotKeyAsSelected(parentNode);
@@ -93,21 +92,21 @@ public class HotKeys : IMono
     private void StartThisHotKeyBranch(UINode parentNode)
     {
          parentNode.ThisNodeIsSelected();
-        _uiBranch.MoveToThisBranch();
+        _myBranch.MoveToThisBranch();
     }
 
     private void SetHotKeyAsSelected(UINode parentNode)
     {
         EnsureAlwaysReturnToHomeScreen();
         parentNode.SetSelected_NoEffects();
-        _uiBranch.DefaultStartPosition.Audio.Play(UIEventTypes.Selected);
+        _myBranch.DefaultStartPosition.Audio.Play(UIEventTypes.Selected);
     }
 
     private void EnsureAlwaysReturnToHomeScreen()
     {
-        if (_uiBranch.MyBranchType != BranchType.HomeScreenUI)
+        if (_myBranch.MyBranchType != BranchType.HomeScreenUI)
         {
-            _uiBranch.FromHotKey = true;
+            _myBranch.FromHotKey = true;
         } //Ensures back to home is used on cancel
     }
 }

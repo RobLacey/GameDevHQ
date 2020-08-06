@@ -7,10 +7,12 @@ public class Timed : IPopUp, IHUbData
     private UIBranch myBranch;
     bool _running;
     Coroutine _coroutine;
+    private UIData _uiData;
 
     public Timed(UIBranch branch)
     {
         myBranch = branch;
+        _uiData = new UIData();
         OnEnable();
     }
     
@@ -20,12 +22,13 @@ public class Timed : IPopUp, IHUbData
 
     public void OnEnable()
     {
-        UIHub.GamePaused += IsGamePaused;
+        _uiData.IsGamePaused = IsGamePaused;
+        //UIHub.GamePaused += IsGamePaused;
     }
 
     public void OnDisable()
     {
-        UIHub.GamePaused -= IsGamePaused;
+        //UIHub.GamePaused -= IsGamePaused;
     }
 
     public void StartPopUp()

@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using NaughtyAttributes;
+﻿using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -14,7 +13,6 @@ public partial class UIHub
     [ShowNativeProperty] private UINode LastHighlighted { get; set; }
     [ShowNativeProperty] private UIBranch ActiveBranch { get; set; }
     [ShowNativeProperty] private bool GameIsPaused { get; set; }
-    private bool InMenu { get; set; } = true;
     private bool CanStart { get; set; }
 
     private void SetLastSelected(UINode newNode)

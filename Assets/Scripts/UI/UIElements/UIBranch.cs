@@ -15,7 +15,7 @@ public partial class UIBranch : MonoBehaviour, IHUbData
 {
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] BranchType _branchType = BranchType.StandardUI;
+    [SerializeField] private BranchType _branchType = BranchType.StandardUI;
     [SerializeField] [ShowIf("IsTimedPopUp")] float _timer = 1f;
     [SerializeField] [HideIf(EConditionOperator.Or, "IsNonResolvePopUp", "IsTimedPopUp")] 
     ScreenType _screenType = ScreenType.FullScreen;
@@ -41,9 +41,10 @@ public partial class UIBranch : MonoBehaviour, IHUbData
     private UITweener _uiTweener;
     int _groupIndex;
     Action _onFinishedTrigger;
-    private IGameToMenuSwitching _gameToMenuSwitching;
+    //private IGameToMenuSwitching _gameToMenuSwitching;
     private bool _noActiveResolvePopUps = true;
     private bool _onHomeScreen = true;
+    private UIData _uiData;
 
     public bool GameIsPaused { get; private set; }
 
@@ -69,6 +70,7 @@ public partial class UIBranch : MonoBehaviour, IHUbData
         MyCanvasGroup = GetComponent<CanvasGroup>();
         _uiTweener = GetComponent<UITweener>();
         MyCanvas = GetComponent<Canvas>();
+        _uiData = new UIData();
         _uiTweener.OnAwake();
         SetNewParentBranch(this);
         SetStartPositions();
@@ -80,7 +82,8 @@ public partial class UIBranch : MonoBehaviour, IHUbData
 
     private void OnEnable()
     {
-        UIHub.GamePaused += IsGamePaused;
+       // UIHub.GamePaused += IsGamePaused;
+       _uiData.IsGamePaused = IsGamePaused;
         UIHomeGroup.DoOnHomeScreen += SaveIfOnHomeScreen;
         UIBranch.DoActiveBranch += SaveActiveBranch;
         UINode.DoHighlighted += SaveHighlighted;
@@ -90,19 +93,19 @@ public partial class UIBranch : MonoBehaviour, IHUbData
 
     private void OnDisable()
     {
-        UIHub.GamePaused -= IsGamePaused;
+        //UIHub.GamePaused -= IsGamePaused;
         UIHomeGroup.DoOnHomeScreen -= SaveIfOnHomeScreen;
         UIBranch.DoActiveBranch -= SaveActiveBranch;
         UINode.DoHighlighted -= SaveHighlighted;
         UINode.DoSelected -= SaveSelected;
         PopUpController.NoResolvePopUps -= SetResolveCount;
-        PopUpBranch?.OnDisable();
-        PauseMenuClass?.OnDisable();
+        //PopUpBranch?.OnDisable();
+        //PauseMenuClass.OnDisable();
     }
 
-    public void OnAwake(IGameToMenuSwitching gameToMenuSwitching, UIHomeGroup homeGroup)
+    public void OnAwake(UIHomeGroup homeGroup)
     {
-        _gameToMenuSwitching = gameToMenuSwitching;
+        //_gameToMenuSwitching = gameToMenuSwitching;
         HomeGroup = homeGroup;
     }
 
@@ -136,14 +139,14 @@ public partial class UIBranch : MonoBehaviour, IHUbData
     private void CheckIfResolvePopUp()
     {
         if (!IsResolvePopUp) return;
-        PopUpBranch = new Resolve(this, FindObjectsOfType<UIBranch>(), _gameToMenuSwitching);
+        PopUpBranch = new Resolve(this, FindObjectsOfType<UIBranch>()/*, _gameToMenuSwitching*/);
         _escapeKeyFunction = EscapeKey.BackOneLevel;
     }
     
     private void CheckIfNonResolvePopUp()
     {
         if (!IsNonResolvePopUp) return;
-        PopUpBranch = new NonResolve(this, FindObjectsOfType<UIBranch>(), _gameToMenuSwitching);
+        PopUpBranch = new NonResolve(this, FindObjectsOfType<UIBranch>()/*, _gameToMenuSwitching*/);
         _screenType = ScreenType.Normal;
         _escapeKeyFunction = EscapeKey.BackOneLevel;
     }
@@ -265,6 +268,7 @@ public partial class UIBranch : MonoBehaviour, IHUbData
             ActivateInTweens();
         }
         MyCanvas.enabled = true;
+        MyCanvasGroup.blocksRaycasts = true;
     }
 
     public void SwitchBranchGroup(SwitchType switchType) 
@@ -298,19 +302,18 @@ public partial class UIBranch : MonoBehaviour, IHUbData
 
     public bool CheckAndDisableBranchCanvas(ScreenType myBranchScreenType)
     {
-        if (MyCanvas.enabled)
+        if (!MyCanvas.enabled) return false;
+        if (myBranchScreenType == ScreenType.FullScreen)
         {
-            if (myBranchScreenType == ScreenType.FullScreen)
-            {
-                MyCanvas.enabled = false;
-            }
-
-            if (GameIsPaused || !IsResolvePopUp)
-            {
-                MyCanvasGroup.blocksRaycasts = false;
-            }
-            return true;
+            MyCanvas.enabled = false;
         }
-        return false;
+
+        if (GameIsPaused || !IsResolvePopUp)
+        {
+            MyCanvasGroup.blocksRaycasts = false;
+        }
+        return true;
     }
+    
+    
 }

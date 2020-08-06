@@ -37,13 +37,9 @@ public interface IPauseMenu
     void StartPauseMenu(bool isGamePaused);
 }
 
-public interface IPopUp : IMono
+public interface IPopUp
 {
     void StartPopUp();
     void RestoreLastPosition(UINode lastNode = null);
 }
 
-public interface IGameToMenuSwitching
-{
-    void SwitchBetweenGameAndMenu();
-}

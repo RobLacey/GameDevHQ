@@ -2,9 +2,9 @@
 
 public class Resolve : UIPopUp
 {
-    public Resolve(UIBranch branch, UIBranch[] branchList, IGameToMenuSwitching gameToMenu)
+    public Resolve(UIBranch branch, UIBranch[] branchList/*, IGameToMenuSwitching gameToMenu*/)
     {
-        _gameToMenuSwitching = gameToMenu;
+        //_gameToMenuSwitching = gameToMenu;
         _myBranch = branch;
         _allBranches = branchList;
         OnEnable();
