@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DG.Tweening.Core.Easing;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
@@ -11,7 +12,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
-public partial class UIBranch : MonoBehaviour, IHUbData
+public partial class UIBranch : MonoBehaviour
 {
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
@@ -41,17 +42,22 @@ public partial class UIBranch : MonoBehaviour, IHUbData
     private UITweener _uiTweener;
     int _groupIndex;
     Action _onFinishedTrigger;
-    //private IGameToMenuSwitching _gameToMenuSwitching;
     private bool _noActiveResolvePopUps = true;
     private bool _onHomeScreen = true;
+    private bool _tweenOnChange = true;
+    private UIHomeGroup _homeGroup;
     private UIData _uiData;
-
-    public bool GameIsPaused { get; private set; }
+    private Canvas _myCanvas;
+    private bool _setAsActive;
+    private CanvasGroup _myCanvasGroup;
 
     public IPopUp PopUpBranch { get; private set; }
-    private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
-
-    public void IsGamePaused(bool paused) => GameIsPaused = paused;
+    private void SetResolvePopUpCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
+    private void SaveIfOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
+    private void SaveHighlighted(UINode newNode)
+        => LastHighlighted = SearchThisBranchesNodes(newNode, LastHighlighted);
+    private void SaveSelected(UINode newNode) 
+        => LastSelected = SearchThisBranchesNodes(newNode, LastSelected);
 
     //Delegates
     public static event Action<UIBranch> DoActiveBranch; 
@@ -67,9 +73,9 @@ public partial class UIBranch : MonoBehaviour, IHUbData
     private void Awake()
     {
         ThisGroupsUiNodes = gameObject.GetComponentsInChildren<UINode>();
-        MyCanvasGroup = GetComponent<CanvasGroup>();
+        _myCanvasGroup = GetComponent<CanvasGroup>();
         _uiTweener = GetComponent<UITweener>();
-        MyCanvas = GetComponent<Canvas>();
+        _myCanvas = GetComponent<Canvas>();
         _uiData = new UIData();
         _uiTweener.OnAwake();
         SetNewParentBranch(this);
@@ -82,36 +88,26 @@ public partial class UIBranch : MonoBehaviour, IHUbData
 
     private void OnEnable()
     {
-       // UIHub.GamePaused += IsGamePaused;
-       _uiData.IsGamePaused = IsGamePaused;
-        UIHomeGroup.DoOnHomeScreen += SaveIfOnHomeScreen;
-        UIBranch.DoActiveBranch += SaveActiveBranch;
-        UINode.DoHighlighted += SaveHighlighted;
-        UINode.DoSelected += SaveSelected;
-        PopUpController.NoResolvePopUps += SetResolveCount;
+       _uiData.SubscribeToOnHomeScreen(SaveIfOnHomeScreen);
+        _uiData.SubscribeToHighlightedNode(SaveHighlighted);
+        _uiData.SubscribeToSelectedNode(SaveSelected);
+        _uiData.SubscribeNoResolvePopUps(SetResolvePopUpCount);
     }
 
     private void OnDisable()
     {
-        //UIHub.GamePaused -= IsGamePaused;
-        UIHomeGroup.DoOnHomeScreen -= SaveIfOnHomeScreen;
-        UIBranch.DoActiveBranch -= SaveActiveBranch;
-        UINode.DoHighlighted -= SaveHighlighted;
-        UINode.DoSelected -= SaveSelected;
-        PopUpController.NoResolvePopUps -= SetResolveCount;
-        //PopUpBranch?.OnDisable();
-        //PauseMenuClass.OnDisable();
+        _uiData.OnDisable();
+        PopUpBranch?.OnDisable();
     }
 
     public void OnAwake(UIHomeGroup homeGroup)
     {
-        //_gameToMenuSwitching = gameToMenuSwitching;
-        HomeGroup = homeGroup;
+        _homeGroup = homeGroup;
     }
 
     private void Start()
     {
-        MyCanvasGroup.blocksRaycasts = false;
+        _myCanvasGroup.blocksRaycasts = false;
         CheckIfHomeScreen();
     }
 
@@ -120,11 +116,11 @@ public partial class UIBranch : MonoBehaviour, IHUbData
         if (_branchType == BranchType.HomeScreenUI)
         {
             _escapeKeyFunction = EscapeKey.None;
-            MyCanvas.enabled = true;
+            _myCanvas.enabled = true;
         }
         else
         {
-            MyCanvas.enabled = false;
+            _myCanvas.enabled = false;
             _tweenOnHome = IsActive.Yes;
         }
     }
@@ -139,14 +135,14 @@ public partial class UIBranch : MonoBehaviour, IHUbData
     private void CheckIfResolvePopUp()
     {
         if (!IsResolvePopUp) return;
-        PopUpBranch = new Resolve(this, FindObjectsOfType<UIBranch>()/*, _gameToMenuSwitching*/);
+        PopUpBranch = new UIPopUp(this, FindObjectsOfType<UIBranch>());
         _escapeKeyFunction = EscapeKey.BackOneLevel;
     }
     
     private void CheckIfNonResolvePopUp()
     {
-        if (!IsNonResolvePopUp) return;
-        PopUpBranch = new NonResolve(this, FindObjectsOfType<UIBranch>()/*, _gameToMenuSwitching*/);
+        if (!IsOptionalPopUp) return;
+        PopUpBranch = new UIPopUp(this, FindObjectsOfType<UIBranch>());
         _screenType = ScreenType.Normal;
         _escapeKeyFunction = EscapeKey.BackOneLevel;
     }
@@ -195,23 +191,31 @@ public partial class UIBranch : MonoBehaviour, IHUbData
 
     public void MoveBackToThisBranch()
     {
-        if (StayOn) 
-            TweenOnChange = false;
+        if (_stayOn == IsActive.Yes) 
+            _tweenOnChange = false;
         MyParentBranch.LastSelected.ThisNodeIsSelected();
         MoveToThisBranch();
     }
 
     public void MoveToBranchWithoutTween()
     {
-        TweenOnChange = false;
+        _myCanvasGroup.blocksRaycasts = true;
+        _tweenOnChange = false;
+        MoveToThisBranch();
+    }
+
+    public void MoveToThisBranchDontSetAsActive()
+    {
+        _setAsActive = false;
         MoveToThisBranch();
     }
 
     public void MoveToThisBranch(UIBranch newParentController = null)
     {
+        SetAsActiveBranch();
         BasicSetUp(newParentController);
 
-        if (TweenOnChange) //TODO Replace when ActiveBranch is done
+        if (_tweenOnChange)
         {
             ActivateInTweens();
         }
@@ -219,7 +223,7 @@ public partial class UIBranch : MonoBehaviour, IHUbData
         {
             InTweenCallback();
         }
-        TweenOnChange = true;
+        _tweenOnChange = true;
     }
     
     public void SetAsActiveBranch()
@@ -229,7 +233,7 @@ public partial class UIBranch : MonoBehaviour, IHUbData
 
     private void BasicSetUp(UIBranch newParentController = null)
     {
-        MyCanvas.enabled = true;
+        _myCanvas.enabled = true;
         ClearOrRestoreHomeScreen();
         
         if (_saveExitSelection == IsActive.No)
@@ -248,47 +252,64 @@ public partial class UIBranch : MonoBehaviour, IHUbData
 
     private void ClearOrRestoreHomeScreen()
     {
-        if (MyBranchType == BranchType.HomeScreenUI && !_onHomeScreen)
-        {
-            TweenOnChange = TweenOnHome;
-            HomeGroup.RestoreHomeScreen();
-        }
+        RestoreHomeScreen();
+        ClearHomeScreen();
+    }
 
+    private void ClearHomeScreen()
+    {
         if (ScreenType != ScreenType.FullScreen) return;
         if (_onHomeScreen && !IsAPopUpBranch() && !IsPauseMenuBranch())
         {
-            HomeGroup.ClearHomeScreen(this, _turnOffPopUps);
+            _homeGroup.ClearHomeScreen(this, _turnOffPopUps);
+        }
+    }
+
+    private void RestoreHomeScreen()
+    {
+        if (MyBranchType == BranchType.HomeScreenUI && !_onHomeScreen)
+        {
+            _tweenOnChange = _tweenOnHome == IsActive.Yes;
+            _homeGroup.RestoreHomeScreen();
         }
     }
 
     public void ResetHomeScreenBranch()
     {
-        if (TweenOnHome)
+        if (_tweenOnHome == IsActive.Yes)
         {
             ActivateInTweens();
         }
-        MyCanvas.enabled = true;
-        MyCanvasGroup.blocksRaycasts = true;
+        _myCanvas.enabled = true;
+        _myCanvasGroup.blocksRaycasts = true;
     }
 
-    public void SwitchBranchGroup(SwitchType switchType) 
-        => _groupIndex = UIBranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, switchType);
-
-    // ReSharper disable once UnusedMember.Global
-    public void StartPopUpScreen() => PopUpBranch?.StartPopUp();
-
-    private void SaveHighlighted(UINode newNode)
+    public void ClearBranch()
     {
-        if(ActiveBranch != this) return;
-        LastHighlighted = SearchThisBranchesNodes(newNode, LastHighlighted);
+        _myCanvasGroup.blocksRaycasts = false;
+        _myCanvas.enabled = false;
+    }
+    
+    public void ClearBranchForNavigation()
+    {
+        if (_stayOn == IsActive.No)
+        {
+            ClearBranch();
+        }
     }
 
-    private void SaveSelected(UINode newNode) 
-        => LastSelected = SearchThisBranchesNodes(newNode, LastSelected);
+    public void ActivateBranch()
+    {
+        if (_noActiveResolvePopUps)
+            _myCanvasGroup.blocksRaycasts = true;
+        _myCanvas.enabled = true;
+    }
 
-    private void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
-
-    private void SaveIfOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
+    public void SwitchBranchGroup(SwitchType switchType)
+    {
+        if(_groupsList.Count > 1)
+            _groupIndex = UIBranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, switchType);
+    }
 
     private UINode SearchThisBranchesNodes(UINode newNode, UINode defaultNode)
     {
@@ -300,20 +321,21 @@ public partial class UIBranch : MonoBehaviour, IHUbData
         return defaultNode;
     }
 
-    public bool CheckAndDisableBranchCanvas(ScreenType myBranchScreenType)
+    public bool CheckIfActiveAndDisableBranch(ScreenType myBranchScreenType)
     {
-        if (!MyCanvas.enabled) return false;
+        if (!_myCanvas.enabled) return false;
         if (myBranchScreenType == ScreenType.FullScreen)
         {
-            MyCanvas.enabled = false;
+            _myCanvas.enabled = false;
         }
 
-        if (GameIsPaused || !IsResolvePopUp)
-        {
-            MyCanvasGroup.blocksRaycasts = false;
-        }
+        _myCanvasGroup.blocksRaycasts = false;
         return true;
     }
-    
-    
+
+    /// <summary>
+    /// Call To to start any PopUps
+    /// </summary>
+    public void StartPopUp() => PopUpBranch?.StartPopUp();
 }
+

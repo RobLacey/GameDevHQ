@@ -82,6 +82,7 @@ public class UINavigation
         {
             _myNode.Audio.Play(UIEventTypes.Highlighted);
             //_myBranch.SaveLastHighlighted(_myNode);
+            _myNode.ThisNodeIsHighLighted();
             _myNode.SetAsHighlighted();
         }
     }
@@ -181,7 +182,7 @@ public class UINavigation
             _myNode.Audio.Play(UIEventTypes.Highlighted);
         }
         _myNode.TriggerEnterEvent();
-        //_myBranch.SaveLastHighlighted(_myNode);
+        _myNode.ThisNodeIsHighLighted();
         _myNode.SetAsHighlighted();
     }
 
@@ -199,7 +200,7 @@ public class UINavigation
             }
             else
             {
-                _myBranch.StartOutTween(() => ToChildBranch_AfterTween());
+                _myBranch.StartOutTween(() => ToChildBranchProcess());
             }
         }
     }
@@ -210,23 +211,17 @@ public class UINavigation
         {
             _myBranch.StartOutTween();
         }
-        ToChildBranch_OnClick();
+        ToChildBranchProcess();
     }
 
     private void ToFullScreen_AfterTween()
     {
-        ToChildBranch_AfterTween();
+        ToChildBranchProcess();
     }
 
-    private void ToChildBranch_AfterTween()
+    private void ToChildBranchProcess()
     {
-        if (!_myBranch.StayOn) { _myBranch.MyCanvas.enabled = false; }
-        _childBranch.MoveToThisBranch(_myBranch);
-    }
-
-    private void ToChildBranch_OnClick()
-    {
-        if (!_myBranch.StayOn) { _myBranch.MyCanvas.enabled = false; }
+        _myBranch.ClearBranchForNavigation();
         _childBranch.MoveToThisBranch(_myBranch);
     }
 

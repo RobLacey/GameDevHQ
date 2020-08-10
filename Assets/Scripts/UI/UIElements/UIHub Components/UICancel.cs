@@ -9,6 +9,7 @@ public class UICancel : IMono
     private readonly IPopUpControls _popUpControls;
     private readonly EscapeKey _globalEscapeSetting;
     private readonly UIData _uiData;
+    private bool _fromHotKey;
 
     public UICancel(EscapeKey globalSetting, IPopUpControls popUpControls)
     {
@@ -18,6 +19,7 @@ public class UICancel : IMono
         OnEnable();
     }
 
+    //Events
     public static event Func<UIBranch> ReturnHomeBranch; 
 
     //Properties
@@ -25,16 +27,19 @@ public class UICancel : IMono
     private UIBranch ActiveBranch { get; set; }
     private void SaveSelected(UINode newNode) => LastSelected = newNode;
     private void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
+    private void SaveFromHotKey() => _fromHotKey = true;
      
     public void OnEnable()
     {
-        _uiData.NewSelectedNode = SaveSelected;
-        _uiData.NewActiveBranch = SaveActiveBranch;
+        _uiData.SubscribeToSelectedNode(SaveSelected);
+        _uiData.SubscribeToActiveBranch(SaveActiveBranch);
+        _uiData.SubscribeFromHotKey(SaveFromHotKey);
         UINode.DoCancelButtonPressed += CancelOrBackButtonPressed;
     }
 
     public void OnDisable()
     {
+        _uiData.OnDisable();
         UINode.DoCancelButtonPressed -= CancelOrBackButtonPressed;
     }
 
@@ -42,11 +47,11 @@ public class UICancel : IMono
     {
         if(ActiveBranch.IsResolvePopUp) return;
         
-        if (ActiveBranch.FromHotKey)
+        if (_fromHotKey)
         {
             CancelOrBackButtonPressed(EscapeKey.BackToHome);
         }
-        else if (ActiveBranch.IsNonResolvePopUp)
+        else if (ActiveBranch.IsOptionalPopUp)
         {
             ProcessCancelType(EscapeKey.BackOneLevel);
         }
@@ -58,9 +63,9 @@ public class UICancel : IMono
 
     private void CancelOrBackButtonPressed(EscapeKey escapeKey) 
     {
-        if (ActiveBranch.FromHotKey)
+        if (_fromHotKey)
         {
-            ActiveBranch.FromHotKey = false;
+            _fromHotKey = false;
             LastSelected.SetNotSelected_NoEffects();
         }
         ProcessCancelType(escapeKey);
@@ -91,13 +96,18 @@ public class UICancel : IMono
     {
         LastSelected.Audio.Play(UIEventTypes.Cancelled);
 
-        if (ActiveBranch.IsAPopUpBranch() || ActiveBranch.IsPauseMenuBranch())
+        if (IsPopUpOrPauseMenu())
         {
             endOfCancelAction.Invoke();
             return;
         }
         
         StartOutTween(endOfCancelAction);
+    }
+
+    private bool IsPopUpOrPauseMenu()
+    {
+        return ActiveBranch.IsAPopUpBranch() || ActiveBranch.IsPauseMenuBranch();
     }
 
     private void StartOutTween(Action endAction)

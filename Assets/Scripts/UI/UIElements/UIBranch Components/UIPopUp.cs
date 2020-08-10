@@ -1,48 +1,62 @@
 ﻿
+using System;
 using UnityEngine;
 
 public class UIPopUp : IPopUp
 {
     //protected IGameToMenuSwitching _gameToMenuSwitching;
-    protected UIBranch _myBranch;
-    protected UIBranch[] _allBranches;
-    protected bool _noActiveResolvePopUps = true;
+    private UIBranch _myBranch;
+    private UIBranch[] _allBranches;
+    private bool _noActiveResolvePopUps = true;
     private bool _noActiveNonResolvePopUps = true;
     private bool _isInMenu;
     private readonly UIData _uiData;
-    protected UIPopUp()
+
+    public UIPopUp(UIBranch branch, UIBranch[] branchList)
     {
         _uiData = new UIData();
+        _myBranch = branch;
+        _allBranches = branchList;
+        OnEnable();
     }
 
     //Properties
-    protected ScreenData ScreenData { get; } = new ScreenData();
+    private ScreenData ScreenData { get; } = new ScreenData();
     private bool InGameBeforePopUp { get; set; }
-    protected bool GameIsPaused { get; private set; }
+    private bool GameIsPaused { get; set; }
     private bool NoActivePopUps => _noActiveResolvePopUps && _noActiveNonResolvePopUps;
     private void IsGamePaused(bool paused) => GameIsPaused = paused;
-    private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
-    private void SetNonResolveCount(bool activeNonResolvePopUps) => _noActiveNonResolvePopUps = activeNonResolvePopUps;
-    private void SaveSwitchBetweenGameAndMenu(bool inMenu) => _isInMenu = inMenu;
+    private void SetResolvePopUpCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
+    private void SetOptionalPopUpCount(bool activeNonResolvePopUps) => _noActiveNonResolvePopUps = activeNonResolvePopUps;
+    private void SaveInMenu(bool inMenu) => _isInMenu = inMenu;
     private UINode LastHighlighted { get; set; }
     private UINode LastSelected { get; set; }
     private void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
     private void SaveSelected(UINode newNode) => LastSelected = newNode;
+    
+    public static event Action<UIBranch> AddResolvePopUp;
+    public static event Action<UIBranch> AddOptionalPopUp;
 
-    protected void OnEnable()
+
+    public void OnEnable()
     {
-        _uiData.IsGamePaused = IsGamePaused;
-        _uiData.AmImMenu = SaveSwitchBetweenGameAndMenu;
-        _uiData.NewHighLightedNode = SaveHighlighted;
-        _uiData.NewSelectedNode = SaveSelected;
-        _uiData.NoResolvePopUps = SetResolveCount;
-        _uiData.NoNonResolvePopUps = SetNonResolveCount;
+        _uiData.SubscribeToGameIsPaused(IsGamePaused);
+        _uiData.SubscribeToInMenu(SaveInMenu);
+        _uiData.SubscribeToHighlightedNode(SaveHighlighted);
+        _uiData.SubscribeToSelectedNode(SaveSelected);
+        _uiData.SubscribeNoResolvePopUps(SetResolvePopUpCount);
+        _uiData.SubscribeNoOptionalPopUps(SetOptionalPopUpCount);
+    }
+
+    public void OnDisable()
+    {
+        _uiData.OnDisable();
     }
     
     public void StartPopUp()
     {
         if (GameIsPaused) return;
-        if (!_myBranch.MyCanvas.enabled)
+        if (!_myBranch.CanvasIsEnabled)
         {
             SetUpPopUp();
         }
@@ -53,20 +67,35 @@ public class UIPopUp : IPopUp
         if (!_isInMenu && NoActivePopUps)
         {
             InGameBeforePopUp = true;
-            //_gameToMenuSwitching.SwitchBetweenGameAndMenu();
         }
+
+        if (_myBranch.IsResolvePopUp)
+        {
+            AddResolvePopUp?.Invoke(_myBranch);
+        }
+
+        if (_myBranch.IsOptionalPopUp)
+        {
+            AddOptionalPopUp?.Invoke(_myBranch);
+        }
+        
+        PopUpStartProcess();
     }
     
     protected void PopUpStartProcess()
     {
         StoreScreenData();
-        
-        foreach (var branch in _allBranches)
+
+        if (_myBranch.IsResolvePopUp || _myBranch.IsPauseMenuBranch())
         {
-            if (branch == _myBranch) continue;
-            if (!branch.CheckAndDisableBranchCanvas(_myBranch.ScreenType)) continue;
-            ScreenData._clearedBranches.Add(branch);
+            foreach (var branch in _allBranches)
+            {
+                if (branch == _myBranch) continue;
+                if (!branch.CheckIfActiveAndDisableBranch(_myBranch.ScreenType)) continue;
+                ScreenData._clearedBranches.Add(branch);
+            }
         }
+
         ActivatePopUp();
     }
     
@@ -79,11 +108,11 @@ public class UIPopUp : IPopUp
     
     private void ActivatePopUp()
     {
-        _myBranch.LastSelected.Audio.Play(UIEventTypes.Selected);
+        LastSelected.Audio.Play(UIEventTypes.Selected);
         _myBranch.MoveToThisBranch();
     }
     
-    public void RestoreLastPosition(UINode lastNode)
+    public void MoveToNextPopUp(UINode lastNode)
     {
         if (_myBranch.WhenToMove == WhenToMove.AfterEndOfTween)
         {
@@ -98,7 +127,7 @@ public class UIPopUp : IPopUp
 
     private void EndOfTweenActions(UINode lastNode)
     {
-        RestoreScreen();
+        DoRestoreScreen();
         SetLastSelected(lastNode);
         if (NoActivePopUps && InGameBeforePopUp)
         {
@@ -138,17 +167,19 @@ public class UIPopUp : IPopUp
         return lastHomeGroupNode.MyBranch.MyParentBranch;
     }
 
-    protected virtual void RestoreScreen()
+    private void DoRestoreScreen()
     {
+        if (GameIsPausedOrNotAResolvePopUp()) return;
+        
         foreach (var branch in ScreenData._clearedBranches)
         {
-            if (GameIsPaused) continue;
-            if (_noActiveResolvePopUps)
-            {
-                branch.MyCanvasGroup.blocksRaycasts = true;
-            }
+            branch.ActivateBranch();
         }
     }
 
+    private bool GameIsPausedOrNotAResolvePopUp()
+    {
+        return GameIsPaused || !_myBranch.IsResolvePopUp;
+    }
 }
 

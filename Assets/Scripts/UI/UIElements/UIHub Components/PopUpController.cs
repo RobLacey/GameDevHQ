@@ -1,131 +1,115 @@
 ﻿using System;
 using System.Collections.Generic;
-
-public interface IPopUpControls
-{
-    bool NoActivePopUps { get; }
-    void ActiveNextPopUp();
-    void RemoveNextPopUp();
-}
-
+/// <summary>
+/// This Class Looks after managing switching between PopUps
+/// </summary>
 public class PopUpController : IMono, IPopUpControls
 {
+    private UIData _uiData;
+    
     public PopUpController()
     {
+        _uiData = new UIData();
         OnEnable();
     }
-    
+   
     //Properties
-    private List<UIBranch> ActiveResolvePopUpsList { get; } = new List<UIBranch>();
-    private List<UIBranch> ActiveNonResolvePopUpsList { get; } = new List<UIBranch>();
-    public bool NoActivePopUps => ActiveResolvePopUpsList.Count == 0
-                                  & ActiveNonResolvePopUpsList.Count == 0;
-
-    private bool NoActiveResolvePopUps => ActiveResolvePopUpsList.Count == 0;
-    private bool NoActiveNonResolvePopUps => ActiveNonResolvePopUpsList.Count == 0;
+    private List<UIBranch> ActiveResolvePopUps { get; } = new List<UIBranch>();
+    private List<UIBranch> ActiveOptionalPopUps { get; } = new List<UIBranch>();
+    public bool NoActivePopUps => ActiveResolvePopUps.Count == 0
+                                  & ActiveOptionalPopUps.Count == 0;
+    private bool NoActiveResolvePopUps => ActiveResolvePopUps.Count == 0;
+    private bool NoActiveOptionalPopUps => ActiveOptionalPopUps.Count == 0;
     private UINode LastNodeBeforePopUp { get; set; }
 
     //Delegates
     public static event Action<bool> NoResolvePopUps;
-    public static event Action<bool> NoNonResolvePopUps;
+    public static event Action<bool> NoOptionalPopUps;
     
     public void OnEnable()
     {
-        Resolve.AddToResolvePopUp += AddToResolveList;
-        NonResolve.AddToNonResolvePopUp += AddToNonResolveList;
+        _uiData.SubscribeToAddResolvePopUp(AddActivePopUps_Resolve);
+        _uiData.SubscribeToAddOptionalPopUp(AddToActivePopUps_Optional);
     }
 
     public void OnDisable()
     {
-        Resolve.AddToResolvePopUp -= AddToResolveList;
-        NonResolve.AddToNonResolvePopUp -= AddToNonResolveList;
+        _uiData.OnDisable();
     }
 
-    public void ActiveNextPopUp()
+    public void ActivateCurrentPopUp()
     {
         if (!NoActiveResolvePopUps)
         {
-            int index = ActiveResolvePopUpsList.Count - 1;
-            ActiveResolvePopUpsList[index].LastHighlighted.SetNodeAsActive();
+            GetNextPopUp(ActiveResolvePopUps).SetNodeAsActive();
         }
-        else if(!NoActiveNonResolvePopUps)
+        else if(!NoActiveOptionalPopUps)
         {
-            int index = ActiveNonResolvePopUpsList.Count - 1;
-            ActiveNonResolvePopUpsList[index].LastHighlighted.SetNodeAsActive();
+            GetNextPopUp(ActiveOptionalPopUps).SetNodeAsActive();
         }
     }
+
+    private UINode GetNextPopUp(List<UIBranch> popUpList)
+    {
+        int index = popUpList.Count - 1;
+        return popUpList[index].LastHighlighted;
+    }
+
     public void RemoveNextPopUp()
     {
         if (!NoActiveResolvePopUps)
         {
-            RemoveFromActiveList_Resolve();
+            RemoveFromActivePopUpList(ActiveResolvePopUps, WhatToDoNext_Resolve);
         }
-        else if(!NoActiveNonResolvePopUps)
+        else if(!NoActiveOptionalPopUps)
         {
-            RemoveFromActiveList_NonResolve();
+            RemoveFromActivePopUpList(ActiveOptionalPopUps, WhatToDoNext_Optional);
         }
     }
 
-    private void AddToResolveList(UIBranch newResolve)
-    {
-        if (ActiveResolvePopUpsList.Contains(newResolve)) return;
-        ActiveResolvePopUpsList.Add(newResolve);
-        NoResolvePopUps?.Invoke(false);
-    }
-    
-    private void AddToNonResolveList(UIBranch newNonResolve)
-    {
-        if (ActiveNonResolvePopUpsList.Contains(newNonResolve)) return;
-        ActiveNonResolvePopUpsList.Add(newNonResolve);
-        NoNonResolvePopUps?.Invoke(false);
-    }
-    
-    private void RemoveFromActiveList_Resolve()
-    {
-        int lastIndexItem = ActiveResolvePopUpsList.Count - 1;
-        var nextPopUp = ActiveResolvePopUpsList[lastIndexItem];
-        ActiveResolvePopUpsList.Remove(nextPopUp);
+    private void AddActivePopUps_Resolve(UIBranch newResolvePopUp)
+       => AddToPopUpList(newResolvePopUp, ActiveResolvePopUps, NoResolvePopUps);
 
+    private void AddToActivePopUps_Optional(UIBranch newOptionalPopUp) 
+        => AddToPopUpList(newOptionalPopUp, ActiveOptionalPopUps, NoOptionalPopUps);
+
+    private void AddToPopUpList(UIBranch newPopUp, List<UIBranch> popUpList,Action<bool> clearListEvent)
+    {
+        if (popUpList.Contains(newPopUp)) return;
+        popUpList.Add(newPopUp);
+        clearListEvent?.Invoke(false);
+    }
+
+    private void RemoveFromActivePopUpList(List<UIBranch> popUpList, Action<UIBranch> finishRemovalFromList)
+    {
+        var lastPopUp = popUpList[popUpList.Count - 1];
+        popUpList.Remove(lastPopUp);
+        finishRemovalFromList?.Invoke(lastPopUp);
+    }
+
+    private void WhatToDoNext_Resolve(UIBranch lastPopUp)
+    {
         if (NoActiveResolvePopUps)
         {
             NoResolvePopUps?.Invoke(true);
-            ActivateNextNonResolvePopUp(nextPopUp);
+            WhatToDoNext_Optional(lastPopUp);
         }
         else
         {
-            lastIndexItem = ActiveResolvePopUpsList.Count - 1;
-            nextPopUp.PopUpBranch.RestoreLastPosition(ActiveResolvePopUpsList[lastIndexItem].LastHighlighted);
+            lastPopUp.PopUpBranch.MoveToNextPopUp(GetNextPopUp(ActiveResolvePopUps));
         }
     }
 
-    private void ActivateNextNonResolvePopUp(UIBranch nextPopUp)
+    private void WhatToDoNext_Optional(UIBranch currentPopUp)
     {
-        if (NoActiveNonResolvePopUps)
+        if (NoActiveOptionalPopUps)
         {
-            nextPopUp.PopUpBranch.RestoreLastPosition(LastNodeBeforePopUp);
+            NoOptionalPopUps?.Invoke(true);
+            currentPopUp.PopUpBranch.MoveToNextPopUp(LastNodeBeforePopUp);
         }
         else
         {
-            var lastIndexItem = ActiveNonResolvePopUpsList.Count - 1;
-            nextPopUp.PopUpBranch.RestoreLastPosition(ActiveNonResolvePopUpsList[lastIndexItem].LastHighlighted);
-        }
-    }
-
-    private void RemoveFromActiveList_NonResolve()
-    {
-        int lastIndexItem = ActiveNonResolvePopUpsList.Count - 1;
-        var nextPopUp = ActiveNonResolvePopUpsList[lastIndexItem];
-        ActiveNonResolvePopUpsList.Remove(nextPopUp);
-
-        if (NoActiveNonResolvePopUps)
-        {
-            NoNonResolvePopUps?.Invoke(true);
-            nextPopUp.PopUpBranch.RestoreLastPosition(LastNodeBeforePopUp);
-        }
-        else
-        {
-            ActiveNextPopUp();
-            nextPopUp.PopUpBranch.RestoreLastPosition(ActiveNonResolvePopUpsList[0].LastHighlighted);
+            currentPopUp.PopUpBranch.MoveToNextPopUp(GetNextPopUp(ActiveOptionalPopUps));
         }
     }
 

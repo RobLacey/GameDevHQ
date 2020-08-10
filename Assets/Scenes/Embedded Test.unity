@@ -7340,7 +7340,7 @@ PrefabInstance:
     - target: {fileID: 7472274104923999175, guid: 889858f9542a04a41801cc9b56665611,
         type: 3}
       propertyPath: m_Text
-      value: 'Is NonResolve
+      value: 'Is Optional
 
 '
       objectReference: {fileID: 0}
@@ -9612,6 +9612,11 @@ PrefabInstance:
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: _buttonFunction
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _isCancelOrBack
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
@@ -9758,7 +9763,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 3
   _timer: 2
-  _screenType: 0
+  _screenType: 1
   _turnOffPopUps: 1
   _stayOn: 1
   _tweenOnHome: 0
@@ -11536,7 +11541,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 620683490}
-          m_MethodName: StartPopUpScreen
+          m_MethodName: StartPopUp
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -11550,7 +11555,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 2018220711}
-          m_MethodName: StartPopUpScreen
+          m_MethodName: StartPopUp
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -11564,7 +11569,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 1478859609}
-          m_MethodName: StartPopUpScreen
+          m_MethodName: StartPopUp
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -13402,7 +13407,7 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _branchType
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -27383,7 +27388,7 @@ GameObject:
   - component: {fileID: 2018220712}
   - component: {fileID: 2018220711}
   m_Layer: 0
-  m_Name: NonResolve
+  m_Name: Optional
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27423,7 +27428,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 4
+  _branchType: 3
   _timer: 5
   _screenType: 0
   _turnOffPopUps: 1
@@ -31810,7 +31815,7 @@ PrefabInstance:
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _mainControlType
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
@@ -31845,7 +31850,7 @@ PrefabInstance:
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _menuAndGameSwitching._inGameMenuSystem
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}

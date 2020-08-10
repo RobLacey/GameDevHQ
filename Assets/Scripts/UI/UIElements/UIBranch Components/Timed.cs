@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Timed : IPopUp, IHUbData
+public class Timed : IPopUp
 {
     private UIBranch myBranch;
     bool _running;
@@ -22,12 +22,14 @@ public class Timed : IPopUp, IHUbData
 
     public void OnEnable()
     {
-        _uiData.IsGamePaused = IsGamePaused;
+        _uiData.SubscribeToGameIsPaused(IsGamePaused);
+        //_uiData.IsGamePaused = IsGamePaused;
         //UIHub.GamePaused += IsGamePaused;
     }
 
     public void OnDisable()
     {
+        _uiData.OnDisable();
         //UIHub.GamePaused -= IsGamePaused;
     }
 
@@ -39,7 +41,7 @@ public class Timed : IPopUp, IHUbData
         _coroutine = StaticCoroutine.StartCoroutine(TimedPopUpProcess());
     }
 
-    public void RestoreLastPosition(UINode lastNode = null)
+    public void MoveToNextPopUp(UINode lastNode = null)
     {
         //Maybe Need for quick exit button
     }
@@ -48,8 +50,9 @@ public class Timed : IPopUp, IHUbData
     {
         if (!_running)
         {
-            myBranch.DontSetAsActive = true;
-            myBranch.MoveToThisBranch();
+            // myBranch.DontSetAsActive = true;
+            // myBranch.MoveToThisBranch();
+            myBranch.MoveToThisBranchDontSetAsActive();
             _running = true;
         }
         yield return new WaitForSeconds(myBranch.Timer);

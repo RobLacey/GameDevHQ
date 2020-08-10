@@ -11,38 +11,39 @@ public partial class UIBranch
         _branchEvents?._onBranchExit.Invoke();
         _onFinishedTrigger = action;
         _uiTweener.StopAllCoroutines();
-        MyCanvasGroup.blocksRaycasts = false;
+        _myCanvasGroup.blocksRaycasts = false;
         _uiTweener.DeactivateTweens(OutTweenCallback);
     }
 
     private void OutTweenCallback()
     {
-        MyCanvas.enabled = false;
+        _myCanvas.enabled = false;
         _onFinishedTrigger?.Invoke();
     }
 
     private void ActivateInTweens()
     {
-        MyCanvasGroup.blocksRaycasts = false;
+        if (IsOptionalPopUp && !_noActiveResolvePopUps)
+        {
+            _myCanvasGroup.blocksRaycasts = false;
+            _setAsActive = false;
+        }
+        else
+        {
+            _myCanvasGroup.blocksRaycasts = true;
+        }
+
         _uiTweener.ActivateTweens(InTweenCallback);
     }
 
     private void InTweenCallback()
     {
-        if (!IsAPopUpBranch()) MyCanvasGroup.blocksRaycasts = true;
-        if (IsNonResolvePopUp && !_noActiveResolvePopUps)
+        if (_setAsActive)
         {
-            DontSetAsActive = true;
-        }
-
-        if (!DontSetAsActive)
-        {
-            MyCanvasGroup.blocksRaycasts = true;
             LastHighlighted.SetNodeAsActive();
-            SetAsActiveBranch();
         }
 
         _branchEvents?._onBranchEnter.Invoke();
-        DontSetAsActive = false;
+        _setAsActive = true;
     }
 }

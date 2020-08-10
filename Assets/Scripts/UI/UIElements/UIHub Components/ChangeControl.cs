@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 /// <summary>
 /// Class that handles switching control from the mouse to a keyboard or controller
@@ -10,15 +9,18 @@ public class ChangeControl
     private readonly IPopUpControls _popUpControls;
     private Vector3 _mousePos = Vector3.zero;
     private readonly ControlMethod _controlMethod;
+    private readonly UIData _uiData;
+    private bool _gameIsPaused;
 
     public ChangeControl(ControlMethod controlMethod, IPopUpControls popUpControls)
     {
         _popUpControls = popUpControls;
         _controlMethod = controlMethod;
-        var uiData = new UIData();
-        uiData.NewHighLightedNode = SaveHighlighted;
+        _uiData = new UIData();
+        _uiData.SubscribeToHighlightedNode(SaveHighlighted);
+        _uiData.SubscribeToGameIsPaused(SaveGameIsPaused);
     }
-
+    
     //Delegates
     public static event Action<bool> DoAllowKeys;
 
@@ -27,23 +29,54 @@ public class ChangeControl
     private bool UsingKeysOrCtrl { get; set; }
     private UINode LastHighlighted { get; set; }
     private void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
+    private void SaveGameIsPaused(bool isPaused) => _gameIsPaused = isPaused;
 
-    public void StartGame()
+    public void OnDisable()
+    {
+        _uiData.OnDisable();
+    }
+
+    public void StartGame(bool startingInGame)
     {
         _mousePos = Input.mousePosition;
-        
         if (MousePreferredControlMethod())
         {
-            ActivateMouse();
+            SetUpMouse(startingInGame);
         }
         else
         {
-            ActivateKeysOrControl();
+            SetUpKeysOrCtrl(startingInGame);
         }
     }
 
     private bool MousePreferredControlMethod() 
         => _controlMethod == ControlMethod.Mouse || _controlMethod == ControlMethod.BothStartAsMouse;
+
+    private void SetUpMouse(bool startingInGame)
+    {
+        if (!startingInGame)
+        {
+            ActivateMouse();
+        }
+        else
+        {
+            UsingMouse = true;
+            SetAllowKeys();
+        }
+    }
+
+    private void SetUpKeysOrCtrl(bool startingInGame)
+    {
+        if (!startingInGame)
+        {
+            ActivateKeysOrControl();
+        }
+        else
+        {
+            UsingKeysOrCtrl = true;
+            SetAllowKeys();
+        }
+    }
 
     public void ChangeControlType()
     {
@@ -53,16 +86,19 @@ public class ChangeControl
         }
         else if(CanSwitchToKeysOrController())
         {
-            if (!(!Input.GetMouseButton(0) & !Input.GetMouseButton(1))) return;
+            if (MouseButtonsClicked()) return;
             ActivateKeysOrControl();
         }
     }
 
+    private bool CanSwitchToMouseControl() 
+        => _mousePos != Input.mousePosition && _controlMethod != ControlMethod.KeysOrController;
+
     private bool CanSwitchToKeysOrController() 
         => Input.anyKeyDown &&_controlMethod != ControlMethod.Mouse;
 
-    private bool CanSwitchToMouseControl() 
-        => _mousePos != Input.mousePosition && _controlMethod != ControlMethod.KeysOrController;
+    private static bool MouseButtonsClicked()
+        => !(!Input.GetMouseButton(0) & !Input.GetMouseButton(1));
 
     private void ActivateMouse()
     {
@@ -83,7 +119,7 @@ public class ChangeControl
         UsingMouse = false;
         SetAllowKeys();
         SetNextHighlightedForKeys();
-        EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
+        UIHub.SetEventSystem(LastHighlighted.gameObject);
     }
 
     private void SetAllowKeys()
@@ -94,13 +130,14 @@ public class ChangeControl
 
     private void SetNextHighlightedForKeys()
     {
-        if (!_popUpControls.NoActivePopUps)
+        if (_popUpControls.NoActivePopUps || _gameIsPaused)
         {
-            _popUpControls.ActiveNextPopUp();
+            LastHighlighted.ThisNodeIsHighLighted();
+            LastHighlighted.SetAsHighlighted();
         }
         else
         {
-            LastHighlighted.SetAsHighlighted();
+            _popUpControls.ActivateCurrentPopUp();
         }
     }
 }

@@ -9,6 +9,9 @@ using UnityEngine.EventSystems;
 public partial class UIHub
 {
     //Properties
+    private void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
+    private void SaveOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
+    private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
     [ShowNativeProperty] private UINode LastSelected { get; set; }
     [ShowNativeProperty] private UINode LastHighlighted { get; set; }
     [ShowNativeProperty] private UIBranch ActiveBranch { get; set; }
@@ -22,35 +25,46 @@ public partial class UIHub
         
         if (_onHomeScreen)
         {
-            WhenOnHomeScreen(newNode);
+            DeactivateLastHomeScreenNodes(newNode);
         }
         else
         {
-            WhenNotOnHomeScreen();
+            DeactiavteInternalBranches();
         }
 
         LastSelected = newNode;
     }
 
-    private void WhenNotOnHomeScreen()
+    private void DeactiavteInternalBranches()
     {
         if (!LastSelected.HasChildBranch) return; //Stops Tween Error when no child
         if (LastSelected.HasChildBranch.MyBranchType == BranchType.Internal) LastSelected.Deactivate();
     }
 
-    private void WhenOnHomeScreen(UINode newNode)
+    private void DeactivateLastHomeScreenNodes(UINode newNode)
     {
-        if (newNode.MyBranch.IsAPopUpBranch() || newNode.MyBranch.IsPauseMenuBranch()) return;
+        if (IsAPopUpOrPauseMenu(newNode)) return;
+        newNode = FindNewNodesHomeScreenParent(newNode);
 
+        if (CanDeactivateLastHomeScreenNode(newNode)) 
+            _lastHomeScreenNode.Deactivate();
+        
+        _lastHomeScreenNode = newNode;
+    }
+
+    private static bool IsAPopUpOrPauseMenu(UINode newNode)
+        => newNode.MyBranch.IsAPopUpBranch() || newNode.MyBranch.IsPauseMenuBranch();
+
+    private bool CanDeactivateLastHomeScreenNode(UINode newNode)
+        => newNode != _lastHomeScreenNode && _lastHomeScreenNode.IsSelected;
+
+    private static UINode FindNewNodesHomeScreenParent(UINode newNode)
+    {
         while (newNode.MyBranch != newNode.MyBranch.MyParentBranch)
         {
             newNode = newNode.MyBranch.MyParentBranch.LastSelected;
         }
-
-        if (newNode != _lastHomeScreenNode && _lastHomeScreenNode.IsSelected) 
-            _lastHomeScreenNode.Deactivate();
-
-        _lastHomeScreenNode = newNode;
+        return newNode;
     }
 
     private void SetLastHighlighted(UINode newNode)
@@ -59,6 +73,11 @@ public partial class UIHub
         LastHighlighted.SetNotHighlighted();
         LastHighlighted = newNode;
         if(!GameIsPaused)_popUpController.SetLastNodeBeforePopUp(newNode);
-        EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
+        if(_inMenu) SetEventSystem(LastHighlighted.gameObject);
+    }
+
+    public static void SetEventSystem(GameObject newGameObject)
+    {
+        EventSystem.current.SetSelectedGameObject(newGameObject);
     }
 }

@@ -2,7 +2,6 @@
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 
 [Serializable]
 public class MenuAndGameSwitching : IMono
@@ -15,6 +14,9 @@ public class MenuAndGameSwitching : IMono
 
     //Variables
     private UIData _uiData;
+    private bool _onHomeScreen = true;
+    private bool _noResolvePopUps = true;
+    private bool _noNonResolvePoUps = true;
     
     //Events
     [Serializable]
@@ -25,19 +27,24 @@ public class MenuAndGameSwitching : IMono
     public bool ActiveInGameSystem => _inGameMenuSystem == InGameSystem.On;
     public bool StartInGame => _startGameWhere == StartInMenu.InGameControl;
     public bool CanStartInGame => ActiveInGameSystem && StartInGame;
-    public bool InMenu { get; private set; } = true;
+    public bool InTheMenu { get; private set; } = true;
     public string SwitchControls => _switchToMenusButton;
     private UINode LastHighlighted { get; set; }
     private void SaveLastHighlighted(UINode newNode) => LastHighlighted = newNode;
-
-    private void GameIsPaused(bool isPaused)
+    private void SaveOnHomeScreen (bool onHomeScreen) => _onHomeScreen = onHomeScreen;
+    private bool NoPopUps => _noResolvePopUps && _noNonResolvePoUps;
+    private void SaveNoResolvePopUps(bool newPopUp)
     {
-        if (ActiveInGameSystem)
-        {
-            SwitchBetweenGameAndMenu();
-        }
+        _noResolvePopUps = newPopUp;
+        PopUpEventHandler();
+    }
+    private void SaveNoOptionalPopUps(bool newPopUp)
+    {
+        _noNonResolvePoUps = newPopUp;
+        PopUpEventHandler();
     }
 
+    
     //Enums
     private enum InGameSystem { On, Off }
 
@@ -49,48 +56,47 @@ public class MenuAndGameSwitching : IMono
     
     public void OnEnable()
     {
-        UIHub.OnStart += StartUp;
-        _uiData.NewHighLightedNode = SaveLastHighlighted;
-        _uiData.IsGamePaused = GameIsPaused;
+        _uiData.SubscribeToOnStart(StartUp);
+        _uiData.SubscribeToHighlightedNode(SaveLastHighlighted);
+        _uiData.SubscribeToGameIsPaused(WhenTheGameIsPaused);
+        _uiData.SubscribeToOnHomeScreen(SaveOnHomeScreen);
+        _uiData.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
+        _uiData.SubscribeNoOptionalPopUps(SaveNoOptionalPopUps);
+        _uiData.SubscribeFromHotKey(SwitchBetweenGameAndMenu);
     }
 
     public void OnDisable()
     {
-        UIHub.OnStart -= StartUp;
+        _uiData.OnDisable();
+    }
+
+    private void PopUpEventHandler()
+    {
+        if (!NoPopUps && !InTheMenu)
+            SwitchBetweenGameAndMenu();
+        
+        if (NoPopUps)
+            SwitchBetweenGameAndMenu();
     }
 
     private void StartUp()
     {
-        InMenu = true;
+        InTheMenu = true;
         if (ActiveInGameSystem && StartInGame)
         {
             SwitchBetweenGameAndMenu();
         }
         else
         {
-            _returnToGameControl.Invoke(InMenu);
-            IsInTheMenu?.Invoke(InMenu);
+            BroadcastState();
         }
     }
 
-
-    public void TurnOffGameSwitchSystem() => _inGameMenuSystem = InGameSystem.Off;
-    public bool HasSwitchControls() => _switchToMenusButton != string.Empty;
-
-    /// <summary>
-    /// Create a method that switches control when the below events are triggered
-    /// </summary>
-    private void EventTriggersSwitch()
-    {
-        //New PopUp
-        //HotKey - Remove from UI hub
-    }
-    
     public void SwitchBetweenGameAndMenu()
     {
-        if (!ActiveInGameSystem) return;
+        if (!ActiveInGameSystem || !_onHomeScreen) return;
     
-        if (InMenu)
+        if (InTheMenu)
         {
             SwitchToGame();
         }
@@ -98,21 +104,43 @@ public class MenuAndGameSwitching : IMono
         {
             SwitchToMenu();
         }
-        _returnToGameControl.Invoke(InMenu);
-        IsInTheMenu?.Invoke(InMenu);
+        BroadcastState();
     }
-    
+
+
     private void SwitchToGame()
     {
-        InMenu = false;
+        InTheMenu = false;
         LastHighlighted.SetNotHighlighted();
-        EventSystem.current.SetSelectedGameObject(null);
+        UIHub.SetEventSystem(null);
     }
-    
+
     private void SwitchToMenu()
     {
-        InMenu = true;
+        InTheMenu = true;
         LastHighlighted.SetAsHighlighted();
-        EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
+        UIHub.SetEventSystem(LastHighlighted.gameObject);
     }
+
+    private void BroadcastState()
+    {
+        _returnToGameControl.Invoke(InTheMenu);
+        IsInTheMenu?.Invoke(InTheMenu);
+    }
+
+    private void WhenTheGameIsPaused(bool isPaused)
+    {
+        if (InTheMenu && isPaused) return;
+        if(!NoPopUps) return;
+        
+        if (ActiveInGameSystem)
+        {
+            SwitchBetweenGameAndMenu();
+        }
+    }
+    
+    public void TurnOffGameSwitchSystem() => _inGameMenuSystem = InGameSystem.Off;
+    
+    public bool HasSwitchControls() => _switchToMenusButton != string.Empty;
+
 }

@@ -74,7 +74,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.Toggle_NotLinked;
     private bool CanGoToChildBranch => HasChildBranch & _navigation.CanNaviagte;
-    private void SwitchBetweenGameAndMenu(bool isInMenu) => _inMenu = isInMenu;
+    private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
 
 
     public bool IsDisabled
@@ -112,8 +112,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions += _sizeAndPos.OnAwake(transform, _enabledFunctions);
         _startUiFunctions += _swapImageOrText.OnAwake(IsSelected, _enabledFunctions);
         _startUiFunctions += _invertColourCorrection.OnAwake(_enabledFunctions);
-        _uiData.AmImMenu = SwitchBetweenGameAndMenu;
-        _uiData.AllowKeys = SaveAllowKeys;
+        _uiData.SubscribeToInMenu(SaveInMenu);
+        _uiData.SubscribeToAllowKeys(SaveAllowKeys);
         //UIHub.SwitchBetweenGmaeAndMenu += SwitchBetweenGmaeAndMenu;
         //ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
@@ -124,6 +124,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions -= _sizeAndPos.OnDisable();
         _startUiFunctions -= _swapImageOrText.OnDisable();
         _startUiFunctions -= _invertColourCorrection.OnDisable();
+        _uiData.OnDisable();
         //UIHub.SwitchBetweenGmaeAndMenu -= SwitchBetweenGmaeAndMenu;
         //ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
@@ -157,9 +158,9 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             HandleIfDisabled(); 
             return;
         }
-        
-        ThisNodeIsHighLighted();
 
+        ThisNodeIsHighLighted();
+        
         if (_allowKeys && _inMenu)
         {
             SetAsHighlighted();
@@ -259,7 +260,6 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _colours.SetColourOnEnter(IsSelected);
         _startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
         StartCoroutine(_tooltips.StartToolTip(MyBranch, _rectForTooltip));
-        ThisNodeIsHighLighted();
     }
 
     public void SetNotHighlighted()
@@ -354,12 +354,13 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     public void ThisNodeIsSelected()
     {
         DoSelected?.Invoke(this);
+        DoHighlighted?.Invoke(this);
     }
     
     public void ThisNodeIsHighLighted()
     {
         DoHighlighted?.Invoke(this);
-        MyBranch.SetAsActiveBranch();
+       if(_allowKeys) MyBranch.SetAsActiveBranch();
     }
 
     private void SaveAllowKeys(bool allow)

@@ -36,7 +36,7 @@ public partial class UIHub : MonoBehaviour
     [SerializeField] private MenuAndGameSwitching _menuAndGameSwitching = new MenuAndGameSwitching();
 
     //Events
-    public static event Action OnEndOfUse;
+    //public static event Action OnEndOfUse;
     public static event Action OnStart;
 
     //Variables
@@ -52,14 +52,9 @@ public partial class UIHub : MonoBehaviour
     private bool _inMenu;
 
     //Properties
-    private bool NotStartingInGame => !_menuAndGameSwitching.ActiveInGameSystem 
-                                      || !_menuAndGameSwitching.StartInGame;
+    private bool StartingInGame => _menuAndGameSwitching.ActiveInGameSystem 
+                                      && _menuAndGameSwitching.StartInGame;
     private UIBranch[] AllBranches { get; set; }
-    private PauseOptionsOnEscape PauseOptions => _pauseOptionsOnEscape;
-    private void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
-    private void SaveOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
-    private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
-
     private bool MouseOnly()
     {
         if(_mainControlType == ControlMethod.Mouse) _menuAndGameSwitching.TurnOffGameSwitchSystem();
@@ -68,7 +63,6 @@ public partial class UIHub : MonoBehaviour
 
     private void Awake()
     {
-        
         AllBranches = FindObjectsOfType<UIBranch>();
         CheckForControls();
         CreateSubClasses();
@@ -106,73 +100,76 @@ public partial class UIHub : MonoBehaviour
 
     private void OnEnable()
     {
-        _uiData.NewHighLightedNode = SetLastHighlighted;
-        _uiData.NewSelectedNode = SetLastSelected;
-        _uiData.NewActiveBranch = SaveActiveBranch;
-        _uiData.IsOnHomeScreen = SaveOnHomeScreen;
-        _uiData.AmImMenu = SaveInMenu;
+        _uiData.SubscribeToHighlightedNode(SetLastHighlighted);
+        _uiData.SubscribeToSelectedNode(SetLastSelected);
+        _uiData.SubscribeToActiveBranch(SaveActiveBranch);
+        _uiData.SubscribeToOnHomeScreen(SaveOnHomeScreen);
+        _uiData.SubscribeToInMenu(SaveInMenu);
     }
 
     private void OnDisable()
     {
-        RunOnDisableForSubClasses();
-        OnEndOfUse?.Invoke();
-    }
-    
-    private void RunOnDisableForSubClasses()
-    {
         _uiAudio.OnDisable();
         _myUiCancel.OnDisable();
         _popUpController.OnDisable();
+        _changeControl.OnDisable();
+        _uiData.OnDisable();
+    }
+    
+    private void Start()
+    {
+        SetStartPositionsAndSettings();
+        CheckIfStartingInGame();
+        StartCoroutine(EnableStartControls());
+        OnStart?.Invoke();
     }
 
-    private void Start()
+    private void SetStartPositionsAndSettings()
     {
         LastHighlighted = _homeBranches[0].DefaultStartPosition;
         _homeBranches[0].DefaultStartPosition.ThisNodeIsHighLighted();
         LastSelected = _homeBranches[0].DefaultStartPosition;
         _homeBranches[0].DefaultStartPosition.ThisNodeIsSelected();
         _popUpController.SetLastNodeBeforePopUp(_homeBranches[0].DefaultStartPosition);
-        CheckIfStartingInGame();
-        StartCoroutine(EnableStartControls());
-        OnStart?.Invoke();
     }
 
     private void CheckIfStartingInGame()
     {
         if (_menuAndGameSwitching.CanStartInGame)
         {
-            IntroAnimations(IsActive.Yes);
+            ActivateAllHomeBranches(IsActive.Yes);
         }
         else
         {
             EventSystem.current.SetSelectedGameObject(LastHighlighted.gameObject);
-            IntroAnimations(IsActive.No);
+            ActivateAllHomeBranches(IsActive.No);
         }
     }
 
-    private void IntroAnimations(IsActive activateOnStart)
+    private void ActivateAllHomeBranches(IsActive activateOnStart)
     {
         foreach (var branch in _homeBranches)
         {
-            branch.MyCanvasGroup.blocksRaycasts = false;
-            if (activateOnStart == IsActive.Yes) _homeBranches[0].DontSetAsActive = true;
-            if (branch != _homeBranches[0]) branch.DontSetAsActive = true;
-            branch.MoveToThisBranch();
+            if (activateOnStart == IsActive.Yes && branch == _homeBranches[0])
+            {
+                branch.MoveToThisBranch();
+            }
+            else
+            {
+                branch.MoveToThisBranchDontSetAsActive();
+            }
         }
     }
 
     private IEnumerator EnableStartControls()
     {
+        _changeControl.StartGame(StartingInGame);
         yield return new WaitForSeconds(_atStartDelay);
         CanStart = true;
-
-        if (NotStartingInGame)
-            _changeControl.StartGame();
         
         foreach (var homeBranch in _homeBranches)
         {
-            homeBranch.MyCanvasGroup.blocksRaycasts = true;
+            homeBranch.ActivateBranch();
         }
     }
 
@@ -191,12 +188,7 @@ public partial class UIHub : MonoBehaviour
             return;
         }
 
-        if (CheckIfHotKeyAllowed())
-        {
-            if (!_inMenu) 
-                _menuAndGameSwitching.SwitchBetweenGameAndMenu();
-            return;
-        }
+        if (CheckIfHotKeyAllowed()) return;
 
         if (_inMenu) InMenuControls();
     }
@@ -214,3 +206,5 @@ public partial class UIHub : MonoBehaviour
         _changeControl.ChangeControlType();
     }
 }
+
+

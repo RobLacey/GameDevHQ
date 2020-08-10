@@ -20,25 +20,22 @@ public partial class UIHub
     private bool CanEnterPauseWithNothingSelected()
     {
         return (_popUpController.NoActivePopUps && 
-                LastSelected.HasChildBranch.MyCanvas.enabled == false)
-               && PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
+                LastSelected.HasChildBranch.CanvasIsEnabled == false)
+               && _pauseOptionsOnEscape == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
     }
 
     private bool CheckIfHotKeyAllowed()
     {
         if (_hotKeySettings.Count <= 0) return false;
         if (GameIsPaused) return false;
-        if (!_popUpController.NoActivePopUps) return false;
-        return _hotKeySettings.Any(hotKeys => hotKeys.CheckHotKeys());
+        return _popUpController.NoActivePopUps && _hotKeySettings.Any(hotKeys => hotKeys.CheckHotKeys());
     }
 
     private void PauseOptionMenuPressed()
     {
         GameIsPaused = !GameIsPaused;
         if (_pauseMenu)
-        {
             _pauseMenu.PauseMenuClass.StartPauseMenu(GameIsPaused);
-        }
     }
 
     private bool SwitchGroupProcess()
@@ -64,7 +61,7 @@ public partial class UIHub
             LastHighlighted.Audio.Play(UIEventTypes.Selected);
             _uiHomeGroup.SwitchHomeGroups(switchType);
         }
-        else if (ActiveBranch.GroupListCount > 1)
+        else
         {
             ActiveBranch.SwitchBranchGroup(switchType);
         }

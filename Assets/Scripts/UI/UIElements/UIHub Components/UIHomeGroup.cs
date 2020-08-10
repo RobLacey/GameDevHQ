@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using NaughtyAttributes;
-using UnityEngine;
 
 /// <summary>
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
@@ -9,11 +6,6 @@ using UnityEngine;
 /// </summary>
 public class UIHomeGroup : IMono
 {
-    private readonly UIBranch[] _homeGroup;
-    private readonly UIBranch[] _allBranches;
-    private bool _allowKeys;
-    private readonly UIData _uiData;
-
     public UIHomeGroup(UIBranch[] homeBranches, UIBranch[] allBranches)
     {
         _allBranches = allBranches;
@@ -21,19 +13,12 @@ public class UIHomeGroup : IMono
         _uiData = new UIData();
         OnEnable();
     }
-    
-    public void OnEnable()
-    {
-        _uiData.NewActiveBranch = SaveActiveBranch;
-        _uiData.OnStartUp = OnStart;
-        _uiData.AllowKeys = SaveAllowKeys;
-        UICancel.ReturnHomeBranch += CurrentHomeBranch;
-    }
-    
-    public void OnDisable()
-    {
-        UICancel.ReturnHomeBranch -= CurrentHomeBranch;
-    }
+
+    private readonly UIBranch[] _homeGroup;
+    private readonly UIBranch[] _allBranches;
+    private bool _allowKeys;
+    private readonly UIData _uiData;
+    private bool _fromHotKey;
 
     //Delegate
     public static event Action<bool> DoOnHomeScreen; // Subscribe To track if on Home Screen
@@ -41,10 +26,26 @@ public class UIHomeGroup : IMono
     //Properties
     private UIBranch CurrentHomeBranch() => _homeGroup[Index];
     private void SaveAllowKeys(bool allow) => _allowKeys = allow;
+    private void SaveFromHotKey() => _fromHotKey = true;
     private bool OnHomeScreen { get; set; } = true;
     private int Index { get; set; }
 
-    private void OnStart()
+    public void OnEnable()
+    {
+        _uiData.SubscribeToActiveBranch(SaveActiveBranch);
+        _uiData.SubscribeToOnStart(InvokeOnHomeScreen);
+        _uiData.SubscribeToAllowKeys(SaveAllowKeys);
+        _uiData.SubscribeFromHotKey(SaveFromHotKey);
+        UICancel.ReturnHomeBranch += CurrentHomeBranch;
+    }
+
+    public void OnDisable()
+    {
+        _uiData.OnDisable();
+        UICancel.ReturnHomeBranch -= CurrentHomeBranch;
+    }
+
+    private void InvokeOnHomeScreen()
     {
         DoOnHomeScreen?.Invoke(OnHomeScreen);
     }
@@ -82,35 +83,31 @@ public class UIHomeGroup : IMono
     {
         if (!OnHomeScreen) return;
         OnHomeScreen = false;
-        DoOnHomeScreen?.Invoke(OnHomeScreen);
-        ProcessAllBranches(ignoreThisBranch, turnOffPopUps);
+        InvokeOnHomeScreen();
+        TurnOfAllAllowableBranches(ignoreThisBranch, turnOffPopUps);
     }
 
-    private void ProcessAllBranches(UIBranch ignoreThisBranch, IsActive turnOffPopUps)
+    private void TurnOfAllAllowableBranches(UIBranch ignoreThisBranch, IsActive turnOffPopUps)
     {
         foreach (var branch in _allBranches)
         {
             if (AlreadyOffOrCanIgnore(ignoreThisBranch, branch)) continue;
-            if (CanTurnOffPopUps(turnOffPopUps, branch.IsNonResolvePopUp)) continue;
-            branch.MyCanvas.enabled = false;
+            if (CanTurnOffPopUps(turnOffPopUps, branch.IsOptionalPopUp)) continue;
+            branch.ClearBranch();
         }
     }
 
     private static bool CanTurnOffPopUps(IsActive turnOffPopUps, bool isPopUp)
-    {
-        return isPopUp && turnOffPopUps == IsActive.No;
-    }
+        => isPopUp && turnOffPopUps == IsActive.No;
 
-    private static bool AlreadyOffOrCanIgnore(UIBranch ignoreThisBranch, UIBranch branch)
-    {
-        return !branch.MyCanvas.enabled || branch == ignoreThisBranch;
-    }
+    private static bool AlreadyOffOrCanIgnore(UIBranch ignoreThisBranch, UIBranch branch) 
+        => !branch.CanvasIsEnabled || branch == ignoreThisBranch;
 
     public void RestoreHomeScreen()
     {
         if (OnHomeScreen) return;
         OnHomeScreen = true;
-        DoOnHomeScreen?.Invoke(OnHomeScreen);
+        InvokeOnHomeScreen();
         
         foreach (var item in _homeGroup)
         {
@@ -121,6 +118,30 @@ public class UIHomeGroup : IMono
     private void SaveActiveBranch(UIBranch newBranch)
     {
         if (!OnHomeScreen) return;
+        if (_fromHotKey)
+        {
+            FindHomeScreenBranch(newBranch);
+        }
+        else
+        {
+            SearchHomeBranches(newBranch);
+        }
+    }
+
+    private void FindHomeScreenBranch(UIBranch newBranch)
+    {
+        _fromHotKey = false;
+        UIBranch homeBranch = newBranch;
+        
+        while (homeBranch.MyParentBranch != homeBranch)
+        {
+            homeBranch = homeBranch.MyParentBranch;
+        }
+        SearchHomeBranches(homeBranch);
+    }
+
+    private void SearchHomeBranches(UIBranch newBranch)
+    {
         for (var index = 0; index < _homeGroup.Length; index++)
         {
             if (_homeGroup[index] != newBranch) continue;

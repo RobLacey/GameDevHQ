@@ -101,7 +101,7 @@ public enum CurrentRoatationIs { StartRotateAt, MidPointForInAndOut, EndRotateAt
 public enum ScreenType { Normal, FullScreen }
 
 public enum StartInMenu { InMenu, InGameControl }
-public enum BranchType { HomeScreenUI, StandardUI, Internal, PopUp_Resolve, PopUp_NonResolve, PopUp_Timed, PauseMenu }
+public enum BranchType { HomeScreenUI, StandardUI, Internal, ResolvePopUp, OptionalPopUp, TimedPopUp, PauseMenu }
 
 public enum WhenToMove { Immediately, AfterEndOfTween }
 public enum PauseOptionsOnEscape { EnterPauseOrEscapeMenu, DoNothing }

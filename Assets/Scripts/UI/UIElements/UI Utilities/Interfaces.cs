@@ -35,11 +35,20 @@ public interface IStartPopUp
 public interface IPauseMenu
 {
     void StartPauseMenu(bool isGamePaused);
+    void OnDisable();
 }
 
-public interface IPopUp
+public interface IPopUp : IMono
 {
     void StartPopUp();
-    void RestoreLastPosition(UINode lastNode = null);
+    void MoveToNextPopUp(UINode lastNode = null);
 }
+
+public interface IPopUpControls
+{
+    bool NoActivePopUps { get; }
+    void ActivateCurrentPopUp();
+    void RemoveNextPopUp();
+}
+
 

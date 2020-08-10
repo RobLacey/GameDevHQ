@@ -7,9 +7,9 @@ public partial class UIBranch
 {
     public bool IsAPopUpBranch()
     {
-        return _branchType == BranchType.PopUp_NonResolve
-               || _branchType == BranchType.PopUp_Resolve
-               || _branchType == BranchType.PopUp_Timed;
+        return _branchType == BranchType.OptionalPopUp
+               || _branchType == BranchType.ResolvePopUp
+               || _branchType == BranchType.TimedPopUp;
     }
 
     public bool IsPauseMenuBranch()
@@ -23,28 +23,19 @@ public partial class UIBranch
         private set => _userDefinedStartPosition = value;
     }
 
-    public Canvas MyCanvas { get; private set; }
+    public bool CanvasIsEnabled => _myCanvas.enabled;
     public UINode LastHighlighted { get; private set; }
     public UINode LastSelected { get; private set; }
-    private UIBranch ActiveBranch { get; set; }
     public UIBranch MyParentBranch { get; private set; }
-    public bool DontSetAsActive { get; set; }
     public UINode[] ThisGroupsUiNodes { get; private set; }
-    public CanvasGroup MyCanvasGroup { get; private set; }
     public EscapeKey EscapeKeySetting => _escapeKeyFunction;
     public BranchType MyBranchType => _branchType;
     public WhenToMove WhenToMove => _moveType;
-    public bool StayOn => _stayOn == IsActive.Yes;
-    public bool FromHotKey { get; set; }
-    public bool IsResolvePopUp => _branchType == BranchType.PopUp_Resolve;
-    public bool IsNonResolvePopUp => _branchType == BranchType.PopUp_NonResolve;
-    private bool IsTimedPopUp => _branchType == BranchType.PopUp_Timed;
+    public bool IsResolvePopUp => _branchType == BranchType.ResolvePopUp;
+    public bool IsOptionalPopUp => _branchType == BranchType.OptionalPopUp;
+    private bool IsTimedPopUp => _branchType == BranchType.TimedPopUp;
     public ScreenType ScreenType => _screenType;
     public IPauseMenu PauseMenuClass { get; private set; }
-    public int GroupListCount => _groupsList.Count;
     public float Timer => _timer;
-    private UIHomeGroup HomeGroup { get; set; }
-    private bool TweenOnChange { get; set; } = true;
-    private bool TweenOnHome => _tweenOnHome == IsActive.Yes;
 
 }

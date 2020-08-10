@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Need To Make this a singleton or check thee is only one of these
@@ -30,13 +32,19 @@ public class PauseMenu : IPauseMenu
     private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
     
     public static event Action<bool> GamePaused; // Subscribe to trigger pause operations
+    public static event Action<(bool gamepaused, GameObject sender)> NewGamePaused;
 
     public void OnEnable()
     {
-        _uiData.NoResolvePopUps = SetResolveCount;
-        _uiData.NewHighLightedNode = SaveHighlighted;
-        _uiData.NewSelectedNode = SaveSelected;
-        _uiData.AmImMenu = SaveInMenu;
+        _uiData.SubscribeNoResolvePopUps(SetResolveCount);
+        _uiData.SubscribeToHighlightedNode(SaveHighlighted);
+        _uiData.SubscribeToSelectedNode(SaveSelected);
+        _uiData.SubscribeToInMenu(SaveInMenu);
+    }
+
+    public void OnDisable()
+    {
+       _uiData.OnDisable();
     }
     
     public void StartPauseMenu(bool isGamePaused)
@@ -60,7 +68,7 @@ public class PauseMenu : IPauseMenu
         foreach (var branch in _allBranches)
         {
             if (branch == _myBranch) continue;
-            if (!branch.CheckAndDisableBranchCanvas(_myBranch.ScreenType)) continue;
+            if (!branch.CheckIfActiveAndDisableBranch(_myBranch.ScreenType)) continue;
             ClearedScreenData._clearedBranches.Add(branch);
         }
         ActivatePopUp();
@@ -68,7 +76,7 @@ public class PauseMenu : IPauseMenu
     
     private void ActivatePopUp()
     {
-        _myBranch.LastSelected.Audio.Play(UIEventTypes.Selected);
+        LastSelected.Audio.Play(UIEventTypes.Selected);
         _myBranch.MoveToThisBranch();
     }
 
@@ -96,23 +104,15 @@ public class PauseMenu : IPauseMenu
     private void EndOfTweenActions()
     {
         var nextNode = ClearedScreenData._lastHighlighted;
-        RestoreScreen();
+        
+        foreach (var branch in ClearedScreenData._clearedBranches)
+        {
+            branch.ActivateBranch();
+        }
+
         if (!ClearedScreenData._wasInTheMenu) return;
         ClearedScreenData._lastSelected.ThisNodeIsSelected();
         nextNode.MyBranch.MoveToBranchWithoutTween();
     }
-
-    private void RestoreScreen()
-    {
-        foreach (var branch in ClearedScreenData._clearedBranches)
-        {
-            if (_noActiveResolvePopUps)
-                branch.MyCanvasGroup.blocksRaycasts = true;
-
-            if (branch.IsResolvePopUp)
-                branch.MyCanvasGroup.blocksRaycasts = true;
-            
-            branch.MyCanvas.enabled = true;
-        }
-    }
 }
+
