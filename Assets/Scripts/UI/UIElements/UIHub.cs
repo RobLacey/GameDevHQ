@@ -25,7 +25,7 @@ public partial class UIHub : MonoBehaviour
     PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.DoNothing;
     [Header("Pause Settings")]
     [SerializeField] [Label("Pause / Option Button")] [InputAxis] string _pauseOptionButton;
-    [SerializeField] UIBranch _pauseMenu;
+    //[SerializeField] UIBranch _pauseMenu;
     [Header("Home Branch Switch Settings")]
     [SerializeField] [HideIf("MouseOnly")] [InputAxis] string _posSwitchButton;
     [SerializeField] [HideIf("MouseOnly")] [InputAxis] string _negSwitchButton;
@@ -38,6 +38,9 @@ public partial class UIHub : MonoBehaviour
     //Events
     //public static event Action OnEndOfUse;
     public static event Action OnStart;
+#pragma warning disable 67
+    public static event Action<bool> OnGamePaused; // Subscribe to trigger pause operations
+#pragma warning restore 67
 
     //Variables
     private UINode _lastHomeScreenNode;
@@ -130,7 +133,6 @@ public partial class UIHub : MonoBehaviour
         _homeBranches[0].DefaultStartPosition.ThisNodeIsHighLighted();
         LastSelected = _homeBranches[0].DefaultStartPosition;
         _homeBranches[0].DefaultStartPosition.ThisNodeIsSelected();
-        _popUpController.SetLastNodeBeforePopUp(_homeBranches[0].DefaultStartPosition);
     }
 
     private void CheckIfStartingInGame()
@@ -178,7 +180,7 @@ public partial class UIHub : MonoBehaviour
         if (!CanStart) return;
         if (CanPauseGame())
         {
-            PauseOptionMenuPressed();
+            PausedPressedActions();
             return;
         }
 
@@ -192,7 +194,7 @@ public partial class UIHub : MonoBehaviour
 
         if (_inMenu) InMenuControls();
     }
-    
+
     private void InMenuControls()
     {
         if (CanDoCancel())
@@ -206,5 +208,7 @@ public partial class UIHub : MonoBehaviour
         _changeControl.ChangeControlType();
     }
 }
+
+
 
 

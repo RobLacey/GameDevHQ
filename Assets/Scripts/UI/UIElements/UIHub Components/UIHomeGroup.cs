@@ -52,6 +52,7 @@ public class UIHomeGroup : IMono
 
     public void SwitchHomeGroups(SwitchType switchType)
     {
+        if(_homeGroup.Length == 1) return;
         SetNewIndex(switchType);
         if (ActivateHoverOverIfKeysAllowed())
         {

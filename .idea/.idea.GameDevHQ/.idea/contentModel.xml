@@ -262,7 +262,6 @@
               </e>
               <e p="UI Utilities" t="Include">
                 <e p="Interfaces.cs" t="Include" />
-                <e p="ScreenData.cs" t="Include" />
                 <e p="StaticCoroutine.cs" t="Include" />
                 <e p="UIData.cs" t="Include" />
                 <e p="UIEnums.cs" t="Include" />

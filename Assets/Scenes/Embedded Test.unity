@@ -9763,7 +9763,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 3
   _timer: 2
-  _screenType: 1
+  _screenType: 0
   _turnOffPopUps: 1
   _stayOn: 1
   _tweenOnHome: 0
@@ -11522,18 +11522,7 @@ MonoBehaviour:
   _eventsForTest:
     _event1:
       m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1478859609}
-          m_MethodName: StartPopUpScreen
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+        m_Calls: []
     _event2:
       m_PersistentCalls:
         m_Calls: []
@@ -27428,7 +27417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 3
+  _branchType: 4
   _timer: 5
   _screenType: 0
   _turnOffPopUps: 1

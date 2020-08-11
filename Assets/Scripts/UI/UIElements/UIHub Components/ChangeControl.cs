@@ -4,6 +4,10 @@ using UnityEngine;
 /// <summary>
 /// Class that handles switching control from the mouse to a keyboard or controller
 /// </summary>
+///
+//ToDo make changing to keys pick up the last highlighted plus open branch not where the mouse was last.
+// TODO Currently if a node is moused over that becomes the next node activated when switched to keys which might not be
+// TODO in the open branch.
 public class ChangeControl
 {
     private readonly IPopUpControls _popUpControls;

@@ -32,16 +32,15 @@ public interface IStartPopUp
     void RestoreLastPosition(UINode lastHomeGroupNode = null);
 }
 
-public interface IPauseMenu
+public interface IPauseMenu : IMono
 {
     void StartPauseMenu(bool isGamePaused);
-    void OnDisable();
 }
 
 public interface IPopUp : IMono
 {
     void StartPopUp();
-    void MoveToNextPopUp(UINode lastNode = null);
+    void MoveToNextPopUp(UIBranch lastBranch = null);
 }
 
 public interface IPopUpControls

@@ -72,7 +72,6 @@ public partial class UIHub
         if (newNode == LastHighlighted) return;
         LastHighlighted.SetNotHighlighted();
         LastHighlighted = newNode;
-        if(!GameIsPaused)_popUpController.SetLastNodeBeforePopUp(newNode);
         if(_inMenu) SetEventSystem(LastHighlighted.gameObject);
     }
 

@@ -39,7 +39,7 @@ public class UIData
 
     public void OnDisable()
     {
-        PauseMenu.GamePaused -= _gameIsPaused.Event;
+        UIHub.OnGamePaused -= _gameIsPaused.Event;
         UINode.DoHighlighted -= _highlightedNode.Event;
         UINode.DoSelected -= _selectedNode.Event;
         UIBranch.DoActiveBranch -= _activeBranch.Event;
@@ -55,7 +55,7 @@ public class UIData
     }
 
     public void SubscribeToGameIsPaused(Action<bool> subscriber) 
-        => PauseMenu.GamePaused += _gameIsPaused.Add(subscriber);
+        => UIHub.OnGamePaused += _gameIsPaused.Add(subscriber);
 
     public void SubscribeToHighlightedNode(Action<UINode> subscriber) 
         => UINode.DoHighlighted += _highlightedNode.Add(subscriber);

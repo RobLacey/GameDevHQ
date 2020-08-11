@@ -33,9 +33,8 @@ public partial class UIBranch
     public WhenToMove WhenToMove => _moveType;
     public bool IsResolvePopUp => _branchType == BranchType.ResolvePopUp;
     public bool IsOptionalPopUp => _branchType == BranchType.OptionalPopUp;
-    private bool IsTimedPopUp => _branchType == BranchType.TimedPopUp;
     public ScreenType ScreenType => _screenType;
-    public IPauseMenu PauseMenuClass { get; private set; }
     public float Timer => _timer;
+    private bool IsTimedPopUp => _branchType == BranchType.TimedPopUp;
 
 }

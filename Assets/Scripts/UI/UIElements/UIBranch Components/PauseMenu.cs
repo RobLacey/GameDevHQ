@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using System.Collections.Generic;
 
 /// <summary>
 /// Need To Make this a singleton or check thee is only one of these
@@ -19,27 +16,31 @@ public class PauseMenu : IPauseMenu
 
     private readonly UIBranch _myBranch;
     private readonly UIBranch[] _allBranches;
-    private bool _noActiveResolvePopUps = true;
     private readonly UIData _uiData;
     private bool _inMenu;
 
+    //Internal Class
+    private class ScreenData
+    {
+        public readonly List<UIBranch> _clearedBranches = new List<UIBranch>();
+        public UINode _lastHighlighted;
+        public UINode _lastSelected;
+        public bool  _wasInTheMenu;
+    }
+
     private ScreenData ClearedScreenData { get; } = new ScreenData();
-    private void SetResolveCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
     private UINode LastHighlighted { get; set; }
     private UINode LastSelected { get; set; }
     private void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
     private void SaveSelected(UINode newNode) => LastSelected = newNode;
     private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
     
-    public static event Action<bool> GamePaused; // Subscribe to trigger pause operations
-    public static event Action<(bool gamepaused, GameObject sender)> NewGamePaused;
-
     public void OnEnable()
     {
-        _uiData.SubscribeNoResolvePopUps(SetResolveCount);
         _uiData.SubscribeToHighlightedNode(SaveHighlighted);
         _uiData.SubscribeToSelectedNode(SaveSelected);
         _uiData.SubscribeToInMenu(SaveInMenu);
+        _uiData.SubscribeToGameIsPaused(StartPauseMenu);
     }
 
     public void OnDisable()
@@ -57,8 +58,6 @@ public class PauseMenu : IPauseMenu
         {
             RestoreLastPosition();
         }
-
-        GamePaused?.Invoke(isGamePaused);
     }
     
     private void PopUpStartProcess()

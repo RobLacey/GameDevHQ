@@ -41,7 +41,7 @@ public class Timed : IPopUp
         _coroutine = StaticCoroutine.StartCoroutine(TimedPopUpProcess());
     }
 
-    public void MoveToNextPopUp(UINode lastNode = null)
+    public void MoveToNextPopUp(UIBranch lastBranch = null)
     {
         //Maybe Need for quick exit button
     }

@@ -11,6 +11,9 @@ public class HotKeys : IMono
     
     //Variables
     private UIData _uiData;
+    private UINode _parentNode;
+    private bool _hasParentNode;
+    private bool _notHomeScreenHotKey;
 
     //Properties
     private UINode LastSelected { get; set; }
@@ -32,6 +35,7 @@ public class HotKeys : IMono
     public void OnAwake()
     {
         _uiData = new UIData();
+        _notHomeScreenHotKey = _myBranch.MyBranchType != BranchType.HomeScreenUI;
         OnEnable();
     }
     
@@ -55,58 +59,69 @@ public class HotKeys : IMono
     }
 
     private void HotKeyActivation()
+    {    
+        if(!_hasParentNode)
+        {
+            GetParentNode();
+        }
+        StartHotKeyProcess();
+        SetHotKeyAsSelectedActions();
+
+    }
+
+    private void GetParentNode()
     {
         foreach (UINode parentNode in _myBranch.MyParentBranch.ThisGroupsUiNodes)
         {
             if (parentNode.HasChildBranch != _myBranch) continue;
-            StartHotKeyProcess(parentNode);
-            SetHotKeyAsSelected(parentNode);
+            _hasParentNode = true;
+            _parentNode = parentNode;
             break;
         }
     }
 
-    private void StartHotKeyProcess(UINode parentNode)
+    private void StartHotKeyProcess()
     {
         if (LastSelected.IsSelected)
         {
-            StartOutTweenForLastSelected(parentNode);
+            StartOutTweenForLastSelected();
         }
         else
         {
-            StartThisHotKeyBranch(parentNode);
+            StartThisHotKeyBranch();
         }
     }
 
-    private void StartOutTweenForLastSelected(UINode parentNode)  
+    private void StartOutTweenForLastSelected()  
     {
         LastSelected.SetNotSelected_NoEffects();
         if (ActiveBranch.WhenToMove == WhenToMove.Immediately)
         {
             ActiveBranch.StartOutTween();
-            StartThisHotKeyBranch(parentNode);
+            StartThisHotKeyBranch();
         }
         else
         {
-            ActiveBranch.StartOutTween(() => StartThisHotKeyBranch(parentNode));
+            ActiveBranch.StartOutTween(() => StartThisHotKeyBranch());
         }
     }
 
-    private void StartThisHotKeyBranch(UINode parentNode)
+    private void StartThisHotKeyBranch()
     {
         EnsureAlwaysReturnToHomeScreen();
-         parentNode.ThisNodeIsSelected();
         _myBranch.MoveToThisBranch();
     }
 
-    private void SetHotKeyAsSelected(UINode parentNode)
+    private void SetHotKeyAsSelectedActions()
     {
-        parentNode.SetSelected_NoEffects();
+        _parentNode.ThisNodeIsSelected();
+        _parentNode.SetSelected_NoEffects();
         _myBranch.DefaultStartPosition.Audio.Play(UIEventTypes.Selected);
     }
 
     private void EnsureAlwaysReturnToHomeScreen()
     {
-        if (_myBranch.MyBranchType != BranchType.HomeScreenUI)
+        if (_notHomeScreenHotKey)
              FromHotKey?.Invoke();  //Ensures back to home is used on cancel
     }
 }

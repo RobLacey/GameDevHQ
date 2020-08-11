@@ -7,11 +7,8 @@ using UnityEngine;
 public partial class UIHub 
 {
     private bool CanSwitchBranches() => _popUpController.NoActivePopUps && !MouseOnly();
-    
     private bool CanPauseGame() => _hasPauseAxis && Input.GetButtonDown(_pauseOptionButton);
-    
     private bool CanDoCancel() => _hasCancelAxis && Input.GetButtonDown(_cancelButton);
-    
     private bool CanSwitchBetweenInGameAndMenu() 
         => _hasSwitchToMenuAxis 
            && Input.GetButtonDown(_menuAndGameSwitching.SwitchControls) 
@@ -29,13 +26,6 @@ public partial class UIHub
         if (_hotKeySettings.Count <= 0) return false;
         if (GameIsPaused) return false;
         return _popUpController.NoActivePopUps && _hotKeySettings.Any(hotKeys => hotKeys.CheckHotKeys());
-    }
-
-    private void PauseOptionMenuPressed()
-    {
-        GameIsPaused = !GameIsPaused;
-        if (_pauseMenu)
-            _pauseMenu.PauseMenuClass.StartPauseMenu(GameIsPaused);
     }
 
     private bool SwitchGroupProcess()
@@ -56,22 +46,28 @@ public partial class UIHub
 
     private void SwitchingGroups(SwitchType switchType)
     {
-        if (_onHomeScreen && _homeBranches.Count > 1)
+        if (_onHomeScreen)
         {
-            LastHighlighted.Audio.Play(UIEventTypes.Selected);
             _uiHomeGroup.SwitchHomeGroups(switchType);
         }
         else
         {
             ActiveBranch.SwitchBranchGroup(switchType);
         }
+        LastHighlighted.Audio.Play(UIEventTypes.Selected);
+    }
+    
+    private void PausedPressedActions()
+    {
+        GameIsPaused = !GameIsPaused;
+        OnGamePaused?.Invoke(GameIsPaused);
     }
 
     private void WhenCancelPressed()
     {
         if (CanEnterPauseWithNothingSelected() || GameIsPaused)
         {
-            PauseOptionMenuPressed();
+            PausedPressedActions();
         }
         else
         {
