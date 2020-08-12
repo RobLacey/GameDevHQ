@@ -7,12 +7,13 @@ public class Timed : IPopUp
     private UIBranch myBranch;
     bool _running;
     Coroutine _coroutine;
-    private UIData _uiData;
+    //private UIData _uiData;
+    private readonly UIControlsEvents _uiControlsEvents;
 
     public Timed(UIBranch branch)
     {
         myBranch = branch;
-        _uiData = new UIData();
+        _uiControlsEvents = new UIControlsEvents();
         OnEnable();
     }
     
@@ -22,15 +23,9 @@ public class Timed : IPopUp
 
     public void OnEnable()
     {
-        _uiData.SubscribeToGameIsPaused(IsGamePaused);
+        _uiControlsEvents.SubscribeToGameIsPaused(IsGamePaused);
         //_uiData.IsGamePaused = IsGamePaused;
         //UIHub.GamePaused += IsGamePaused;
-    }
-
-    public void OnDisable()
-    {
-        _uiData.OnDisable();
-        //UIHub.GamePaused -= IsGamePaused;
     }
 
     public void StartPopUp()

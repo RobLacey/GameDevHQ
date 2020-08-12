@@ -11,12 +11,12 @@ public partial class UIBranch
 
     public bool IsStandard()
     {
-        return _branchType == BranchType.StandardUI;
+        return _branchType == BranchType.Standard;
     }
 
     public bool IsHome()
     {
-        if (_branchType == BranchType.HomeScreenUI)
+        if (_branchType == BranchType.HomeScreen)
         {
             _escapeKeyFunction = EscapeKey.None;
             return true;

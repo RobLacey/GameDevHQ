@@ -53,7 +53,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool _pointerOver;
     private bool _inMenu;
     private bool _allowKeys;
-    private UIData _uiData;
+    private UIDataEvents _uiDataEvents;
+    private UIControlsEvents _uiControlsEvents;
 
     //Delegates
     private Action<UIEventTypes, bool> _startUiFunctions;
@@ -72,7 +73,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     public UIAudio Audio => _audio;
     private bool NotActiveSlider => IsDisabled || _isCancelOrBack || !AmSlider || _allowKeys;
     private bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
-    private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.Toggle_NotLinked;
+    private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
     private bool CanGoToChildBranch => HasChildBranch & _navigation.CanNaviagte;
     private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
 
@@ -92,7 +93,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _rectForTooltip = GetComponent<RectTransform>();
         AmSlider = GetComponent<Slider>();
         MyBranch = GetComponentInParent<UIBranch>();
-        _uiData = new UIData();
+        _uiDataEvents = new UIDataEvents();
+        _uiControlsEvents = new UIControlsEvents();
         SetUpUiFunctions();
         _toggleGroups = new UIToggles(this, _buttonFunction, _startAsSelected);
     }
@@ -112,8 +114,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions += _sizeAndPos.OnAwake(transform, _enabledFunctions);
         _startUiFunctions += _swapImageOrText.OnAwake(IsSelected, _enabledFunctions);
         _startUiFunctions += _invertColourCorrection.OnAwake(_enabledFunctions);
-        _uiData.SubscribeToInMenu(SaveInMenu);
-        _uiData.SubscribeToAllowKeys(SaveAllowKeys);
+        _uiDataEvents.SubscribeToInMenu(SaveInMenu);
+        _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
         //UIHub.SwitchBetweenGmaeAndMenu += SwitchBetweenGmaeAndMenu;
         //ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
@@ -124,7 +126,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions -= _sizeAndPos.OnDisable();
         _startUiFunctions -= _swapImageOrText.OnDisable();
         _startUiFunctions -= _invertColourCorrection.OnDisable();
-        _uiData.OnDisable();
+        //_uiData.OnDisable();
         //UIHub.SwitchBetweenGmaeAndMenu -= SwitchBetweenGmaeAndMenu;
         //ChangeControl.DoAllowKeys += SaveAllowKeys;
     }

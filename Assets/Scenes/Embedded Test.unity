@@ -28755,7 +28755,6 @@ MonoBehaviour:
   _horizontal: Horizontal
   _vertical: Vertical
   _speed: 0.5
-  _inMenu: 0
 --- !u!212 &2113496481
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31874,7 +31873,7 @@ PrefabInstance:
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _menuAndGameSwitching._startGameWhere
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}

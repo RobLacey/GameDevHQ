@@ -10,7 +10,7 @@ public class HotKeys : IMono
     public UIBranch _myBranch;
     
     //Variables
-    private UIData _uiData;
+    private UIDataEvents _uiDataEvents;
     private UINode _parentNode;
     private bool _hasParentNode;
     private bool _notHomeScreenHotKey;
@@ -34,20 +34,20 @@ public class HotKeys : IMono
 
     public void OnAwake()
     {
-        _uiData = new UIData();
-        _notHomeScreenHotKey = _myBranch.MyBranchType != BranchType.HomeScreenUI;
+        _uiDataEvents = new UIDataEvents();
+        _notHomeScreenHotKey = _myBranch.MyBranchType != BranchType.HomeScreen;
         OnEnable();
     }
     
     public void OnEnable()
     {
-        _uiData.SubscribeToSelectedNode(SaveSelected);
-        _uiData.SubscribeToActiveBranch(SaveActiveBranch);
+        _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
+        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
     }
 
     public void OnDisable()
     {
-        _uiData.OnDisable();
+        //_uiData.OnDisable();
     }
 
     public bool CheckHotKeys()

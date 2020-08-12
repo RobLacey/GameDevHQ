@@ -10,13 +10,15 @@ public class PauseMenu : IPauseMenu
     {
         _myBranch = branch;
         _allBranches = branchList;
-        _uiData = new UIData();
+        _uiDataEvents = new UIDataEvents();
+        _uiControlsEvents = new UIControlsEvents();
         OnEnable();
     }
 
     private readonly UIBranch _myBranch;
     private readonly UIBranch[] _allBranches;
-    private readonly UIData _uiData;
+    private readonly UIDataEvents _uiDataEvents;
+    private UIControlsEvents _uiControlsEvents;
     private bool _inMenu;
 
     //Internal Class
@@ -37,15 +39,10 @@ public class PauseMenu : IPauseMenu
     
     public void OnEnable()
     {
-        _uiData.SubscribeToHighlightedNode(SaveHighlighted);
-        _uiData.SubscribeToSelectedNode(SaveSelected);
-        _uiData.SubscribeToInMenu(SaveInMenu);
-        _uiData.SubscribeToGameIsPaused(StartPauseMenu);
-    }
-
-    public void OnDisable()
-    {
-       _uiData.OnDisable();
+        _uiDataEvents.SubscribeToHighlightedNode(SaveHighlighted);
+        _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
+        _uiDataEvents.SubscribeToInMenu(SaveInMenu);
+        _uiControlsEvents.SubscribeToGameIsPaused(StartPauseMenu);
     }
     
     public void StartPauseMenu(bool isGamePaused)

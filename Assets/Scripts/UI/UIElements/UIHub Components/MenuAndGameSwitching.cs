@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [Serializable]
-public class MenuAndGameSwitching : IMono
+public class MenuAndGameSwitching
 {
     [Header("In-Game Menu Settings")]
     [SerializeField] InGameSystem _inGameMenuSystem = InGameSystem.Off;
@@ -13,7 +13,9 @@ public class MenuAndGameSwitching : IMono
     [SerializeField] InGameOrInMenu _returnToGameControl;
 
     //Variables
-    private UIData _uiData;
+    private UIDataEvents _uiDataEvents;
+    private UIControlsEvents _uiControlsEvents;
+    private UIPopUpEvents _uiPopUpEvents;
     private bool _onHomeScreen = true;
     private bool _noResolvePopUps = true;
     private bool _noNonResolvePoUps = true;
@@ -50,26 +52,23 @@ public class MenuAndGameSwitching : IMono
 
     public void OnAwake()
     {
-        _uiData = new UIData();
+        _uiDataEvents = new UIDataEvents();
+        _uiControlsEvents = new UIControlsEvents();
+        _uiPopUpEvents = new UIPopUpEvents();
         OnEnable();
     }
     
     public void OnEnable()
     {
-        _uiData.SubscribeToOnStart(StartUp);
-        _uiData.SubscribeToHighlightedNode(SaveLastHighlighted);
-        _uiData.SubscribeToGameIsPaused(WhenTheGameIsPaused);
-        _uiData.SubscribeToOnHomeScreen(SaveOnHomeScreen);
-        _uiData.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
-        _uiData.SubscribeNoOptionalPopUps(SaveNoOptionalPopUps);
-        _uiData.SubscribeFromHotKey(SwitchBetweenGameAndMenu);
+        _uiDataEvents.SubscribeToOnStart(StartUp);
+        _uiDataEvents.SubscribeToHighlightedNode(SaveLastHighlighted);
+        _uiControlsEvents.SubscribeToGameIsPaused(WhenTheGameIsPaused);
+        _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
+        _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
+        _uiPopUpEvents.SubscribeNoOptionalPopUps(SaveNoOptionalPopUps);
+        _uiControlsEvents.SubscribeFromHotKey(SwitchBetweenGameAndMenu);
     }
-
-    public void OnDisable()
-    {
-        _uiData.OnDisable();
-    }
-
+    
     private void PopUpEventHandler()
     {
         if (!NoPopUps && !InTheMenu)

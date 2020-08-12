@@ -1,32 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 //Todo Stop Optional popups appearing when in fullscreen. Maybe new popups altogether and maybe cache them 
 public class UIPopUp : IPopUp
 {
     private readonly UIBranch _myBranch;
     private readonly UIBranch[] _allBranches;
-    private bool _noActiveResolvePopUps = true;
-    private bool _noActiveNonResolvePopUps = true;
+    private bool _noActivePopUps = true;
     private bool _isInMenu;
-    private readonly UIData _uiData;
+    private readonly UIDataEvents _uiDataEvents;
+    private readonly UIControlsEvents _uiControlsEvents;
+    private UIPopUpEvents _uiPopUpEvents;
     private readonly List<UIBranch> _clearedBranches = new List<UIBranch>();
     private bool _gameIsPaused;
     private bool _inGameBeforePopUp;
 
     public UIPopUp(UIBranch branch, UIBranch[] branchList)
     {
-        _uiData = new UIData();
+        _uiDataEvents = new UIDataEvents();
+        _uiControlsEvents = new UIControlsEvents();
+        _uiPopUpEvents = new UIPopUpEvents();
         _myBranch = branch;
         _allBranches = branchList;
         OnEnable();
     }
 
     //Properties
-    private bool NoActivePopUps => _noActiveResolvePopUps && _noActiveNonResolvePopUps;
+    private void SaveNoActivePopUps(bool noActivePopUps) => _noActivePopUps = noActivePopUps;
     private void SaveIfGamePaused(bool paused) => _gameIsPaused = paused;
-    private void SetResolvePopUpCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
-    private void SetOptionalPopUpCount(bool activeNonResolvePopUps) => _noActiveNonResolvePopUps = activeNonResolvePopUps;
     private void SaveIfInMenu(bool inMenu) => _isInMenu = inMenu;
     
     //Delegates
@@ -34,15 +36,12 @@ public class UIPopUp : IPopUp
     public static event Action<UIBranch> AddOptionalPopUp;
 
 
-    public void OnEnable()
+    private void OnEnable()
     {
-        _uiData.SubscribeToGameIsPaused(SaveIfGamePaused);
-        _uiData.SubscribeToInMenu(SaveIfInMenu);
-        _uiData.SubscribeNoResolvePopUps(SetResolvePopUpCount);
-        _uiData.SubscribeNoOptionalPopUps(SetOptionalPopUpCount);
+        _uiControlsEvents.SubscribeToGameIsPaused(SaveIfGamePaused);
+        _uiDataEvents.SubscribeToInMenu(SaveIfInMenu);
+        _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
     }
-
-    public void OnDisable() => _uiData.OnDisable();
 
     public void StartPopUp()
     {
@@ -54,7 +53,7 @@ public class UIPopUp : IPopUp
     
     protected virtual void SetUpPopUp()
     {
-        if (!_isInMenu && NoActivePopUps)
+        if (!_isInMenu && _noActivePopUps)
             _inGameBeforePopUp = true;
 
         if (_myBranch.IsResolvePopUp)
@@ -109,7 +108,7 @@ public class UIPopUp : IPopUp
     {
         DoRestoreScreen();
         
-        if (NoActivePopUps && _inGameBeforePopUp)
+        if (_noActivePopUps && _inGameBeforePopUp)
         {
             ReturnToGame();
         }

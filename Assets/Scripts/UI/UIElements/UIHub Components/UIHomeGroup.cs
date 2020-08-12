@@ -4,56 +4,69 @@
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
 /// is for keyboard or controller. Differ from internal branch groups as involve Branches not Nodes
 /// </summary>
-public class UIHomeGroup : IMono
+public class UIHomeGroup
 {
     public UIHomeGroup(UIBranch[] homeBranches, UIBranch[] allBranches)
     {
         _allBranches = allBranches;
         _homeGroup = homeBranches;
-        _uiData = new UIData();
+        _uiDataEvents = new UIDataEvents();
+        _uiControlsEvents = new UIControlsEvents();
         OnEnable();
     }
 
     private readonly UIBranch[] _homeGroup;
     private readonly UIBranch[] _allBranches;
     private bool _allowKeys;
-    private readonly UIData _uiData;
+    private readonly UIDataEvents _uiDataEvents;
+    private readonly UIControlsEvents _uiControlsEvents;
     private bool _fromHotKey;
+    private bool _onHomeScreen;
 
     //Delegate
-    public static event Action<bool> DoOnHomeScreen; // Subscribe To track if on Home Screen
+    public static event Action<UIBranch> DoCurrentHomeBranch; // Subscribe To track if on Home Screen
     
     //Properties
-    private UIBranch CurrentHomeBranch() => _homeGroup[Index];
     private void SaveAllowKeys(bool allow) => _allowKeys = allow;
     private void SaveFromHotKey() => _fromHotKey = true;
-    private bool OnHomeScreen { get; set; } = true;
     private int Index { get; set; }
 
-    public void OnEnable()
+    private void OnEnable()
     {
-        _uiData.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiData.SubscribeToOnStart(InvokeOnHomeScreen);
-        _uiData.SubscribeToAllowKeys(SaveAllowKeys);
-        _uiData.SubscribeFromHotKey(SaveFromHotKey);
-        UICancel.ReturnHomeBranch += CurrentHomeBranch;
+        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
+        _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
+        _uiDataEvents.SubscribeToOnStart(SetStartPosition);
+        _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
+        _uiControlsEvents.SubscribeFromHotKey(SaveFromHotKey);
+        _uiControlsEvents.SubscribeSwitchGroups(SwitchHomeGroups);
     }
 
-    public void OnDisable()
+    private void SaveOnHomeScreen(bool onHomeScreen)
     {
-        _uiData.OnDisable();
-        UICancel.ReturnHomeBranch -= CurrentHomeBranch;
+        _onHomeScreen = onHomeScreen;
+        if (_onHomeScreen)
+        {
+            RestoreHomeScreen();
+        }
+        else
+        {
+            ClearHomeScreen();
+        }
     }
 
-    private void InvokeOnHomeScreen()
+    private void SetStartPosition()
     {
-        DoOnHomeScreen?.Invoke(OnHomeScreen);
+        DoCurrentHomeBranch?.Invoke(_homeGroup[Index]);
     }
-
-    public void SwitchHomeGroups(SwitchType switchType)
+    
+    private void SwitchHomeGroups(SwitchType switchType)
     {
+        if (!_onHomeScreen) return;
         if(_homeGroup.Length == 1) return;
+        
         SetNewIndex(switchType);
+        DoCurrentHomeBranch?.Invoke(_homeGroup[Index]);
+        
         if (ActivateHoverOverIfKeysAllowed())
         {
             _homeGroup[Index].LastSelected.PressedActions();
@@ -62,6 +75,7 @@ public class UIHomeGroup : IMono
         {
             _homeGroup[Index].MoveToBranchWithoutTween();
         }
+        
     }
 
     private bool ActivateHoverOverIfKeysAllowed() 
@@ -80,36 +94,24 @@ public class UIHomeGroup : IMono
         }
     }
 
-    public void ClearHomeScreen(UIBranch ignoreThisBranch, IsActive turnOffPopUps)
-    {
-        if (!OnHomeScreen) return;
-        OnHomeScreen = false;
-        InvokeOnHomeScreen();
-        TurnOfAllAllowableBranches(ignoreThisBranch, turnOffPopUps);
-    }
-
-    private void TurnOfAllAllowableBranches(UIBranch ignoreThisBranch, IsActive turnOffPopUps)
+    private void ClearHomeScreen()
     {
         foreach (var branch in _allBranches)
         {
-            if (AlreadyOffOrCanIgnore(ignoreThisBranch, branch)) continue;
-            if (CanTurnOffPopUps(turnOffPopUps, branch.IsOptionalPopUp)) continue;
+            if (AlreadyOffOrCanIgnore(branch)) continue;
+            if (CanTurnOffPopUps(branch)) continue;
             branch.ClearBranch();
         }
     }
+    
+    private static bool CanTurnOffPopUps(UIBranch branch)
+        => branch.IsOptionalPopUp && !branch.TurnOffPopUPs;
 
-    private static bool CanTurnOffPopUps(IsActive turnOffPopUps, bool isPopUp)
-        => isPopUp && turnOffPopUps == IsActive.No;
+    private static bool AlreadyOffOrCanIgnore(UIBranch branch)
+        => !branch.CanvasIsEnabled || branch.IgnoreThisBranch;
 
-    private static bool AlreadyOffOrCanIgnore(UIBranch ignoreThisBranch, UIBranch branch) 
-        => !branch.CanvasIsEnabled || branch == ignoreThisBranch;
-
-    public void RestoreHomeScreen()
+    private void RestoreHomeScreen()
     {
-        if (OnHomeScreen) return;
-        OnHomeScreen = true;
-        InvokeOnHomeScreen();
-        
         foreach (var item in _homeGroup)
         {
             item.ResetHomeScreenBranch();
@@ -118,7 +120,7 @@ public class UIHomeGroup : IMono
 
     private void SaveActiveBranch(UIBranch newBranch)
     {
-        if (!OnHomeScreen) return;
+        if (!_onHomeScreen) return;
         if (_fromHotKey)
         {
             FindHomeScreenBranch(newBranch);

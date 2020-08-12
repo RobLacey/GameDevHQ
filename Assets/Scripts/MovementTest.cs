@@ -13,7 +13,7 @@ public class MovementTest : MonoBehaviour
     float _horizontalSpeed;
     float _verticalSpeed;
 
-    [SerializeField] bool _inMenu = false;
+    bool _inMenu = true;
 
     public bool InMenu { get { return _inMenu; } set { _inMenu = value; } }
 

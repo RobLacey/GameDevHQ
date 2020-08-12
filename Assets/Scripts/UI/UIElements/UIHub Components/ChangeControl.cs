@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
@@ -10,19 +11,19 @@ using UnityEngine;
 // TODO in the open branch.
 public class ChangeControl
 {
-    private readonly IPopUpControls _popUpControls;
     private Vector3 _mousePos = Vector3.zero;
     private readonly ControlMethod _controlMethod;
-    private readonly UIData _uiData;
-    private bool _gameIsPaused;
+    private readonly UIDataEvents _uiDataEvents;
+    private readonly UIControlsEvents _uiControlsEvents;
+    private readonly bool _startInGame;
 
-    public ChangeControl(ControlMethod controlMethod, IPopUpControls popUpControls)
+    public ChangeControl(ControlMethod controlMethod, bool startInGame)
     {
-        _popUpControls = popUpControls;
         _controlMethod = controlMethod;
-        _uiData = new UIData();
-        _uiData.SubscribeToHighlightedNode(SaveHighlighted);
-        _uiData.SubscribeToGameIsPaused(SaveGameIsPaused);
+        _startInGame = startInGame;
+        _uiDataEvents = new UIDataEvents();
+        _uiControlsEvents = new UIControlsEvents(); 
+        OnEnable();
     }
     
     //Delegates
@@ -33,32 +34,33 @@ public class ChangeControl
     private bool UsingKeysOrCtrl { get; set; }
     private UINode LastHighlighted { get; set; }
     private void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
-    private void SaveGameIsPaused(bool isPaused) => _gameIsPaused = isPaused;
 
-    public void OnDisable()
+    private void OnEnable()
     {
-        _uiData.OnDisable();
+        _uiDataEvents.SubscribeToHighlightedNode(SaveHighlighted);
+        _uiDataEvents.SubscribeToOnStart(StartGame);
+        _uiControlsEvents.SubscribeOnChangeControls(ChangeControlType);
     }
 
-    public void StartGame(bool startingInGame)
+    private void StartGame()
     {
         _mousePos = Input.mousePosition;
         if (MousePreferredControlMethod())
         {
-            SetUpMouse(startingInGame);
+            SetUpMouse();
         }
         else
         {
-            SetUpKeysOrCtrl(startingInGame);
+            SetUpKeysOrCtrl();
         }
     }
 
     private bool MousePreferredControlMethod() 
-        => _controlMethod == ControlMethod.Mouse || _controlMethod == ControlMethod.BothStartAsMouse;
+        => _controlMethod == ControlMethod.MouseOnly || _controlMethod == ControlMethod.AllowBothStartWithMouse;
 
-    private void SetUpMouse(bool startingInGame)
+    private void SetUpMouse()
     {
-        if (!startingInGame)
+        if (!_startInGame)
         {
             ActivateMouse();
         }
@@ -69,9 +71,9 @@ public class ChangeControl
         }
     }
 
-    private void SetUpKeysOrCtrl(bool startingInGame)
+    private void SetUpKeysOrCtrl()
     {
-        if (!startingInGame)
+        if (!_startInGame)
         {
             ActivateKeysOrControl();
         }
@@ -82,7 +84,7 @@ public class ChangeControl
         }
     }
 
-    public void ChangeControlType()
+    private void ChangeControlType()
     {
         if (CanSwitchToMouseControl())
         {
@@ -96,10 +98,10 @@ public class ChangeControl
     }
 
     private bool CanSwitchToMouseControl() 
-        => _mousePos != Input.mousePosition && _controlMethod != ControlMethod.KeysOrController;
+        => _mousePos != Input.mousePosition && _controlMethod != ControlMethod.KeysOrControllerOnly;
 
     private bool CanSwitchToKeysOrController() 
-        => Input.anyKeyDown &&_controlMethod != ControlMethod.Mouse;
+        => Input.anyKeyDown &&_controlMethod != ControlMethod.MouseOnly;
 
     private static bool MouseButtonsClicked()
         => !(!Input.GetMouseButton(0) & !Input.GetMouseButton(1));
@@ -128,20 +130,13 @@ public class ChangeControl
 
     private void SetAllowKeys()
     {
-        if (_controlMethod == ControlMethod.Mouse) return;
+        if (_controlMethod == ControlMethod.MouseOnly) return;
         DoAllowKeys?.Invoke(UsingKeysOrCtrl);
     }
 
     private void SetNextHighlightedForKeys()
     {
-        if (_popUpControls.NoActivePopUps || _gameIsPaused)
-        {
-            LastHighlighted.ThisNodeIsHighLighted();
-            LastHighlighted.SetAsHighlighted();
-        }
-        else
-        {
-            _popUpControls.ActivateCurrentPopUp();
-        }
+        LastHighlighted.ThisNodeIsHighLighted();
+        LastHighlighted.SetAsHighlighted();
     }
 }

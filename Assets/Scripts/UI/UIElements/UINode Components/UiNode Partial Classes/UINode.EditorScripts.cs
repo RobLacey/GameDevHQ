@@ -4,7 +4,7 @@ public partial class UINode
     private bool SetChildBranch(ButtonFunction buttonFunction)
     {
         _navigation.NotAToggle = buttonFunction == ButtonFunction.ToggleGroup
-                                 || buttonFunction == ButtonFunction.Toggle_NotLinked;
+                                 || buttonFunction == ButtonFunction.ToggleNotLinked;
 
         return true;
     }

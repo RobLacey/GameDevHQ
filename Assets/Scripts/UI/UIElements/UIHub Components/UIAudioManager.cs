@@ -3,25 +3,26 @@ using UnityEngine;
 /// <summary>
 /// This class handles playing UI audio. Is called by invoking the static event from within the project
 /// </summary>
-public class UIAudioManager : IMono
+public class UIAudioManager
 {
     private readonly AudioSource _myAudioSource;
-    public static Action<AudioClip, float> PlayAudio;
+    public static Action<AudioClip, float> _playAudio;
 
     public UIAudioManager(AudioSource audioSource)
     {
         _myAudioSource = audioSource;
+        Application.quitting += OnDisable;
         OnEnable();
     }
 
-    public void OnEnable()
+    private void OnEnable()
     {
-        PlayAudio += Play;
+        _playAudio += Play;
     }
 
-    public void OnDisable()
+    private void OnDisable()
     {
-        PlayAudio -= Play;
+        _playAudio -= Play;
     }
 
     private void Play(AudioClip audioClip, float volume)

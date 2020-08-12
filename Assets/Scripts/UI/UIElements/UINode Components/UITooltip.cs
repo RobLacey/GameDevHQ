@@ -229,13 +229,13 @@ public class UITooltip
                                                             _canvasHeight - (_layout.preferredHeight / 2));
                 _rectTransform.pivot = new Vector2(0.5f, 0.5f);
                 break;
-            case ToolTipAnchor.middleLeft:
+            case ToolTipAnchor.MiddleLeft:
                 tooltipPos.x = Mathf.Clamp(tooltipPos.x, (-_canvasWidth) + _layout.preferredWidth, (_canvasWidth));
                 tooltipPos.y = Mathf.Clamp(tooltipPos.y, (_layout.preferredHeight / 2) + (-_canvasHeight),
                                                             _canvasHeight - (_layout.preferredHeight / 2));
                 _rectTransform.pivot = new Vector2(1f, 0.5f);
                 break;
-            case ToolTipAnchor.middleRight:
+            case ToolTipAnchor.MiddleRight:
                 tooltipPos.x = Mathf.Clamp(tooltipPos.x, (-_canvasWidth), (_canvasWidth) - _layout.preferredWidth);
                 tooltipPos.y = Mathf.Clamp(tooltipPos.y, (_layout.preferredHeight / 2) + (-_canvasHeight),
                                                             _canvasHeight - (_layout.preferredHeight / 2));

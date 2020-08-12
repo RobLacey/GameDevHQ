@@ -9,19 +9,14 @@ using UnityEngine.EventSystems;
 public partial class UIHub
 {
     //Properties
-    private void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
     private void SaveOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
     private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
-    [ShowNativeProperty] private UINode LastSelected { get; set; }
-    [ShowNativeProperty] private UINode LastHighlighted { get; set; }
-    [ShowNativeProperty] private UIBranch ActiveBranch { get; set; }
-    [ShowNativeProperty] private bool GameIsPaused { get; set; }
+    private void SaveNoActivePopUps(bool noActivePopUps) => _noActivePopUps = noActivePopUps;
     private bool CanStart { get; set; }
-
     private void SetLastSelected(UINode newNode)
     {
         if (_lastHomeScreenNode is null) _lastHomeScreenNode = newNode;
-        if (LastSelected == newNode) return;
+        if (_lastSelected == newNode) return;
         
         if (_onHomeScreen)
         {
@@ -32,13 +27,13 @@ public partial class UIHub
             DeactiavteInternalBranches();
         }
 
-        LastSelected = newNode;
+        _lastSelected = newNode;
     }
 
     private void DeactiavteInternalBranches()
     {
-        if (!LastSelected.HasChildBranch) return; //Stops Tween Error when no child
-        if (LastSelected.HasChildBranch.MyBranchType == BranchType.Internal) LastSelected.Deactivate();
+        if (!_lastSelected.HasChildBranch) return; //Stops Tween Error when no child
+        if (_lastSelected.HasChildBranch.MyBranchType == BranchType.Internal) _lastSelected.Deactivate();
     }
 
     private void DeactivateLastHomeScreenNodes(UINode newNode)
@@ -69,10 +64,10 @@ public partial class UIHub
 
     private void SetLastHighlighted(UINode newNode)
     {
-        if (newNode == LastHighlighted) return;
-        LastHighlighted.SetNotHighlighted();
-        LastHighlighted = newNode;
-        if(_inMenu) SetEventSystem(LastHighlighted.gameObject);
+        if (newNode == _lastHighlighted) return;
+        _lastHighlighted.SetNotHighlighted();
+        _lastHighlighted = newNode;
+        if(_inMenu) SetEventSystem(_lastHighlighted.gameObject);
     }
 
     public static void SetEventSystem(GameObject newGameObject)

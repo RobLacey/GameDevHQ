@@ -12,10 +12,10 @@ public enum IsActive
     Yes, No
 }
 
-public enum UIGroupID
-{
-    Group1, Group2, Group3, Group4, Group5
-}
+// public enum UIGroupID
+// {
+//     Group1, Group2, Group3, Group4, Group5
+// }
 
 public enum PositionTweenType 
 { 
@@ -48,7 +48,7 @@ public enum ToggleGroup { None, TG1, TG2, TG3, TG4, TG5 }
 
 public enum EscapeKey { None, BackOneLevel, BackToHome, GlobalSetting }
 
-public enum ButtonFunction { Standard_Hold, ToggleGroup, Toggle_NotLinked, HoverToActivate }
+public enum ButtonFunction { Standard, ToggleGroup, ToggleNotLinked, HoverToActivate }
 
 [Flags]
 public enum Setting
@@ -81,7 +81,7 @@ public enum Choose { None, Highlighted, HighlightedAndSelected, Selected, Presse
 
 public enum ToolTipAnchor
 {
-    Centre, middleLeft, middleRight, MiddleTop,
+    Centre, MiddleLeft, MiddleRight, MiddleTop,
     MiddleBottom, TopLeft, TopRight, BottomLeft, BottomRight
 }
 
@@ -96,16 +96,16 @@ public enum EventType
     Pressed = 1 << 2,
 }
 
-public enum CurrentRoatationIs { StartRotateAt, MidPointForInAndOut, EndRotateAt }
+//public enum CurrentRoatationIs { StartRotateAt, MidPointForInAndOut, EndRotateAt }
 
 public enum ScreenType { Normal, FullScreen }
 
 public enum StartInMenu { InMenu, InGameControl }
-public enum BranchType { HomeScreenUI, StandardUI, Internal, ResolvePopUp, OptionalPopUp, TimedPopUp, PauseMenu }
+public enum BranchType { HomeScreen, Standard, Internal, ResolvePopUp, OptionalPopUp, TimedPopUp, PauseMenu }
 
 public enum WhenToMove { Immediately, AfterEndOfTween }
 public enum PauseOptionsOnEscape { EnterPauseOrEscapeMenu, DoNothing }
-public  enum ControlMethod { Mouse, KeysOrController, BothStartAsMouse, BothStartAsKeys }
+public  enum ControlMethod { MouseOnly, KeysOrControllerOnly, AllowBothStartWithMouse, AllowBothStartWithKeys }
 public enum SwitchType { Positive, Negative }
 public enum TweenType { In, Out }
 

@@ -1,26 +1,26 @@
 ﻿using System;
-using UnityEngine;
 
 /// <summary>
 /// Class handles all UI cancel behaviour from cancel type to context sensitive cases
 /// </summary>
-public class UICancel : IMono
+public class UICancel
 {
-    private readonly IPopUpControls _popUpControls;
     private readonly EscapeKey _globalEscapeSetting;
-    private readonly UIData _uiData;
+    private readonly UIDataEvents _uiDataEvents;
+    private readonly UIControlsEvents _uiControlsEvents;
     private bool _fromHotKey;
+    private UIBranch _currentHomeBranch;
 
-    public UICancel(EscapeKey globalSetting, IPopUpControls popUpControls)
+    public UICancel(EscapeKey globalSetting)
     {
-        _popUpControls = popUpControls;
         _globalEscapeSetting = globalSetting;
-        _uiData = new UIData();
+        _uiDataEvents = new UIDataEvents();
+        _uiControlsEvents = new UIControlsEvents();
         OnEnable();
     }
 
     //Events
-    public static event Func<UIBranch> ReturnHomeBranch; 
+    public static event Action<UIBranch> OnBackOneLevel; 
 
     //Properties
     private UINode LastSelected { get; set; }
@@ -28,22 +28,19 @@ public class UICancel : IMono
     private void SaveSelected(UINode newNode) => LastSelected = newNode;
     private void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
     private void SaveFromHotKey() => _fromHotKey = true;
-     
-    public void OnEnable()
+    private void SaveCurrentHomeBranch(UIBranch currentHomeBranch) => _currentHomeBranch = currentHomeBranch;
+
+    private void OnEnable()
     {
-        _uiData.SubscribeToSelectedNode(SaveSelected);
-        _uiData.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiData.SubscribeFromHotKey(SaveFromHotKey);
-        UINode.DoCancelButtonPressed += CancelOrBackButtonPressed;
+        _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
+        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
+        _uiDataEvents.SubscribeToCurrentHomeScreen(SaveCurrentHomeBranch);
+        _uiControlsEvents.SubscribeFromHotKey(SaveFromHotKey);
+        _uiControlsEvents.SubscribeCancelOrBackButtonPressed(CancelOrBackButtonPressed);
+        _uiControlsEvents.SubscribeOnCancel(CancelPressed);
     }
 
-    public void OnDisable()
-    {
-        _uiData.OnDisable();
-        UINode.DoCancelButtonPressed -= CancelOrBackButtonPressed;
-    }
-
-    public void CancelPressed()
+    private void CancelPressed()
     {
         if(ActiveBranch.IsResolvePopUp) return;
         
@@ -125,27 +122,17 @@ public class UICancel : IMono
 
     private void BackOneLevel()
     {
-        if(!_popUpControls.NoActivePopUps)
-        {
-            _popUpControls.RemoveNextPopUp();
-        }
-        else
-        {
-            LastSelected.SetNotSelected_NoEffects();
-            LastSelected.MyBranch.MoveBackToThisBranch();
-        }
+        CancelEvent(LastSelected.MyBranch);
     }
 
     private void BackToHome()
     {
-        UIBranch homeBranch = ReturnHomeBranch?.Invoke();
-        if (homeBranch == null)
-        {
-            Debug.Log("Not Returning UIBranch");
-            return;
-        }
         LastSelected.SetNotSelected_NoEffects();
-        homeBranch.LastSelected.SetNotSelected_NoEffects();
-        homeBranch.MoveBackToThisBranch();
+        CancelEvent(_currentHomeBranch);
+    }
+
+    private void CancelEvent(UIBranch targetBranch)
+    {
+        OnBackOneLevel?.Invoke(targetBranch);
     }
 }
