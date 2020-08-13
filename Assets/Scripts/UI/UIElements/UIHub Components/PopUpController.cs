@@ -84,7 +84,6 @@ public class PopUpController
         if (NoActiveResolvePopUps)
         {
             NoResolvePopUps?.Invoke(true);
-            NoPopUps?.Invoke(NoActivePopUps);
             WhatToDoNext_Optional(lastPopUpBranch);
         }
         else
@@ -98,13 +97,13 @@ public class PopUpController
         if (NoActiveOptionalPopUps)
         {
             NoOptionalPopUps?.Invoke(true);
-            NoPopUps?.Invoke(NoActivePopUps);
             currentPopUpBranch.MoveToNextPopUp(_lastNodeBeforePopUp);
         }
         else
         {
             currentPopUpBranch.MoveToNextPopUp(GetNextPopUp(_activeOptionalPopUps));
         }
+        NoPopUps?.Invoke(NoActivePopUps);
     }
 
     private void SetLastBranchBeforePopUp(UINode lastBranch)

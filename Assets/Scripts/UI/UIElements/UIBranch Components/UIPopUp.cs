@@ -110,7 +110,7 @@ public class UIPopUp : IPopUp
         
         if (_noActivePopUps && _inGameBeforePopUp)
         {
-            ReturnToGame();
+            ReturnToGame(lastBranch);
         }
         else
         {
@@ -118,7 +118,11 @@ public class UIPopUp : IPopUp
         }
     }
 
-    private void ReturnToGame() => _inGameBeforePopUp = false;
+    private void ReturnToGame(UIBranch lastBranch)
+    {
+        lastBranch.LastHighlighted.ThisNodeIsHighLighted();
+        _inGameBeforePopUp = false;
+    }
 
     private static void ToLastActiveBranch(UIBranch lastActiveBranch) 
         => lastActiveBranch.MoveToBranchWithoutTween();

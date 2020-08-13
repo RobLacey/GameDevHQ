@@ -11,21 +11,27 @@ public class HotKeys : IMono
     
     //Variables
     private UIDataEvents _uiDataEvents;
+    private UIControlsEvents _uiControlsEvents;
+    private UIPopUpEvents _uiPopUpEvents;
     private UINode _parentNode;
     private bool _hasParentNode;
     private bool _notHomeScreenHotKey;
+    private bool _gameIsPaused;
+    private bool _noActivePopUps = true;
 
     //Properties
     private UINode LastSelected { get; set; }
     private UIBranch ActiveBranch { get; set; }
     private void SaveSelected(UINode newNode) => LastSelected = newNode;
     private void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
+    private void SaveIsPaused(bool isPaused) => _gameIsPaused = isPaused;
+    private void SaveNoActivePopUps(bool noaActivePopUps) => _noActivePopUps = noaActivePopUps;
 
     //Events
     public static event Action FromHotKey;
     
     //EditorScript
-    public bool IsAllowedType()
+    private bool IsAllowedType()
     {
         if (!_myBranch.IsAPopUpBranch()) return true;
         Debug.Log("Can't have PopUp as Hot Key as Hot Key");
@@ -35,6 +41,8 @@ public class HotKeys : IMono
     public void OnAwake()
     {
         _uiDataEvents = new UIDataEvents();
+        _uiControlsEvents = new UIControlsEvents();
+        _uiPopUpEvents = new UIPopUpEvents();
         _notHomeScreenHotKey = _myBranch.MyBranchType != BranchType.HomeScreen;
         OnEnable();
     }
@@ -43,17 +51,20 @@ public class HotKeys : IMono
     {
         _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
+        _uiControlsEvents.SubscribeToGameIsPaused(SaveIsPaused);
+        _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
+        UIInput.HotKeyActivated += CheckHotKeys;
     }
 
     public void OnDisable()
     {
-        //_uiData.OnDisable();
+        UIInput.HotKeyActivated -= CheckHotKeys;
     }
 
     public bool CheckHotKeys()
     {
         if (!Input.GetButtonDown(_hotKeyAxis)) return false;
-        if (_myBranch.CanvasIsEnabled) return false;
+        if (_myBranch.CanvasIsEnabled || _gameIsPaused || !_noActivePopUps) return false;
         HotKeyActivation();
         return true;
     }

@@ -25,7 +25,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
 
     [Header("Settings (Click Arrows To Expand)")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] [EnumFlags] [Label("UI Functions To Use")] 
+    [SerializeField] [Label("UI Functions To Use")] 
     public Setting _enabledFunctions;
     [SerializeField] [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")] 
     UINavigation _navigation;
