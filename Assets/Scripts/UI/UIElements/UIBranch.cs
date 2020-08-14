@@ -64,7 +64,6 @@ public partial class UIBranch : MonoBehaviour
     public static event Action<UIBranch> DoActiveBranch;
     public static event Action<bool> SetIsOnHomeScreen; // Subscribe To track if on Home Screen
 
-
   //InternalClasses
     [Serializable]
     private class BranchEvents
@@ -215,8 +214,8 @@ public partial class UIBranch : MonoBehaviour
 
     public void MoveToThisBranch(UIBranch newParentController = null)
     {
-        SetAsActiveBranch();
         BasicSetUp(newParentController);
+        if(_setAsActive) SetAsActiveBranch();
 
         if (_tweenOnChange)
         {
@@ -229,8 +228,8 @@ public partial class UIBranch : MonoBehaviour
         _tweenOnChange = true;
         IgnoreThisBranch = false;
     }
-    
-    public void SetAsActiveBranch() => DoActiveBranch?.Invoke(this);
+
+    private void SetAsActiveBranch() => DoActiveBranch?.Invoke(this);
 
     private void BasicSetUp(UIBranch newParentController = null)
     {
@@ -288,9 +287,14 @@ public partial class UIBranch : MonoBehaviour
         _myCanvas.enabled = true;
         _myCanvasGroup.blocksRaycasts = true;
     }
+    
+    //TODO Covert all clear screens to work the same way by generating a clear list. Maybe use a seperate class to
+    //TODO store methods and data.
 
     public void ClearBranch()
     {
+        if(IsOptionalPopUp && !TurnOffPopUPs) return;
+        if(!CanvasIsEnabled || IgnoreThisBranch) return;
         _myCanvasGroup.blocksRaycasts = false;
         _myCanvas.enabled = false;
     }
@@ -299,6 +303,23 @@ public partial class UIBranch : MonoBehaviour
     {
         if (_stayOn == IsActive.No)
             ClearBranch();
+    }
+    
+    public bool ClearActiveBranches(UIBranch branch, ScreenType screenType)
+    {
+
+        if (branch == this || !CanvasIsEnabled) return false;
+        Debug.Log(this);
+        CheckIfActiveAndDisableBranch(screenType);
+        return true;
+    }
+
+    private void CheckIfActiveAndDisableBranch(ScreenType myBranchScreenType)
+    {
+        //if (!CanvasIsEnabled) return;
+        if (myBranchScreenType == ScreenType.FullScreen)
+            _myCanvas.enabled = false;
+        _myCanvasGroup.blocksRaycasts = false;
     }
 
     public void ActivateBranch()
@@ -324,17 +345,6 @@ public partial class UIBranch : MonoBehaviour
             return newNode;
         }
         return defaultNode;
-    }
-
-    public bool CheckIfActiveAndDisableBranch(ScreenType myBranchScreenType)
-    {
-        if (!_myCanvas.enabled) return false;
-        
-        if (myBranchScreenType == ScreenType.FullScreen)
-            _myCanvas.enabled = false;
-
-        _myCanvasGroup.blocksRaycasts = false;
-        return true;
     }
 
     /// <summary>

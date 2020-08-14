@@ -4,22 +4,24 @@
 /// Need To Make this a singleton or check thee is only one of these
 /// </summary>
 
-public class PauseMenu : IPauseMenu
+public class PauseMenu
 {
     public PauseMenu(UIBranch branch, UIBranch[] branchList)
     {
         _myBranch = branch;
         _allBranches = branchList;
-        _uiDataEvents = new UIDataEvents();
-        _uiControlsEvents = new UIControlsEvents();
         OnEnable();
     }
 
+    //Variables
     private readonly UIBranch _myBranch;
     private readonly UIBranch[] _allBranches;
-    private readonly UIDataEvents _uiDataEvents;
-    private UIControlsEvents _uiControlsEvents;
+    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
+    private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
+    private readonly ScreenData _clearedScreenData = new ScreenData();
     private bool _inMenu;
+    private UINode _lastHighlighted;
+    private UINode _lastSelected;
 
     //Internal Class
     private class ScreenData
@@ -30,26 +32,23 @@ public class PauseMenu : IPauseMenu
         public bool  _wasInTheMenu;
     }
 
-    private ScreenData ClearedScreenData { get; } = new ScreenData();
-    private UINode LastHighlighted { get; set; }
-    private UINode LastSelected { get; set; }
-    private void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
-    private void SaveSelected(UINode newNode) => LastSelected = newNode;
+    private void SaveHighlighted(UINode newNode) => _lastHighlighted = newNode;
+    private void SaveSelected(UINode newNode) => _lastSelected = newNode;
     private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
-    
-    public void OnEnable()
+
+    private void OnEnable()
     {
         _uiDataEvents.SubscribeToHighlightedNode(SaveHighlighted);
         _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiControlsEvents.SubscribeToGameIsPaused(StartPauseMenu);
     }
-    
-    public void StartPauseMenu(bool isGamePaused)
+
+    private void StartPauseMenu(bool isGamePaused)
     {
         if (isGamePaused)
         {
-            PopUpStartProcess();
+            PauseStartProcess();
         }
         else
         {
@@ -57,31 +56,29 @@ public class PauseMenu : IPauseMenu
         }
     }
     
-    private void PopUpStartProcess()
+    private void PauseStartProcess()
     {
         StoreClearScreenData();
         
-        foreach (var branch in _allBranches)
+        foreach (var branchToClear in _allBranches)
         {
-            if (branch == _myBranch) continue;
-            if (!branch.CheckIfActiveAndDisableBranch(_myBranch.ScreenType)) continue;
-            ClearedScreenData._clearedBranches.Add(branch);
+            if(branchToClear.ClearActiveBranches(_myBranch, _myBranch.ScreenType))
+                _clearedScreenData._clearedBranches.Add(branchToClear);
         }
-        ActivatePopUp();
+        ActivatePauseMenu();
     }
-    
-    private void ActivatePopUp()
+
+    private void ActivatePauseMenu()
     {
-        LastSelected.Audio.Play(UIEventTypes.Selected);
         _myBranch.MoveToThisBranch();
     }
 
     private void StoreClearScreenData()
     {
-        ClearedScreenData._wasInTheMenu = _inMenu;
-        ClearedScreenData._clearedBranches.Clear();
-        ClearedScreenData._lastSelected = LastSelected;
-        ClearedScreenData._lastHighlighted = LastHighlighted;
+        _clearedScreenData._wasInTheMenu = _inMenu;
+        _clearedScreenData._clearedBranches.Clear();
+        _clearedScreenData._lastSelected = _lastSelected;
+        _clearedScreenData._lastHighlighted = _lastHighlighted;
     }
 
     private void RestoreLastPosition()
@@ -99,16 +96,21 @@ public class PauseMenu : IPauseMenu
     
     private void EndOfTweenActions()
     {
-        var nextNode = ClearedScreenData._lastHighlighted;
-        
-        foreach (var branch in ClearedScreenData._clearedBranches)
+        ActiveClearedBranches();
+
+        if (WasInGame()) return;
+        _clearedScreenData._lastSelected.ThisNodeIsSelected();
+        _clearedScreenData._lastHighlighted.MyBranch.MoveToBranchWithoutTween();
+    }
+
+    private void ActiveClearedBranches()
+    {
+        foreach (var branch in _clearedScreenData._clearedBranches)
         {
             branch.ActivateBranch();
         }
-
-        if (!ClearedScreenData._wasInTheMenu) return;
-        ClearedScreenData._lastSelected.ThisNodeIsSelected();
-        nextNode.MyBranch.MoveToBranchWithoutTween();
     }
+
+    private bool WasInGame() => !_clearedScreenData._wasInTheMenu;
 }
 

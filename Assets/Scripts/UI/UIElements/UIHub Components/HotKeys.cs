@@ -3,27 +3,29 @@ using UnityEngine;
 using NaughtyAttributes;
 
 [Serializable]
-public class HotKeys : IMono
+public class HotKeys
 {
-    [InputAxis] [AllowNesting] public string _hotKeyAxis;
+    [SerializeField] 
+    [InputAxis] [AllowNesting] private string _hotKeyAxis;
+    [SerializeField] 
     [ValidateInput("IsAllowedType", "Can't have PopUp as HotKey as HotKey")] 
-    public UIBranch _myBranch;
+    private UIBranch _myBranch;
     
     //Variables
-    private UIDataEvents _uiDataEvents;
-    private UIControlsEvents _uiControlsEvents;
-    private UIPopUpEvents _uiPopUpEvents;
-    private UINode _parentNode;
+    private UIDataEvents _uiDataEvents = new UIDataEvents();
+    private UIControlsEvents _uiControlsEvents = new UIControlsEvents();
+    private UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private bool _hasParentNode;
     private bool _notHomeScreenHotKey;
     private bool _gameIsPaused;
     private bool _noActivePopUps = true;
+    private UINode _parentNode;
+    private UINode _lastSelected;
+    private UIBranch _activeBranch;
 
     //Properties
-    private UINode LastSelected { get; set; }
-    private UIBranch ActiveBranch { get; set; }
-    private void SaveSelected(UINode newNode) => LastSelected = newNode;
-    private void SaveActiveBranch(UIBranch newBranch) => ActiveBranch = newBranch;
+    private void SaveSelected(UINode newNode) => _lastSelected = newNode;
+    private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
     private void SaveIsPaused(bool isPaused) => _gameIsPaused = isPaused;
     private void SaveNoActivePopUps(bool noaActivePopUps) => _noActivePopUps = noaActivePopUps;
 
@@ -40,9 +42,6 @@ public class HotKeys : IMono
 
     public void OnAwake()
     {
-        _uiDataEvents = new UIDataEvents();
-        _uiControlsEvents = new UIControlsEvents();
-        _uiPopUpEvents = new UIPopUpEvents();
         _notHomeScreenHotKey = _myBranch.MyBranchType != BranchType.HomeScreen;
         OnEnable();
     }
@@ -52,13 +51,8 @@ public class HotKeys : IMono
         _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiControlsEvents.SubscribeToGameIsPaused(SaveIsPaused);
+        _uiControlsEvents.SubscribeHotKeyActivation(CheckHotKeys);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
-        UIInput.HotKeyActivated += CheckHotKeys;
-    }
-
-    public void OnDisable()
-    {
-        UIInput.HotKeyActivated -= CheckHotKeys;
     }
 
     public bool CheckHotKeys()
@@ -77,7 +71,6 @@ public class HotKeys : IMono
         }
         StartHotKeyProcess();
         SetHotKeyAsSelectedActions();
-
     }
 
     private void GetParentNode()
@@ -93,7 +86,7 @@ public class HotKeys : IMono
 
     private void StartHotKeyProcess()
     {
-        if (LastSelected.IsSelected)
+        if (_lastSelected.IsSelected)
         {
             StartOutTweenForLastSelected();
         }
@@ -105,15 +98,15 @@ public class HotKeys : IMono
 
     private void StartOutTweenForLastSelected()  
     {
-        LastSelected.SetNotSelected_NoEffects();
-        if (ActiveBranch.WhenToMove == WhenToMove.Immediately)
+        _lastSelected.SetNotSelected_NoEffects();
+        if (_activeBranch.WhenToMove == WhenToMove.Immediately)
         {
-            ActiveBranch.StartOutTween();
+            _activeBranch.StartOutTween();
             StartThisHotKeyBranch();
         }
         else
         {
-            ActiveBranch.StartOutTween(() => StartThisHotKeyBranch());
+            _activeBranch.StartOutTween(StartThisHotKeyBranch);
         }
     }
 

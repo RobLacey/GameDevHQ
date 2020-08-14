@@ -15,32 +15,38 @@ public partial class UIHub : MonoBehaviour
 {
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] [Label("Enable Controls After..")] float _atStartDelay;
-    [SerializeField] [ValidateInput("ProtectEscapeKeySetting", "Can't set Global Settings to Global Settings")]
+    [SerializeField] 
+    [Label("Enable Controls After..")] float _atStartDelay;
+    [SerializeField] 
+    [ValidateInput("ProtectEscapeKeySetting", "Can't set Global Settings to Global Settings")]
     EscapeKey _globalCancelFunction = EscapeKey.BackOneLevel;
-    
-    //TODO Fix Mouse only hidden
-    [SerializeField] /*[HideIf("MouseOnly")]*/ [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")] 
+    [SerializeField] 
+    [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")] 
     List<UIBranch> _homeBranches;
-    [SerializeField] [ReorderableList] [Label("Hot Keys (CAN'T have PopUps as Hot keys)")] 
+    [SerializeField] 
+    [ReorderableList] [Label("Hot Keys (CAN'T have PopUps as Hot keys)")] 
     List<HotKeys> _hotKeySettings;
 
     //Events
     public static event Action OnStart;
 
     //Variables
+    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private UINode _lastHomeScreenNode;
-    private UIDataEvents _uiDataEvents;
-    private bool _onHomeScreen;
-    private bool _inMenu;
     private UINode _lastSelected;
     private UINode _lastHighlighted;
+    private bool _onHomeScreen;
+    private bool _inMenu;
     private bool _startingInGame;
 
     //Properties
     private void SaveOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
-    private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
 
+    private void SaveInMenu(bool isInMenu)
+    {
+        _inMenu = isInMenu;
+        if(!_inMenu) SetEventSystem(null);
+    }
 
     private void Awake()
     {
@@ -54,7 +60,6 @@ public partial class UIHub : MonoBehaviour
         var unused1 = new UIAudioManager(GetComponent<AudioSource>());
         var unused3 = new UIHomeGroup(_homeBranches.ToArray(), FindObjectsOfType<UIBranch>());
         var unused2 = new UICancel(_globalCancelFunction);
-        _uiDataEvents = new UIDataEvents();
         SetUpHotKeys();
     }
 
@@ -75,15 +80,6 @@ public partial class UIHub : MonoBehaviour
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
     }
 
-    private void OnDisable()
-    {
-        if (_hotKeySettings.Count == 0) return;
-        foreach (var hotKey in _hotKeySettings)
-        {
-            hotKey.OnDisable();
-        }
-    }
-
     private void Start()
     {
         SetStartPositionsAndSettings();
@@ -94,24 +90,35 @@ public partial class UIHub : MonoBehaviour
     private void SetStartPositionsAndSettings()
     {
         _lastHighlighted = _homeBranches[0].DefaultStartPosition;
-        _homeBranches[0].DefaultStartPosition.ThisNodeIsHighLighted();
         _lastSelected = _homeBranches[0].DefaultStartPosition;
+        _homeBranches[0].DefaultStartPosition.ThisNodeIsHighLighted();
         _homeBranches[0].DefaultStartPosition.ThisNodeIsSelected();
     }
 
-    //Fix
     private void CheckIfStartingInGame()
     {
         if (_startingInGame)
         {
-            ActivateAllHomeBranches(IsActive.Yes);
-            OnStart?.Invoke();
+            StartInGame();
+            _inMenu = false;
         }
         else
         {
-            EventSystem.current.SetSelectedGameObject(_lastHighlighted.gameObject);
-            ActivateAllHomeBranches(IsActive.No);
+            StartInMenus();
+            _inMenu = true;
         }
+    }
+
+    private void StartInGame()
+    {
+        ActivateAllHomeBranches(IsActive.No);
+        OnStart?.Invoke();
+    }
+
+    private void StartInMenus()
+    {
+        EventSystem.current.SetSelectedGameObject(_lastHighlighted.gameObject);
+        ActivateAllHomeBranches(IsActive.Yes);
     }
 
     private void ActivateAllHomeBranches(IsActive activateOnStart)
@@ -167,7 +174,7 @@ public partial class UIHub : MonoBehaviour
     private void DeactivateLastHomeScreenNodes(UINode newNode)
     {
         if (IsAPopUpOrPauseMenu(newNode)) return;
-        newNode = FindNewNodesHomeScreenParent(newNode);
+            newNode = FindNewNodesHomeScreenParent(newNode);
 
         if (CanDeactivateLastHomeScreenNode(newNode)) 
             _lastHomeScreenNode.Deactivate();
@@ -192,8 +199,7 @@ public partial class UIHub : MonoBehaviour
 
     private void SetLastHighlighted(UINode newNode)
     {
-        if (newNode == _lastHighlighted) return;
-        _lastHighlighted.SetNotHighlighted();
+        if (newNode != _lastHighlighted) _lastHighlighted.SetNotHighlighted();
         _lastHighlighted = newNode;
         if(_inMenu) SetEventSystem(_lastHighlighted.gameObject);
     }

@@ -356,13 +356,11 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     public void ThisNodeIsSelected()
     {
         DoSelected?.Invoke(this);
-        DoHighlighted?.Invoke(this);
     }
     
     public void ThisNodeIsHighLighted()
     {
         DoHighlighted?.Invoke(this);
-       if(_allowKeys) MyBranch.SetAsActiveBranch();
     }
 
     private void SaveAllowKeys(bool allow)

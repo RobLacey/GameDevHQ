@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [Serializable]
-public class MenuAndGameSwitching : IMono
+public class MenuAndGameSwitching
 {
     [Header("In-Game Menu Settings")]
     [SerializeField] InGameSystem _inGameMenuSystem = InGameSystem.Off;
@@ -16,6 +16,7 @@ public class MenuAndGameSwitching : IMono
     private UIDataEvents _uiDataEvents;
     private UIControlsEvents _uiControlsEvents;
     private UIPopUpEvents _uiPopUpEvents;
+    private UINode _lastHighlighted;
     private bool _onHomeScreen = true;
     private bool _noPopUps = true;
     private bool _wasInGame;
@@ -29,10 +30,9 @@ public class MenuAndGameSwitching : IMono
     public bool ActiveInGameSystem => _inGameMenuSystem == InGameSystem.On;
     public bool StartInGame => _startGameWhere == StartInMenu.InGameControl && ActiveInGameSystem;
     public bool InTheMenu { get; private set; } = true;
-    private UINode LastHighlighted { get; set; }
     public void TurnOffGameSwitchSystem() => _inGameMenuSystem = InGameSystem.Off;
     private bool HasSwitchControls() => _switchToMenusButton != string.Empty;
-    private void SaveLastHighlighted(UINode newNode) => LastHighlighted = newNode;
+    private void SaveLastHighlighted(UINode newNode) => _lastHighlighted = newNode;
     private void SaveOnHomeScreen (bool onHomeScreen) => _onHomeScreen = onHomeScreen;
 
     private void SaveNoPopUps(bool noActivePopUps)
@@ -62,12 +62,7 @@ public class MenuAndGameSwitching : IMono
         _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
         _uiControlsEvents.SubscribeFromHotKey(HotKeyActivated);
-        UIInput.OnGameToMenuSwitchPressed += CheckForActivation;
-    }
-
-    public void OnDisable()
-    {
-        UIInput.OnGameToMenuSwitchPressed -= CheckForActivation;
+        _uiControlsEvents.SubscribeMenuGameSwitching(CheckForActivation);
     }
     
     private void HotKeyActivated()
@@ -122,22 +117,22 @@ public class MenuAndGameSwitching : IMono
         {
             SwitchToMenu();
         }
-        BroadcastState();
     }
 
 
     private void SwitchToGame()
     {
         InTheMenu = false;
-        LastHighlighted.SetNotHighlighted();
-        UIHub.SetEventSystem(null);
+        BroadcastState();
+        _lastHighlighted.SetNotHighlighted();
     }
 
     private void SwitchToMenu()
     {
         InTheMenu = true;
-        LastHighlighted.SetAsHighlighted();
-        UIHub.SetEventSystem(LastHighlighted.gameObject);
+        BroadcastState();
+        _lastHighlighted.ThisNodeIsHighLighted();
+        _lastHighlighted.SetAsHighlighted();
     }
 
     private void BroadcastState()

@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 public class UIDataEvents : UiEventCaller
 {
@@ -7,7 +6,7 @@ public class UIDataEvents : UiEventCaller
     private CustomEventHandler<UINode> _selectedNode;
     private CustomEventHandler<UIBranch> _activeBranch;
     private CustomEventHandler<UIBranch> _currentHomeScreen;
-    private CustomEventHandler<object> _onStartUp;
+    private CustomEventHandler _onStartUp;
     private CustomEventHandler<UIBranch> _onBackOneLevel;
     private CustomEventHandler<bool> _onHomeScreen;
     private CustomEventHandler<bool> _inMenu;
@@ -20,7 +19,7 @@ public class UIDataEvents : UiEventCaller
         if (_onStartUp != null) UIHub.OnStart -= _onStartUp.Event;
         if (_onHomeScreen != null) UIBranch.SetIsOnHomeScreen -= _onHomeScreen.Event;
         if (_inMenu != null) MenuAndGameSwitching.IsInTheMenu -= _inMenu.Event;
-        if (_currentHomeScreen != null) UIHomeGroup.DoCurrentHomeBranch -= _currentHomeScreen.Event;
+        if (_currentHomeScreen != null) UIHomeGroup.DoSetCurrentHomeBranch -= _currentHomeScreen.Event;
     }
 
 
@@ -39,7 +38,7 @@ public class UIDataEvents : UiEventCaller
     public void SubscribeToCurrentHomeScreen(Action<UIBranch> subscriber)
     {
         _currentHomeScreen = new CustomEventHandler<UIBranch>();
-        UIHomeGroup.DoCurrentHomeBranch += _currentHomeScreen.Add(subscriber);
+        UIHomeGroup.DoSetCurrentHomeBranch += _currentHomeScreen.Add(subscriber);
     }
 
     public void SubscribeToActiveBranch(Action<UIBranch> subscriber)
@@ -50,7 +49,7 @@ public class UIDataEvents : UiEventCaller
 
     public void SubscribeToOnStart(Action subscriber)
     {
-        _onStartUp = new CustomEventHandler<object>();
+        _onStartUp = new CustomEventHandler();
         UIHub.OnStart += _onStartUp.Add(subscriber);
     }
     

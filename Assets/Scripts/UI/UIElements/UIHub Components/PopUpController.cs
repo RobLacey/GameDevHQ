@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 /// <summary>
 /// This Class Looks after managing switching between PopUps
@@ -9,14 +8,12 @@ public class PopUpController
 {
     public PopUpController()
     {
-        _uiDataEvents = new UIDataEvents();
-        _uiPopUpEvents = new UIPopUpEvents();
         OnEnable();
     }
     
     //Variables
-    private readonly UIDataEvents _uiDataEvents;
-    private readonly UIPopUpEvents _uiPopUpEvents;
+    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
+    private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private readonly List<UIBranch> _activeResolvePopUps = new List<UIBranch>();
     private readonly List<UIBranch> _activeOptionalPopUps = new List<UIBranch>();
     private UIBranch _lastNodeBeforePopUp;
@@ -31,7 +28,7 @@ public class PopUpController
     private void AddToActivePopUps_Optional(UIBranch newOptionalPopUp) 
         => AddToPopUpList(newOptionalPopUp, _activeOptionalPopUps, NoOptionalPopUps);
 
-    //Delegates
+    //Events
     public static event Action<bool> NoResolvePopUps;
     public static event Action<bool> NoOptionalPopUps;
     public static event Action<bool> NoPopUps;

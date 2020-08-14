@@ -1,28 +1,22 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+
 /// <summary>
 /// This class handles playing UI audio. Is called by invoking the static event from within the project
 /// </summary>
 public class UIAudioManager
 {
     private readonly AudioSource _myAudioSource;
-    public static Action<AudioClip, float> _playAudio;
+    private readonly UIAudioEvents _uiAudioEvents = new UIAudioEvents();
 
     public UIAudioManager(AudioSource audioSource)
     {
         _myAudioSource = audioSource;
-        Application.quitting += OnDisable;
         OnEnable();
     }
 
     private void OnEnable()
     {
-        _playAudio += Play;
-    }
-
-    private void OnDisable()
-    {
-        _playAudio -= Play;
+        _uiAudioEvents.SubscribeToPlayAudio(Play);
     }
 
     private void Play(AudioClip audioClip, float volume)

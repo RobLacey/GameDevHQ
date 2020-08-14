@@ -1,30 +1,35 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using NaughtyAttributes;
 
-[System.Serializable]
+[Serializable]
 public class UIAudio
 {
-    [SerializeField] AudioScheme _audioScheme;
-    [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Highlighted Clip")] AudioClip _soundHighlighted;
-    [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Highlighted Volume")] float _volumeHighlighted;
-    [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Selected Clip")] AudioClip _soundSelect;
-    [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Selected Volume")] float _volumeSelect;
-    [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Cancelled Clip")] AudioClip _soundCancel;
-    [SerializeField] [AllowNesting] [HideIf("UsingScheme")] [Label("Cancelled Volume")] float _volumeCancel;
+    [SerializeField] 
+    AudioScheme _audioScheme;
+    [SerializeField] 
+    [AllowNesting] [HideIf("UsingScheme")] [Label("Highlighted Clip")] AudioClip _soundHighlighted;
+    [SerializeField] 
+    [AllowNesting] [HideIf("UsingScheme")] [Label("Highlighted Volume")] float _volumeHighlighted;
+    [SerializeField] 
+    [AllowNesting] [HideIf("UsingScheme")] [Label("Selected Clip")] AudioClip _soundSelect;
+    [SerializeField] 
+    [AllowNesting] [HideIf("UsingScheme")] [Label("Selected Volume")] float _volumeSelect;
+    [SerializeField] 
+    [AllowNesting] [HideIf("UsingScheme")] [Label("Cancelled Clip")] AudioClip _soundCancel;
+    [SerializeField] 
+    [AllowNesting] [HideIf("UsingScheme")] [Label("Cancelled Volume")] float _volumeCancel;
 
     //Variables 
     bool _canPlay;
 
-    public void OnAwake(Setting setting)
-    {
-        _canPlay = (setting & Setting.Audio) != 0;
-    }
+    //Events
+    public static event Action<AudioClip, float> PlayAudio;
 
     //Properties
-    private bool UsingScheme()
-    {
-        return _audioScheme;
-    }
+    private bool UsingScheme() => _audioScheme;
+
+    public void OnAwake(Setting setting) => _canPlay = (setting & Setting.Audio) != 0;
 
     public void Play(UIEventTypes uIEventTypes)
     {
@@ -35,31 +40,37 @@ public class UIAudio
             case UIEventTypes.Highlighted:
                 if (UsingScheme())
                 {
-                    UIAudioManager._playAudio.Invoke(_audioScheme.HighlightedClip, _audioScheme.HighlighVolume);
+                    //UIAudioManager.PlayAudio.Invoke(_audioScheme.HighlightedClip, _audioScheme.HighlighVolume);
+                    PlayAudio?.Invoke(_audioScheme.HighlightedClip, _audioScheme.HighlighVolume);
                 }
                 else
                 {
-                    UIAudioManager._playAudio.Invoke(_soundHighlighted, _volumeHighlighted);
+                    //UIAudioManager.PlayAudio.Invoke(_soundHighlighted, _volumeHighlighted);
+                    PlayAudio?.Invoke(_soundHighlighted, _volumeHighlighted);
                 }
                 break;
             case UIEventTypes.Cancelled:
                 if (UsingScheme())
                 {
-                    UIAudioManager._playAudio.Invoke(_audioScheme.CancelledClip, _audioScheme.CancelledVolume);
+                    PlayAudio?.Invoke(_audioScheme.CancelledClip, _audioScheme.CancelledVolume);
+                    // UIAudioManager.PlayAudio.Invoke(_audioScheme.CancelledClip, _audioScheme.CancelledVolume);
                 }
                 else
                 {
-                    UIAudioManager._playAudio.Invoke(_soundCancel, _volumeCancel);
+                    PlayAudio?.Invoke(_soundCancel, _volumeCancel);
+                    // UIAudioManager.PlayAudio.Invoke(_soundCancel, _volumeCancel);
                 }
                 break;
             case UIEventTypes.Selected:
                 if (UsingScheme())
                 {
-                    UIAudioManager._playAudio.Invoke(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
+                    PlayAudio?.Invoke(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
+                    // UIAudioManager.PlayAudio.Invoke(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
                 }
                 else
                 {
-                    UIAudioManager._playAudio.Invoke(_soundSelect, _volumeSelect);
+                    PlayAudio?.Invoke(_soundSelect, _volumeSelect);
+                    // UIAudioManager.PlayAudio.Invoke(_soundSelect, _volumeSelect);
                 }
                 break;
         }

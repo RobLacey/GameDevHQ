@@ -10,32 +10,33 @@ public class UIHomeGroup
     {
         _allBranches = allBranches;
         _homeGroup = homeBranches;
-        _uiDataEvents = new UIDataEvents();
-        _uiControlsEvents = new UIControlsEvents();
         OnEnable();
     }
 
+    //Variables
     private readonly UIBranch[] _homeGroup;
     private readonly UIBranch[] _allBranches;
+    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
+    private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private bool _allowKeys;
-    private readonly UIDataEvents _uiDataEvents;
-    private readonly UIControlsEvents _uiControlsEvents;
     private bool _fromHotKey;
     private bool _onHomeScreen;
+    private int _index;
 
     //Delegate
-    public static event Action<UIBranch> DoCurrentHomeBranch; // Subscribe To track if on Home Screen
+    public static event Action<UIBranch> DoSetCurrentHomeBranch; // Subscribe To track if on Home Screen
     
     //Properties
     private void SaveAllowKeys(bool allow) => _allowKeys = allow;
     private void SaveFromHotKey() => _fromHotKey = true;
-    private int Index { get; set; }
+    private void SetLastHighlightedBranch(UINode newNode) => SaveActiveBranch(newNode.MyBranch);
 
     private void OnEnable()
     {
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
         _uiDataEvents.SubscribeToOnStart(SetStartPosition);
+        _uiDataEvents.SubscribeToHighlightedNode(SetLastHighlightedBranch);
         _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
         _uiControlsEvents.SubscribeFromHotKey(SaveFromHotKey);
         _uiControlsEvents.SubscribeSwitchGroups(SwitchHomeGroups);
@@ -54,62 +55,53 @@ public class UIHomeGroup
         }
     }
 
-    private void SetStartPosition()
-    {
-        DoCurrentHomeBranch?.Invoke(_homeGroup[Index]);
-    }
-    
+    private void SetStartPosition() => DoSetCurrentHomeBranch?.Invoke(_homeGroup[0]);
+
     private void SwitchHomeGroups(SwitchType switchType)
     {
         if (!_onHomeScreen) return;
         if(_homeGroup.Length == 1) return;
         
         SetNewIndex(switchType);
-        DoCurrentHomeBranch?.Invoke(_homeGroup[Index]);
         
         if (ActivateHoverOverIfKeysAllowed())
         {
-            _homeGroup[Index].LastSelected.PressedActions();
+            _homeGroup[_index].LastSelected.PressedActions();
         }
         else
         {
-            _homeGroup[Index].MoveToBranchWithoutTween();
+            _homeGroup[_index].MoveToBranchWithoutTween();
         }
         
     }
 
     private bool ActivateHoverOverIfKeysAllowed() 
-        => _homeGroup[Index].LastSelected.Function == ButtonFunction.HoverToActivate && _allowKeys;
+        => _homeGroup[_index].LastSelected.Function == ButtonFunction.HoverToActivate && _allowKeys;
 
     private void SetNewIndex(SwitchType switchType)
     {
-        _homeGroup[Index].LastSelected.Deactivate();
+        _homeGroup[_index].LastSelected.Deactivate();
+        
+        // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
         if (switchType == SwitchType.Positive)
         {
-            Index = Index.PositiveIterate(_homeGroup.Length);
+            _index = _index.PositiveIterate(_homeGroup.Length);
         }
         else
         {
-            Index = Index.NegativeIterate(_homeGroup.Length);
+            _index = _index.NegativeIterate(_homeGroup.Length);
         }
+        DoSetCurrentHomeBranch?.Invoke(_homeGroup[_index]);
     }
 
     private void ClearHomeScreen()
     {
         foreach (var branch in _allBranches)
         {
-            if (AlreadyOffOrCanIgnore(branch)) continue;
-            if (CanTurnOffPopUps(branch)) continue;
             branch.ClearBranch();
         }
     }
     
-    private static bool CanTurnOffPopUps(UIBranch branch)
-        => branch.IsOptionalPopUp && !branch.TurnOffPopUPs;
-
-    private static bool AlreadyOffOrCanIgnore(UIBranch branch)
-        => !branch.CanvasIsEnabled || branch.IgnoreThisBranch;
-
     private void RestoreHomeScreen()
     {
         foreach (var item in _homeGroup)
@@ -117,7 +109,7 @@ public class UIHomeGroup
             item.ResetHomeScreenBranch();
         }
     }
-
+    
     private void SaveActiveBranch(UIBranch newBranch)
     {
         if (!_onHomeScreen) return;
@@ -127,7 +119,7 @@ public class UIHomeGroup
         }
         else
         {
-            SearchHomeBranches(newBranch);
+            SearchHomeBranchesAndSet(newBranch);
         }
     }
 
@@ -140,15 +132,16 @@ public class UIHomeGroup
         {
             homeBranch = homeBranch.MyParentBranch;
         }
-        SearchHomeBranches(homeBranch);
+        SearchHomeBranchesAndSet(homeBranch);
     }
 
-    private void SearchHomeBranches(UIBranch newBranch)
+    private void SearchHomeBranchesAndSet(UIBranch newBranch)
     {
         for (var index = 0; index < _homeGroup.Length; index++)
         {
             if (_homeGroup[index] != newBranch) continue;
-            Index = index;
+            _index = index;
+            DoSetCurrentHomeBranch?.Invoke(_homeGroup[_index]);
             break;
         }
     }

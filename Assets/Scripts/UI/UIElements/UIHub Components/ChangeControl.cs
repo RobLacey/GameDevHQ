@@ -1,44 +1,42 @@
 ﻿using System;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
 /// Class that handles switching control from the mouse to a keyboard or controller
 /// </summary>
 ///
-//ToDo make changing to keys pick up the last highlighted plus open branch not where the mouse was last.
-// TODO Currently if a node is moused over that becomes the next node activated when switched to keys which might not be
-// TODO in the open branch.
 public class ChangeControl
 {
-    private Vector3 _mousePos = Vector3.zero;
-    private readonly ControlMethod _controlMethod;
-    private readonly UIDataEvents _uiDataEvents;
-    private readonly UIControlsEvents _uiControlsEvents;
-    private readonly bool _startInGame;
-
     public ChangeControl(ControlMethod controlMethod, bool startInGame)
     {
         _controlMethod = controlMethod;
         _startInGame = startInGame;
-        _uiDataEvents = new UIDataEvents();
-        _uiControlsEvents = new UIControlsEvents(); 
         OnEnable();
     }
-    
-    //Delegates
+
+    //Variables
+    private Vector3 _mousePos = Vector3.zero;
+    private readonly ControlMethod _controlMethod;
+    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
+    private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
+    private readonly bool _startInGame;
+    private bool _usingMouse;
+    private bool _usingKeysOrCtrl;
+    private UINode _lastHighlighted;
+    private UIBranch _activeBranch;
+
+    //Events
     public static event Action<bool> DoAllowKeys;
 
     //Properties
-    private bool UsingMouse { get; set; }
-    private bool UsingKeysOrCtrl { get; set; }
-    private UINode LastHighlighted { get; set; }
-    private void SaveHighlighted(UINode newNode) => LastHighlighted = newNode;
+    private void SaveHighlighted(UINode newNode) => _lastHighlighted = newNode;
+    private void SaveActiveBranch(UIBranch newNode) => _activeBranch = newNode;
 
     private void OnEnable()
     {
         _uiDataEvents.SubscribeToHighlightedNode(SaveHighlighted);
         _uiDataEvents.SubscribeToOnStart(StartGame);
+        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiControlsEvents.SubscribeOnChangeControls(ChangeControlType);
     }
 
@@ -66,7 +64,7 @@ public class ChangeControl
         }
         else
         {
-            UsingMouse = true;
+            _usingMouse = true;
             SetAllowKeys();
         }
     }
@@ -79,7 +77,7 @@ public class ChangeControl
         }
         else
         {
-            UsingKeysOrCtrl = true;
+            _usingKeysOrCtrl = true;
             SetAllowKeys();
         }
     }
@@ -110,33 +108,47 @@ public class ChangeControl
     {
         _mousePos = Input.mousePosition;
         Cursor.visible = true;
-        if (UsingMouse) return;
-        UsingMouse = true;
-        UsingKeysOrCtrl = false;
+        if (_usingMouse) return;
+        _usingMouse = true;
+        _usingKeysOrCtrl = false;
         SetAllowKeys();
-        LastHighlighted.SetNotHighlighted();
+        _lastHighlighted.SetNotHighlighted();
     }
 
     private void ActivateKeysOrControl()
     {
         Cursor.visible = false;
-        if (UsingKeysOrCtrl) return;
-        UsingKeysOrCtrl = true;
-        UsingMouse = false;
+        if (_usingKeysOrCtrl) return;
+        _usingMouse = false;
+        _usingKeysOrCtrl = true;
         SetAllowKeys();
         SetNextHighlightedForKeys();
-        UIHub.SetEventSystem(LastHighlighted.gameObject);
+        UIHub.SetEventSystem(_lastHighlighted.gameObject);
     }
 
     private void SetAllowKeys()
     {
         if (_controlMethod == ControlMethod.MouseOnly) return;
-        DoAllowKeys?.Invoke(UsingKeysOrCtrl);
+        DoAllowKeys?.Invoke(_usingKeysOrCtrl);
     }
 
     private void SetNextHighlightedForKeys()
     {
-        LastHighlighted.ThisNodeIsHighLighted();
-        LastHighlighted.SetAsHighlighted();
+        var nextBranch = _activeBranch;
+        nextBranch = FindLastActiveBranchesEndNode(nextBranch);
+        nextBranch.LastHighlighted.ThisNodeIsHighLighted();
+        nextBranch.LastHighlighted.SetAsHighlighted();
+    }
+
+    private static UIBranch FindLastActiveBranchesEndNode(UIBranch nextBranch)
+    {
+        if (nextBranch.LastSelected.HasChildBranch == null) return nextBranch;
+        
+        while (nextBranch.LastSelected.HasChildBranch.CanvasIsEnabled)
+        {
+            nextBranch = nextBranch.LastSelected.HasChildBranch;
+        }
+
+        return nextBranch;
     }
 }

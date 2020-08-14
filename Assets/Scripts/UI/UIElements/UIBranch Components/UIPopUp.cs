@@ -5,36 +5,33 @@ using UnityEngine;
 //Todo Stop Optional popups appearing when in fullscreen. Maybe new popups altogether and maybe cache them 
 public class UIPopUp : IPopUp
 {
-    private readonly UIBranch _myBranch;
-    private readonly UIBranch[] _allBranches;
-    private bool _noActivePopUps = true;
-    private bool _isInMenu;
-    private readonly UIDataEvents _uiDataEvents;
-    private readonly UIControlsEvents _uiControlsEvents;
-    private UIPopUpEvents _uiPopUpEvents;
-    private readonly List<UIBranch> _clearedBranches = new List<UIBranch>();
-    private bool _gameIsPaused;
-    private bool _inGameBeforePopUp;
-
     public UIPopUp(UIBranch branch, UIBranch[] branchList)
     {
-        _uiDataEvents = new UIDataEvents();
-        _uiControlsEvents = new UIControlsEvents();
-        _uiPopUpEvents = new UIPopUpEvents();
         _myBranch = branch;
         _allBranches = branchList;
         OnEnable();
     }
+
+    //Variables
+    private readonly UIBranch _myBranch;
+    private readonly UIBranch[] _allBranches;
+    private bool _noActivePopUps = true;
+    private bool _isInMenu;
+    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
+    private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
+    private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
+    private readonly List<UIBranch> _clearedBranches = new List<UIBranch>();
+    private bool _gameIsPaused;
+    private bool _inGameBeforePopUp;
 
     //Properties
     private void SaveNoActivePopUps(bool noActivePopUps) => _noActivePopUps = noActivePopUps;
     private void SaveIfGamePaused(bool paused) => _gameIsPaused = paused;
     private void SaveIfInMenu(bool inMenu) => _isInMenu = inMenu;
     
-    //Delegates
+    //Events
     public static event Action<UIBranch> AddResolvePopUp;
     public static event Action<UIBranch> AddOptionalPopUp;
-
 
     private void OnEnable()
     {
@@ -51,7 +48,7 @@ public class UIPopUp : IPopUp
             SetUpPopUp();
     }
     
-    protected virtual void SetUpPopUp()
+    private void SetUpPopUp()
     {
         if (!_isInMenu && _noActivePopUps)
             _inGameBeforePopUp = true;
@@ -77,11 +74,10 @@ public class UIPopUp : IPopUp
 
     private void ClearAndStoreActiveBranches()
     {
-        foreach (var branch in _allBranches)
+        foreach (var branchToClear in _allBranches)
         {
-            if (branch == _myBranch) continue;
-            if (!branch.CheckIfActiveAndDisableBranch(_myBranch.ScreenType)) continue;
-            _clearedBranches.Add(branch);
+            if(branchToClear.ClearActiveBranches(_myBranch, _myBranch.ScreenType))
+                _clearedBranches.Add(branchToClear);
         }
     }
 
