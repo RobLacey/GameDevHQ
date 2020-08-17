@@ -33,14 +33,11 @@ public partial class UIHub : MonoBehaviour
     //Variables
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private UINode _lastHomeScreenNode;
-    private UINode _lastSelected;
     private UINode _lastHighlighted;
-    private bool _onHomeScreen;
     private bool _inMenu;
     private bool _startingInGame;
 
     //Properties
-    private void SaveOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
 
     private void SaveInMenu(bool isInMenu)
     {
@@ -58,7 +55,7 @@ public partial class UIHub : MonoBehaviour
     {
         var unused = new PopUpController();
         var unused1 = new UIAudioManager(GetComponent<AudioSource>());
-        var unused3 = new UIHomeGroup(_homeBranches.ToArray(), FindObjectsOfType<UIBranch>());
+        var unused3 = new UIHomeGroup(_homeBranches.ToArray());
         var unused2 = new UICancel(_globalCancelFunction);
         SetUpHotKeys();
     }
@@ -75,8 +72,6 @@ public partial class UIHub : MonoBehaviour
     private void OnEnable()
     {
         _uiDataEvents.SubscribeToHighlightedNode(SetLastHighlighted);
-        _uiDataEvents.SubscribeToSelectedNode(SetLastSelected);
-        _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
     }
 
@@ -90,7 +85,6 @@ public partial class UIHub : MonoBehaviour
     private void SetStartPositionsAndSettings()
     {
         _lastHighlighted = _homeBranches[0].DefaultStartPosition;
-        _lastSelected = _homeBranches[0].DefaultStartPosition;
         _homeBranches[0].DefaultStartPosition.ThisNodeIsHighLighted();
         _homeBranches[0].DefaultStartPosition.ThisNodeIsSelected();
     }
@@ -117,7 +111,7 @@ public partial class UIHub : MonoBehaviour
 
     private void StartInMenus()
     {
-        EventSystem.current.SetSelectedGameObject(_lastHighlighted.gameObject);
+        EventSystem.current.SetSelectedGameObject(_homeBranches[0].DefaultStartPosition.gameObject);
         ActivateAllHomeBranches(IsActive.Yes);
     }
 
@@ -148,55 +142,6 @@ public partial class UIHub : MonoBehaviour
         }
     }
     
-    private void SetLastSelected(UINode newNode)
-    {
-        if (_lastHomeScreenNode is null) _lastHomeScreenNode = newNode;
-        if (_lastSelected == newNode) return;
-        
-        if (_onHomeScreen)
-        {
-            DeactivateLastHomeScreenNodes(newNode);
-        }
-        else
-        {
-            DeactivateInternalBranches();
-        }
-
-        _lastSelected = newNode;
-    }
-
-    private void DeactivateInternalBranches()
-    {
-        if (!_lastSelected.HasChildBranch) return; //Stops Tween Error when no child
-        if (_lastSelected.HasChildBranch.MyBranchType == BranchType.Internal) _lastSelected.Deactivate();
-    }
-
-    private void DeactivateLastHomeScreenNodes(UINode newNode)
-    {
-        if (IsAPopUpOrPauseMenu(newNode)) return;
-            newNode = FindNewNodesHomeScreenParent(newNode);
-
-        if (CanDeactivateLastHomeScreenNode(newNode)) 
-            _lastHomeScreenNode.Deactivate();
-        
-        _lastHomeScreenNode = newNode;
-    }
-
-    private static bool IsAPopUpOrPauseMenu(UINode newNode)
-        => newNode.MyBranch.IsAPopUpBranch() || newNode.MyBranch.IsPauseMenuBranch();
-
-    private bool CanDeactivateLastHomeScreenNode(UINode newNode)
-        => newNode != _lastHomeScreenNode && _lastHomeScreenNode.IsSelected;
-
-    private static UINode FindNewNodesHomeScreenParent(UINode newNode)
-    {
-        while (newNode.MyBranch != newNode.MyBranch.MyParentBranch)
-        {
-            newNode = newNode.MyBranch.MyParentBranch.LastSelected;
-        }
-        return newNode;
-    }
-
     private void SetLastHighlighted(UINode newNode)
     {
         if (newNode != _lastHighlighted) _lastHighlighted.SetNotHighlighted();

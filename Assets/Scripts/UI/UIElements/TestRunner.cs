@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -6,6 +7,9 @@ using NaughtyAttributes;
 
 public class TestRunner : MonoBehaviour
 {
+    [SerializeField] private UINode _lastHighlighted;
+    [SerializeField] private UINode _lastSelected;
+    [SerializeField] private UIBranch _activeBranch;
     [SerializeField] EventsForTest _eventsForTest;
     [SerializeField] string _test1Test;
     [SerializeField] string _test2Test;
@@ -19,6 +23,19 @@ public class TestRunner : MonoBehaviour
         [SerializeField] public UnityEvent _event3;
         [SerializeField] public UnityEvent _event4;
         [SerializeField] public UnityEvent _event5;
+    }
+
+    readonly UIDataEvents _uiDataEvents = new UIDataEvents();
+
+    private void SaveLastHighlighted(UINode newNode) => _lastHighlighted = newNode;
+    private void SaveLastSelected(UINode newNode) => _lastSelected = newNode;
+    private void SaveActivebranch(UIBranch newBranch) => _activeBranch = newBranch;
+
+    private void OnEnable()
+    {
+        _uiDataEvents.SubscribeToHighlightedNode(SaveLastHighlighted);
+        _uiDataEvents.SubscribeToSelectedNode(SaveLastSelected);
+        _uiDataEvents.SubscribeToActiveBranch(SaveActivebranch);
     }
 
     [Button ()]

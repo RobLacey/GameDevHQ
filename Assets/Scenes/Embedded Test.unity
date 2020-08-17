@@ -11530,6 +11530,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e6ca6c0ffdb19944bd0c517764a1cad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _lastHighlighted: {fileID: 0}
+  _lastSelected: {fileID: 0}
+  _activeBranch: {fileID: 0}
   _eventsForTest:
     _event1:
       m_PersistentCalls:

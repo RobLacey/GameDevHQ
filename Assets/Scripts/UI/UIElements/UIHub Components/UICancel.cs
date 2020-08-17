@@ -23,6 +23,7 @@ public class UICancel
 
     //Events
     public static event Action<UIBranch> OnBackOneLevel; 
+    public static event Action OnBackOnePopUp; 
 
     //Properties
     private void SaveSelected(UINode newNode) => _lastSelected = newNode;
@@ -36,7 +37,7 @@ public class UICancel
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiDataEvents.SubscribeToCurrentHomeScreen(SaveCurrentHomeBranch);
         _uiControlsEvents.SubscribeFromHotKey(SaveFromHotKey);
-        _uiControlsEvents.SubscribeCancelOrBackButtonPressed(CancelOrBackButtonPressed);
+        _uiControlsEvents.SubscribeCancelOrBackButtonPressed(ProcessCancelType);
         _uiControlsEvents.SubscribeOnCancel(CancelPressed);
     }
 
@@ -46,7 +47,7 @@ public class UICancel
         
         if (_fromHotKey)
         {
-            CancelOrBackButtonPressed(EscapeKey.BackToHome);
+            ProcessCancelType(EscapeKey.BackToHome);
         }
         else if (_activeBranch.IsOptionalPopUp)
         {
@@ -56,16 +57,6 @@ public class UICancel
         {
             ProcessCancelType(_lastSelected.HasChildBranch.EscapeKeySetting);
         }
-    }
-
-    private void CancelOrBackButtonPressed(EscapeKey escapeKey) 
-    {
-        if (_fromHotKey)
-        {
-            _fromHotKey = false;
-            _lastSelected.SetNotSelected_NoEffects();
-        }
-        ProcessCancelType(escapeKey);
     }
 
     private void ProcessCancelType(EscapeKey escapeKey)
@@ -92,11 +83,12 @@ public class UICancel
 
         if (IsPopUpOrPauseMenu())
         {
-            endOfCancelAction.Invoke();
-            return;
+            StartOutTween(BackOnePopUp);
         }
-        
-        StartOutTween(endOfCancelAction);
+        else
+        {
+            StartOutTween(endOfCancelAction);
+        }
     }
 
     private bool IsPopUpOrPauseMenu() => _activeBranch.IsAPopUpBranch() || _activeBranch.IsPauseMenuBranch();
@@ -115,10 +107,10 @@ public class UICancel
     }
 
     private void BackOneLevel() => InvokeCancelEvent(_lastSelected.MyBranch);
+    private void BackOnePopUp() => OnBackOnePopUp?.Invoke();
 
     private void BackToHome()
     {
-        _lastSelected.SetNotSelected_NoEffects();
         InvokeCancelEvent(_currentHomeBranch);
     }
 

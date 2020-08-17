@@ -19,18 +19,22 @@ public class ChangeControl
     private readonly ControlMethod _controlMethod;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
+    private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private readonly bool _startInGame;
     private bool _usingMouse;
     private bool _usingKeysOrCtrl;
+    private bool _noPopUps = true;
     private UINode _lastHighlighted;
     private UIBranch _activeBranch;
 
     //Events
     public static event Action<bool> DoAllowKeys;
+    public static event Func<UIBranch> ReturnNextPopUp; 
 
     //Properties
     private void SaveHighlighted(UINode newNode) => _lastHighlighted = newNode;
     private void SaveActiveBranch(UIBranch newNode) => _activeBranch = newNode;
+    private void SaveNoPopUps(bool noPopUps) => _noPopUps = noPopUps;
 
     private void OnEnable()
     {
@@ -38,6 +42,7 @@ public class ChangeControl
         _uiDataEvents.SubscribeToOnStart(StartGame);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiControlsEvents.SubscribeOnChangeControls(ChangeControlType);
+        _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
     }
 
     private void StartGame()
@@ -136,12 +141,16 @@ public class ChangeControl
     {
         var nextBranch = _activeBranch;
         nextBranch = FindLastActiveBranchesEndNode(nextBranch);
-        nextBranch.LastHighlighted.ThisNodeIsHighLighted();
-        nextBranch.LastHighlighted.SetAsHighlighted();
+        nextBranch.MoveToBranchWithoutTween();
+        // nextBranch.LastHighlighted.ThisNodeIsHighLighted();
+        // nextBranch.set
+        // nextBranch.LastHighlighted.SetAsHighlighted();
     }
 
-    private static UIBranch FindLastActiveBranchesEndNode(UIBranch nextBranch)
+    private UIBranch FindLastActiveBranchesEndNode(UIBranch nextBranch)
     {
+        if (!_noPopUps) return ReturnNextPopUp?.Invoke();
+        
         if (nextBranch.LastSelected.HasChildBranch == null) return nextBranch;
         
         while (nextBranch.LastSelected.HasChildBranch.CanvasIsEnabled)

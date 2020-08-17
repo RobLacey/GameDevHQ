@@ -20,37 +20,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf145f6b-d551-4e26-8fbc-722270da7110" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIAudioEvents.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIAudioEvents.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProjectSettings/VersionControlSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/indexLayout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Materials/StarField.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Materials/StarField.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Colour Schemes/Test Scheme.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Colour Schemes/Test Scheme.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/CustomEventHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/CustomEventHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIControlsEvents.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIControlsEvents.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIDataEvents.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIDataEvents.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UiEventCaller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UiEventCaller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/PauseMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/PauseMenu.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Timed.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Timed.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Interfaces.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Interfaces.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIPopUp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIPopUp.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/MenuAndGameSwitching.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/MenuAndGameSwitching.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIAudioManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIAudioManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIAudio.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIAudio.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,6 +72,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Interfaces.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/StaticCoroutine.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components.meta" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/NaughtyAttributes/Scripts/Editor/Utility/ReflectionUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIAudioManager.cs" root0="FORCE_HIGHLIGHTING" />
@@ -120,6 +104,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ScaleTweener.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIAudioEvents.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Enhanced Hierarchy/Editor/ReflectionHelper.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenSettings.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIAudio.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIAccessories.cs" root0="FORCE_HIGHLIGHTING" />
@@ -130,7 +115,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ShakeTweener.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTweener.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/IData.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.PopUpData.cs" />
@@ -145,7 +129,6 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/OptionalPopUp.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/ScreenData.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIUtilities.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/MyClass.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/EventCaller.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIData.cs" />
@@ -155,32 +138,34 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/MovementTest.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIControlsEvents.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Interfaces.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIPopUpEvents.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.UpdateMethods.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.UIHistory.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIAudioEvents.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIAudio.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIAudioManager.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIDataEvents.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UiEventCaller.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/CustomEventHandler.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/MenuAndGameSwitching.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIControlsEvents.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.TweenHandler.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Timed.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/PauseMenu.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIDataEvents.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Interfaces.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.TweenHandler.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIPopUp.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" />
       </list>
     </option>
   </component>
@@ -208,7 +193,7 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.C#" />
+    <property name="settings.editor.selected.configurable" value="preferences.general" />
   </component>
   <component name="RiderTodoViewSettings" groupByProject="false" />
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
@@ -280,6 +265,8 @@
       <workItem from="1597218647472" duration="23145000" />
       <workItem from="1597310262728" duration="17378000" />
       <workItem from="1597395793740" duration="22434000" />
+      <workItem from="1597612194004" duration="3176000" />
+      <workItem from="1597653873406" duration="19860000" />
     </task>
     <servers />
   </component>
@@ -410,12 +397,12 @@
     </state>
     <state x="2455" y="157" key="RiderGenerateDialog/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1597054702328" />
     <state x="535" y="157" width="472" height="601" key="RiderGenerateDialog/0.0.1536.864@0.0.1536.864" timestamp="1596617107550" />
-    <state x="2197" y="77" key="SettingsEditor" timestamp="1596719095214">
-      <screen x="1920" y="0" width="1536" height="864" />
+    <state x="277" y="77" key="SettingsEditor" timestamp="1597612291327">
+      <screen x="0" y="0" width="1536" height="864" />
     </state>
     <state x="277" y="77" key="SettingsEditor/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593506737224" />
     <state x="2197" y="77" key="SettingsEditor/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1596719095214" />
-    <state x="277" y="77" key="SettingsEditor/0.0.1536.864@0.0.1536.864" timestamp="1596616633966" />
+    <state x="277" y="77" key="SettingsEditor/0.0.1536.864@0.0.1536.864" timestamp="1597612291327" />
     <state width="498" height="446" key="SwitcherDM" timestamp="1593723352373">
       <screen x="0" y="0" width="1536" height="864" />
     </state>

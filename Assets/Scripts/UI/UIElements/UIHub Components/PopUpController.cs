@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// This Class Looks after managing switching between PopUps
+/// </summary>
+///
+//TODO Add Functinality to turn off and on popUps on homescreen. Add buffer for new triggers
+/// <summary>
+/// Need to make sure Optionals don't appear when not on main screen but buffered for return to homescreen
 /// </summary>
 public class PopUpController
 {
@@ -17,12 +23,21 @@ public class PopUpController
     private readonly List<UIBranch> _activeResolvePopUps = new List<UIBranch>();
     private readonly List<UIBranch> _activeOptionalPopUps = new List<UIBranch>();
     private UIBranch _lastNodeBeforePopUp;
-   
+    private bool _noPopUps = true;
+
     //Properties
-    private bool NoActivePopUps => _activeResolvePopUps.Count == 0
-                                  & _activeOptionalPopUps.Count == 0;
+    private void SaveNoPopUps(bool activePopUps) => _noPopUps = activePopUps;
     private bool NoActiveResolvePopUps => _activeResolvePopUps.Count == 0;
     private bool NoActiveOptionalPopUps => _activeOptionalPopUps.Count == 0;
+
+    private void SaveActiveBranch(UIBranch newBranch)
+    {
+        if (!newBranch.IsAPopUpBranch() && !newBranch.IsPauseMenuBranch())
+        {
+            _lastNodeBeforePopUp = newBranch;
+        }
+    }
+
     private void AddActivePopUps_Resolve(UIBranch newResolvePopUp)
         => AddToPopUpList(newResolvePopUp, _activeResolvePopUps, NoResolvePopUps);
     private void AddToActivePopUps_Optional(UIBranch newOptionalPopUp) 
@@ -37,8 +52,25 @@ public class PopUpController
     {
         _uiPopUpEvents.SubscribeToAddResolvePopUp(AddActivePopUps_Resolve);
         _uiPopUpEvents.SubscribeToAddOptionalPopUp(AddToActivePopUps_Optional);
-        _uiDataEvents.SubscribeToSelectedNode(SetLastBranchBeforePopUp);
-        _uiDataEvents.SubscribeToBackOneLevel(RemoveNextPopUp);
+        _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
+        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
+        UICancel.OnBackOnePopUp += RemoveNextPopUp;
+        ChangeControl.ReturnNextPopUp += NextPopUp;
+    }
+
+    private UIBranch NextPopUp()
+    {
+        if (!NoActiveResolvePopUps)
+        {
+            return GetNextPopUp(_activeResolvePopUps);
+        }
+
+        if (!NoActiveOptionalPopUps)
+        {
+            return GetNextPopUp(_activeOptionalPopUps);
+        }
+
+        return null;
     }
 
     private UIBranch GetNextPopUp(IReadOnlyList<UIBranch> popUpList)
@@ -47,9 +79,9 @@ public class PopUpController
         return popUpList[index];
     }
 
-    private void RemoveNextPopUp(UIBranch lastBranch = null)
+    private void RemoveNextPopUp()
     {
-        if(NoActivePopUps) return;
+        if(_noPopUps) return;
         
         if (!NoActiveResolvePopUps)
         {
@@ -66,26 +98,26 @@ public class PopUpController
         if (popUpList.Contains(newPopUp)) return;
         popUpList.Add(newPopUp);
         noActivePopUpsEvent?.Invoke(false);
-        NoPopUps?.Invoke(NoActivePopUps);
+        NoPopUps?.Invoke(false);
     }
 
     private void RemoveFromActivePopUpList(IList<UIBranch> popUpList, Action<UIBranch> finishRemovalFromList)
     {
-        var lastPopUp = popUpList[popUpList.Count - 1];
-        popUpList.Remove(lastPopUp);
-        finishRemovalFromList?.Invoke(lastPopUp);
+        var currentPopUpBranch = popUpList[popUpList.Count - 1];
+        popUpList.Remove(currentPopUpBranch);
+        finishRemovalFromList?.Invoke(currentPopUpBranch);
     }
 
-    private void WhatToDoNext_Resolve(UIBranch lastPopUpBranch)
+    private void WhatToDoNext_Resolve(UIBranch currentPopUpBranch)
     {
         if (NoActiveResolvePopUps)
         {
             NoResolvePopUps?.Invoke(true);
-            WhatToDoNext_Optional(lastPopUpBranch);
+            WhatToDoNext_Optional(currentPopUpBranch);
         }
         else
         {
-            lastPopUpBranch.MoveToNextPopUp(GetNextPopUp(_activeResolvePopUps));
+            currentPopUpBranch.MoveToNextPopUp(GetNextPopUp(_activeResolvePopUps));
         }
     }
 
@@ -93,6 +125,7 @@ public class PopUpController
     {
         if (NoActiveOptionalPopUps)
         {
+            _noPopUps = true;
             NoOptionalPopUps?.Invoke(true);
             currentPopUpBranch.MoveToNextPopUp(_lastNodeBeforePopUp);
         }
@@ -100,18 +133,6 @@ public class PopUpController
         {
             currentPopUpBranch.MoveToNextPopUp(GetNextPopUp(_activeOptionalPopUps));
         }
-        NoPopUps?.Invoke(NoActivePopUps);
+        NoPopUps?.Invoke(_noPopUps);
     }
-
-    private void SetLastBranchBeforePopUp(UINode lastBranch)
-    {
-        if (IsNotAPopUpOrPauseMenu(lastBranch)) 
-            _lastNodeBeforePopUp = lastBranch.MyBranch;
-    }
-
-    private static bool IsNotAPopUpOrPauseMenu(UINode lastBranch)
-    {
-        return !lastBranch.MyBranch.IsAPopUpBranch() || !lastBranch.MyBranch.IsPauseMenuBranch();
-    }
-
 }

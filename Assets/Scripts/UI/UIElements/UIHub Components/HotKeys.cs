@@ -12,7 +12,6 @@ public class HotKeys
     private UIBranch _myBranch;
     
     //Variables
-    private UIDataEvents _uiDataEvents = new UIDataEvents();
     private UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private bool _hasParentNode;
@@ -20,12 +19,8 @@ public class HotKeys
     private bool _gameIsPaused;
     private bool _noActivePopUps = true;
     private UINode _parentNode;
-    private UINode _lastSelected;
-    private UIBranch _activeBranch;
 
     //Properties
-    private void SaveSelected(UINode newNode) => _lastSelected = newNode;
-    private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
     private void SaveIsPaused(bool isPaused) => _gameIsPaused = isPaused;
     private void SaveNoActivePopUps(bool noaActivePopUps) => _noActivePopUps = noaActivePopUps;
 
@@ -48,8 +43,6 @@ public class HotKeys
     
     public void OnEnable()
     {
-        _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
-        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiControlsEvents.SubscribeToGameIsPaused(SaveIsPaused);
         _uiControlsEvents.SubscribeHotKeyActivation(CheckHotKeys);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
@@ -69,7 +62,7 @@ public class HotKeys
         {
             GetParentNode();
         }
-        StartHotKeyProcess();
+        StartThisHotKeyBranch();
         SetHotKeyAsSelectedActions();
     }
 
@@ -83,33 +76,7 @@ public class HotKeys
             break;
         }
     }
-
-    private void StartHotKeyProcess()
-    {
-        if (_lastSelected.IsSelected)
-        {
-            StartOutTweenForLastSelected();
-        }
-        else
-        {
-            StartThisHotKeyBranch();
-        }
-    }
-
-    private void StartOutTweenForLastSelected()  
-    {
-        _lastSelected.SetNotSelected_NoEffects();
-        if (_activeBranch.WhenToMove == WhenToMove.Immediately)
-        {
-            _activeBranch.StartOutTween();
-            StartThisHotKeyBranch();
-        }
-        else
-        {
-            _activeBranch.StartOutTween(StartThisHotKeyBranch);
-        }
-    }
-
+    
     private void StartThisHotKeyBranch()
     {
         EnsureAlwaysReturnToHomeScreen();

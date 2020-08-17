@@ -51,10 +51,24 @@ public partial class UIBranch : MonoBehaviour
     private Canvas _myCanvas;
     private CanvasGroup _myCanvasGroup;
     private IPopUp _popUpBranch;
+    private bool _activePopUp;
 
     private void SaveNoPopUps(bool noActivePopUps) => _noPopUps = noActivePopUps;
     private void SetResolvePopUpCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
-    private void SaveIfOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
+
+    private void SaveIfOnHomeScreen(bool onHomeScreen)
+    {
+        _onHomeScreen = onHomeScreen;
+        if (_onHomeScreen && (_branchType == BranchType.HomeScreen || _activePopUp))
+        {
+            ResetHomeScreenBranch();
+        }
+        else
+        {
+            ClearBranch();
+        }
+    }
+
     private void SaveHighlighted(UINode newNode)
         => LastHighlighted = SearchThisBranchesNodes(newNode, LastHighlighted);
     private void SaveSelected(UINode newNode) 
@@ -104,7 +118,7 @@ public partial class UIBranch : MonoBehaviour
     private void Start()
     {
         _myCanvasGroup.blocksRaycasts = false;
-        SetIsOnHomeScreen?.Invoke(true);
+        //SetIsOnHomeScreen?.Invoke(true);
         CheckIfHomeScreen();
     }
 
@@ -118,7 +132,7 @@ public partial class UIBranch : MonoBehaviour
         else
         {
             _myCanvas.enabled = false;
-            _tweenOnHome = IsActive.Yes;
+            if(!IsAPopUpBranch()) _tweenOnHome = IsActive.Yes;
         }
     }
 
@@ -186,11 +200,12 @@ public partial class UIBranch : MonoBehaviour
 
     private void MoveBackToThisBranch(UIBranch lastBranch)
     {
-        if (lastBranch != this || !_noPopUps) return;
+        if (lastBranch != this) return;
         if (_stayOn == IsActive.Yes) 
             _tweenOnChange = false;
         LastSelected.SetNotSelected_NoEffects();
         MyParentBranch.LastSelected.ThisNodeIsSelected();
+        //if (!_noPopUps) _setAsActive = false;
         MoveToThisBranch();
     }
 
@@ -204,6 +219,15 @@ public partial class UIBranch : MonoBehaviour
     public void MoveToNextPopUp(UIBranch nextBranch)
     {
         _popUpBranch.MoveToNextPopUp(nextBranch);
+    }
+
+    public void MoveToBranchFromPopUp()
+    {
+        if (IsOptionalPopUp && !_noActiveResolvePopUps)
+        {
+            MoveToThisBranchDontSetAsActive();
+        }
+        MoveToThisBranch();
     }
 
     public void MoveToThisBranchDontSetAsActive()
@@ -255,61 +279,71 @@ public partial class UIBranch : MonoBehaviour
 
     private void ClearOrRestoreHomeScreen()
     {
-        RestoreHomeScreen();
-        ClearHomeScreen();
+        if (MyBranchType == BranchType.HomeScreen)
+        {
+            RestoreHomeScreen();
+        }
+        else
+        {
+            ClearHomeScreen();
+        }
     }
 
     private void RestoreHomeScreen()
     {
-        if (MyBranchType != BranchType.HomeScreen || _onHomeScreen) return;
-        SetIsOnHomeScreen?.Invoke(true);
-        _tweenOnChange = _tweenOnHome == IsActive.Yes;
+        if (!_onHomeScreen)
+        {
+            SetIsOnHomeScreen?.Invoke(true);
+            _tweenOnChange = _tweenOnHome == IsActive.Yes;
+        }
     }
 
     private void ClearHomeScreen()
     {
-        if (CanClearHomeScreen())
+        if (!CanvasIsEnabled || !_onHomeScreen) return;
+        
+        if (CanClearScreen())
         {
             SetIsOnHomeScreen?.Invoke(false);
         }
     }
 
-    private bool CanClearHomeScreen()
+    private bool CanClearScreen() //TODO Make Pause and PopUps work
     {
-        return ScreenType == 
-            ScreenType.FullScreen && _onHomeScreen && !IsAPopUpBranch() && !IsPauseMenuBranch();
+        return ScreenType == ScreenType.FullScreen;
     }
 
-    public void ResetHomeScreenBranch()
+    private void ClearBranch()
+    {
+        //if (_stayOn == IsActive.Yes) return; //TODO Add This back
+        if(!CanvasIsEnabled || IgnoreThisBranch) return;
+        if (IsAPopUpBranch() && CanvasIsEnabled) 
+            _activePopUp = true;
+        //if(IsOptionalPopUp && !TurnOffPopUPs) return;
+        
+        _myCanvasGroup.blocksRaycasts = false;
+        _myCanvas.enabled = false;
+    }
+
+    private void ResetHomeScreenBranch()
     {
         if (_tweenOnHome == IsActive.Yes)
             ActivateInTweens();
         _myCanvas.enabled = true;
         _myCanvasGroup.blocksRaycasts = true;
+        _activePopUp = false;
     }
-    
-    //TODO Covert all clear screens to work the same way by generating a clear list. Maybe use a seperate class to
-    //TODO store methods and data.
 
-    public void ClearBranch()
-    {
-        if(IsOptionalPopUp && !TurnOffPopUPs) return;
-        if(!CanvasIsEnabled || IgnoreThisBranch) return;
-        _myCanvasGroup.blocksRaycasts = false;
-        _myCanvas.enabled = false;
-    }
-    
-    public void ClearBranchForNavigation()
-    {
-        if (_stayOn == IsActive.No)
-            ClearBranch();
-    }
+    // public void ClearBranchForNavigation()
+    // {
+    //     if (_stayOn == IsActive.No)
+    //         ClearBranch();
+    // }
     
     public bool ClearActiveBranches(UIBranch branch, ScreenType screenType)
     {
 
         if (branch == this || !CanvasIsEnabled) return false;
-        Debug.Log(this);
         CheckIfActiveAndDisableBranch(screenType);
         return true;
     }

@@ -77,6 +77,17 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool CanGoToChildBranch => HasChildBranch & _navigation.CanNaviagte;
     private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
 
+    private void SaveLastSelected(UINode newNode) // TODO Use to loose set not selected
+    {
+        if (newNode != this && IsSelected)
+        {
+            if (newNode.MyBranch.MyParentBranch.LastSelected != this)
+            {
+                Deactivate();
+            }
+        }
+    }
+
 
     public bool IsDisabled
     {
@@ -116,6 +127,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions += _invertColourCorrection.OnAwake(_enabledFunctions);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
+        _uiDataEvents.SubscribeToSelectedNode(SaveLastSelected);
         //UIHub.SwitchBetweenGmaeAndMenu += SwitchBetweenGmaeAndMenu;
         //ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
@@ -201,7 +213,9 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             if (IsToggleGroup && MyBranch.LastHighlighted == this) return;
             if (IsToggleNotLinked) { IsSelected = false; }
             Deactivate();
-            DoSelected?.Invoke(MyBranch.MyParentBranch.LastSelected);
+            MyBranch.MoveToBranchWithoutTween();
+            //MyBranch.MyParentBranch.MoveToThisBranchDontSetAsActive();
+            //DoSelected?.Invoke(MyBranch.MyParentBranch.LastSelected);
             //MyBranch.SaveLastSelected(MyBranch.MyParentBranch.LastSelected);
         }
         else

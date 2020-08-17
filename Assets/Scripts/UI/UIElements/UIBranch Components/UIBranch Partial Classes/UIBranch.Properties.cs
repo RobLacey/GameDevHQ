@@ -25,7 +25,7 @@ public partial class UIBranch
 
     public bool CanvasIsEnabled => _myCanvas.enabled;
     public bool TurnOffPopUPs => _turnOffPopUps == IsActive.Yes;
-    public bool IgnoreThisBranch { get; private set; }
+    private bool IgnoreThisBranch { get; set; }
 
     public UINode LastHighlighted { get; private set; }
     public UINode LastSelected { get; private set; }

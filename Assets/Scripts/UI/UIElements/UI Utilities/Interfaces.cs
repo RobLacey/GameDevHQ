@@ -1,5 +1,7 @@
 ﻿// ReSharper disable once CheckNamespace
 
+using System;
+
 internal interface INodeData
 {
     UINode LastHighlighted { get; }
@@ -42,6 +44,7 @@ public interface IPopUp
     void StartPopUp();
     void MoveToNextPopUp(UIBranch lastBranch = null);
 }
+
 
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
@@ -6,21 +7,21 @@
 /// </summary>
 public class UIHomeGroup
 {
-    public UIHomeGroup(UIBranch[] homeBranches, UIBranch[] allBranches)
+    public UIHomeGroup(UIBranch[] homeBranches/*, UIBranch[] allBranches*/)
     {
-        _allBranches = allBranches;
+        //_allBranches = allBranches;
         _homeGroup = homeBranches;
         OnEnable();
     }
 
     //Variables
     private readonly UIBranch[] _homeGroup;
-    private readonly UIBranch[] _allBranches;
+   // private readonly UIBranch[] _allBranches;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private bool _allowKeys;
     private bool _fromHotKey;
-    private bool _onHomeScreen;
+    private bool _onHomeScreen = true;
     private int _index;
 
     //Delegate
@@ -30,6 +31,7 @@ public class UIHomeGroup
     private void SaveAllowKeys(bool allow) => _allowKeys = allow;
     private void SaveFromHotKey() => _fromHotKey = true;
     private void SetLastHighlightedBranch(UINode newNode) => SaveActiveBranch(newNode.MyBranch);
+    private void SaveOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
 
     private void OnEnable()
     {
@@ -42,26 +44,12 @@ public class UIHomeGroup
         _uiControlsEvents.SubscribeSwitchGroups(SwitchHomeGroups);
     }
 
-    private void SaveOnHomeScreen(bool onHomeScreen)
-    {
-        _onHomeScreen = onHomeScreen;
-        if (_onHomeScreen)
-        {
-            RestoreHomeScreen();
-        }
-        else
-        {
-            ClearHomeScreen();
-        }
-    }
-
     private void SetStartPosition() => DoSetCurrentHomeBranch?.Invoke(_homeGroup[0]);
 
     private void SwitchHomeGroups(SwitchType switchType)
     {
         if (!_onHomeScreen) return;
         if(_homeGroup.Length == 1) return;
-        
         SetNewIndex(switchType);
         
         if (ActivateHoverOverIfKeysAllowed())
@@ -92,22 +80,6 @@ public class UIHomeGroup
             _index = _index.NegativeIterate(_homeGroup.Length);
         }
         DoSetCurrentHomeBranch?.Invoke(_homeGroup[_index]);
-    }
-
-    private void ClearHomeScreen()
-    {
-        foreach (var branch in _allBranches)
-        {
-            branch.ClearBranch();
-        }
-    }
-    
-    private void RestoreHomeScreen()
-    {
-        foreach (var item in _homeGroup)
-        {
-            item.ResetHomeScreenBranch();
-        }
     }
     
     private void SaveActiveBranch(UIBranch newBranch)

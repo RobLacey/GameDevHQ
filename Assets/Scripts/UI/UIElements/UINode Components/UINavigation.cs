@@ -221,7 +221,8 @@ public class UINavigation
 
     private void ToChildBranchProcess()
     {
-        _myBranch.ClearBranchForNavigation();
+        //_myBranch.ClearBranch();
+        // _myBranch.ClearBranchForNavigation();
         _childBranch.MoveToThisBranch(_myBranch);
     }
 
