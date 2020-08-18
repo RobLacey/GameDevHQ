@@ -21,7 +21,7 @@ public partial class UIBranch
         _onFinishedTrigger?.Invoke();
     }
 
-    private void ActivateInTweens()
+    protected internal void ActivateInTweens()
     {
         if (IsOptionalPopUp && !_noActiveResolvePopUps)
         {
@@ -30,7 +30,7 @@ public partial class UIBranch
         }
         else
         {
-            _myCanvasGroup.blocksRaycasts = true;
+            //_myCanvasGroup.blocksRaycasts = true;
         }
 
         _uiTweener.ActivateTweens(InTweenCallback);

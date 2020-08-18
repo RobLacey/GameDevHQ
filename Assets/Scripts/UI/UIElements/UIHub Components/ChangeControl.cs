@@ -33,7 +33,9 @@ public class ChangeControl
 
     //Properties
     private void SaveHighlighted(UINode newNode) => _lastHighlighted = newNode;
+
     private void SaveActiveBranch(UIBranch newNode) => _activeBranch = newNode;
+
     private void SaveNoPopUps(bool noPopUps) => _noPopUps = noPopUps;
 
     private void OnEnable()
@@ -150,7 +152,6 @@ public class ChangeControl
     private UIBranch FindLastActiveBranchesEndNode(UIBranch nextBranch)
     {
         if (!_noPopUps) return ReturnNextPopUp?.Invoke();
-        
         if (nextBranch.LastSelected.HasChildBranch == null) return nextBranch;
         
         while (nextBranch.LastSelected.HasChildBranch.CanvasIsEnabled)

@@ -1,15 +1,21 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// Need To Make this a singleton or check thee is only one of these
 /// </summary>
 
-public class PauseMenu
+public class PauseMenu : Branch, IBranch
 {
-    public PauseMenu(UIBranch branch, UIBranch[] branchList)
+    public PauseMenu(UIBranch branch, UIBranch[] branchList, ScreenType screenType, CanvasGroup canvasGroup,
+                     Canvas canvas)
     {
         _myBranch = branch;
         _allBranches = branchList;
+        _screenType = screenType;
+        _myCanvasGroup = canvasGroup;
+        _myCanvas = canvas;
+
         OnEnable();
     }
 
@@ -22,6 +28,12 @@ public class PauseMenu
     private bool _inMenu;
     private UINode _lastHighlighted;
     private UINode _lastSelected;
+    private bool _onHomeScreen;
+    private readonly ScreenType _screenType;
+    private readonly bool _isHomeScreenBranch = false;
+    private CanvasGroup _myCanvasGroup;
+    private Canvas _myCanvas;
+
 
     //Internal Class
     private class ScreenData
@@ -35,12 +47,15 @@ public class PauseMenu
     private void SaveHighlighted(UINode newNode) => _lastHighlighted = newNode;
     private void SaveSelected(UINode newNode) => _lastSelected = newNode;
     private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
+    private void SaveIfOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
+
 
     private void OnEnable()
     {
         _uiDataEvents.SubscribeToHighlightedNode(SaveHighlighted);
         _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
+        _uiDataEvents.SubscribeToOnHomeScreen(SaveIfOnHomeScreen);
         _uiControlsEvents.SubscribeToGameIsPaused(StartPauseMenu);
     }
 
@@ -62,14 +77,11 @@ public class PauseMenu
         
         foreach (var branchToClear in _allBranches)
         {
-            if(branchToClear.ClearActiveBranches(_myBranch, _myBranch.ScreenType))
+            if (branchToClear.CanvasIsEnabled && branchToClear != _myBranch)
+            {
                 _clearedScreenData._clearedBranches.Add(branchToClear);
+            }
         }
-        ActivatePauseMenu();
-    }
-
-    private void ActivatePauseMenu()
-    {
         _myBranch.MoveToThisBranch();
     }
 
@@ -112,5 +124,36 @@ public class PauseMenu
     }
 
     private bool WasInGame() => !_clearedScreenData._wasInTheMenu;
+    
+
+    public void SetUpStartUpBranch(UIBranch startBranch, IsActive inMenu)
+    {
+        //Nothing
+    }
+
+    public void ActivateBranch()
+    {
+        _myCanvasGroup.blocksRaycasts = true;
+        _myCanvas.enabled = true;
+    }
+
+    public void ClearBranch(UIBranch ignoreThisBranch = null)
+    {
+        //Not Used to may need for Pause Nauigation
+        if (ignoreThisBranch == _myBranch || !_myBranch.CanvasIsEnabled) return;
+        Debug.Log("Pause clear");
+        _myCanvas.enabled = false;
+        _myCanvasGroup.blocksRaycasts = false;
+    }
+
+    public void CanClearOrRestoreScreen()
+    {
+        if (_screenType == ScreenType.FullScreen && !_onHomeScreen)
+        {
+            InvokeDoClearScreen(_myBranch);
+        }
+
+        InvokeHomeScreen(_isHomeScreenBranch);
+    }
 }
 

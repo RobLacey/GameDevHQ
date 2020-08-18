@@ -17,11 +17,12 @@ public partial class UIBranch : MonoBehaviour
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     [SerializeField] private BranchType _branchType = BranchType.Standard;
     [SerializeField] [ShowIf("IsTimedPopUp")] float _timer = 1f;
-    [SerializeField] [HideIf(EConditionOperator.Or, "IsNonResolvePopUp", "IsTimedPopUp")] 
+    [SerializeField] [HideIf(EConditionOperator.Or, "IsOptionalPopUp", "IsTimedPopUp", "IsHome")] 
     ScreenType _screenType = ScreenType.FullScreen;
     [SerializeField] [ShowIf("TurnOffPopUps")] IsActive _turnOffPopUps = IsActive.No;
     [SerializeField] [HideIf("IsAPopUpBranch")] IsActive _stayOn = IsActive.No;
-    [SerializeField] [ShowIf("IsHome")] [Label("Tween on Return To Home")] IsActive _tweenOnHome = IsActive.No;
+    [SerializeField] [ShowIf("IsHome")] [Label("Tween on Return To Home")]
+    protected IsActive _tweenOnHome = IsActive.No;
     [SerializeField] [Label("Save Position On Exit")] [HideIf("IsAPopUpBranch")] IsActive _saveExitSelection = IsActive.Yes;
     [SerializeField] [Label("Move To Next Branch...")] WhenToMove _moveType = WhenToMove.Immediately;
     [SerializeField] 
@@ -42,32 +43,22 @@ public partial class UIBranch : MonoBehaviour
     Action _onFinishedTrigger;
     private bool _noActiveResolvePopUps = true;
     private bool _noPopUps = true;
-    private bool _onHomeScreen = true;
-    private bool _tweenOnChange = true;
+    protected bool _onHomeScreen = true;
+    internal bool _tweenOnChange = true;
     private bool _setAsActive = true;
     private UIDataEvents _uiDataEvents;
     private UIControlsEvents _uiControlsEvents;
     private UIPopUpEvents _uiPopUpEvents;
-    private Canvas _myCanvas;
-    private CanvasGroup _myCanvasGroup;
+    protected Canvas _myCanvas;
+    protected CanvasGroup _myCanvasGroup;
     private IPopUp _popUpBranch;
+    private IBranch _branch;
     private bool _activePopUp;
-
+    
     private void SaveNoPopUps(bool noActivePopUps) => _noPopUps = noActivePopUps;
     private void SetResolvePopUpCount(bool activeResolvePopUps) => _noActiveResolvePopUps = activeResolvePopUps;
 
-    private void SaveIfOnHomeScreen(bool onHomeScreen)
-    {
-        _onHomeScreen = onHomeScreen;
-        if (_onHomeScreen && (_branchType == BranchType.HomeScreen || _activePopUp))
-        {
-            ResetHomeScreenBranch();
-        }
-        else
-        {
-            ClearBranch();
-        }
-    }
+    private void SaveIfOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
 
     private void SaveHighlighted(UINode newNode)
         => LastHighlighted = SearchThisBranchesNodes(newNode, LastHighlighted);
@@ -76,7 +67,8 @@ public partial class UIBranch : MonoBehaviour
 
     //Delegates
     public static event Action<UIBranch> DoActiveBranch;
-    public static event Action<bool> SetIsOnHomeScreen; // Subscribe To track if on Home Screen
+    //public static event Action<bool> SetIsOnHomeScreen; // Subscribe To track if on Home Screen
+    //public static event Action<UIBranch> DoBranchClearScreen; // Subscribe To track if on Home Screen
 
   //InternalClasses
     [Serializable]
@@ -100,8 +92,10 @@ public partial class UIBranch : MonoBehaviour
         SetStartPositions();
         CreateIfIsAPauseMenu();
         CheckIfResolvePopUp();
-        CheckIfNonResolvePopUp();
+        CheckIfOptionalPopUp();
         CheckIfTimedPopUp();
+        CheckIfStandardBranch();
+        CheckIfHomeScreenBranch();
     }
 
     private void OnEnable()
@@ -113,6 +107,8 @@ public partial class UIBranch : MonoBehaviour
         _uiPopUpEvents.SubscribeNoResolvePopUps(SetResolvePopUpCount);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
         _uiControlsEvents.SubscribeSwitchGroups(SwitchBranchGroup);
+        Branch.DoClearScreen += ClearBranchForNavigation;
+        //DoBranchClearScreen += ClearBranchForNavigation;
     }
 
     private void Start()
@@ -139,7 +135,8 @@ public partial class UIBranch : MonoBehaviour
     private void CreateIfIsAPauseMenu()
     {
         if (_branchType != BranchType.PauseMenu) return;
-        var unused = new PauseMenu(this, FindObjectsOfType<UIBranch>());
+        _branch = new PauseMenu(this, FindObjectsOfType<UIBranch>(), 
+                                _screenType, _myCanvasGroup, _myCanvas);
         _escapeKeyFunction = EscapeKey.BackOneLevel;
     }
 
@@ -150,7 +147,7 @@ public partial class UIBranch : MonoBehaviour
         _escapeKeyFunction = EscapeKey.BackOneLevel;
     }
     
-    private void CheckIfNonResolvePopUp()
+    private void CheckIfOptionalPopUp()
     {
         if (!IsOptionalPopUp) return;
         _popUpBranch = new UIPopUp(this, FindObjectsOfType<UIBranch>());
@@ -164,6 +161,19 @@ public partial class UIBranch : MonoBehaviour
         _popUpBranch = new Timed(this);
         _screenType = ScreenType.Normal;
         _escapeKeyFunction = EscapeKey.BackOneLevel;
+    }
+    
+    private void CheckIfStandardBranch()
+    {
+        if (_branchType != BranchType.Standard) return;
+        _branch = new StandardBranch(_myCanvas, _myCanvasGroup, _screenType, this);
+    }
+    
+    private void CheckIfHomeScreenBranch()
+    {
+        if (_branchType != BranchType.HomeScreen) return;
+        _branch = new HomeScreenBranch(_myCanvas, _myCanvasGroup, _tweenOnHome, this);
+        _screenType = ScreenType.Normal;
     }
 
     private void SetStartPositions()
@@ -198,6 +208,9 @@ public partial class UIBranch : MonoBehaviour
         }
     }
 
+    public void ActivateHomeBranches(UIBranch startBranch, IsActive inMenu) 
+        => _branch.SetUpStartUpBranch(startBranch, inMenu);
+
     private void MoveBackToThisBranch(UIBranch lastBranch)
     {
         if (lastBranch != this) return;
@@ -219,6 +232,7 @@ public partial class UIBranch : MonoBehaviour
     public void MoveToNextPopUp(UIBranch nextBranch)
     {
         _popUpBranch.MoveToNextPopUp(nextBranch);
+        //TODO RestoreBranches
     }
 
     public void MoveToBranchFromPopUp()
@@ -227,7 +241,10 @@ public partial class UIBranch : MonoBehaviour
         {
             MoveToThisBranchDontSetAsActive();
         }
-        MoveToThisBranch();
+        else
+        {
+            MoveToThisBranch();
+        }
     }
 
     public void MoveToThisBranchDontSetAsActive()
@@ -250,15 +267,13 @@ public partial class UIBranch : MonoBehaviour
             InTweenCallback();
         }
         _tweenOnChange = true;
-        IgnoreThisBranch = false;
     }
 
-    private void SetAsActiveBranch() => DoActiveBranch?.Invoke(this);
+    internal void SetAsActiveBranch() => DoActiveBranch?.Invoke(this);
 
     private void BasicSetUp(UIBranch newParentController = null)
     {
-        _myCanvas.enabled = true;
-        IgnoreThisBranch = true;
+        ActivateBranch();
         ClearOrRestoreHomeScreen();
         
         if (_saveExitSelection == IsActive.No)
@@ -279,89 +294,40 @@ public partial class UIBranch : MonoBehaviour
 
     private void ClearOrRestoreHomeScreen()
     {
-        if (MyBranchType == BranchType.HomeScreen)
+        if (_branch != null)
         {
-            RestoreHomeScreen();
+            _branch.CanClearOrRestoreScreen();
+        }
+    }
+    
+    private void ClearBranchForNavigation(UIBranch ignoreThisBranch)
+    {
+            if (_branch != null) //Remove
+           {
+                _branch.ClearBranch(ignoreThisBranch);
+           }
+           else //Remove once PopUp do
+           {
+               // if (ignoreThisBranch == this || !CanvasIsEnabled) return;
+               // _myCanvas.enabled = false;
+               // _myCanvasGroup.blocksRaycasts = false;
+           }
+
+    }
+    
+    public void ActivateBranch()
+    {
+        if (_branch != null)
+        {
+            _branch.ActivateBranch();
         }
         else
         {
-            ClearHomeScreen();
+            // if (_noActiveResolvePopUps)
+            //     _myCanvasGroup.blocksRaycasts = true;
+            //
+            // _myCanvas.enabled = true;
         }
-    }
-
-    private void RestoreHomeScreen()
-    {
-        if (!_onHomeScreen)
-        {
-            SetIsOnHomeScreen?.Invoke(true);
-            _tweenOnChange = _tweenOnHome == IsActive.Yes;
-        }
-    }
-
-    private void ClearHomeScreen()
-    {
-        if (!CanvasIsEnabled || !_onHomeScreen) return;
-        
-        if (CanClearScreen())
-        {
-            SetIsOnHomeScreen?.Invoke(false);
-        }
-    }
-
-    private bool CanClearScreen() //TODO Make Pause and PopUps work
-    {
-        return ScreenType == ScreenType.FullScreen;
-    }
-
-    private void ClearBranch()
-    {
-        //if (_stayOn == IsActive.Yes) return; //TODO Add This back
-        if(!CanvasIsEnabled || IgnoreThisBranch) return;
-        if (IsAPopUpBranch() && CanvasIsEnabled) 
-            _activePopUp = true;
-        //if(IsOptionalPopUp && !TurnOffPopUPs) return;
-        
-        _myCanvasGroup.blocksRaycasts = false;
-        _myCanvas.enabled = false;
-    }
-
-    private void ResetHomeScreenBranch()
-    {
-        if (_tweenOnHome == IsActive.Yes)
-            ActivateInTweens();
-        _myCanvas.enabled = true;
-        _myCanvasGroup.blocksRaycasts = true;
-        _activePopUp = false;
-    }
-
-    // public void ClearBranchForNavigation()
-    // {
-    //     if (_stayOn == IsActive.No)
-    //         ClearBranch();
-    // }
-    
-    public bool ClearActiveBranches(UIBranch branch, ScreenType screenType)
-    {
-
-        if (branch == this || !CanvasIsEnabled) return false;
-        CheckIfActiveAndDisableBranch(screenType);
-        return true;
-    }
-
-    private void CheckIfActiveAndDisableBranch(ScreenType myBranchScreenType)
-    {
-        //if (!CanvasIsEnabled) return;
-        if (myBranchScreenType == ScreenType.FullScreen)
-            _myCanvas.enabled = false;
-        _myCanvasGroup.blocksRaycasts = false;
-    }
-
-    public void ActivateBranch()
-    {
-        if (_noActiveResolvePopUps)
-            _myCanvasGroup.blocksRaycasts = true;
-        
-        _myCanvas.enabled = true;
     }
 
     private void SwitchBranchGroup(SwitchType switchType)

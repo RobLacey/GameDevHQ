@@ -58,6 +58,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
 
     //Delegates
     private Action<UIEventTypes, bool> _startUiFunctions;
+    private UINode _lastHighlighted;
+    
     public static event Action<EscapeKey> DoCancelButtonPressed;
     public static event Action<UINode> DoHighlighted; 
     public static event Action<UINode> DoSelected; 
@@ -75,7 +77,20 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
     private bool CanGoToChildBranch => HasChildBranch & _navigation.CanNaviagte;
-    private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
+
+    private void SaveInMenu(bool isInMenu)
+    {
+        _inMenu = isInMenu;
+        if (!_inMenu)
+        {
+            SetNotHighlighted();
+        }
+        else if (_lastHighlighted == this)
+        {
+            ThisNodeIsHighLighted();
+            SetAsHighlighted();
+        }
+    }
 
     private void SaveLastSelected(UINode newNode) // TODO Use to loose set not selected
     {
@@ -86,6 +101,15 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
                 Deactivate();
             }
         }
+    }
+
+    private void SaveHighLighted(UINode newNode)
+    {
+        if (newNode != this && _lastHighlighted == this)
+        {
+            SetNotHighlighted();
+        }
+        _lastHighlighted = newNode;
     }
 
 
@@ -108,6 +132,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _uiControlsEvents = new UIControlsEvents();
         SetUpUiFunctions();
         _toggleGroups = new UIToggles(this, _buttonFunction, _startAsSelected);
+        _lastHighlighted = MyBranch.DefaultStartPosition;
     }
 
     private void SetUpUiFunctions()
@@ -128,6 +153,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
         _uiDataEvents.SubscribeToSelectedNode(SaveLastSelected);
+        _uiDataEvents.SubscribeToHighlightedNode(SaveHighLighted);
         //UIHub.SwitchBetweenGmaeAndMenu += SwitchBetweenGmaeAndMenu;
         //ChangeControl.DoAllowKeys += SaveAllowKeys;
     }

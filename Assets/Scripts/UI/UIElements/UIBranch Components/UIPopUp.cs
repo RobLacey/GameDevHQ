@@ -72,7 +72,7 @@ public class UIPopUp : IPopUp
     private void PopUpStartProcess()
     {
         _clearedBranches.Clear();
-
+        
         if (_myBranch.IsResolvePopUp || _myBranch.IsPauseMenuBranch())
             ClearAndStoreActiveBranches();
         
@@ -83,7 +83,7 @@ public class UIPopUp : IPopUp
     {
         foreach (var branchToClear in _allBranches)
         {
-            if(branchToClear.ClearActiveBranches(_myBranch, _myBranch.ScreenType))
+            if (branchToClear.CanvasIsEnabled && branchToClear != _myBranch)
                 _clearedBranches.Add(branchToClear);
         }
     }

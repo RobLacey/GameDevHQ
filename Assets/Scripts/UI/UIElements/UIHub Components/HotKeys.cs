@@ -68,6 +68,7 @@ public class HotKeys
 
     private void GetParentNode()
     {
+        if(_parentNode != null) return;
         foreach (UINode parentNode in _myBranch.MyParentBranch.ThisGroupsUiNodes)
         {
             if (parentNode.HasChildBranch != _myBranch) continue;

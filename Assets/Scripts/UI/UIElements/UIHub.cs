@@ -85,8 +85,6 @@ public partial class UIHub : MonoBehaviour
     private void SetStartPositionsAndSettings()
     {
         _lastHighlighted = _homeBranches[0].DefaultStartPosition;
-        _homeBranches[0].DefaultStartPosition.ThisNodeIsHighLighted();
-        _homeBranches[0].DefaultStartPosition.ThisNodeIsSelected();
     }
 
     private void CheckIfStartingInGame()
@@ -119,14 +117,7 @@ public partial class UIHub : MonoBehaviour
     {
         foreach (var branch in _homeBranches)
         {
-            if (activateOnStart == IsActive.Yes && branch == _homeBranches[0])
-            {
-                branch.MoveToThisBranch();
-            }
-            else
-            {
-                branch.MoveToThisBranchDontSetAsActive();
-            }
+            branch.ActivateHomeBranches(_homeBranches[0], activateOnStart);
         }
     }
 
@@ -144,7 +135,6 @@ public partial class UIHub : MonoBehaviour
     
     private void SetLastHighlighted(UINode newNode)
     {
-        if (newNode != _lastHighlighted) _lastHighlighted.SetNotHighlighted();
         _lastHighlighted = newNode;
         if(_inMenu) SetEventSystem(_lastHighlighted.gameObject);
     }

@@ -275,7 +275,9 @@
               </e>
               <e p="UIBranch Components" t="Include">
                 <e p="GroupList.cs" t="Include" />
+                <e p="HomeScreenBranch.cs" t="Include" />
                 <e p="PauseMenu.cs" t="Include" />
+                <e p="StandardBranch.cs" t="Include" />
                 <e p="Timed.cs" t="Include" />
                 <e p="UIBranch Partial Classes" t="Include">
                   <e p="UIBranch.EditorScripts.cs" t="Include" />
