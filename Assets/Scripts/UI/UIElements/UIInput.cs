@@ -140,7 +140,7 @@ public class UIInput : MonoBehaviour
     private bool CanEnterPauseWithNothingSelected()
     {
         return (_noActivePopUps && 
-                _lastSelected.HasChildBranch.CanvasIsEnabled == false)
+                !_lastSelected.HasChildBranch.CanvasIsEnabled)
                && _pauseOptionsOnEscape == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
     }
 

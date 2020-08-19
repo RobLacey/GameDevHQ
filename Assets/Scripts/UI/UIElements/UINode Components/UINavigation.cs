@@ -60,15 +60,15 @@ public class UINavigation
         _allowKeys = allow;
     }
 
-    public void SetChildsParentBranch()
-    {
-        if (_myBranch.IsAPopUpBranch()) return;
-
-        if (_childBranch)
-        {
-            _childBranch.SetNewParentBranch(_myBranch);
-        }
-    }
+    // public void SetChildsParentBranch()
+    // {
+    //     if (_myBranch.IsAPopUpBranch()) return;
+    //
+    //     if (_childBranch)
+    //     {
+    //         //_childBranch.SetNewParentBranch(_myBranch);
+    //     }
+    // }
 
 
     public void PointerEnter(PointerEventData eventData)

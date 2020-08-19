@@ -17,7 +17,7 @@ public class UIDataEvents : UiEventCaller
         if (_selectedNode != null) UINode.DoSelected -= _selectedNode.Event;
         if (_activeBranch != null) UIBranch.DoActiveBranch -= _activeBranch.Event;
         if (_onStartUp != null) UIHub.OnStart -= _onStartUp.Event;
-        if (_onHomeScreen != null) Branch.SetIsOnHomeScreen -= _onHomeScreen.Event;
+        if (_onHomeScreen != null) BranchBase.SetIsOnHomeScreen -= _onHomeScreen.Event;
         if (_inMenu != null) MenuAndGameSwitching.IsInTheMenu -= _inMenu.Event;
         if (_currentHomeScreen != null) UIHomeGroup.DoSetCurrentHomeBranch -= _currentHomeScreen.Event;
     }
@@ -62,7 +62,7 @@ public class UIDataEvents : UiEventCaller
     public void SubscribeToOnHomeScreen(Action<bool> subscriber)
     {
         _onHomeScreen = new CustomEventHandler<bool>();
-        Branch.SetIsOnHomeScreen += _onHomeScreen.Add(subscriber);
+        BranchBase.SetIsOnHomeScreen += _onHomeScreen.Add(subscriber);
     }
 
     public void SubscribeToInMenu(Action<bool> subscriber)

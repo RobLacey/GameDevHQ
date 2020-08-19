@@ -29,6 +29,7 @@ public partial class UIHub : MonoBehaviour
 
     //Events
     public static event Action OnStart;
+    public static event Action<UIBranch> SetUpBranchesAtStart;
 
     //Variables
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
@@ -85,52 +86,28 @@ public partial class UIHub : MonoBehaviour
     private void SetStartPositionsAndSettings()
     {
         _lastHighlighted = _homeBranches[0].DefaultStartPosition;
+        SetUpBranchesAtStart?.Invoke(_homeBranches[0]);
     }
 
     private void CheckIfStartingInGame()
     {
         if (_startingInGame)
         {
-            StartInGame();
+            OnStart?.Invoke();
             _inMenu = false;
         }
         else
         {
-            StartInMenus();
+            EventSystem.current.SetSelectedGameObject(_homeBranches[0].DefaultStartPosition.gameObject);
             _inMenu = true;
         }
     }
-
-    private void StartInGame()
-    {
-        ActivateAllHomeBranches(IsActive.No);
-        OnStart?.Invoke();
-    }
-
-    private void StartInMenus()
-    {
-        EventSystem.current.SetSelectedGameObject(_homeBranches[0].DefaultStartPosition.gameObject);
-        ActivateAllHomeBranches(IsActive.Yes);
-    }
-
-    private void ActivateAllHomeBranches(IsActive activateOnStart)
-    {
-        foreach (var branch in _homeBranches)
-        {
-            branch.ActivateHomeBranches(_homeBranches[0], activateOnStart);
-        }
-    }
-
+    
     private IEnumerator EnableStartControls()
     {
         yield return new WaitForSeconds(_atStartDelay);
         if(!_startingInGame)
             OnStart?.Invoke();
-
-        foreach (var homeBranch in _homeBranches)
-        {
-            homeBranch.ActivateBranch();
-        }
     }
     
     private void SetLastHighlighted(UINode newNode)

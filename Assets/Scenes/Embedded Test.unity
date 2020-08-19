@@ -18626,6 +18626,11 @@ PrefabInstance:
       propertyPath: _addTweenEventTriggers
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _punchShakeTween
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalPosition.x

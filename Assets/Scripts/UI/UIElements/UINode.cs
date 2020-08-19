@@ -172,7 +172,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private void Start()
     {
         if (AmSlider) AmSlider.interactable = false;
-        _navigation.SetChildsParentBranch();
+        //_navigation.SetChildsParentBranch();
         _toggleGroups.SetUpToggleGroup(MyBranch.ThisGroupsUiNodes);
         
         if (MyBranch.IsAPopUpBranch() || MyBranch.IsPauseMenuBranch()) 

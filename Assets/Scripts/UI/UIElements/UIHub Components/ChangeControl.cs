@@ -139,20 +139,18 @@ public class ChangeControl
         DoAllowKeys?.Invoke(_usingKeysOrCtrl);
     }
 
-    private void SetNextHighlightedForKeys()
+    //Must track active branch in case user closes branches while PopUps are open
+    private void SetNextHighlightedForKeys() 
     {
         var nextBranch = _activeBranch;
-        nextBranch = FindLastActiveBranchesEndNode(nextBranch);
+        nextBranch = FindActiveBranchesEndNode(nextBranch);
         nextBranch.MoveToBranchWithoutTween();
-        // nextBranch.LastHighlighted.ThisNodeIsHighLighted();
-        // nextBranch.set
-        // nextBranch.LastHighlighted.SetAsHighlighted();
     }
 
-    private UIBranch FindLastActiveBranchesEndNode(UIBranch nextBranch)
+    private UIBranch FindActiveBranchesEndNode(UIBranch nextBranch)
     {
         if (!_noPopUps) return ReturnNextPopUp?.Invoke();
-        if (nextBranch.LastSelected.HasChildBranch == null) return nextBranch;
+        if (nextBranch.LastSelected.HasChildBranch is null) return nextBranch;
         
         while (nextBranch.LastSelected.HasChildBranch.CanvasIsEnabled)
         {

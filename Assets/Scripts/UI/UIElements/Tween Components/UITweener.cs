@@ -114,6 +114,7 @@ public partial class UITweener : MonoBehaviour
             InTweenEndAction();
             return;
         }
+
         SetTweensUp(_globalInTime, TweenType.In, InTweenEndAction, IsActive.Yes);
     }
 

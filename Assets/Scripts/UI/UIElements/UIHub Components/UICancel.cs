@@ -49,12 +49,15 @@ public class UICancel
         {
             ProcessCancelType(EscapeKey.BackToHome);
         }
+        
+        //TODO Might Need Change when PopUps done as might be able to read from active branch
         else if (_activeBranch.IsOptionalPopUp)
         {
             ProcessCancelType(EscapeKey.BackOneLevel);
         }
         else
         {
+            Debug.Log(_activeBranch); 
             ProcessCancelType(_lastSelected.HasChildBranch.EscapeKeySetting);
         }
     }
