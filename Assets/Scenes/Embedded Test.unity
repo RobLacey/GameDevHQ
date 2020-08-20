@@ -3389,6 +3389,9 @@ MonoBehaviour:
   _moveType: 1
   _escapeKeyFunction: 0
   _userDefinedStartPosition: {fileID: 0}
+  _whenPausePressed:
+    m_PersistentCalls:
+      m_Calls: []
   _groupsList: []
   _branchEvents:
     _onBranchEnter:
@@ -9757,7 +9760,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 3
   _timer: 2
-  _screenType: 1
+  _screenType: 0
   _turnOffPopUps: 1
   _stayOn: 1
   _tweenOnHome: 0
@@ -9765,6 +9768,9 @@ MonoBehaviour:
   _moveType: 1
   _escapeKeyFunction: 1
   _userDefinedStartPosition: {fileID: 1541690463}
+  _whenPausePressed:
+    m_PersistentCalls:
+      m_Calls: []
   _groupsList: []
   _branchEvents:
     _onBranchEnter:
@@ -10039,7 +10045,7 @@ PrefabInstance:
     - target: {fileID: 997165033627275256, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: _saveExitSelection
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 997165033627275256, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
@@ -20788,7 +20794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 5
+  _branchType: 4
   _timer: 6
   _screenType: 0
   _turnOffPopUps: 1
@@ -20798,6 +20804,9 @@ MonoBehaviour:
   _moveType: 1
   _escapeKeyFunction: 1
   _userDefinedStartPosition: {fileID: 0}
+  _whenPausePressed:
+    m_PersistentCalls:
+      m_Calls: []
   _groupsList: []
   _branchEvents:
     _onBranchEnter:
@@ -24745,9 +24754,12 @@ MonoBehaviour:
   _stayOn: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
-  _moveType: 0
+  _moveType: 1
   _escapeKeyFunction: 1
   _userDefinedStartPosition: {fileID: 457656681}
+  _whenPausePressed:
+    m_PersistentCalls:
+      m_Calls: []
   _groupsList: []
   _branchEvents:
     _onBranchEnter:
@@ -24788,7 +24800,7 @@ MonoBehaviour:
   _globalOutTime: 1
   _positionTween: 0
   _rotationTween: 0
-  _canvasGroupFade: 1
+  _canvasGroupFade: 3
   _scaleTransition: 0
   _punchShakeTween: 1
   _shakeOrPunchAtEnd: 0
@@ -27457,6 +27469,9 @@ MonoBehaviour:
   _moveType: 1
   _escapeKeyFunction: 1
   _userDefinedStartPosition: {fileID: 717249547}
+  _whenPausePressed:
+    m_PersistentCalls:
+      m_Calls: []
   _groupsList: []
   _branchEvents:
     _onBranchEnter:
@@ -32005,6 +32020,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _menuAndGameSwitching._inGameMenuSystem
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _pauseOptionsOnEscape
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d4d4ae77ac7463a40afa29655e938f81, type: 3}

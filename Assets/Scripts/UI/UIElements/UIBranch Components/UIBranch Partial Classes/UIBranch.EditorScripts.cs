@@ -25,5 +25,5 @@ public partial class UIBranch
         return false;
     }
 
-    private bool TurnOffPopUps => _screenType == ScreenType.FullScreen && !IsOptionalPopUp;
+    //private bool TurnOffPopUps => _screenType == ScreenType.FullScreen && !IsOptionalPopUp;
 }

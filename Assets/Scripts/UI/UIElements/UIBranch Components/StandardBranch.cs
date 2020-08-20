@@ -3,7 +3,7 @@ public class StandardBranchBase : BranchBase
 {
     public StandardBranchBase(UIBranch branch) : base(branch) { }
     
-    public override void BasicSetUp(UIBranch newParentController = null)
+    public override void SetUpBranch(UIBranch newParentController = null)
     {
         if (_myBranch._stayOn == IsActive.Yes && _myBranch.CanvasIsEnabled) 
             _myBranch._tweenOnChange = false;

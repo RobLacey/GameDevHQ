@@ -286,14 +286,14 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
 
         //MyBranch.SaveLastSelected(this);
 
-        if (MyBranch.WhenToMove == WhenToMove.AfterEndOfTween)
-        {
-            _navigation.MoveAfterTween();
-        }
-        else
-        {
-            _navigation.MoveOnClick();
-        }
+        // if (MyBranch.WhenToMove == WhenToMove.AfterEndOfTween)
+        // {
+            _navigation.StartMoveToChild();
+        // }
+        // else
+        // {
+        //     _navigation.MoveOnClick();
+        // }
     }
 
     public void SetAsHighlighted()

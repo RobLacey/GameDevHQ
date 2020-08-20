@@ -20,24 +20,32 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf145f6b-d551-4e26-8fbc-722270da7110" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchBase.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchBase.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/OptionalPopUp.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/OptionalPopUp.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/ResolvePopUp.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/ResolvePopUp.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchFactory.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchFactory.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/ScreenData.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/ScreenData.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIDataEvents.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIDataEvents.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/DOTweenSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/DOTweenSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIControlsEvents.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIControlsEvents.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIPopUpEvents.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIPopUpEvents.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchBase.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/HomeScreenBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/HomeScreenBranch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/OptionalPopUp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/OptionalPopUp.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/PauseMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/PauseMenu.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/ResolvePopUp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/ResolvePopUp.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/StandardBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/StandardBranch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Timed.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Timed.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.EditorScripts.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.EditorScripts.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.TweenHandler.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.TweenHandler.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIPopUp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIPopUp.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" afterDir="false" />
@@ -93,7 +101,6 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/ColourScheme.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UIToggles.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranchGroups.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.TweenHandler.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIDataEvents.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/3a/7b27e858/DOTweenComponent.cs" root0="SKIP_HIGHLIGHTING" />
@@ -125,11 +132,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/UINode.InputInterfaces.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Resolve.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UITooltip.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/NonResolve.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/ScreenData.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIUtilities.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/MyClass.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/EventCaller.cs" />
@@ -138,9 +143,7 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranchGroups.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIDataEvents.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/MovementTest.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIControlsEvents.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIPopUpEvents.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.UpdateMethods.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHub Partial Classes/UIHub.UIHistory.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIAudioEvents.cs" />
@@ -148,34 +151,38 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIAudioManager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UiEventCaller.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/CustomEventHandler.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIControlsEvents.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Timed.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Interfaces.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/MenuAndGameSwitching.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.EditorScripts.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIPopUp.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIDataEvents.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/OptionalPopUp.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/ResolvePopUp.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTweener.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.TweenHandler.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/PauseMenu.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/HomeScreenBranch.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/StandardBranch.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIPopUpEvents.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchFactory.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.TweenHandler.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/ScreenData.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/HomeScreenBranch.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UI Event Callers/UIControlsEvents.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIPopUp.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.EditorScripts.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchBase.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Timed.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UINavigation.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/OptionalPopUp.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/PauseMenu.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/ResolvePopUp.cs" />
       </list>
     </option>
   </component>
@@ -296,6 +303,8 @@
       <workItem from="1597828678489" duration="50000" />
       <workItem from="1597828754430" duration="37000" />
       <workItem from="1597828815884" duration="23220000" />
+      <workItem from="1597908675537" duration="15632000" />
+      <workItem from="1597925400027" duration="9312000" />
     </task>
     <servers />
   </component>
@@ -456,11 +465,11 @@
       <screen x="0" y="0" width="1536" height="864" />
     </state>
     <state x="329" y="169" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593874492898" />
-    <state x="2351" y="185" width="672" height="678" key="search.everywhere.popup" timestamp="1597230728088">
+    <state x="2351" y="185" width="672" height="678" key="search.everywhere.popup" timestamp="1597935276513">
       <screen x="1920" y="0" width="1536" height="864" />
     </state>
     <state x="431" y="185" width="672" height="678" key="search.everywhere.popup/0.0.1536.864/1920.0.1536.864@0.0.1536.864" timestamp="1593506880318" />
-    <state x="2351" y="185" width="672" height="678" key="search.everywhere.popup/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1597230728088" />
+    <state x="2351" y="185" width="672" height="678" key="search.everywhere.popup/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1597935276513" />
     <state x="431" y="185" width="672" height="678" key="search.everywhere.popup/0.0.1536.864@0.0.1536.864" timestamp="1596617164132" />
   </component>
   <component name="XDebuggerManager">

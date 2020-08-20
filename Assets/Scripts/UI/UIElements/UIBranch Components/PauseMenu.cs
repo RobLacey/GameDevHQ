@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
 
 /// <summary>
 /// Need To Make this a singleton or check thee is only one of these
@@ -10,72 +9,35 @@ public class PauseMenu : BranchBase
     public PauseMenu(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
         _allBranches = branchList;
-        OnEnable();
+        UIInput.OnPausedPressed += StartPauseMenu;
     }
 
     //Variables
     private readonly UIBranch[] _allBranches;
-    private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
-    private readonly ScreenData _clearedScreenData = new ScreenData();
-    private UINode _lastHighlighted;
-    private UINode _lastSelected;
-
-
-    //Internal Class
-    private class ScreenData
+    
+    public static event Action<bool> OnGamePaused; // Subscribe to trigger pause operations
+    
+    private void StartPauseMenu()
     {
-        public readonly List<UIBranch> _clearedBranches = new List<UIBranch>();
-        public UINode _lastHighlighted;
-        public UINode _lastSelected;
-        public bool  _wasInTheMenu;
-    }
-
-    private void SaveHighlighted(UINode newNode) => _lastHighlighted = newNode;
-    private void SaveSelected(UINode newNode) => _lastSelected = newNode;
-
-
-    private void OnEnable()
-    {
-        _uiDataEvents.SubscribeToHighlightedNode(SaveHighlighted);
-        _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
-        _uiControlsEvents.SubscribeToGameIsPaused(StartPauseMenu);
-    }
-
-    private void StartPauseMenu(bool isGamePaused)
-    {
-        if (isGamePaused && _canStart)
+        _gameIsPaused = !_gameIsPaused;
+        if (_gameIsPaused && _canStart)
         {
-            PauseStartProcess();
+            EnterPause();
+            OnGamePaused?.Invoke(_gameIsPaused);
         }
         else
         {
-            RestoreLastPosition();
+            ExitPause();
         }
     }
     
-    private void PauseStartProcess()
+    private void EnterPause()
     {
-        StoreClearScreenData();
-        
-        foreach (var branchToClear in _allBranches)
-        {
-            if (branchToClear.CanvasIsEnabled && branchToClear != _myBranch)
-            {
-                _clearedScreenData._clearedBranches.Add(branchToClear);
-            }
-        }
+        _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRayCast.Yes);
         _myBranch.MoveToThisBranch();
     }
-
-    private void StoreClearScreenData()
-    {
-        _clearedScreenData._wasInTheMenu = _inMenu;
-        _clearedScreenData._clearedBranches.Clear();
-        _clearedScreenData._lastSelected = _lastSelected;
-        _clearedScreenData._lastHighlighted = _lastHighlighted;
-    }
-
-    public override void BasicSetUp(UIBranch newParentController = null)
+    
+    public override void SetUpBranch(UIBranch newParentController = null)
     {
         ActivateBranch();
         CanClearOrRestoreScreen();
@@ -86,38 +48,20 @@ public class PauseMenu : BranchBase
         }
     }
 
+    private void ExitPause() => _myBranch.StartOutTweenProcess(RestoreLastStoredState);
 
-    private void RestoreLastPosition()
+    private void RestoreLastStoredState() //TODO Look at how standrad branches do it
     {
-        if (_myBranch.WhenToMove == WhenToMove.AfterEndOfTween)
-        {
-            _myBranch.StartOutTween(EndOfTweenActions);
-        }
-        else
-        {
-            _myBranch.StartOutTween();
-            EndOfTweenActions();
-        }
-    }
-    
-    private void EndOfTweenActions()
-    {
-        ActiveClearedBranches();
+        OnGamePaused?.Invoke(_gameIsPaused);
+
+        _screenData.RestoreScreen();
 
         if (WasInGame()) return;
-        _clearedScreenData._lastSelected.ThisNodeIsSelected();
-        _clearedScreenData._lastHighlighted.MyBranch.MoveToBranchWithoutTween();
+        _screenData._lastSelected.ThisNodeIsSelected();
+        _screenData._activeBranch.MoveToBranchWithoutTween();
+        _screenData._locked = false;
     }
 
-    private void ActiveClearedBranches()
-    {
-        foreach (var branch in _clearedScreenData._clearedBranches)
-        {
-            branch.ActivateBranch();
-        }
-    }
-
-    private bool WasInGame() => !_clearedScreenData._wasInTheMenu;
-
+    private bool WasInGame() => !_screenData._wasInTheMenu;
 }
 

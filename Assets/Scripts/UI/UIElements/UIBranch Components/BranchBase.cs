@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public abstract class BranchBase
 {
@@ -9,7 +10,11 @@ public abstract class BranchBase
         _uiDataEvents.SubscribeToOnHomeScreen(SaveIfOnHomeScreen);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiDataEvents.SubscribeToOnStart(SaveOnStart);
-        UIHub.SetUpBranchesAtStart += SetUpBranchesAt;
+        _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
+        _uiControlsEvents.SubscribeToGameIsPaused(SaveIfGamePaused);
+        _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
+
+        UIHub.SetUpBranchesAtStart += SetUpBranchesOnStart;
         DoClearScreen += ClearBranch;
     }
     
@@ -17,14 +22,29 @@ public abstract class BranchBase
     protected readonly bool _isHomeScreenBranch;
     protected bool _onHomeScreen = true;
     protected readonly UIDataEvents _uiDataEvents = new UIDataEvents();
+    private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
+    private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     protected bool _inMenu;
     protected bool _canStart;
+    protected bool _noActivePopUps = true;
+    protected bool _gameIsPaused;
+    protected bool _noResolvePopUps = true;
+
 
     //Events
     public static event Action<bool> SetIsOnHomeScreen; // Subscribe To track if on Home Screen
     public static event Action<UIBranch> DoClearScreen; // Subscribe To track if on Home Screen
+    public Action OnStartPopUp;
+    public Action<UIBranch> ActivateNextPopUp;
+    protected readonly ScreenData _screenData = new ScreenData();
+
+    //Properties
     protected void InvokeOnHomeScreen(bool onHome) => SetIsOnHomeScreen?.Invoke(onHome);
     private void InvokeDoClearScreen(UIBranch ignoreThisBranch) => DoClearScreen?.Invoke(ignoreThisBranch);
+    private void SaveNoResolvePopUps(bool activeResolvePopUps) => _noResolvePopUps = activeResolvePopUps;
+    private void SaveNoActivePopUps(bool noActivePopUps) => _noActivePopUps = noActivePopUps;
+    private void SaveIfGamePaused(bool paused) => _gameIsPaused = paused;
+
 
     //Properties
     protected virtual void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
@@ -32,13 +52,13 @@ public abstract class BranchBase
     protected virtual void SaveOnStart() => _canStart = true;
 
 
-    protected virtual void SetUpBranchesAt(UIBranch startBranch)
+    protected virtual void SetUpBranchesOnStart(UIBranch startBranch)
     {
         _myBranch._myCanvasGroup.blocksRaycasts = false;
         _myBranch._myCanvas.enabled = false;
     }
 
-    public abstract void BasicSetUp(UIBranch newParentController = null);
+    public abstract void SetUpBranch(UIBranch newParentController = null);
     
     public void ActivateBranch()
     {

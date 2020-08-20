@@ -39,7 +39,7 @@ public class HomeScreenBranchBase: BranchBase
         }
     }
 
-    protected override void SetUpBranchesAt(UIBranch startBranch)
+    protected override void SetUpBranchesOnStart(UIBranch startBranch)
     {
         _myBranch._myCanvas.enabled = true;
         _myBranch._myCanvasGroup.blocksRaycasts = false;
@@ -50,12 +50,11 @@ public class HomeScreenBranchBase: BranchBase
             _myBranch.DefaultStartPosition.ThisNodeIsSelected();
             _myBranch.SetAsActiveBranch();
         }
-
         _myBranch._setAsActive = false;
         _myBranch.MoveToThisBranch();
     }
 
-    public override void BasicSetUp(UIBranch newParentController = null)
+    public override void SetUpBranch(UIBranch newParentController = null)
     {
         ActivateBranch();
         

@@ -186,11 +186,11 @@ public class UINavigation
         _myNode.SetAsHighlighted();
     }
 
-    public void MoveAfterTween()
+    public void StartMoveToChild()
     {
         if (_childBranch.ScreenType == ScreenType.FullScreen)
         {
-            _myBranch.StartOutTween(() => ToFullScreen_AfterTween());
+            _myBranch.StartOutTweenProcess(() => ToChildBranchProcess());
         }
         else if (_childBranch.ScreenType == ScreenType.Normal)
         {
@@ -200,24 +200,30 @@ public class UINavigation
             }
             else
             {
-                _myBranch.StartOutTween(() => ToChildBranchProcess());
+                if (_childBranch.ScreenType == ScreenType.FullScreen)
+                {
+                    _myBranch.StartOutTweenProcess();
+                }
+                ToChildBranchProcess();
+                //_myBranch.StartOutTweenProcess(() => ToChildBranchProcess());
             }
         }
     }
 
-    public void MoveOnClick()
-    {
-        if (_childBranch.ScreenType == ScreenType.FullScreen)
-        {
-            _myBranch.StartOutTween();
-        }
-        ToChildBranchProcess();
-    }
-
-    private void ToFullScreen_AfterTween()
-    {
-        ToChildBranchProcess();
-    }
+    // public void MoveOnClick()
+    // {
+    //     Debug.Log(_myBranch.WhenToMove);
+    //     if (_childBranch.ScreenType == ScreenType.FullScreen)
+    //     {
+    //         _myBranch.StartOutTweenProcess();
+    //     }
+    //     ToChildBranchProcess();
+    // }
+    
+    // private void ToFullScreen_AfterTween()
+    // {
+    //     ToChildBranchProcess();
+    // }
 
     private void ToChildBranchProcess()
     {

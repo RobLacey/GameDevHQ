@@ -38,12 +38,13 @@ public class UIInput : MonoBehaviour
     private UINode _lastHomeScreenNode;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
+    private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
 
     //Events
     public static event Action OnChangeControls;
     public static event Action OnCancelPressed;
     public static event Action<SwitchType> OnSwitchGroupsPressed;
-    public static event Action<bool> OnGamePaused; // Subscribe to trigger pause operations
+    public static event Action OnPausedPressed; // Subscribe to trigger pause operations
     public static event Func<bool> HotKeyActivated;
     public static event Func<bool> OnGameToMenuSwitchPressed;
 
@@ -58,6 +59,7 @@ public class UIInput : MonoBehaviour
     private void SaveNoActivePopUps(bool noActivePopUps) => _noActivePopUps = noActivePopUps;
     private void SetLastSelected(UINode newNode) => _lastSelected = newNode;
     private void SaveOnStart() => _canStart = true;
+    private void SaveGameIsPaused(bool gameIsPaused) => _gameIsPaused = gameIsPaused;
 
     private void Awake()
     {
@@ -80,6 +82,7 @@ public class UIInput : MonoBehaviour
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiDataEvents.SubscribeToOnStart(SaveOnStart);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
+        _uiControlsEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
     }
     
     private void Update()
@@ -113,11 +116,7 @@ public class UIInput : MonoBehaviour
     
     private bool CanPauseGame() => _hasPauseAxis && Input.GetButtonDown(_pauseOptionButton);
 
-    private void PausedPressedActions()
-    {
-        _gameIsPaused = !_gameIsPaused;
-        OnGamePaused?.Invoke(_gameIsPaused);
-    }
+    private void PausedPressedActions() => OnPausedPressed?.Invoke();
 
     private static bool CanSwitchBetweenInGameAndMenu() => OnGameToMenuSwitchPressed?.Invoke() ?? false;
     

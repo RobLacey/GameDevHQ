@@ -14,7 +14,7 @@ public class UIControlsEvents : UiEventCaller
 
     protected override void OnExit()
     {
-        if (_gameIsPaused != null) UIInput.OnGamePaused -= _gameIsPaused.Event;
+        if (_gameIsPaused != null) PauseMenu.OnGamePaused -= _gameIsPaused.Event;
         if (_allowKeys != null) ChangeControl.DoAllowKeys -= _allowKeys.Event;
         if (_fromHotKey != null) HotKeys.FromHotKey -= _fromHotKey.Event;
         if (_cancelOrBackButtonPressed != null) UINode.DoCancelButtonPressed -= _cancelOrBackButtonPressed.Event;
@@ -28,7 +28,7 @@ public class UIControlsEvents : UiEventCaller
     public void SubscribeToGameIsPaused(Action<bool> subscriber)
     {
         _gameIsPaused = new CustomEventHandler<bool>();
-        UIInput.OnGamePaused += _gameIsPaused.Add(subscriber);
+        PauseMenu.OnGamePaused += _gameIsPaused.Add(subscriber);
     }
 
     public void SubscribeToAllowKeys(Action<bool> subscriber)

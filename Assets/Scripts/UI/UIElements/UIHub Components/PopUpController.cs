@@ -22,20 +22,26 @@ public class PopUpController
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private readonly List<UIBranch> _activeResolvePopUps = new List<UIBranch>();
     private readonly List<UIBranch> _activeOptionalPopUps = new List<UIBranch>();
-    private UIBranch _lastNodeBeforePopUp;
+    private UIBranch _lastBranchBeforePopUp;
+    private UIBranch _activeBranch;
     private bool _noPopUps = true;
 
     //Properties
-    private void SaveNoPopUps(bool activePopUps) => _noPopUps = activePopUps;
+    private void SaveNoPopUps(bool activePopUps)
+    {
+        if (_noPopUps && !activePopUps)
+        {
+            _lastBranchBeforePopUp = _activeBranch;
+        }
+        _noPopUps = activePopUps;
+    }
+
     private bool NoActiveResolvePopUps => _activeResolvePopUps.Count == 0;
     private bool NoActiveOptionalPopUps => _activeOptionalPopUps.Count == 0;
 
     private void SaveActiveBranch(UIBranch newBranch)
     {
-        if (!newBranch.IsAPopUpBranch() && !newBranch.IsPauseMenuBranch())
-        {
-            _lastNodeBeforePopUp = newBranch;
-        }
+        _activeBranch = newBranch;
     }
 
     private void AddActivePopUps_Resolve(UIBranch newResolvePopUp)
@@ -127,12 +133,12 @@ public class PopUpController
         {
             _noPopUps = true;
             NoOptionalPopUps?.Invoke(true);
-            currentPopUpBranch.MoveToNextPopUp(_lastNodeBeforePopUp);
+            NoPopUps?.Invoke(_noPopUps);
+            currentPopUpBranch.MoveToNextPopUp(_lastBranchBeforePopUp);
         }
         else
         {
             currentPopUpBranch.MoveToNextPopUp(GetNextPopUp(_activeOptionalPopUps));
         }
-        NoPopUps?.Invoke(_noPopUps);
     }
 }

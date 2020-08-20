@@ -13,21 +13,21 @@ public class UIPopUpEvents : UiEventCaller
     {
         if (_noResolvePopUps != null) PopUpController.NoResolvePopUps -= _noResolvePopUps.Event;
         if (_noOptionalPopUps != null) PopUpController.NoOptionalPopUps -= _noOptionalPopUps.Event;
-        if (_addResolvePopUp != null) UIPopUp.AddResolvePopUp -= _addResolvePopUp.Event;
-        if (_addOptionalPopUp != null) UIPopUp.AddOptionalPopUp -= _addOptionalPopUp.Event;
+        if (_addResolvePopUp != null) ResolvePopUp.AddResolvePopUp -= _addResolvePopUp.Event;
+        if (_addOptionalPopUp != null) OptionalPopUp.AddOptionalPopUp -= _addOptionalPopUp.Event;
         if (_noPopUps != null) PopUpController.NoPopUps -= _noPopUps.Event;
     }
 
     public void SubscribeToAddResolvePopUp(Action<UIBranch> subscriber)
     {
         _addResolvePopUp = new CustomEventHandler<UIBranch>();
-        UIPopUp.AddResolvePopUp += _addResolvePopUp.Add(subscriber);
+        ResolvePopUp.AddResolvePopUp += _addResolvePopUp.Add(subscriber);
     }
 
     public void SubscribeToAddOptionalPopUp(Action<UIBranch> subscriber)
     {
         _addOptionalPopUp = new CustomEventHandler<UIBranch>();
-        UIPopUp.AddOptionalPopUp += _addOptionalPopUp.Add(subscriber);
+        OptionalPopUp.AddOptionalPopUp += _addOptionalPopUp.Add(subscriber);
     }
 
     public void SubscribeNoResolvePopUps(Action<bool> subscriber)

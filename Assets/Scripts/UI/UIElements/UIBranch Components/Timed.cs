@@ -40,11 +40,12 @@ public class Timed : IPopUp
     {
         if (!_running)
         {
-            _myBranch.MoveToThisBranchDontSetAsActive();
+            //TODO Fix 
+           // _myBranch.MoveToThisBranchDontSetAsActive();
             _running = true;
         }
         yield return new WaitForSeconds(_myBranch.Timer);
         _running = false;
-        _myBranch.StartOutTween();
+        _myBranch.StartOutTweenProcess();
     }
 }

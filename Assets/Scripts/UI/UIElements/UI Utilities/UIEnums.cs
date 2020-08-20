@@ -108,4 +108,5 @@ public enum PauseOptionsOnEscape { EnterPauseOrEscapeMenu, DoNothing }
 public  enum ControlMethod { MouseOnly, KeysOrControllerOnly, AllowBothStartWithMouse, AllowBothStartWithKeys }
 public enum SwitchType { Positive, Negative }
 public enum TweenType { In, Out }
+public enum BlockRayCast { Yes, No }
 

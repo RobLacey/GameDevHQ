@@ -16,10 +16,13 @@ public class UICancel
     private readonly EscapeKey _globalEscapeSetting;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
+    private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private bool _fromHotKey;
     private UIBranch _currentHomeBranch;
     private UINode _lastSelected;
     private UIBranch _activeBranch;
+    private bool _noResolvePopUps = true;
+    private bool _noPopUps = true;
 
     //Events
     public static event Action<UIBranch> OnBackOneLevel; 
@@ -30,6 +33,8 @@ public class UICancel
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
     private void SaveFromHotKey() => _fromHotKey = true;
     private void SaveCurrentHomeBranch(UIBranch currentHomeBranch) => _currentHomeBranch = currentHomeBranch;
+    private void SaveNoResolvePopUps(bool noResolvePopUps) => _noResolvePopUps = noResolvePopUps;
+    private void SaveNoPopUps(bool noPopUps) => _noPopUps = noPopUps;
 
     private void OnEnable()
     {
@@ -39,33 +44,28 @@ public class UICancel
         _uiControlsEvents.SubscribeFromHotKey(SaveFromHotKey);
         _uiControlsEvents.SubscribeCancelOrBackButtonPressed(ProcessCancelType);
         _uiControlsEvents.SubscribeOnCancel(CancelPressed);
+        _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
+        _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
     }
 
     private void CancelPressed()
     {
-        if(_activeBranch.IsResolvePopUp) return;
+        if(!_noResolvePopUps) return;
         
         if (_fromHotKey)
         {
             ProcessCancelType(EscapeKey.BackToHome);
         }
-        
-        //TODO Might Need Change when PopUps done as might be able to read from active branch
-        else if (_activeBranch.IsOptionalPopUp)
-        {
-            ProcessCancelType(EscapeKey.BackOneLevel);
-        }
         else
         {
-            Debug.Log(_activeBranch); 
-            ProcessCancelType(_lastSelected.HasChildBranch.EscapeKeySetting);
+            ProcessCancelType(_activeBranch.EscapeKeySetting);
         }
+        
     }
 
     private void ProcessCancelType(EscapeKey escapeKey)
     {
         if (escapeKey == EscapeKey.GlobalSetting) escapeKey = _globalEscapeSetting;
-        if (NodeDoesntHaveAParent()) return;
 
         switch (escapeKey)
         {
@@ -78,15 +78,13 @@ public class UICancel
         }
     }
 
-    private bool NodeDoesntHaveAParent() => _activeBranch == _activeBranch.MyParentBranch;
-
     private void StartCancelProcess(Action endOfCancelAction) 
     {
-        _lastSelected.Audio.Play(UIEventTypes.Cancelled);
+        _activeBranch.LastHighlighted.Audio.Play(UIEventTypes.Cancelled);
 
-        if (IsPopUpOrPauseMenu())
+        if (!_noPopUps)
         {
-            StartOutTween(BackOnePopUp);
+            StartOutTween(ToNextPopUp);
         }
         else
         {
@@ -94,23 +92,13 @@ public class UICancel
         }
     }
 
-    private bool IsPopUpOrPauseMenu() => _activeBranch.IsAPopUpBranch() || _activeBranch.IsPauseMenuBranch();
-
     private void StartOutTween(Action endAction)
     {
-        if (_activeBranch.WhenToMove == WhenToMove.AfterEndOfTween)
-        {
-            _activeBranch.StartOutTween(endAction.Invoke);
-        }
-        else
-        {
-            _activeBranch.StartOutTween();
-            endAction.Invoke();
-        }
+        _activeBranch.StartOutTweenProcess(endAction);
     }
 
     private void BackOneLevel() => InvokeCancelEvent(_lastSelected.MyBranch);
-    private void BackOnePopUp() => OnBackOnePopUp?.Invoke();
+    private void ToNextPopUp() => OnBackOnePopUp?.Invoke();
 
     private void BackToHome()
     {

@@ -12,10 +12,7 @@ public partial class UIBranch
                || _branchType == BranchType.TimedPopUp;
     }
 
-    public bool IsPauseMenuBranch()
-    {
-        return _branchType == BranchType.PauseMenu;
-    }
+    public bool IsPauseMenuBranch() => _branchType == BranchType.PauseMenu;
 
     public UINode DefaultStartPosition
     {
@@ -28,14 +25,12 @@ public partial class UIBranch
     //private bool IgnoreThisBranch { get; set; }
 
     public UINode LastHighlighted { get; private set; }
-    public UINode LastSelected { get; private set; }
+    public UINode LastSelected { get; set; }
     public UIBranch MyParentBranch { get; internal set; }
     public UINode[] ThisGroupsUiNodes { get; private set; }
     public EscapeKey EscapeKeySetting => _escapeKeyFunction;
     public BranchType MyBranchType => _branchType;
     public WhenToMove WhenToMove => _moveType;
-    public bool IsResolvePopUp => _branchType == BranchType.ResolvePopUp;
-    public bool IsOptionalPopUp => _branchType == BranchType.OptionalPopUp;
     public ScreenType ScreenType => _screenType;
     public float Timer => _timer;
     private bool IsTimedPopUp => _branchType == BranchType.TimedPopUp;
