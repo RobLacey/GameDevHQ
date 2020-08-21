@@ -54,7 +54,7 @@ public partial class UITweener : MonoBehaviour
     [Serializable]
     public class TweenTrigger : UnityEvent{ }
 
-    public void OnAwake() 
+    public void Awake() 
     {
         SetUpPositionTween();
         SetUpRotationTween();

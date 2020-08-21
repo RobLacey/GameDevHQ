@@ -9,14 +9,12 @@ public class UIHomeGroup
 {
     public UIHomeGroup(UIBranch[] homeBranches/*, UIBranch[] allBranches*/)
     {
-        //_allBranches = allBranches;
         _homeGroup = homeBranches;
         OnEnable();
     }
 
     //Variables
     private readonly UIBranch[] _homeGroup;
-   // private readonly UIBranch[] _allBranches;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private bool _allowKeys;
@@ -52,9 +50,10 @@ public class UIHomeGroup
         if(_homeGroup.Length == 1) return;
         SetNewIndex(switchType);
         
-        if (ActivateHoverOverIfKeysAllowed())
+        if (ActivateHoverOverIfKeysAllowed()) //TODO redo with Node refactor
         {
-            _homeGroup[_index].LastSelected.PressedActions();
+            //_homeGroup[_index].LastSelected.PressedActions();
+           _homeGroup[_index].MoveToThisBranch();
         }
         else
         {

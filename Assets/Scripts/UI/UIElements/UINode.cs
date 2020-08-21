@@ -175,8 +175,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         //_navigation.SetChildsParentBranch();
         _toggleGroups.SetUpToggleGroup(MyBranch.ThisGroupsUiNodes);
         
-        if (MyBranch.IsAPopUpBranch() || MyBranch.IsPauseMenuBranch()) 
-            _escapeKeyFunction = EscapeKey.BackOneLevel;
+        // if (MyBranch.IsAPopUpBranch() || MyBranch.IsPauseMenuBranch()) 
+        //     _escapeKeyFunction = EscapeKey.BackOneLevel;
 
         if (_colours.CanActivate && _colours.NoSettings)
         {

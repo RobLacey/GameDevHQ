@@ -53,7 +53,6 @@ public static class BranchFactory
     {
         branch._screenType = ScreenType.Normal;
         branch._escapeKeyFunction = EscapeKey.BackOneLevel;
-        branch._tweenOnHome = IsActive.No;
     }
     
     private static void CreateTimedPopUp(UIBranch branch)

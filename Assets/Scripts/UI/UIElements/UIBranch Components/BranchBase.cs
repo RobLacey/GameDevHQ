@@ -10,9 +10,10 @@ public abstract class BranchBase
         _uiDataEvents.SubscribeToOnHomeScreen(SaveIfOnHomeScreen);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiDataEvents.SubscribeToOnStart(SaveOnStart);
+        _uiDataEvents.SubscribeToBackOneLevel(MoveBackToThisBranch);
         _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
         _uiControlsEvents.SubscribeToGameIsPaused(SaveIfGamePaused);
-        _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
+        _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
 
         UIHub.SetUpBranchesAtStart += SetUpBranchesOnStart;
         DoClearScreen += ClearBranch;
@@ -20,22 +21,20 @@ public abstract class BranchBase
     
     protected readonly UIBranch _myBranch;
     protected readonly bool _isHomeScreenBranch;
-    protected bool _onHomeScreen = true;
     protected readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
+    protected bool _onHomeScreen = true;
     protected bool _inMenu;
     protected bool _canStart;
     protected bool _noActivePopUps = true;
     protected bool _gameIsPaused;
     protected bool _noResolvePopUps = true;
 
-
     //Events
     public static event Action<bool> SetIsOnHomeScreen; // Subscribe To track if on Home Screen
     public static event Action<UIBranch> DoClearScreen; // Subscribe To track if on Home Screen
-    public Action OnStartPopUp;
-    public Action<UIBranch> ActivateNextPopUp;
+    public Action _onStartPopUp;
     protected readonly ScreenData _screenData = new ScreenData();
 
     //Properties
@@ -50,6 +49,7 @@ public abstract class BranchBase
     protected virtual void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
     protected virtual void SaveIfOnHomeScreen(bool currentlyOnHomeScreen) => _onHomeScreen = currentlyOnHomeScreen;
     protected virtual void SaveOnStart() => _canStart = true;
+    private bool ReturnToGame() => !_screenData._wasInTheMenu && _noActivePopUps;
 
 
     protected virtual void SetUpBranchesOnStart(UIBranch startBranch)
@@ -59,6 +59,12 @@ public abstract class BranchBase
     }
 
     public abstract void SetUpBranch(UIBranch newParentController = null);
+
+    protected virtual void MoveBackToThisBranch(UIBranch lastBranch)
+    {
+        _myBranch.LastSelected.SetNotSelected_NoEffects();
+        _myBranch.MyParentBranch.LastSelected.ThisNodeIsSelected();
+    }
     
     public void ActivateBranch()
     {
@@ -67,19 +73,20 @@ public abstract class BranchBase
         _myBranch._myCanvas.enabled = true;
     }
 
-    protected void ClearBranch(UIBranch ignoreThisBranch = null)
+    protected virtual void ClearBranch(UIBranch ignoreThisBranch = null)
     {
         if (ignoreThisBranch == _myBranch || !_myBranch.CanvasIsEnabled) return;
         _myBranch._myCanvas.enabled = false;
         _myBranch._myCanvasGroup.blocksRaycasts = false;
     }
 
-    protected void CanClearOrRestoreScreen()
+    protected void CanClearScreen()
     {
         if (_myBranch._screenType != ScreenType.FullScreen) return;
         
         if (_onHomeScreen)
         {
+            InvokeDoClearScreen(_myBranch);
             InvokeOnHomeScreen(_isHomeScreenBranch);
         }
         else
@@ -87,4 +94,17 @@ public abstract class BranchBase
             InvokeDoClearScreen(_myBranch);
         }
     }
+    
+    protected void ReturnToMenuOrGame((UIBranch nextPopUp, UIBranch currentPopUp) data)
+    {
+        if (ReturnToGame())
+        {
+            data.nextPopUp.LastHighlighted.ThisNodeIsHighLighted();
+        }
+        else
+        {
+            data.nextPopUp.MoveToBranchWithoutTween();
+        }
+    }
+
 }

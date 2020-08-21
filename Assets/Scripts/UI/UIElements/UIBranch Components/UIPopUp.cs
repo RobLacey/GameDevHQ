@@ -9,8 +9,8 @@ public class UIPopUp : BranchBase
     {
         //_myBranch = branch;
         _allBranches = branchList;
-        OnStartPopUp = StartPopUp;
-        ActivateNextPopUp = EndOfTweenActions;
+        _onStartPopUp = StartPopUp;
+        //ActivateNextPopUp = EndOfTweenActions;
         OnEnable();
     }
 
@@ -39,7 +39,7 @@ public class UIPopUp : BranchBase
 
         if (!_myBranch.CanvasIsEnabled)
         {
-            _myBranch.LastSelected.Audio.Play(UIEventTypes.Selected);
+            //_myBranch.LastSelected.Audio.Play(UIEventTypes.Selected);
             //_myBranch.MoveToBranchFromPopUp();
         }
 
@@ -47,10 +47,15 @@ public class UIPopUp : BranchBase
 
     public override void SetUpBranch(UIBranch newParentController = null)
     {
-        ActivateBranch();
+        //ActivateBranch();
         
         if (!_inMenu && _noActivePopUps)
             _inGameBeforePopUp = true;
+    }
+
+    protected override void MoveBackToThisBranch(UIBranch lastBranch)
+    {
+        throw new NotImplementedException();
     }
 
     private void PopUpStartProcess()
@@ -97,7 +102,7 @@ public class UIPopUp : BranchBase
     {
         foreach (var branch in _clearedBranches)
         {
-            branch.ActivateBranch();
+            //branch.ActivateBranch();
         }
     }
 }

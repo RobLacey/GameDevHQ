@@ -12,7 +12,7 @@ public class ScreenData
     }
 
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
-    public readonly List<UIBranch> _clearedBranches = new List<UIBranch>();
+    private readonly List<UIBranch> _clearedBranches = new List<UIBranch>();
     public UINode _lastHighlighted;
     public UINode _lastSelected;
     public UIBranch _activeBranch;
@@ -54,19 +54,21 @@ public class ScreenData
     {
         foreach (var branchToClear in allBranches)
         {
-            if (branchToClear.CanvasIsEnabled && branchToClear != thisBranch)
-            {
-                _clearedBranches.Add(branchToClear);
-                if (blockRaycast) branchToClear._myCanvasGroup.blocksRaycasts = false;
-            }
+            if (NoNeedToStoreBranch(thisBranch, branchToClear)) continue;
+            _clearedBranches.Add(branchToClear);
+            if (blockRaycast) 
+                branchToClear._myCanvasGroup.blocksRaycasts = false;
         }
     }
-    
+
+    private static bool NoNeedToStoreBranch(UIBranch thisBranch, UIBranch branchToClear) 
+        => !branchToClear.CanvasIsEnabled || branchToClear == thisBranch;
+
     public void RestoreScreen()
     {
         foreach (var branch in _clearedBranches)
         {
-            branch.ActivateBranch();
+            branch._branch.ActivateBranch();
         }
     }
 

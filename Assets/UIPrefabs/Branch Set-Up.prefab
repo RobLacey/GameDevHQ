@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList: []
-  _useGlobalTweenTime: 0
+  _useGlobalTime: 1
   _globalInTime: 1
   _globalOutTime: 1
   _positionTween: 0
@@ -165,13 +165,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 1
+  _timer: 1
   _screenType: 1
-  _dontTurnOff: 0
+  _turnOffPopUps: 1
+  _stayOn: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
   _moveType: 0
-  _blockRaycasts: 0
-  _alwaysRetainPopUps: 0
   _escapeKeyFunction: 3
   _userDefinedStartPosition: {fileID: 0}
+  _whenPausePressed:
+    m_PersistentCalls:
+      m_Calls: []
   _groupsList: []
+  _branchEvents:
+    _onBranchEnter:
+      m_PersistentCalls:
+        m_Calls: []
+    _onBranchExit:
+      m_PersistentCalls:
+        m_Calls: []

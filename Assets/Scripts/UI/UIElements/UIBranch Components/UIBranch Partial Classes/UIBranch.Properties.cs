@@ -11,9 +11,7 @@ public partial class UIBranch
                || _branchType == BranchType.ResolvePopUp
                || _branchType == BranchType.TimedPopUp;
     }
-
-    public bool IsPauseMenuBranch() => _branchType == BranchType.PauseMenu;
-
+    
     public UINode DefaultStartPosition
     {
         get => _userDefinedStartPosition;
@@ -21,9 +19,6 @@ public partial class UIBranch
     }
 
     public bool CanvasIsEnabled => _myCanvas.enabled;
-    //public bool TurnOffPopUPs => _turnOffPopUps == IsActive.Yes;
-    //private bool IgnoreThisBranch { get; set; }
-
     public UINode LastHighlighted { get; private set; }
     public UINode LastSelected { get; set; }
     public UIBranch MyParentBranch { get; internal set; }
@@ -33,6 +28,5 @@ public partial class UIBranch
     public WhenToMove WhenToMove => _moveType;
     public ScreenType ScreenType => _screenType;
     public float Timer => _timer;
-    private bool IsTimedPopUp => _branchType == BranchType.TimedPopUp;
 
 }

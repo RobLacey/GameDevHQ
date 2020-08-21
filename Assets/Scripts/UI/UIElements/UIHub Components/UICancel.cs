@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 /// <summary>
@@ -20,16 +21,18 @@ public class UICancel
     private bool _fromHotKey;
     private UIBranch _currentHomeBranch;
     private UINode _lastSelected;
+    private UINode _lastHighlighted;
     private UIBranch _activeBranch;
     private bool _noResolvePopUps = true;
     private bool _noPopUps = true;
 
     //Events
     public static event Action<UIBranch> OnBackOneLevel; 
-    public static event Action OnBackOnePopUp; 
+    public static event Action<UIBranch> OnBackToAPopUp; 
 
     //Properties
     private void SaveSelected(UINode newNode) => _lastSelected = newNode;
+    private void SaveLastHighlighted(UINode newNode) => _lastHighlighted = newNode;
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
     private void SaveFromHotKey() => _fromHotKey = true;
     private void SaveCurrentHomeBranch(UIBranch currentHomeBranch) => _currentHomeBranch = currentHomeBranch;
@@ -41,6 +44,7 @@ public class UICancel
         _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiDataEvents.SubscribeToCurrentHomeScreen(SaveCurrentHomeBranch);
+        _uiDataEvents.SubscribeToHighlightedNode(SaveLastHighlighted);
         _uiControlsEvents.SubscribeFromHotKey(SaveFromHotKey);
         _uiControlsEvents.SubscribeCancelOrBackButtonPressed(ProcessCancelType);
         _uiControlsEvents.SubscribeOnCancel(CancelPressed);
@@ -82,28 +86,24 @@ public class UICancel
     {
         _activeBranch.LastHighlighted.Audio.Play(UIEventTypes.Cancelled);
 
-        if (!_noPopUps)
+        if (HasActivePopUps())
         {
-            StartOutTween(ToNextPopUp);
+            _lastHighlighted.MyBranch.StartOutTweenProcess();
+            ToNextPopUp();
         }
         else
         {
-            StartOutTween(endOfCancelAction);
+            _activeBranch.StartOutTweenProcess(endOfCancelAction);
         }
     }
 
-    private void StartOutTween(Action endAction)
-    {
-        _activeBranch.StartOutTweenProcess(endAction);
-    }
+    private bool HasActivePopUps() => !_noPopUps && _lastHighlighted.MyBranch.IsAPopUpBranch();
 
     private void BackOneLevel() => InvokeCancelEvent(_lastSelected.MyBranch);
-    private void ToNextPopUp() => OnBackOnePopUp?.Invoke();
 
-    private void BackToHome()
-    {
-        InvokeCancelEvent(_currentHomeBranch);
-    }
+    private void ToNextPopUp() => OnBackToAPopUp?.Invoke(_lastHighlighted.MyBranch);
+
+    private void BackToHome() => InvokeCancelEvent(_currentHomeBranch);
 
     private void InvokeCancelEvent(UIBranch targetBranch) => OnBackOneLevel?.Invoke(targetBranch);
 }

@@ -40,12 +40,23 @@ public class PauseMenu : BranchBase
     public override void SetUpBranch(UIBranch newParentController = null)
     {
         ActivateBranch();
-        CanClearOrRestoreScreen();
+        CanClearScreen();
 
         if (_myBranch._saveExitSelection == IsActive.No)
         {
             _myBranch.ResetBranchStartPosition();
         }
+    }
+
+    protected override void MoveBackToThisBranch(UIBranch lastBranch)
+    {
+        if (lastBranch != _myBranch) return;
+        base.MoveBackToThisBranch(lastBranch);
+        if (_myBranch._stayOn == IsActive.Yes && _myBranch.CanvasIsEnabled) //TODO check works for internal
+            _myBranch._tweenOnChange = false;
+
+        _myBranch.MoveToThisBranch();
+
     }
 
     private void ExitPause() => _myBranch.StartOutTweenProcess(RestoreLastStoredState);
