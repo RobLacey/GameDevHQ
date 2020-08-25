@@ -18,25 +18,29 @@ public class PopUpController
     private readonly List<UIBranch> _activeOptionalPopUps = new List<UIBranch>();
     private UIBranch _lastBranchBeforePopUp;
     private bool _noPopUps = true;
+    private bool _gameIsPaused;
 
     //Properties
     private void SaveNoPopUps(bool activePopUps) => _noPopUps = activePopUps;
+    private void SaveGameIsPaused(bool isPaused) => _gameIsPaused = isPaused;
     private bool NoActiveResolvePopUps => _activeResolvePopUps.Count == 0;
     private bool NoActiveOptionalPopUps => _activeOptionalPopUps.Count == 0;
 
     private void SaveActiveBranch(UIBranch newBranch)
     {
-        if(_noPopUps) _lastBranchBeforePopUp = newBranch;
+        if(_gameIsPaused) return;
+        if (newBranch.IsAPopUpBranch() || newBranch.IsPauseMenuBranch()) return;
+        _lastBranchBeforePopUp = newBranch;
     }
 
     private void AddActivePopUps_Resolve(UIBranch newResolvePopUp)
         => AddToPopUpList(newResolvePopUp, _activeResolvePopUps, NoResolvePopUps);
+    
     private void AddToActivePopUps_Optional(UIBranch newOptionalPopUp) 
-        => AddToPopUpList(newOptionalPopUp, _activeOptionalPopUps, NoOptionalPopUps);
+        => AddToPopUpList(newOptionalPopUp, _activeOptionalPopUps);
 
     //Events
     public static event Action<bool> NoResolvePopUps;
-    public static event Action<bool> NoOptionalPopUps;
     public static event Action<bool> NoPopUps;
     public static event Action<(UIBranch nextPopUp,UIBranch currentPopUp)> MoveToNextFromPopUp;
     
@@ -45,10 +49,11 @@ public class PopUpController
         _uiPopUpEvents.SubscribeToAddResolvePopUp(AddActivePopUps_Resolve);
         _uiPopUpEvents.SubscribeToAddOptionalPopUp(AddToActivePopUps_Optional);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
+        _uiPopUpEvents.SubscribeToBackToAPopUp(RemoveNextPopUp);
+        _uiPopUpEvents.SubscribeToRemoveOptionalPopUp(OnLeavingHomeScreen);
+        _uiPopUpEvents.SubscribeToReturnNextPopUp(NextPopUp);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        UICancel.OnBackToAPopUp += RemoveNextPopUp;
-        ChangeControl.ReturnNextPopUp += NextPopUp;
-        OptionalPopUp.RemoveOptionalPopUp += OnLeavingHomeScreen;
+        _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
     }
 
     private UIBranch NextPopUp()
@@ -98,7 +103,6 @@ public class PopUpController
         if (!NoActiveOptionalPopUps) return;
         
         _noPopUps = true;
-        NoOptionalPopUps?.Invoke(true);
         NoPopUps?.Invoke(_noPopUps);
     }
 
@@ -112,16 +116,18 @@ public class PopUpController
         }
     }
 
-    private void AddToPopUpList(UIBranch newPopUp, ICollection<UIBranch> popUpList,Action<bool> noActivePopUpsEvent)
+    private static void AddToPopUpList(UIBranch newPopUp, 
+                                       ICollection<UIBranch> popUpList,
+                                       Action<bool> noActivePopUpsEvent = null)
     {
         popUpList.Add(newPopUp);
         noActivePopUpsEvent?.Invoke(false);
         NoPopUps?.Invoke((false));
     }
 
-    private void RemoveFromActivePopUpList(IList<UIBranch> popUpList, 
-                                           Action<UIBranch> finishRemovalFromList,
-                                           UIBranch popUpToRemove)
+    private static void RemoveFromActivePopUpList(IList<UIBranch> popUpList, 
+                                                  Action<UIBranch> finishRemovalFromList,
+                                                  UIBranch popUpToRemove)
     {
         if(!popUpList.Contains(popUpToRemove)) return;
         popUpList.Remove(popUpToRemove);
@@ -137,6 +143,8 @@ public class PopUpController
         }
         else
         {
+            Debug.Log(NoActiveResolvePopUps);
+
             MoveToNextFromPopUp?.Invoke((GetNextPopUp(_activeResolvePopUps), currentPopUpBranch));
         }
     }
@@ -146,7 +154,6 @@ public class PopUpController
         if (NoActiveOptionalPopUps)
         {
             _noPopUps = true;
-            NoOptionalPopUps?.Invoke(true);
             NoPopUps?.Invoke(_noPopUps);
             MoveToNextFromPopUp?.Invoke((_lastBranchBeforePopUp, currentPopUpBranch));
         }

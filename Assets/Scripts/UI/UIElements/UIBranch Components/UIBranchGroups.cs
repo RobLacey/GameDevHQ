@@ -1,66 +1,42 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public static class UIBranchGroups
 {
-    public static int SetGroupIndex(UINode DefaultStartPosition, List<GroupList> _groupsList)
-    {
-        int groupIndex = 0;
+    private static int groupIndex;
+    private static int index;
 
-        if (DefaultStartPosition && _groupsList.Count > 0)
+    public static int SetGroupIndex(UINode defaultStartPosition, List<GroupList> branchGroupsList)
+    {
+        groupIndex = 0;
+        index = 0;
+        foreach (var branchGroup in branchGroupsList)
         {
-            int index = 0;
-            for (int i = 0; i < _groupsList.Count; i++)
+            foreach (var node in branchGroup._nodes)
             {
-                foreach (var item in _groupsList[i]._nodes)
-                {
-                    if (item == DefaultStartPosition)
-                    {
-                        groupIndex = index;
-                        break;
-                    }
-                }
-                index++;
+                if (node != defaultStartPosition) continue;
+                groupIndex = index;
+                return groupIndex;
             }
+            index++;
         }
         return groupIndex;
     }
 
-    public static int SwitchBranchGroup(List<GroupList> groupsList, int groupIndex, SwitchType switchType)
+    public static int SwitchBranchGroup(List<GroupList> groupsList, int passedIndex, SwitchType switchType)
     {
         int newIndex;
-        groupsList[groupIndex]._startNode.SetNotHighlighted();
+        groupsList[passedIndex]._startNode.SetNotHighlighted();
         
+        // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
         if (switchType == SwitchType.Positive)
         {
-            //newIndex = PositveSwitch(groupsList, groupIndex);
-            newIndex = groupIndex.PositiveIterate(groupsList.Count);
+            newIndex = passedIndex.PositiveIterate(groupsList.Count);
         }
         else
         {
-            //newIndex = NegativeSwitch(groupsList, groupIndex);
-            newIndex = groupIndex.NegativeIterate(groupsList.Count);
+           newIndex = passedIndex.NegativeIterate(groupsList.Count);
         }
         groupsList[newIndex]._startNode.Navigation.NavigateToNextNode();
         return newIndex;
     }
-
-    // private static int PositveSwitch(List<GroupList> groupsList, int groupIndex)
-    // {
-    //     if (groupIndex == groupsList.Count - 1)
-    //     {
-    //         return 0;
-    //     }
-    //     return groupIndex + 1;
-    // }
-    //
-    // private static int NegativeSwitch(List<GroupList> groupsList, int groupIndex)
-    // {
-    //     if (groupIndex == 0)
-    //     {
-    //         return groupsList.Count - 1;
-    //     }
-    //     return groupIndex - 1;
-    // }
 }

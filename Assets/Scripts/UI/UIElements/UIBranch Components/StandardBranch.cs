@@ -1,24 +1,17 @@
 ﻿
-using UnityEngine;
-
 public class StandardBranchBase : BranchBase
 {
     public StandardBranchBase(UIBranch branch) : base(branch) { }
     
     public override void SetUpBranch(UIBranch newParentController = null)
     {
-        if (_myBranch._stayOn == IsActive.Yes && _myBranch.CanvasIsEnabled) 
-            _myBranch._tweenOnChange = false;
+        if (_myBranch.CanvasIsEnabled) 
+            _myBranch.SetNoTween();
         
         ActivateBranch();
-        CanClearScreen();
-        
-        if (_myBranch._saveExitSelection == IsActive.No)
-        {
-            _myBranch.ResetBranchStartPosition();
-        }
-
-        SetNewParentBranch(newParentController);
+        CanGoToFullscreen();
+        _myBranch.ResetBranchesStartPosition();
+        _myBranch.SetNewParentBranch(newParentController);
     }
 
     protected override void MoveBackToThisBranch(UIBranch lastBranch)
@@ -27,15 +20,9 @@ public class StandardBranchBase : BranchBase
         
         base.MoveBackToThisBranch(lastBranch);
         
-        if (_myBranch._stayOn == IsActive.Yes && _myBranch.CanvasIsEnabled) //TODO check works for internal
-             _myBranch._tweenOnChange = false;
+        if (_myBranch.CanvasIsEnabled)
+             _myBranch.SetNoTween();
         
         _myBranch.MoveToThisBranch();
-    }
-
-    private void SetNewParentBranch(UIBranch newParentController) 
-    {
-        if(newParentController is null) return;
-            _myBranch.MyParentBranch = newParentController;
     }
 }

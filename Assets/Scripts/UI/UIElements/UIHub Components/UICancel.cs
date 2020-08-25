@@ -1,6 +1,4 @@
 ﻿using System;
-using UnityEditor;
-using UnityEngine;
 
 /// <summary>
 /// Class handles all UI cancel behaviour from cancel type to context sensitive cases
@@ -23,6 +21,7 @@ public class UICancel
     private UINode _lastSelected;
     private UINode _lastHighlighted;
     private UIBranch _activeBranch;
+    private bool _gameIsPaused;
     private bool _noResolvePopUps = true;
     private bool _noPopUps = true;
 
@@ -38,13 +37,16 @@ public class UICancel
     private void SaveCurrentHomeBranch(UIBranch currentHomeBranch) => _currentHomeBranch = currentHomeBranch;
     private void SaveNoResolvePopUps(bool noResolvePopUps) => _noResolvePopUps = noResolvePopUps;
     private void SaveNoPopUps(bool noPopUps) => _noPopUps = noPopUps;
+    private void SaveGameIsPaused(bool isPaused) => _gameIsPaused = isPaused;
 
     private void OnEnable()
     {
         _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiDataEvents.SubscribeToCurrentHomeScreen(SaveCurrentHomeBranch);
+        _uiDataEvents.SubscribeSetUpBranchesAtStart(SaveCurrentHomeBranch);
         _uiDataEvents.SubscribeToHighlightedNode(SaveLastHighlighted);
+        _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
         _uiControlsEvents.SubscribeFromHotKey(SaveFromHotKey);
         _uiControlsEvents.SubscribeCancelOrBackButtonPressed(ProcessCancelType);
         _uiControlsEvents.SubscribeOnCancel(CancelPressed);
@@ -54,17 +56,14 @@ public class UICancel
 
     private void CancelPressed()
     {
-        if(!_noResolvePopUps) return;
-        
-        if (_fromHotKey)
+        if(!_noResolvePopUps && !_gameIsPaused) return;
+        if(_lastHighlighted.MyBranch.IsTimedPopUp)
         {
-            ProcessCancelType(EscapeKey.BackToHome);
+            CancelTimedPopUp();
+            return;
         }
-        else
-        {
-            ProcessCancelType(_activeBranch.EscapeKeySetting);
-        }
-        
+
+        ProcessCancelType(_fromHotKey ? EscapeKey.BackToHome : _activeBranch.EscapeKeySetting);
     }
 
     private void ProcessCancelType(EscapeKey escapeKey)
@@ -85,25 +84,22 @@ public class UICancel
     private void StartCancelProcess(Action endOfCancelAction) 
     {
         _activeBranch.LastHighlighted.Audio.Play(UIEventTypes.Cancelled);
-
-        if (HasActivePopUps())
+        
+        if (HasActivePopUps() && !_gameIsPaused)
         {
-            _lastHighlighted.MyBranch.StartOutTweenProcess();
+            _lastHighlighted.MyBranch.StartOutTweenProcess(OutTweenType.Cancel);
             ToNextPopUp();
         }
         else
         {
-            _activeBranch.StartOutTweenProcess(endOfCancelAction);
+            _activeBranch.StartOutTweenProcess(OutTweenType.Cancel, endOfCancelAction);
         }
     }
 
     private bool HasActivePopUps() => !_noPopUps && _lastHighlighted.MyBranch.IsAPopUpBranch();
-
     private void BackOneLevel() => InvokeCancelEvent(_lastSelected.MyBranch);
-
-    private void ToNextPopUp() => OnBackToAPopUp?.Invoke(_lastHighlighted.MyBranch);
-
     private void BackToHome() => InvokeCancelEvent(_currentHomeBranch);
-
-    private void InvokeCancelEvent(UIBranch targetBranch) => OnBackOneLevel?.Invoke(targetBranch);
+    private void CancelTimedPopUp() => InvokeCancelEvent(_lastHighlighted.MyBranch);
+    private void ToNextPopUp() => OnBackToAPopUp?.Invoke(_lastHighlighted.MyBranch);
+    private static void InvokeCancelEvent(UIBranch targetBranch) => OnBackOneLevel?.Invoke(targetBranch);
 }

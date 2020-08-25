@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class UIHomeGroup
 {
-    public UIHomeGroup(UIBranch[] homeBranches/*, UIBranch[] allBranches*/)
+    public UIHomeGroup(UIBranch[] homeBranches)
     {
         _homeGroup = homeBranches;
         OnEnable();
@@ -21,6 +21,8 @@ public class UIHomeGroup
     private bool _fromHotKey;
     private bool _onHomeScreen = true;
     private int _index;
+    private bool _afterStartUp;
+    private UIBranch _lastActiveBranch;
 
     //Delegate
     public static event Action<UIBranch> DoSetCurrentHomeBranch; // Subscribe To track if on Home Screen
@@ -28,21 +30,16 @@ public class UIHomeGroup
     //Properties
     private void SaveAllowKeys(bool allow) => _allowKeys = allow;
     private void SaveFromHotKey() => _fromHotKey = true;
-    private void SetLastHighlightedBranch(UINode newNode) => SaveActiveBranch(newNode.MyBranch);
     private void SaveOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
 
     private void OnEnable()
     {
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
-        _uiDataEvents.SubscribeToOnStart(SetStartPosition);
-        _uiDataEvents.SubscribeToHighlightedNode(SetLastHighlightedBranch);
         _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
         _uiControlsEvents.SubscribeFromHotKey(SaveFromHotKey);
         _uiControlsEvents.SubscribeSwitchGroups(SwitchHomeGroups);
     }
-
-    private void SetStartPosition() => DoSetCurrentHomeBranch?.Invoke(_homeGroup[0]);
 
     private void SwitchHomeGroups(SwitchType switchType)
     {
@@ -52,18 +49,13 @@ public class UIHomeGroup
         
         if (ActivateHoverOverIfKeysAllowed()) //TODO redo with Node refactor
         {
-            //_homeGroup[_index].LastSelected.PressedActions();
            _homeGroup[_index].MoveToThisBranch();
         }
         else
         {
             _homeGroup[_index].MoveToBranchWithoutTween();
         }
-        
     }
-
-    private bool ActivateHoverOverIfKeysAllowed() 
-        => _homeGroup[_index].LastSelected.Function == ButtonFunction.HoverToActivate && _allowKeys;
 
     private void SetNewIndex(SwitchType switchType)
     {
@@ -80,10 +72,17 @@ public class UIHomeGroup
         }
         DoSetCurrentHomeBranch?.Invoke(_homeGroup[_index]);
     }
-    
+
+    private bool ActivateHoverOverIfKeysAllowed() 
+        => _homeGroup[_index].LastSelected.Function == ButtonFunction.HoverToActivate && _allowKeys;
+
     private void SaveActiveBranch(UIBranch newBranch)
     {
         if (!_onHomeScreen) return;
+        if(_lastActiveBranch == newBranch) return;
+
+        _lastActiveBranch = newBranch;
+        
         if (_fromHotKey)
         {
             FindHomeScreenBranch(newBranch);
@@ -112,7 +111,9 @@ public class UIHomeGroup
         {
             if (_homeGroup[index] != newBranch) continue;
             _index = index;
-            DoSetCurrentHomeBranch?.Invoke(_homeGroup[_index]);
+            if(_afterStartUp) 
+                DoSetCurrentHomeBranch?.Invoke(_homeGroup[_index]);
+            _afterStartUp = true;
             break;
         }
     }

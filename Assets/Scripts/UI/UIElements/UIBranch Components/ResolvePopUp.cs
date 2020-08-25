@@ -1,24 +1,23 @@
 ﻿using System;
-using UnityEngine;
 
-public class ResolvePopUp : BranchBase
+public class ResolvePopUp : BranchBase, ITriggeredPopUp
 {
     public ResolvePopUp(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
         _allBranches = branchList;
-        _onStartPopUp = StartPopUp;
+        _myBranch._onStartPopUp = StartPopUp;
         _uiPopUpEvents.SubscribeToNextNodeFromPopUp(RestoreLastPosition);
     }    
 
     //Variables
     private readonly UIBranch[] _allBranches;
-    private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
 
     //Events
     public static event Action<UIBranch> AddResolvePopUp;
 
-    private void StartPopUp()
+    public void StartPopUp()
     {
+        if(!_canStart) return;
         if (_gameIsPaused) return; //TODO add to buffer goes here for when paused. trigger from SaveOnHome?
 
         if (!_myBranch.CanvasIsEnabled)
@@ -27,6 +26,8 @@ public class ResolvePopUp : BranchBase
     
     public override void SetUpBranch(UIBranch newParentController = null)
     {
+        if(_myBranch.CanvasIsEnabled) return;
+        
         ActivateBranch();
         _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRayCast.Yes);
         AddResolvePopUp?.Invoke(_myBranch);
@@ -45,7 +46,6 @@ public class ResolvePopUp : BranchBase
         if (data.currentPopUp != _myBranch) return;
         
         _screenData.RestoreScreen();
-        
         ReturnToMenuOrGame(data);
     }
 }

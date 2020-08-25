@@ -3382,13 +3382,13 @@ MonoBehaviour:
   _branchType: 0
   _timer: 1
   _screenType: 0
-  _stayOn: 0
+  _stayOn: 1
   _clearOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
   _moveType: 1
   _escapeKeyFunction: 0
-  _userDefinedStartPosition: {fileID: 0}
+  _startOnThisNode: {fileID: 0}
   _whenPausePressed:
     m_PersistentCalls:
       m_Calls: []
@@ -4726,7 +4726,7 @@ RectTransform:
   m_Children:
   - {fileID: 620683489}
   m_Father: {fileID: 819564431}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -8398,7 +8398,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &481426545
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9758,7 +9758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 3
+  _branchType: 2
   _timer: 2
   _screenType: 0
   _stayOn: 1
@@ -9767,7 +9767,7 @@ MonoBehaviour:
   _saveExitSelection: 0
   _moveType: 1
   _escapeKeyFunction: 1
-  _userDefinedStartPosition: {fileID: 1541690463}
+  _startOnThisNode: {fileID: 0}
   _whenPausePressed:
     m_PersistentCalls:
       m_Calls: []
@@ -10320,6 +10320,11 @@ PrefabInstance:
     - target: {fileID: 997165033627275256, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: _branchType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275256, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _stayOn
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 997165033627275258, guid: 8e09348a0583a7e4b875cd1513db467b,
@@ -13407,7 +13412,7 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _branchType
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -17091,7 +17096,7 @@ RectTransform:
   m_Children:
   - {fileID: 2018220710}
   m_Father: {fileID: 819564431}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -20262,7 +20267,7 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _branchType
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -20803,7 +20808,7 @@ MonoBehaviour:
   _saveExitSelection: 0
   _moveType: 1
   _escapeKeyFunction: 1
-  _userDefinedStartPosition: {fileID: 0}
+  _startOnThisNode: {fileID: 0}
   _whenPausePressed:
     m_PersistentCalls:
       m_Calls: []
@@ -21848,6 +21853,11 @@ PrefabInstance:
       propertyPath: _events._OnButtonClickEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1185300371}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _isCancelOrBack
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3688934388505339738, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
@@ -24747,16 +24757,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 6
+  _branchType: 5
   _timer: 1
   _screenType: 1
-  _stayOn: 1
+  _stayOn: 0
   _clearOrResetOptional: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
   _moveType: 1
   _escapeKeyFunction: 1
-  _userDefinedStartPosition: {fileID: 457656681}
+  _startOnThisNode: {fileID: 0}
   _whenPausePressed:
     m_PersistentCalls:
       m_Calls: []
@@ -25583,7 +25593,7 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _branchType
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -27459,7 +27469,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 4
+  _branchType: 3
   _timer: 5
   _screenType: 0
   _stayOn: 1
@@ -27468,7 +27478,7 @@ MonoBehaviour:
   _saveExitSelection: 0
   _moveType: 1
   _escapeKeyFunction: 1
-  _userDefinedStartPosition: {fileID: 717249547}
+  _startOnThisNode: {fileID: 0}
   _whenPausePressed:
     m_PersistentCalls:
       m_Calls: []
@@ -31584,7 +31594,7 @@ PrefabInstance:
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _hotKeySettings.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
@@ -31940,12 +31950,12 @@ PrefabInstance:
         type: 3}
       propertyPath: _hotKeySettings.Array.data[0]._myBranch
       value: 
-      objectReference: {fileID: 1592079424}
+      objectReference: {fileID: 616071579}
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _hotKeySettings.Array.data[1]._myBranch
       value: 
-      objectReference: {fileID: 1154447021}
+      objectReference: {fileID: 375905088}
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _hotKeySettings.Array.data[2]._myBranch

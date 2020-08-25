@@ -55,11 +55,12 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool _allowKeys;
     private UIDataEvents _uiDataEvents;
     private UIControlsEvents _uiControlsEvents;
+    private bool _holdState;
 
     //Delegates
     private Action<UIEventTypes, bool> _startUiFunctions;
     private UINode _lastHighlighted;
-    
+
     public static event Action<EscapeKey> DoCancelButtonPressed;
     public static event Action<UINode> DoHighlighted; 
     public static event Action<UINode> DoSelected; 
@@ -76,7 +77,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool NotActiveSlider => IsDisabled || _isCancelOrBack || !AmSlider || _allowKeys;
     private bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
-    private bool CanGoToChildBranch => HasChildBranch & _navigation.CanNaviagte;
+    private bool CanGoToChildBranch => HasChildBranch & _navigation.CanNavigate;
 
     private void SaveInMenu(bool isInMenu)
     {
@@ -91,17 +92,34 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             SetAsHighlighted();
         }
     }
+    
+    private void SaveAllowKeys(bool allow) => _allowKeys = allow;
+
+    private void SaveGameIsPaused(bool isPaused)
+    {
+        if (MyBranch.CanvasIsEnabled && isPaused)
+        {
+            _holdState = true;
+        }
+        else
+        {
+            _holdState = false;
+        }
+    }
 
     private void SaveLastSelected(UINode newNode) // TODO Use to loose set not selected
     {
-        if (newNode != this && IsSelected)
+        if (DeselectNodeNotAllowed()) return;
+        
+        if (newNode.MyBranch.MyParentBranch.LastSelected != this)
         {
-            if (newNode.MyBranch.MyParentBranch.LastSelected != this)
-            {
-                Deactivate();
-            }
+            Deactivate();
         }
+        
+        bool DeselectNodeNotAllowed() 
+            => newNode == this || !IsSelected || IsToggleGroup || IsToggleNotLinked || _holdState;
     }
+
 
     private void SaveHighLighted(UINode newNode)
     {
@@ -132,7 +150,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _uiControlsEvents = new UIControlsEvents();
         SetUpUiFunctions();
         _toggleGroups = new UIToggles(this, _buttonFunction, _startAsSelected);
-        _lastHighlighted = MyBranch.DefaultStartPosition;
+        _lastHighlighted = MyBranch.DefaultStartOnThisNode;
     }
 
     private void SetUpUiFunctions()
@@ -154,6 +172,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
         _uiDataEvents.SubscribeToSelectedNode(SaveLastSelected);
         _uiDataEvents.SubscribeToHighlightedNode(SaveHighLighted);
+        _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
         //UIHub.SwitchBetweenGmaeAndMenu += SwitchBetweenGmaeAndMenu;
         //ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
@@ -403,10 +422,6 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         DoHighlighted?.Invoke(this);
     }
 
-    private void SaveAllowKeys(bool allow)
-    {
-        _allowKeys = allow;
-    }
 }
 
 

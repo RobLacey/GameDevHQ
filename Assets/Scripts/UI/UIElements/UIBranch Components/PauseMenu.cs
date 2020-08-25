@@ -3,76 +3,104 @@
 /// <summary>
 /// Need To Make this a singleton or check thee is only one of these
 /// </summary>
-
-public class PauseMenu : BranchBase
+public class PauseMenu : BranchBase, ITriggeredPopUp
 {
     public PauseMenu(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
         _allBranches = branchList;
-        UIInput.OnPausedPressed += StartPauseMenu;
+        _uiControlsEvents.SubscribePausedPressed(StartPopUp);
+        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
     }
 
     //Variables
     private readonly UIBranch[] _allBranches;
+    private UIBranch _activeBranch;
+    
+    //Properties
+    private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
+    private bool WasInGame() => !_screenData._wasInTheMenu;
+
     
     public static event Action<bool> OnGamePaused; // Subscribe to trigger pause operations
-    
-    private void StartPauseMenu()
+
+    public void StartPopUp()
     {
-        _gameIsPaused = !_gameIsPaused;
-        if (_gameIsPaused && _canStart)
+        if(!_canStart) return;
+        
+        if (!_gameIsPaused)
         {
-            EnterPause();
-            OnGamePaused?.Invoke(_gameIsPaused);
+            PauseGame();
+            return;
         }
-        else
-        {
-            ExitPause();
-        }
+        
+        if(_gameIsPaused && _activeBranch.IsPauseMenuBranch())
+            UnPauseGame();
     }
-    
+
+    private void PauseGame()
+    {
+        _gameIsPaused = true;
+        OnGamePaused?.Invoke(_gameIsPaused);
+        EnterPause();
+    }
+
+    private void UnPauseGame()
+    {
+        _gameIsPaused = false;
+        OnGamePaused?.Invoke(_gameIsPaused);
+        ExitPause();
+    }
+
     private void EnterPause()
     {
         _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRayCast.Yes);
         _myBranch.MoveToThisBranch();
     }
-    
+
     public override void SetUpBranch(UIBranch newParentController = null)
     {
         ActivateBranch();
-        CanClearScreen();
+        CanGoToFullscreen();
+        _myBranch.ResetBranchesStartPosition();
+    }
 
-        if (_myBranch._saveExitSelection == IsActive.No)
+    protected override void CanGoToFullscreen()
+    {
+        if (_onHomeScreen)
         {
-            _myBranch.ResetBranchStartPosition();
+            InvokeOnHomeScreen(_isHomeScreenBranch);
         }
+        InvokeDoClearScreen(_myBranch);
+    }
+
+    private void ExitPause() => _myBranch.StartOutTweenProcess(OutTweenType.Cancel, RestoreLastStoredState);
+
+    private void RestoreLastStoredState()
+    {
+        _screenData.RestoreScreen();
+        if (WasInGame()) return;
+        ActivateStoredPosition();
+    }
+
+    private void ActivateStoredPosition()
+    {
+        _screenData._lastSelected.ThisNodeIsSelected();
+        _screenData._activeBranch.MoveToBranchWithoutTween();
+        if (_screenData._wasOnHomeScreen)
+            InvokeOnHomeScreen(true);
+        
+        _screenData._locked = false;
     }
 
     protected override void MoveBackToThisBranch(UIBranch lastBranch)
     {
         if (lastBranch != _myBranch) return;
+        
         base.MoveBackToThisBranch(lastBranch);
-        if (_myBranch._stayOn == IsActive.Yes && _myBranch.CanvasIsEnabled) //TODO check works for internal
-            _myBranch._tweenOnChange = false;
+        if (_myBranch.CanvasIsEnabled)
+            _myBranch.SetNoTween();
 
         _myBranch.MoveToThisBranch();
-
     }
-
-    private void ExitPause() => _myBranch.StartOutTweenProcess(RestoreLastStoredState);
-
-    private void RestoreLastStoredState() //TODO Look at how standrad branches do it
-    {
-        OnGamePaused?.Invoke(_gameIsPaused);
-
-        _screenData.RestoreScreen();
-
-        if (WasInGame()) return;
-        _screenData._lastSelected.ThisNodeIsSelected();
-        _screenData._activeBranch.MoveToBranchWithoutTween();
-        _screenData._locked = false;
-    }
-
-    private bool WasInGame() => !_screenData._wasInTheMenu;
 }
 

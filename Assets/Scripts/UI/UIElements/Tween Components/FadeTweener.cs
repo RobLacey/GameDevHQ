@@ -79,6 +79,7 @@ public class FadeTweener
     {
         if (isIn == TweenType.In)
         {
+            Debug.Log("Here");
             RewindTweens();
             _callback.Invoke();
         }

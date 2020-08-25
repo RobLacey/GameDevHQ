@@ -55,7 +55,7 @@ public class MenuAndGameSwitching
     public void OnEnable()
     {
         _uiDataEvents.SubscribeToOnStart(StartUp);
-       _uiControlsEvents.SubscribeToGameIsPaused(WhenTheGameIsPaused);
+        _uiDataEvents.SubscribeToGameIsPaused(WhenTheGameIsPaused);
         _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
         _uiControlsEvents.SubscribeFromHotKey(HotKeyActivated);

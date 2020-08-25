@@ -8,45 +8,45 @@ public class UIInput : MonoBehaviour
 
     [Header("Pause Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    
     [SerializeField] 
     [Label("Nothing to Cancel")] 
     PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.DoNothing;
+    
     [SerializeField] 
     [Label("Pause / Option Button")] [InputAxis] string _pauseOptionButton;
     
     [Header("Home Branch Switch Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] 
+    
+    [SerializeField]
     [HideIf("MouseOnly")] [InputAxis] string _posSwitchButton;
+    
     [SerializeField] 
     [HideIf("MouseOnly")] [InputAxis] string _negSwitchButton;
     
     [Header("Cancel Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    
     [SerializeField] 
     [InputAxis] string _cancelButton;
+    
     [SerializeField]
     MenuAndGameSwitching _menuAndGameSwitching = new MenuAndGameSwitching();
 
     //Variables
-    private bool _hasPauseAxis, _hasPosSwitchAxis, _hasNegSwitchAxis, _hasCancelAxis;
-    private bool _canStart;
-    private bool _inMenu;
-    private bool _gameIsPaused;
+    private bool _hasPauseAxis, _hasPosSwitchAxis, _hasNegSwitchAxis, 
+                 _hasCancelAxis, _canStart, _inMenu, _gameIsPaused;
     private bool _noActivePopUps = true;
-    private UINode _lastSelected;
-    private UINode _lastHomeScreenNode;
+    private UINode _lastHomeScreenNode, _lastSelected;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
-    private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
+    private UIBranch _activeBranch;
 
     //Events
-    public static event Action OnChangeControls;
-    public static event Action OnCancelPressed;
+    public static event Action OnChangeControls, OnCancelPressed, OnPausedPressed;
     public static event Action<SwitchType> OnSwitchGroupsPressed;
-    public static event Action OnPausedPressed; // Subscribe to trigger pause operations
-    public static event Func<bool> HotKeyActivated;
-    public static event Func<bool> OnGameToMenuSwitchPressed;
+    public static event Func<bool> HotKeyActivated, OnGameToMenuSwitchPressed;
 
     //Properties
     private bool MouseOnly()
@@ -60,6 +60,7 @@ public class UIInput : MonoBehaviour
     private void SetLastSelected(UINode newNode) => _lastSelected = newNode;
     private void SaveOnStart() => _canStart = true;
     private void SaveGameIsPaused(bool gameIsPaused) => _gameIsPaused = gameIsPaused;
+    private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
 
     private void Awake()
     {
@@ -81,8 +82,9 @@ public class UIInput : MonoBehaviour
         _uiDataEvents.SubscribeToSelectedNode(SetLastSelected);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiDataEvents.SubscribeToOnStart(SaveOnStart);
+        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
+        _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
-        _uiControlsEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
     }
     
     private void Update()
@@ -126,7 +128,7 @@ public class UIInput : MonoBehaviour
 
     private void WhenCancelPressed()
     {
-        if (CanEnterPauseWithNothingSelected() || _gameIsPaused)
+        if (CanEnterPauseWithNothingSelected() || CanUnpauseGame())
         {
             PausedPressedActions();
         }
@@ -135,6 +137,8 @@ public class UIInput : MonoBehaviour
             OnCancelPressed?.Invoke();
         }
     }
+
+    private bool CanUnpauseGame() => _gameIsPaused && _activeBranch.IsPauseMenuBranch();
 
     private bool CanEnterPauseWithNothingSelected()
     {

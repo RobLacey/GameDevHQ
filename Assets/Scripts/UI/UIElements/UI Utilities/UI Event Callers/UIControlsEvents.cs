@@ -2,7 +2,6 @@
 
 public class UIControlsEvents : UiEventCaller
 {
-    private CustomEventHandler<bool> _gameIsPaused;
     private CustomEventHandler<bool> _allowKeys;
     private CustomEventHandler _fromHotKey;
     private CustomEventHandler _onCancel;
@@ -11,10 +10,10 @@ public class UIControlsEvents : UiEventCaller
     private CustomEventHandler<SwitchType> _switchGroups;
     private CustomReturnEventHandler<bool> _menuAndGameSwitching;
     private CustomReturnEventHandler<bool> _hotKeyActivation;
+    private CustomEventHandler _pausedPressed;
 
     protected override void OnExit()
     {
-        if (_gameIsPaused != null) PauseMenu.OnGamePaused -= _gameIsPaused.Event;
         if (_allowKeys != null) ChangeControl.DoAllowKeys -= _allowKeys.Event;
         if (_fromHotKey != null) HotKeys.FromHotKey -= _fromHotKey.Event;
         if (_cancelOrBackButtonPressed != null) UINode.DoCancelButtonPressed -= _cancelOrBackButtonPressed.Event;
@@ -23,14 +22,9 @@ public class UIControlsEvents : UiEventCaller
         if (_switchGroups != null) UIInput.OnSwitchGroupsPressed -= _switchGroups.Event;
         if (_menuAndGameSwitching != null) UIInput.OnGameToMenuSwitchPressed -= _menuAndGameSwitching.Event;
         if (_hotKeyActivation != null) UIInput.HotKeyActivated -= _hotKeyActivation.Event;
+        if (_pausedPressed != null) UIInput.OnPausedPressed -= _pausedPressed.Event;
     }
-
-    public void SubscribeToGameIsPaused(Action<bool> subscriber)
-    {
-        _gameIsPaused = new CustomEventHandler<bool>();
-        PauseMenu.OnGamePaused += _gameIsPaused.Add(subscriber);
-    }
-
+    
     public void SubscribeToAllowKeys(Action<bool> subscriber)
     {
         _allowKeys = new CustomEventHandler<bool>();
@@ -77,6 +71,12 @@ public class UIControlsEvents : UiEventCaller
     {
         _hotKeyActivation = new CustomReturnEventHandler<bool>();
         UIInput.HotKeyActivated += _hotKeyActivation.Add(subscriber);
+    }
+    
+    public void SubscribePausedPressed(Action subscriber)
+    {
+        _pausedPressed = new CustomEventHandler();
+        UIInput.OnPausedPressed += _pausedPressed.Add(subscriber);
     }
 
 }

@@ -2,10 +2,12 @@
 
 public class UIDataEvents : UiEventCaller
 {
+    private CustomEventHandler<bool> _gameIsPaused;
     private CustomEventHandler<UINode> _highlightedNode;
     private CustomEventHandler<UINode> _selectedNode;
     private CustomEventHandler<UIBranch> _activeBranch;
     private CustomEventHandler<UIBranch> _currentHomeScreen;
+    private CustomEventHandler<UIBranch> _setUpBranchesAtStart;
     private CustomEventHandler _onStartUp;
     private CustomEventHandler<UIBranch> _onBackOneLevel;
     private CustomEventHandler<bool> _onHomeScreen;
@@ -13,15 +15,23 @@ public class UIDataEvents : UiEventCaller
 
     protected override void OnExit()
     {
+        if (_gameIsPaused != null) PauseMenu.OnGamePaused -= _gameIsPaused.Event;
         if (_highlightedNode != null) UINode.DoHighlighted -= _highlightedNode.Event;
         if (_selectedNode != null) UINode.DoSelected -= _selectedNode.Event;
         if (_activeBranch != null) UIBranch.DoActiveBranch -= _activeBranch.Event;
+        if (_currentHomeScreen != null) UIHomeGroup.DoSetCurrentHomeBranch -= _currentHomeScreen.Event;
+        if (_setUpBranchesAtStart != null) UIHub.SetUpBranchesAtStart -= _setUpBranchesAtStart.Event;
         if (_onStartUp != null) UIHub.OnStart -= _onStartUp.Event;
+        if (_onBackOneLevel != null) UICancel.OnBackOneLevel -= _onBackOneLevel.Event;
         if (_onHomeScreen != null) BranchBase.SetIsOnHomeScreen -= _onHomeScreen.Event;
         if (_inMenu != null) MenuAndGameSwitching.IsInTheMenu -= _inMenu.Event;
-        if (_currentHomeScreen != null) UIHomeGroup.DoSetCurrentHomeBranch -= _currentHomeScreen.Event;
     }
 
+    public void SubscribeToGameIsPaused(Action<bool> subscriber)
+    {
+        _gameIsPaused = new CustomEventHandler<bool>();
+        PauseMenu.OnGamePaused += _gameIsPaused.Add(subscriber);
+    }
 
     public void SubscribeToHighlightedNode(Action<UINode> subscriber)
     {
@@ -70,4 +80,11 @@ public class UIDataEvents : UiEventCaller
         _inMenu = new CustomEventHandler<bool>();
         MenuAndGameSwitching.IsInTheMenu += _inMenu.Add(subscriber);
     }
+    
+    public void SubscribeSetUpBranchesAtStart(Action<UIBranch> subscriber)
+    {
+        _setUpBranchesAtStart = new CustomEventHandler<UIBranch>();
+        UIHub.SetUpBranchesAtStart += _setUpBranchesAtStart.Add(subscriber);
+    }
+
 }

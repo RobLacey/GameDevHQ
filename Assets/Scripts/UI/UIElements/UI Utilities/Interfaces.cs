@@ -28,10 +28,9 @@ public interface IMono
     void OnDisable();
 }
 
-public interface IStartPopUp
+public interface ITriggeredPopUp
 {
     void StartPopUp();
-    void RestoreLastPosition(UINode lastHomeGroupNode = null);
 }
 
 public interface IPauseMenu
@@ -39,9 +38,8 @@ public interface IPauseMenu
     void StartPauseMenu(bool isGamePaused);
 }
 
-public interface IPopUp
+public interface IPopUpMove
 {
-    void StartPopUp();
     void MoveToNextPopUp(UIBranch lastBranch = null);
 }
 

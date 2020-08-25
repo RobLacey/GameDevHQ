@@ -7,13 +7,14 @@ public class HotKeys
 {
     [SerializeField] 
     [InputAxis] [AllowNesting] private string _hotKeyAxis;
+    
     [SerializeField] 
-    [ValidateInput("IsAllowedType", "Can't have PopUp as HotKey as HotKey")] 
     private UIBranch _myBranch;
     
     //Variables
     private UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
+    private UIDataEvents _uiDataEvents = new UIDataEvents();
     private bool _hasParentNode;
     private bool _notHomeScreenHotKey;
     private bool _gameIsPaused;
@@ -27,23 +28,26 @@ public class HotKeys
     //Events
     public static event Action FromHotKey;
     
-    //EditorScript
-    private bool IsAllowedType()
-    {
-        if (!_myBranch.IsAPopUpBranch()) return true;
-        Debug.Log("Can't have PopUp as Hot Key as Hot Key");
-        return false;
-    }
-
     public void OnAwake()
     {
         _notHomeScreenHotKey = _myBranch.MyBranchType != BranchType.HomeScreen;
+        IsAllowedType();
         OnEnable();
     }
-    
+
+    private void IsAllowedType()
+    {
+        if (_myBranch.IsAPopUpBranch())
+            throw new Exception("Can't have a PopUp as a Hot Key");
+        if (_myBranch.IsPauseMenuBranch())
+            throw new Exception("Can't have Pause as a Hot Key");
+        if (_myBranch.MyBranchType == BranchType.Internal)
+            throw new Exception("Can't have an Internal Branch as a Hot Key");
+    }
+
     public void OnEnable()
     {
-        _uiControlsEvents.SubscribeToGameIsPaused(SaveIsPaused);
+        _uiDataEvents.SubscribeToGameIsPaused(SaveIsPaused);
         _uiControlsEvents.SubscribeHotKeyActivation(CheckHotKeys);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
     }
@@ -88,7 +92,7 @@ public class HotKeys
     {
         _parentNode.ThisNodeIsSelected();
         _parentNode.SetSelected_NoEffects();
-        _myBranch.DefaultStartPosition.Audio.Play(UIEventTypes.Selected);
+        _myBranch.DefaultStartOnThisNode.Audio.Play(UIEventTypes.Selected);
     }
 
     private void EnsureAlwaysReturnToHomeScreen()

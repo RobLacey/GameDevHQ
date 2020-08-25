@@ -9,15 +9,15 @@ public class ScreenData
         _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
+        _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
     }
 
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly List<UIBranch> _clearedBranches = new List<UIBranch>();
-    public UINode _lastHighlighted;
-    public UINode _lastSelected;
+    public UINode _lastSelected, _lastHighlighted;
     public UIBranch _activeBranch;
-    public bool  _wasInTheMenu;
-    public bool _locked;
+    public bool  _wasInTheMenu, _locked;
+    public bool _wasOnHomeScreen = true;
 
     private void SaveHighlighted(UINode newNode)
     {
@@ -42,6 +42,12 @@ public class ScreenData
         if (_locked) return;
         _activeBranch = newBranch;
     }
+    
+    private void SaveOnHomeScreen(bool onHomeScreen)
+    {
+        if (_locked) return;
+        _wasOnHomeScreen = onHomeScreen;
+    }
 
     public void StoreClearScreenData(UIBranch[] allBranches, UIBranch thisBranch, BlockRayCast blockRaycast)
     {
@@ -54,23 +60,21 @@ public class ScreenData
     {
         foreach (var branchToClear in allBranches)
         {
-            if (NoNeedToStoreBranch(thisBranch, branchToClear)) continue;
-            _clearedBranches.Add(branchToClear);
+            if(branchToClear == thisBranch) continue;
+            
+            if (branchToClear.CanvasIsEnabled)
+                _clearedBranches.Add(branchToClear);
+            
             if (blockRaycast) 
-                branchToClear._myCanvasGroup.blocksRaycasts = false;
+                branchToClear.MyCanvasGroup.blocksRaycasts = false;
         }
     }
-
-    private static bool NoNeedToStoreBranch(UIBranch thisBranch, UIBranch branchToClear) 
-        => !branchToClear.CanvasIsEnabled || branchToClear == thisBranch;
 
     public void RestoreScreen()
     {
         foreach (var branch in _clearedBranches)
         {
-            branch._branch.ActivateBranch();
+            branch.Branch.ActivateBranch();
         }
     }
-
-
 }

@@ -43,7 +43,7 @@ public class UINavigation
     UINode _myNode;
     UIBranch _myBranch;
     private bool _allowKeys;
-    public bool CanNaviagte { get; private set; }
+    public bool CanNavigate { get; private set; }
 
     public UIBranch Child { get { return _childBranch; } }
 
@@ -51,7 +51,7 @@ public class UINavigation
     {
         _myNode = node;
         _myBranch = branch;
-        CanNaviagte = (setting & Setting.NavigationAndOnClick) != 0;
+        CanNavigate = (setting & Setting.NavigationAndOnClick) != 0;
         ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
 
@@ -118,7 +118,7 @@ public class UINavigation
 
     private void ProcessMoves(AxisEventData eventData)
     {
-        if (_setNavigation == NavigationType.None || !CanNaviagte) return;
+        if (_setNavigation == NavigationType.None || !CanNavigate) return;
 
         if (_setNavigation != NavigationType.RightAndLeft)
         {
@@ -188,26 +188,30 @@ public class UINavigation
 
     public void StartMoveToChild()
     {
-        if (_childBranch.ScreenType == ScreenType.FullScreen)
-        {
-            _myBranch.StartOutTweenProcess(() => ToChildBranchProcess());
-        }
-        else if (_childBranch.ScreenType == ScreenType.Normal)
-        {
+        // if (_childBranch.ScreenType == ScreenType.FullScreen)
+        // {
+        //     _myBranch.StartOutTweenProcess(() => ToChildBranchProcess());
+        // }
+        // else if (_childBranch.ScreenType == ScreenType.Normal)
+        // {
             if (_childBranch.MyBranchType == BranchType.Internal)
             {
                 _childBranch.MoveToThisBranch(_myBranch);
+                return;
             }
-            else
-            {
-                if (_childBranch.ScreenType == ScreenType.FullScreen)
-                {
-                    _myBranch.StartOutTweenProcess();
-                }
-                ToChildBranchProcess();
+            // else
+            // {
+                // if (_childBranch.ScreenType == ScreenType.FullScreen)
+                // {
+                    _myBranch.StartOutTweenProcess(OutTweenType.MoveToChild, ToChildBranchProcess);
+                    
+                    void ToChildBranchProcess() => _childBranch.MoveToThisBranch(_myBranch);
+
+                    //}
+                //ToChildBranchProcess();
                 //_myBranch.StartOutTweenProcess(() => ToChildBranchProcess());
-            }
-        }
+          //  }
+       // }
     }
 
     // public void MoveOnClick()
@@ -225,23 +229,24 @@ public class UINavigation
     //     ToChildBranchProcess();
     // }
 
-    private void ToChildBranchProcess()
-    {
-        //_myBranch.ClearBranch();
-        // _myBranch.ClearBranchForNavigation();
-        _childBranch.MoveToThisBranch(_myBranch);
-    }
+    // void ToChildBranchProcess()
+    // {
+    //     //_myBranch.ClearBranch();
+    //     // _myBranch.ClearBranchForNavigation();
+    //     _childBranch.MoveToThisBranch(_myBranch);
+    // }
 
     public void TurnOffChildren()
     {
-        if (_childBranch.WhenToMove == WhenToMove.Immediately)
-        {
-            _childBranch.StartOutTween();
-            _childBranch.LastSelected.Deactivate();
-        }
-        else
-        {
-            _childBranch.StartOutTween(() => _childBranch.LastSelected.Deactivate());
-        }
+        _childBranch.StartOutTweenProcess(OutTweenType.Cancel, _childBranch.LastHighlighted.Deactivate);
+        // if (_childBranch.WhenToMove == WhenToMove.Immediately)
+        // {
+        //     _childBranch.StartOutTween();
+        //     _childBranch.LastSelected.Deactivate();
+        // }
+        // else
+        // {
+        //     _childBranch.StartOutTween(() => _childBranch.LastSelected.Deactivate());
+        // }
     }
 }

@@ -1,51 +1,62 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class Timed : IPopUp
+public class Timed : BranchBase, ITriggeredPopUp
 {
-    public Timed(UIBranch branch)
+    public Timed(UIBranch branch) : base(branch)
     {
-        _myBranch = branch;
-        OnEnable();
+        _myBranch._onStartPopUp = StartPopUp;
     }
 
-    private readonly UIBranch _myBranch;
+    //Variables
     private bool _running;
     private Coroutine _coroutine;
-    private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
-
-    //Properties
-    private bool GameIsPaused { get; set; }
-    private void IsGamePaused(bool paused) => GameIsPaused = paused;
-
-    private void OnEnable()
-    {
-        _uiControlsEvents.SubscribeToGameIsPaused(IsGamePaused);
-    }
-
+    
     public void StartPopUp()
     {
-        if (GameIsPaused) return;
+        if (_gameIsPaused || !_canStart || !_noResolvePopUps) return;
+        
+        SetIfRunningOrNot();
+        _myBranch.DontSetBranchAsActive();
+        _myBranch.MoveToThisBranch();
+    }
 
+    private void SetIfRunningOrNot()
+    {
+        if (!_running)
+        {
+            ActivateBranch();
+            _running = true;
+        }
+        else
+        {
+            _myBranch.SetNoTween();
+        }
+    }
+
+    public override void SetUpBranch(UIBranch newParentController = null)
+    {
         StaticCoroutine.StopCoroutines(_coroutine);
         _coroutine = StaticCoroutine.StartCoroutine(TimedPopUpProcess());
     }
 
-    public void MoveToNextPopUp(UIBranch lastBranch = null)
-    {
-        //Maybe Need for quick exit button
-    }
-
     private IEnumerator TimedPopUpProcess()
     {
-        if (!_running)
-        {
-            //TODO Fix 
-           // _myBranch.MoveToThisBranchDontSetAsActive();
-            _running = true;
-        }
         yield return new WaitForSeconds(_myBranch.Timer);
+        ExitTimedPopUp();
+    }
+
+    protected override void MoveBackToThisBranch(UIBranch lastBranch)
+    {
+        if (lastBranch != _myBranch) return;
+
+        StaticCoroutine.StopCoroutines(_coroutine);
+        ExitTimedPopUp();
+    }
+
+    private void ExitTimedPopUp()
+    {
         _running = false;
-        _myBranch.StartOutTweenProcess();
+        _myBranch.StartOutTweenProcess(OutTweenType.Cancel);
     }
 }

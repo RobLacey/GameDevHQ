@@ -12,7 +12,7 @@ public class HomeScreenBranchBase: BranchBase
     private bool _canActivate;
     
     //Properties
-    private bool CannotTweenOnHome => _myBranch._tweenOnHome == IsActive.No && !_onHomeScreen;
+    private bool CannotTweenOnHome => _myBranch.TweenOnHome == IsActive.No && !_onHomeScreen;
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
     protected override void SaveInMenu(bool inMenu)
     {
@@ -39,30 +39,32 @@ public class HomeScreenBranchBase: BranchBase
 
     protected override void SetUpBranchesOnStart(UIBranch startBranch)
     {
-        _myBranch._myCanvas.enabled = true;
-        _myBranch._myCanvasGroup.blocksRaycasts = false;
+        _myBranch.MyCanvas.enabled = true;
+        _myBranch.MyCanvasGroup.blocksRaycasts = false;
 
         if (startBranch == _myBranch)
         {
             SetBranchAsStartPoistion();
+            return;
         }
-        _myBranch._setAsActive = false;
+
+        _myBranch.DontSetBranchAsActive();
         _myBranch.MoveToThisBranch();
     }
 
     private void SetBranchAsStartPoistion()
     {
-        _myBranch.DefaultStartPosition.ThisNodeIsHighLighted();
-        _myBranch.DefaultStartPosition.ThisNodeIsSelected();
-        _myBranch.SetAsActiveBranch();
+        _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
+        _myBranch.DefaultStartOnThisNode.ThisNodeIsSelected();
+        _myBranch.MoveToThisBranch();
     }
 
     public override void SetUpBranch(UIBranch newParentController = null)
     {
-        if (_myBranch._saveExitSelection == IsActive.No)
-            _myBranch.ResetBranchStartPosition();
-
+        _myBranch.ResetBranchesStartPosition();
         if(!_canStart || !_inMenu) return;
+
+        if (_onHomeScreen) _myBranch.SetNoTween();
         
         ActivateBranch();
     }
@@ -70,13 +72,12 @@ public class HomeScreenBranchBase: BranchBase
     protected override void MoveBackToThisBranch(UIBranch lastBranch)
     {
         if (lastBranch != _myBranch) return;
-
+        
         base.MoveBackToThisBranch(lastBranch);
-
         if (CannotTweenOnHome)
-            _myBranch._tweenOnChange = false;
-
-        _canActivate = true;
+            _myBranch.SetNoTween();
+        
+        _myBranch.MoveToThisBranch();
         InvokeOnHomeScreen(_isHomeScreenBranch);
     }
 
@@ -85,15 +86,11 @@ public class HomeScreenBranchBase: BranchBase
     {
         if (_activeBranch == _myBranch) return;
         
-        if (_myBranch._tweenOnHome == IsActive.No)
-            _myBranch._tweenOnChange = false;
+        if (_myBranch.TweenOnHome == IsActive.No)
+            _myBranch.SetNoTween();
         
-        _myBranch._setAsActive = _canActivate;
-        
-        if (!_noActivePopUps) _myBranch._setAsActive = false;
-        
+        _myBranch.DontSetBranchAsActive();
         _myBranch.MoveToThisBranch();
-        _canActivate = false;
     }
 }
 

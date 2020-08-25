@@ -15,17 +15,20 @@ public partial class UIHub : MonoBehaviour
 {
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    
     [SerializeField] 
     [Label("Enable Controls After..")] float _atStartDelay;
+    
     [SerializeField] 
     [ValidateInput("ProtectEscapeKeySetting", "Can't set Global Settings to Global Settings")]
     EscapeKey _globalCancelFunction = EscapeKey.BackOneLevel;
+    
     [SerializeField] 
     [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")] 
     List<UIBranch> _homeBranches;
+    
     [SerializeField] 
-    [ReorderableList] [Label("Hot Keys (CAN'T have PopUps as Hot keys)")] 
-    List<HotKeys> _hotKeySettings;
+    [ReorderableList] List<HotKeys> _hotKeySettings;
 
     //Events
     public static event Action OnStart;
@@ -33,13 +36,10 @@ public partial class UIHub : MonoBehaviour
 
     //Variables
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
-    private UINode _lastHomeScreenNode;
-    private UINode _lastHighlighted;
-    private bool _inMenu;
-    private bool _startingInGame;
+    private UINode _lastHomeScreenNode, _lastHighlighted;
+    private bool _inMenu, _startingInGame;
 
     //Properties
-
     private void SaveInMenu(bool isInMenu)
     {
         _inMenu = isInMenu;
@@ -85,7 +85,7 @@ public partial class UIHub : MonoBehaviour
 
     private void SetStartPositionsAndSettings()
     {
-        _lastHighlighted = _homeBranches[0].DefaultStartPosition;
+        _lastHighlighted = _homeBranches[0].DefaultStartOnThisNode;
         SetUpBranchesAtStart?.Invoke(_homeBranches[0]);
     }
 
@@ -98,7 +98,7 @@ public partial class UIHub : MonoBehaviour
         }
         else
         {
-            EventSystem.current.SetSelectedGameObject(_homeBranches[0].DefaultStartPosition.gameObject);
+            EventSystem.current.SetSelectedGameObject(_homeBranches[0].DefaultStartOnThisNode.gameObject);
             _inMenu = true;
         }
     }

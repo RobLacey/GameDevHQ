@@ -26,6 +26,8 @@ public class ChangeControl
     private bool _noPopUps = true;
     private UINode _lastHighlighted;
     private UIBranch _activeBranch;
+    private bool _afterStartUp;
+    private bool _gameIsPaused;
 
     //Events
     public static event Action<bool> DoAllowKeys;
@@ -37,12 +39,14 @@ public class ChangeControl
     private void SaveActiveBranch(UIBranch newNode) => _activeBranch = newNode;
 
     private void SaveNoPopUps(bool noPopUps) => _noPopUps = noPopUps;
+    private void SaveGameIsPaused(bool isPaused) => _gameIsPaused = isPaused;
 
     private void OnEnable()
     {
         _uiDataEvents.SubscribeToHighlightedNode(SaveHighlighted);
         _uiDataEvents.SubscribeToOnStart(StartGame);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
+        _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
         _uiControlsEvents.SubscribeOnChangeControls(ChangeControlType);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
     }
@@ -129,8 +133,10 @@ public class ChangeControl
         _usingMouse = false;
         _usingKeysOrCtrl = true;
         SetAllowKeys();
-        SetNextHighlightedForKeys();
+        if(_afterStartUp)
+            SetNextHighlightedForKeys();
         UIHub.SetEventSystem(_lastHighlighted.gameObject);
+        _afterStartUp = true;
     }
 
     private void SetAllowKeys()
@@ -149,7 +155,7 @@ public class ChangeControl
 
     private UIBranch FindActiveBranchesEndNode(UIBranch nextBranch)
     {
-        if (!_noPopUps) return ReturnNextPopUp?.Invoke();
+        if (!_noPopUps && !_gameIsPaused) return ReturnNextPopUp?.Invoke();
         if (nextBranch.LastSelected.HasChildBranch is null) return nextBranch;
         
         while (nextBranch.LastSelected.HasChildBranch.CanvasIsEnabled)

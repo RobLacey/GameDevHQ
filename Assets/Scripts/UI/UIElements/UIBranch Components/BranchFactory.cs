@@ -14,19 +14,21 @@ public static class BranchFactory
             case BranchType.Standard:
                 CreateStandardBranch(branch);
                 return new StandardBranchBase(branch);
-            // case BranchType.Internal:
-            //     return null;
             case BranchType.ResolvePopUp:
                 CreateResolvePopUp(branch);
                 return new ResolvePopUp(branch, allBranches);
             case BranchType.OptionalPopUp:
                 CreateOptionalPopUp(branch);
                 return new OptionalPopUp(branch, allBranches);
-            // case BranchType.TimedPopUp:
-            //     return null;
+             case BranchType.TimedPopUp:
+                 CreateTimedPopUp(branch);
+                 return new Timed(branch);
             case BranchType.PauseMenu:
                 CreatePauseMenu(branch);
                 return new PauseMenu(branch, allBranches);
+            case BranchType.Internal:
+                CreateStandardBranch(branch);
+                return new StandardBranchBase(branch);
         }
 
         return null;
@@ -34,37 +36,40 @@ public static class BranchFactory
     
     private static void CreateHomeScreenBranch(UIBranch branch)
     {
-        branch._screenType = ScreenType.Normal;
-        branch._escapeKeyFunction = EscapeKey.None;
+        branch.ScreenType = ScreenType.Normal;
+        branch.EscapeKeySetting = EscapeKey.None;
     }
 
     private static void CreateStandardBranch(UIBranch branch)
     {
-        branch._tweenOnHome = IsActive.No;
+        branch.TweenOnHome = IsActive.No;
     }
 
     private static void CreateResolvePopUp(UIBranch branch)
     {
-        branch._escapeKeyFunction = EscapeKey.BackOneLevel;
-        branch._tweenOnHome = IsActive.No;
+        branch.EscapeKeySetting = EscapeKey.BackOneLevel;
+        branch.TweenOnHome = IsActive.No;
+        branch.SetStayOn(IsActive.No);
     }
 
     private static void CreateOptionalPopUp(UIBranch branch)
     {
-        branch._screenType = ScreenType.Normal;
-        branch._escapeKeyFunction = EscapeKey.BackOneLevel;
+        branch.ScreenType = ScreenType.Normal;
+        branch.EscapeKeySetting = EscapeKey.BackOneLevel;
+        branch.SetStayOn(IsActive.No);
     }
     
     private static void CreateTimedPopUp(UIBranch branch)
     {
-        branch._screenType = ScreenType.Normal;
-        branch._escapeKeyFunction = EscapeKey.BackOneLevel;
-        branch._tweenOnHome = IsActive.No;
+        branch.ScreenType = ScreenType.Normal;
+        branch.TweenOnHome = IsActive.No;
+        branch.WhenToMove = WhenToMove.Immediately;
+        branch.SetStayOn(IsActive.No);
     }
 
     private static void CreatePauseMenu(UIBranch branch)
     {
-        branch._escapeKeyFunction = EscapeKey.BackOneLevel;
-        branch._tweenOnHome = IsActive.No;
+        branch.EscapeKeySetting = EscapeKey.BackOneLevel;
+        branch.TweenOnHome = IsActive.No;
     }
 }
