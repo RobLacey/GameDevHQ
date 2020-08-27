@@ -56,15 +56,17 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private UIDataEvents _uiDataEvents;
     private UIControlsEvents _uiControlsEvents;
     private bool _holdState;
+    private UINode _lastHighlighted;
+    private readonly Actions _actions = new Actions();
 
     //Delegates
     private Action<UIEventTypes, bool> _startUiFunctions;
-    private UINode _lastHighlighted;
 
+    //Events
     public static event Action<EscapeKey> DoCancelButtonPressed;
     public static event Action<UINode> DoHighlighted; 
-    public static event Action<UINode> DoSelected; 
-
+    public static event Action<UINode> DoSelected;
+    
     //Properties & Enums
     public Slider AmSlider { get; private set; }
     public ButtonFunction Function => _buttonFunction;
@@ -120,16 +122,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             => newNode == this || !IsSelected || IsToggleGroup || IsToggleNotLinked || _holdState;
     }
 
-
-    private void SaveHighLighted(UINode newNode)
-    {
-        if (newNode != this && _lastHighlighted == this)
-        {
-            SetNotHighlighted();
-        }
-        _lastHighlighted = newNode;
-    }
-
+    private void SaveHighLighted(UINode newNode) => _lastHighlighted = newNode;
 
     public bool IsDisabled
     {
@@ -150,13 +143,12 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _uiControlsEvents = new UIControlsEvents();
         SetUpUiFunctions();
         _toggleGroups = new UIToggles(this, _buttonFunction, _startAsSelected);
-        _lastHighlighted = MyBranch.DefaultStartOnThisNode;
     }
 
     private void SetUpUiFunctions()
     {
         _audio.OnAwake(_enabledFunctions);
-        _colours.OnAwake(gameObject.GetInstanceID(), _enabledFunctions);
+        _colours.OnAwake(this, _enabledFunctions, _actions);
         _tooltips.OnAwake(_enabledFunctions, gameObject.name);
         _events.OnAwake(_enabledFunctions);
         _navigation.OnAwake(this, MyBranch, _enabledFunctions);
@@ -168,13 +160,12 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions += _sizeAndPos.OnAwake(transform, _enabledFunctions);
         _startUiFunctions += _swapImageOrText.OnAwake(IsSelected, _enabledFunctions);
         _startUiFunctions += _invertColourCorrection.OnAwake(_enabledFunctions);
+
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
         _uiDataEvents.SubscribeToSelectedNode(SaveLastSelected);
         _uiDataEvents.SubscribeToHighlightedNode(SaveHighLighted);
         _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
-        //UIHub.SwitchBetweenGmaeAndMenu += SwitchBetweenGmaeAndMenu;
-        //ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
 
     private void OnDisable()
@@ -183,33 +174,14 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _startUiFunctions -= _sizeAndPos.OnDisable();
         _startUiFunctions -= _swapImageOrText.OnDisable();
         _startUiFunctions -= _invertColourCorrection.OnDisable();
-        //_uiData.OnDisable();
-        //UIHub.SwitchBetweenGmaeAndMenu -= SwitchBetweenGmaeAndMenu;
-        //ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
 
     private void Start()
     {
         if (AmSlider) AmSlider.interactable = false;
-        //_navigation.SetChildsParentBranch();
         _toggleGroups.SetUpToggleGroup(MyBranch.ThisGroupsUiNodes);
-        
-        // if (MyBranch.IsAPopUpBranch() || MyBranch.IsPauseMenuBranch()) 
-        //     _escapeKeyFunction = EscapeKey.BackOneLevel;
-
-        if (_colours.CanActivate && _colours.NoSettings)
-        {
-            Debug.LogError("No Image or Text set on Colour settings on " + gameObject.name);
-        }
     }
-
-    private void InvokeClickEvents()
-    {
-        if (!_events.CanActivate) return;
-        _events._OnButtonClickEvent?.Invoke();
-        _events._OnToggleEvent?.Invoke(IsSelected);
-    }
-
+    
     public void SetNodeAsActive()
     {
         if (IsDisabled)
@@ -218,6 +190,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             return;
         }
 
+        _lastHighlighted = this;
         ThisNodeIsHighLighted();
         
         if (_allowKeys && _inMenu)
@@ -241,12 +214,13 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             return; 
         }
 
+        _actions._isPressed?.Invoke(true);
         TurnNodeOnOff();
     }
 
     private void HandleAudio()
     {
-        _audio.Play(IsSelected ? UIEventTypes.Cancelled : UIEventTypes.Selected);
+        //_audio.Play(IsSelected ? UIEventTypes.Cancelled : UIEventTypes.Selected);
     }
 
     private void TurnNodeOnOff()
@@ -256,69 +230,55 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         if (IsSelected)
         {
             if (IsToggleGroup && MyBranch.LastHighlighted == this) return;
-            if (IsToggleNotLinked) { IsSelected = false; }
             Deactivate();
             MyBranch.MoveToBranchWithoutTween();
-            //MyBranch.MyParentBranch.MoveToThisBranchDontSetAsActive();
-            //DoSelected?.Invoke(MyBranch.MyParentBranch.LastSelected);
-            //MyBranch.SaveLastSelected(MyBranch.MyParentBranch.LastSelected);
         }
         else
         {
             Activate();
-            //DoSelected?.Invoke(this);
         }
-
+        
         _startUiFunctions.Invoke(UIEventTypes.Selected, IsSelected);
         _sizeAndPos.WhenPressed(IsSelected);
-        _colours.ProcessPress(IsSelected);
         _swapImageOrText.CycleToggle(IsSelected);
+        _actions._isPressed?.Invoke(false);
     }
 
     public void Deactivate()
     {
         if (!IsSelected) return;
         
+        IsSelected = false;
         if (CanGoToChildBranch)
         {
-            IsSelected = false;
             _navigation.TurnOffChildren();
         }
-        if(!_pointerOver) SetNotHighlighted();
+        _actions._isSelected?.Invoke(IsSelected);
         SetSlider(false);
     }
 
     private void Activate()
     {
         IsSelected = true;
+        _actions._isSelected?.Invoke(IsSelected);
         StopAllCoroutines();
         _tooltips.HideToolTip();
         SetSlider(true);
         if(!AmSlider) InvokeClickEvents();
-        if (CanGoToChildBranch) MoveToChildBranch();
+        if (CanGoToChildBranch) 
+            MoveToChildBranch();
     }
     
     private void MoveToChildBranch()
     {
-        //DoSelected?.Invoke(this);
         ThisNodeIsSelected();
-
-        //MyBranch.SaveLastSelected(this);
-
-        // if (MyBranch.WhenToMove == WhenToMove.AfterEndOfTween)
-        // {
-            _navigation.StartMoveToChild();
-        // }
-        // else
-        // {
-        //     _navigation.MoveOnClick();
-        // }
+        _navigation.StartMoveToChild();
     }
 
     public void SetAsHighlighted()
     {
         if (IsDisabled) return;
-        _colours.SetColourOnEnter(IsSelected);
+        _actions._isHighlighted?.Invoke(true);
         _startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
         StartCoroutine(_tooltips.StartToolTip(MyBranch, _rectForTooltip));
     }
@@ -327,6 +287,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     {
         StopAllCoroutines();
         _tooltips.HideToolTip();
+        _actions._isHighlighted?.Invoke(false);
 
         if (IsDisabled) return;
 
@@ -340,19 +301,16 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             {
                 _startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
             }
-            _colours.SetColourOnExit(IsSelected);
         }
         else
         {
             if (_pointerOver)
             {
                 _startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
-                _colours.SetColourOnEnter(IsSelected);
             }
             else
             {
                 _startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
-                _colours.ResetToNormalColour();
             }
         }
     }
@@ -360,6 +318,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     public void SetSelected_NoEffects() //TODO Review - Add DoSelect
     {
         IsSelected = true;
+        _actions._isSelected?.Invoke(true);
         SetNotHighlighted();
         _sizeAndPos.WhenPressed(IsSelected);
         _swapImageOrText.CycleToggle(IsSelected);
@@ -368,6 +327,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     public void SetNotSelected_NoEffects()
     {
         IsSelected = false;
+        _actions._isSelected?.Invoke(false);
         SetNotHighlighted();
         _sizeAndPos.WhenPressed(IsSelected);
         _swapImageOrText.CycleToggle(IsSelected);
@@ -396,9 +356,16 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     }
 
     // ReSharper disable once UnusedMember.Global - Used to Disable Object
-    public void DisableObject() { IsDisabled = true; }
+    public void DisableObject() => IsDisabled = true; 
     // ReSharper disable once UnusedMember.Global - Used to Enable Object
-    public void EnableObject() { IsDisabled = false; }
+    public void EnableObject() => IsDisabled = false; 
+
+    private void InvokeClickEvents()
+    {
+        if (!_events.CanActivate) return;
+        _events._OnButtonClickEvent?.Invoke();
+        _events._OnToggleEvent?.Invoke(IsSelected);
+    }
 
     public void TriggerExitEvent()
     {
@@ -412,16 +379,9 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             _events.OnEnterEvent?.Invoke();
     }
 
-    public void ThisNodeIsSelected()
-    {
-        DoSelected?.Invoke(this);
-    }
-    
-    public void ThisNodeIsHighLighted()
-    {
-        DoHighlighted?.Invoke(this);
-    }
+    public void ThisNodeIsSelected() => DoSelected?.Invoke(this);
 
+    public void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this);
 }
 
 

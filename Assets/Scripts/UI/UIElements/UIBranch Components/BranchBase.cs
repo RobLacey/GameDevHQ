@@ -58,7 +58,7 @@ public abstract class BranchBase
 
     protected virtual void MoveBackToThisBranch(UIBranch lastBranch)
     {
-        _myBranch.LastSelected.SetNotSelected_NoEffects();
+        _myBranch.LastSelected.SetNotSelected_NoEffects(); //TODO Review
         _myBranch.MyParentBranch.LastSelected.ThisNodeIsSelected();
     }
     

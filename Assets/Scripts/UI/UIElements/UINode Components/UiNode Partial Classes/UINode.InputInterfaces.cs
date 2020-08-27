@@ -6,6 +6,7 @@ public partial class UINode
     {
         if (IsDisabled || _allowKeys) return;
         _pointerOver = true;
+        _actions._whenPointerOver?.Invoke(true);
         TriggerEnterEvent();
         _navigation.PointerEnter(eventData);
     }
@@ -14,6 +15,7 @@ public partial class UINode
     {
         if (IsDisabled || _allowKeys) return;
         _pointerOver = false;
+        _actions._whenPointerOver?.Invoke(false);
         TriggerExitEvent();
         _navigation.PointerExit(eventData);
     }

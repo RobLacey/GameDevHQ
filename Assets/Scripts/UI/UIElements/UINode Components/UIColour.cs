@@ -3,219 +3,219 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 using DG.Tweening;
+using TMPro.EditorUtilities;
+
 // ReSharper disable IdentifierTypo
 
 [Serializable]
-public class UIColour 
+public class UIColour : NodeFunctionBase
 {
-    [SerializeField] [AllowNesting] [Label("Colour Scheme")] ColourScheme _scheme;
-    [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] [Header("UI Elements To Use (MUST Assign at Least One)", order = 0)] Text _textElements;
-    [SerializeField] Image[] _imageElements;
+    [SerializeField] [AllowNesting] [Label("Colour Scheme")]
+    private ColourScheme _scheme;
+    [HorizontalLine(4, EColor.Blue, order = 1)]
+    [SerializeField] [Header("UI Elements To Use (MUST Assign at Least One)", order = 0)]
+    private Text _textElements;
+    [SerializeField] private Image[] _imageElements;
 
     //Variables
-    Color _textNormalColour = Color.white;
-    Color _imageNormalColour = Color.white;
-    int _id;
-
-    //Editor Methods
-    public bool UsingColourScheme()  { return _scheme; }
+    private Color _textNormalColour = Color.white;
+    private Color _imageNormalColour = Color.white;
+    private Color _tweenImageToColour;
+    private Color _tweenTextToColour;
+    private Color _selectHighlightColour;
+    private float _selectHighlightPerc;
+    private int _id;
+    private string _nodesName;
 
     //Properties
-    public bool NoSettings { get; set; } 
-    public bool CanActivate { get; private set; }
-
-    public void OnAwake(int objectId, Setting setting)
+    private bool ColourFunctionIsActive => !CanActivate || _scheme is null;
+    private bool CanBeSelected => (_scheme.ColourSettings & EventType.Selected) != 0;
+    private bool CanBePressed => (_scheme.ColourSettings & EventType.Pressed) != 0;
+    private bool CanBeHighlighted => (_scheme.ColourSettings & EventType.Highlighted) !=0; 
+    private protected override void SavePointerStatus(bool pointerOver) => _pointerOver = pointerOver;
+    private protected override void SaveIsSelected(bool isSelected)
     {
+        if (ColourFunctionIsActive) return;
+        _isSelected = isSelected;
+        SaveHighlighted(false);
+    }
+    
+    private protected override void SaveIsPressed(bool pressed)
+    {
+        if (ColourFunctionIsActive) return;
+        if (!CanBePressed) return;
+        _isPressed = pressed;
+        ProcessPress();
+    }
+
+    public override void OnAwake(UINode node, Setting setting, Actions actions)
+    {
+        base.OnAwake(node, setting, actions);
         CanActivate = (setting & Setting.Colours) != 0;
-        _id = objectId;
+        _id = node.GetInstanceID();
+        _nodesName = node.name;
         SetNormalColours();
-        if (_imageElements.Length == 0 && !_textElements) { NoSettings = true; }
+        CheckForSetUpError();
+        _selectHighlightColour = SelectedHighlight();
     }
 
     private void SetNormalColours()
     {
         if (_imageElements.Length > 0)
-        {
             _imageNormalColour = _imageElements[0].color;
-        }
 
         if (_textElements)
-        {
             _textNormalColour = _textElements.color;
+    }
+
+    private void CheckForSetUpError()
+    {
+        if (_imageElements.Length == 0 && !_textElements && CanActivate)
+        {
+            Debug.LogError($"No Image or Text set on Colour settings on {_nodesName}");
         }
     }
 
-    public void SetColourOnEnter(bool isSelected)
+    private protected override void SaveHighlighted(bool isHighlighted)
     {
-        if (!CanActivate || _scheme == null) return;
-
-        if ((_scheme.ColourSettings & EventType.Highlighted) !=0)
+        if (ColourFunctionIsActive) return;
+        
+        _isHighlighted = _pointerOver || isHighlighted;
+        
+        if(_isPressed) return;
+        
+        if (_isHighlighted)
         {
-            if ((_scheme.ColourSettings & EventType.Selected) != 0 && isSelected)
-            {
-                ColourChangesProcesses(SelectedHighlight(), _scheme.TweenTime);
-                TextColourChangeProcess(SelectedHighlight(), _scheme.TweenTime);
-            }
-            else
-            {
-                ColourChangesProcesses(_scheme.HighlightedColour, _scheme.TweenTime);
-                TextColourChangeProcess(_scheme.HighlightedColour, _scheme.TweenTime);
-            }
-        }    
+            SetHighlighted();
+        }
+        else
+        {
+            SetNotHighlighted();
+        }
     }
 
-    public void SetColourOnExit(bool isSelected)
+
+    private void SetHighlighted()
     {
-        if (!CanActivate || _scheme == null) return;
-
-        if ((_scheme.ColourSettings & EventType.Selected) == 0 || !isSelected)
+        if (CanBeSelected && _isSelected)
         {
-            ColourChangesProcesses(_imageNormalColour, _scheme.TweenTime);
-            TextColourChangeProcess(_textNormalColour, _scheme.TweenTime);
+            ProcessSelectedAndHighLighted();
         }
-
-        if ((_scheme.ColourSettings & EventType.Selected) != 0 && isSelected)
+        else if(CanBeHighlighted)
         {
-            ColourChangesProcesses(_scheme.SelectedColour, _scheme.TweenTime);
-            TextColourChangeProcess(_scheme.SelectedColour, _scheme.TweenTime);
+            ProcessHighlighted();
         }
+    }
+
+    private void SetNotHighlighted()
+    {
+        if (CanBeSelected && _isSelected)
+        {
+            ProcessSelected();
+        }
+        else
+        {
+           ProcessToNormal();
+        }
+    }
+
+    private void ProcessSelectedAndHighLighted()
+    {
+        _tweenImageToColour = SelectedHighlight();
+        _tweenTextToColour = SelectedHighlight();
+        DoColourChange(_scheme.TweenTime);
+    }
+    
+    private void ProcessHighlighted()
+    {
+        _tweenImageToColour = _scheme.HighlightedColour;
+        _tweenTextToColour = _scheme.HighlightedColour;
+        DoColourChange(_scheme.TweenTime);
+    }
+
+    private void ProcessSelected()
+    {
+        _tweenImageToColour = _scheme.SelectedColour;
+        _tweenTextToColour = _scheme.SelectedColour;
+        DoColourChange(_scheme.TweenTime);
+    }
+    
+    private void ProcessToNormal()
+    {
+        _tweenImageToColour = _imageNormalColour;
+        _tweenTextToColour = _textNormalColour;
+        DoColourChange(_scheme.TweenTime);
+    }
+    
+    private void DoColourChange(float tweenTime, TweenCallback callback = null)
+    {
+        ImagesColourChangesProcess(_tweenImageToColour, tweenTime, callback);
+        TextColourChangeProcess(_tweenTextToColour, tweenTime, callback);
     }
 
     public void ResetToNormalColour()
     {
-        if (!CanActivate || _scheme == null) return;
-        ColourChangesProcesses(_imageNormalColour, _scheme.TweenTime);
-        TextColourChangeProcess(_textNormalColour, _scheme.TweenTime);
+        if (ColourFunctionIsActive) return;
+        
+        ProcessToNormal();
     }
 
-    public void ProcessPress(bool isSelected)
+    private void ProcessPress()
     {
-        if (!CanActivate || _scheme == null) return;
-
-        if ((_scheme.ColourSettings & EventType.Pressed) != 0)
+        if (CanBeSelected && _isSelected)
         {
-            if (isSelected)
-            {
-                PressedEffect_IsSelected();
-            }
-            else
-            {
-                PressedEffect_NotSelected();
-            }
+            _tweenImageToColour = SelectedHighlight();
+            _tweenTextToColour = SelectedHighlight();
+        }
+        else if (CanBeHighlighted)
+        {
+            _tweenImageToColour = _scheme.HighlightedColour;
+            _tweenTextToColour = _scheme.HighlightedColour;
         }
         else
         {
-            SetAsSelected(isSelected);
+            _tweenImageToColour = _imageNormalColour;
+            _tweenTextToColour = _textNormalColour;
         }
+        DoFlashEffect();
     }
 
-    private void PressedEffect_NotSelected()
+    private void DoFlashEffect()
     {
-        Color flashtooImage;
-        Color flashtooText;
-
-        if ((_scheme.ColourSettings & EventType.Highlighted) != 0)
-        {
-            flashtooImage = _scheme.HighlightedColour;
-            flashtooText = _scheme.HighlightedColour;
-        }
-        else
-        {
-            flashtooImage = _imageNormalColour;
-            flashtooText = _textNormalColour;
-        }
-
-        ColourChangesProcesses(_scheme.PressedColour, _scheme.FlashTime,
-                                () => ColourChangesProcesses(flashtooImage, _scheme.FlashTime));
-        TextColourChangeProcess(_scheme.PressedColour, _scheme.FlashTime,
-                                () => ColourChangesProcesses(flashtooText, _scheme.FlashTime));
+        ImagesColourChangesProcess(_scheme.PressedColour, _scheme.FlashTime, FinishFlashCallBack);
+        TextColourChangeProcess(_scheme.PressedColour, _scheme.FlashTime, FinishFlashCallBack);
+        
+        void FinishFlashCallBack() => DoColourChange(_scheme.FlashTime);
     }
 
-    private void PressedEffect_IsSelected()
-    {
-        Color flashtooImage;
-        Color flashtooText;
 
-        if ((_scheme.ColourSettings & EventType.Selected) != 0)
-        {
-            flashtooImage = _scheme.SelectedColour;
-            flashtooText = _scheme.SelectedColour;
-        }
-        else if ((_scheme.ColourSettings & EventType.Highlighted) != 0)
-        {
-            flashtooImage = _scheme.HighlightedColour;
-            flashtooText = _scheme.HighlightedColour;
-        }
-        else
-        {
-            flashtooImage = _imageNormalColour;
-            flashtooText = _textNormalColour;
-        }
-
-        ColourChangesProcesses(_scheme.PressedColour, _scheme.FlashTime,
-                               () => ColourChangesProcesses(flashtooImage, _scheme.FlashTime));
-        TextColourChangeProcess(_scheme.PressedColour, _scheme.FlashTime,
-                               () => ColourChangesProcesses(flashtooText, _scheme.FlashTime));
-    }
-
-    private void SetAsSelected(bool isSelected)
-{
-    if ((_scheme.ColourSettings & EventType.Selected) != 0)
-    {
-        if (isSelected)
-        {
-            ColourChangesProcesses(_scheme.SelectedColour, _scheme.TweenTime);
-            TextColourChangeProcess(_scheme.SelectedColour, _scheme.TweenTime);
-        }
-
-        if (!isSelected)
-        {
-            if ((_scheme.ColourSettings & EventType.Highlighted) != 0)
-            {
-                ColourChangesProcesses(_scheme.HighlightedColour, _scheme.TweenTime);
-                TextColourChangeProcess(_scheme.HighlightedColour, _scheme.TweenTime);
-            }
-            else
-            {
-                ColourChangesProcesses(_imageNormalColour, _scheme.TweenTime);
-                TextColourChangeProcess(_textNormalColour, _scheme.TweenTime);
-            }
-        }
-    }
-}
-
-    private void ColourChangesProcesses(Color newColour, float time, TweenCallback tweenCallback = null)
+    private void ImagesColourChangesProcess(Color newColour, float time, TweenCallback tweenCallback = null)
     {
         KillTweens();
-
-        if (_imageElements.Length > 0)
+        if (_imageElements.Length <= 0) return;
+        
+        for (int i = 0; i < _imageElements.Length; i++)
         {
-            for (int i = 0; i < _imageElements.Length; i++)
-            {
-                _imageElements[i].DOColor(newColour, time)
-                                                .SetId("_images" + _id + i)
-                                                .SetEase(Ease.Linear)
-                                                .SetAutoKill(true)
-                                                .OnComplete(tweenCallback)
-                                                .Play();
-            }               
+            _imageElements[i].DOColor(newColour, time)
+                             .SetId($"_images{_id}{i}")
+                             .SetEase(Ease.Linear)
+                             .SetAutoKill(true)
+                             .OnComplete(tweenCallback)
+                             .Play();
         }
     }
 
     private void TextColourChangeProcess(Color newColour, float time, TweenCallback tweenCallback = null)
     {
-        DOTween.Kill("_mainText" + _id);
-
-        if (_textElements)
-        {
-            _textElements.DOColor(newColour, time)
-                         .SetId("_mainText" + _id)
-                         .SetEase(Ease.Linear)
-                         .SetAutoKill(true)
-                         .OnComplete(tweenCallback)
-                         .Play();
-        }
+        DOTween.Kill($"_mainText{_id}");
+        if (!_textElements) return;
+        
+        _textElements.DOColor(newColour, time)
+                     .SetId($"_mainText{_id}")
+                     .SetEase(Ease.Linear)
+                     .SetAutoKill(true)
+                     .OnComplete(tweenCallback)
+                     .Play();
     }
 
     public void SetAsDisabled()
@@ -243,12 +243,18 @@ public class UIColour
 
     private Color SelectedHighlight()
     {
+        bool highlightPercIsTheSame = Mathf.Approximately(_selectHighlightPerc, _scheme.SelectedPerc);
+        if (highlightPercIsTheSame) return _selectHighlightColour;
+        
+        _selectHighlightPerc = _scheme.SelectedPerc;
         float r = ColourCalc(_scheme.SelectedColour.r);
         float g = ColourCalc(_scheme.SelectedColour.g);
         float b = ColourCalc(_scheme.SelectedColour.b);
-        return new Color(Mathf.Clamp(r * _scheme.SelectedPerc, 0, 1),
-                         Mathf.Clamp(g * _scheme.SelectedPerc, 0, 1),
-                         Mathf.Clamp(b * _scheme.SelectedPerc, 0, 1));
+        _selectHighlightColour = new Color(Mathf.Clamp(r * _scheme.SelectedPerc, 0, 1),
+                                           Mathf.Clamp(g * _scheme.SelectedPerc, 0, 1),
+                                           Mathf.Clamp(b * _scheme.SelectedPerc, 0, 1));
+        return _selectHighlightColour;
+
     }
 
     private float ColourCalc(float value)
@@ -257,10 +263,7 @@ public class UIColour
         {
             return 0.2f;
         }
-        else
-        {
-            return value;
-        }
+        return value;
     }
 
     private void KillTweens()
