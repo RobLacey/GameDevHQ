@@ -10,10 +10,13 @@ public class TestRunner : MonoBehaviour
     [SerializeField] private UINode _lastHighlighted;
     [SerializeField] private UINode _lastSelected;
     [SerializeField] private UIBranch _activeBranch;
-    [SerializeField] EventsForTest _eventsForTest;
-    [SerializeField] string _test1Test;
-    [SerializeField] string _test2Test;
-    [SerializeField] string _test3Test;
+    [SerializeField] private EventsForTest _eventsForTest;
+    [SerializeField] private string _test1Test;
+    [SerializeField] private string _test2Test;
+    [SerializeField] private string _test3Test;
+    [SerializeField] private string _test4Test;
+    [SerializeField] private string _test5Test;
+
 
     [System.Serializable]
     private class EventsForTest
@@ -25,7 +28,7 @@ public class TestRunner : MonoBehaviour
         [SerializeField] public UnityEvent _event5;
     }
 
-    readonly UIDataEvents _uiDataEvents = new UIDataEvents();
+    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
 
     private void SaveLastHighlighted(UINode newNode) => _lastHighlighted = newNode;
     private void SaveLastSelected(UINode newNode) => _lastSelected = newNode;
@@ -75,5 +78,13 @@ public class TestRunner : MonoBehaviour
     public void PrintTest3()
     {
         Debug.Log(_test3Test);
+    }
+    public void PrintTest4()
+    {
+        Debug.Log(_test4Test);
+    }
+    public void PrintTest5(bool value)
+    {
+        Debug.Log(_test5Test + " : " + value);
     }
 }

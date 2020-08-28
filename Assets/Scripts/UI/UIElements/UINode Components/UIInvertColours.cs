@@ -1,115 +1,74 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 
 [Serializable]
-public class UIInvertColours
+public class UIInvertColours : NodeFunctionBase
 {
-    [InfoBox("CANNOT have Text AND Image set.", EInfoBoxType.Warning)]
-    [SerializeField]  bool invertOnHighlight;
-    [SerializeField] bool invertOnSelected;
-    [SerializeField] [AllowNesting] [ShowIf(EConditionOperator.Or, "invertOnHighlight", "invertOnSelected")] [DisableIf("ImageSet")]
-    Text _text;
-    [SerializeField] [AllowNesting] [ShowIf(EConditionOperator.Or, "invertOnHighlight", "invertOnSelected")] [DisableIf("TextSet")]
-    Image _image;
-    [SerializeField] [AllowNesting] [ShowIf("invertOnHighlight")] Color invertedHighlightColour = Color.white;
-    [SerializeField] [AllowNesting] [ShowIf("invertOnSelected")] Color invertedSelectedColour = Color.white;
+    [InfoBox("ONLY set to objects not effected by the Colour effects", EInfoBoxType.Warning)]
+    
+    [SerializeField]
+    private bool _invertOnHighlight;
+    [SerializeField] private bool _invertOnSelected;
+    [SerializeField] [AllowNesting] [DisableIf("ImageSet")]
+    private Text _text;
+    [SerializeField] [AllowNesting] [DisableIf("TextSet")]
+    private Image _image;
+     [SerializeField] private Color _invertedColour = Color.white;
 
     //Variables
-    bool _canInvert;
-    Color _checkMarkStartColour = Color.white;
-    Color _textStartColour = Color.white;
+    private Color _checkMarkStartColour = Color.white;
+    private Color _textStartColour = Color.white;
+    private bool _hasText;
+    private bool _hasImage;
+    
+    //Properties
+    protected override bool FunctionNotActive() => !_text && !_image && !CanActivate;
+    protected override bool CanBeSelected() => _invertOnSelected;
+    protected override bool CanBeHighlighted() => _invertOnHighlight;
+    protected override bool CanBePressed() => false;
 
-    #region Editor Scripts
-    private bool TextSet()
+    // Editor Scripts
+    private bool TextSet() => _text != null;
+    private bool ImageSet() => _image != null;
+
+    public override void OnAwake(UINode node, UiActions uiActions)
     {
-        if (_text != null) { return true; }
-        return false;
-    }
-    private bool ImageSet()
-    {
-        if (_image != null) { return true; }
-        return false;
+        base.OnAwake(node, uiActions);
+        CanActivate = (_enabledFunctions & Setting.InvertColourCorrection) != 0;
+        SetInverseColourSettings();
     }
 
-    #endregion
-    public Action<UIEventTypes, bool> OnAwake(Setting setting)
+    private void SetInverseColourSettings()
     {
-        _canInvert = CheckSettings(setting);
         if (_image != null) _checkMarkStartColour = _image.color;
         if (_text != null) _textStartColour = _text.color;
-        return InvertColour;
+        _hasText = _text;
+        _hasImage = _image;
     }
 
-    public Action<UIEventTypes, bool> OnDisable()
+    private protected override void ProcessSelectedAndHighLighted() => ChangeToInvertedColour(_invertedColour);
+
+    private protected override void ProcessHighlighted() => ChangeToInvertedColour(_invertedColour);
+
+    private protected override void ProcessSelected() => ChangeToInvertedColour(_invertedColour);
+
+    private protected override void ProcessToNormal() => SetToStartingColour();
+
+    private protected override void ProcessPress() { }
+
+    private protected override void ProcessDisabled(bool isDisabled) => SetToStartingColour();
+
+    private void ChangeToInvertedColour(Color newColour)
     {
-        return InvertColour;
+        if (_hasImage) _image.color = newColour;
+        if (_hasText) _text.color = newColour;
     }
 
-    private bool CheckSettings(Setting setting)
+    private void SetToStartingColour()
     {
-        if (_text || _image && (setting & Setting.InvertColourCorrection) != 0)
-        {
-            return true;
-        }
-        return false;
+        if (_hasImage) _image.color = _checkMarkStartColour;
+        if (_hasText) _text.color = _textStartColour;
     }
-
-    private void InvertColour(UIEventTypes eventType, bool selected)
-    {
-        if (_canInvert)
-        {
-            switch (eventType)
-            {
-                case UIEventTypes.Normal:
-                    StartColour();
-                    break;
-                case UIEventTypes.Highlighted:
-                    if (invertOnHighlight)
-                    {
-                        ChangeColour(invertedHighlightColour);
-                    }
-                    else
-                    {
-                        StartColour();
-                    }
-                    break;
-                case UIEventTypes.Selected:
-                    if (invertOnSelected)
-                    {
-                        if (selected)
-                        {
-                            ChangeColour(invertedSelectedColour);
-                        }
-                        else
-                        {
-                            InvertColour(UIEventTypes.Highlighted, selected);
-                        }
-                    }
-                    else
-                    {
-                        StartColour();
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }    
-    }
-
-    private void ChangeColour(Color newColour)
-    {
-        if (_image != null) _image.color = newColour;
-        if (_text != null) _text.color = newColour;
-    }
-
-    private void StartColour()
-    {
-        if (_image != null) _image.color = _checkMarkStartColour;
-        if (_text != null) _text.color = _textStartColour;
-    }
-
 }

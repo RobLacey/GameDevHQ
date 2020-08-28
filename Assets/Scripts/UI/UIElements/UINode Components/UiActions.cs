@@ -1,10 +1,11 @@
 ﻿
 using System;
 
-public class Actions
+public class UiActions
 {
         public Action<bool> _whenPointerOver;
         public Action<bool> _isHighlighted;
         public Action<bool> _isSelected;
-        public Action<bool> _isPressed;
+        public Action _isPressed;
+        public Action<bool> _isDisabled;
 }

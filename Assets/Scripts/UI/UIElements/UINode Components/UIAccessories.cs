@@ -2,78 +2,73 @@
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
-using UnityEngine.EventSystems;
 
 [Serializable]
-public class UIAccessories
+public class UIAccessories : NodeFunctionBase
 {
     [SerializeField] [EnumFlags] AccessoryEventType _activateWhen = AccessoryEventType.None;
-    [SerializeField] [AllowNesting] [EnableIf("Activate")] Outline _useOutline;
-    [SerializeField] [AllowNesting] [EnableIf("Activate")] Shadow _useShadow;
     [SerializeField] Image[] _accessoriesList;
+    [SerializeField] private Outline[] _outlinesToUse;
+    [SerializeField] private Shadow[] _dropShadowsToUse;
 
     //Variables
-    bool _canActivate;
+    protected override bool CanBeSelected() => (_activateWhen & AccessoryEventType.Selected) != 0;
+    protected  override bool CanBeHighlighted() => (_activateWhen & AccessoryEventType.Highlighted) != 0;
+    protected override bool CanBePressed() => false;
+    protected override bool FunctionNotActive() => !CanActivate || _activateWhen == AccessoryEventType.None;
 
-    //Editor Script
-    public bool Activate()
+    public override void OnAwake(UINode node, UiActions uiActions)
     {
-        if ((_activateWhen == AccessoryEventType.None))
-        {
-            return false;
-        }
-        return true;
+        CanActivate = (node.ActiveFunctions & Setting.Accessories) != 0;
+        if(FunctionNotActive()) return;
+        
+        base.OnAwake(node, uiActions);
+        StartActivation(false);
     }
 
-    public Action<UIEventTypes, bool> OnAwake(Setting setting)
+    private void StartActivation(bool active)
     {
-        _canActivate = (setting & Setting.Accessories) != 0;
-        ActivatePointer(UIEventTypes.Normal, false);
-        return ActivatePointer;
-    }
-
-    public Action<UIEventTypes, bool> OnDisable()
-    {
-        return ActivatePointer;
-    }
-
-    private void ActivatePointer(UIEventTypes uIEventTypes, bool active)
-    {
-        if (!_canActivate) { ActivateAccessories(false); return; }
-
-        switch (uIEventTypes)
-        {
-            case UIEventTypes.Normal:
-                //ebug.Log(EventSystem.cur.isFocused()rent);
-                ActivateAccessories(false);
-                break;
-            case UIEventTypes.Highlighted:
-                if ((_activateWhen & AccessoryEventType.Highlighted) != 0)
-                {
-                    ActivateAccessories(true);
-                }
-                break;
-            case UIEventTypes.Selected:
-                if ((_activateWhen & AccessoryEventType.Selected) != 0)
-                {
-                    ActivateAccessories(true);
-                }
-                break;
-            case UIEventTypes.Cancelled:
-                ActivateAccessories(false);
-                break;
-        }
+        ActivateAccessories(active);
+        ProcessOutLines(active);
+        ProcessShadows(active);
     }
 
     private void ActivateAccessories(bool active)
     {
-        if(_useOutline) _useOutline.enabled = active;
-        if(_useShadow) _useShadow.enabled = active;
-        if (_accessoriesList.Length <= 0) return;
-        
-        foreach (var item in _accessoriesList)
+        if (_accessoriesList.Length == 0) return;
+        foreach (var image in _accessoriesList)
         {
-            item.enabled = active;
+            image.enabled = active;
         }
     }
+
+    private void ProcessOutLines(bool active)
+    {
+        if (_outlinesToUse.Length == 0) return;
+        foreach (var outLine in _outlinesToUse)
+        { 
+            outLine.enabled = active;
+        }
+    }
+
+    private void ProcessShadows(bool active)
+    {
+        if (_dropShadowsToUse.Length == 0) return;
+        foreach (var shadow in _dropShadowsToUse)
+        {
+            shadow.enabled = active;
+        }
+    }
+
+    private protected override void ProcessSelectedAndHighLighted() => StartActivation(true);
+
+    private protected override void ProcessHighlighted() => StartActivation(true);
+
+    private protected override void ProcessSelected() => StartActivation(true);
+
+    private protected override void ProcessToNormal() => StartActivation(false);
+    
+    private protected override void ProcessPress()  {  }
+
+    private protected override void ProcessDisabled(bool isDisabled) => StartActivation(false);
 }

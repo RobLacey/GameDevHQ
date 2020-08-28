@@ -307,9 +307,9 @@
               <e p="UIHub.cs" t="Include" />
               <e p="UIInput.cs" t="Include" />
               <e p="UINode Components" t="Include">
-                <e p="Actions.cs" t="Include" />
                 <e p="NodeFunctionBase.cs" t="Include" />
                 <e p="UIAccessories.cs" t="Include" />
+                <e p="UiActions.cs" t="Include" />
                 <e p="UIAudio.cs" t="Include" />
                 <e p="UIColour.cs" t="Include" />
                 <e p="UIEvents.cs" t="Include" />

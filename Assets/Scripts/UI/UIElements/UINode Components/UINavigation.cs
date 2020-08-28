@@ -13,28 +13,14 @@ public class UINavigation
     [SerializeField] [AllowNesting] [ShowIf("RightLeftNav")] UINode left;
     [SerializeField] [AllowNesting] [ShowIf("RightLeftNav")] UINode right;
 
-    #region Editor Scripts & Internal Classes
+    //Editor Scripts
     public bool NotAToggle { get; set; }
 
-    public bool UpDownNav()
-    {
-        if (_setNavigation == NavigationType.UpAndDown || _setNavigation == NavigationType.AllDirections)
-        {
-            return true;
-        }
-        return false;
-    }
+    public bool UpDownNav() 
+        => _setNavigation == NavigationType.UpAndDown || _setNavigation == NavigationType.AllDirections;
 
-    public bool RightLeftNav()
-    {
-        if (_setNavigation == NavigationType.RightAndLeft || _setNavigation == NavigationType.AllDirections)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    #endregion
+    public bool RightLeftNav() 
+        => _setNavigation == NavigationType.RightAndLeft || _setNavigation == NavigationType.AllDirections;
 
     //Variables
     UINode _myNode;
@@ -67,7 +53,6 @@ public class UINavigation
         else
         {
             _myNode.Audio.Play(UIEventTypes.Highlighted);
-            //_myBranch.SaveLastHighlighted(_myNode);
             _myNode.ThisNodeIsHighLighted();
             _myNode.SetAsHighlighted();
         }
@@ -112,7 +97,6 @@ public class UINavigation
             {
                 if (down)
                 {
-                    _myNode.TriggerExitEvent();
                     if (down.IsDisabled) { down.OnMove(eventData); return; }
                     down.Navigation.NavigateToNextNode();
                 }
@@ -122,7 +106,6 @@ public class UINavigation
             {
                 if (up)
                 {
-                    _myNode.TriggerExitEvent();
                     if (up.IsDisabled) { up.OnMove(eventData); return; }
                     up.Navigation.NavigateToNextNode();
                 }
@@ -135,10 +118,8 @@ public class UINavigation
             {
                 if (left)
                 {
-                    _myNode.TriggerExitEvent();
                     if (left.IsDisabled) { left.OnMove(eventData); return; }
                     left.Navigation.NavigateToNextNode();
-
                 }
             }
 
@@ -146,10 +127,8 @@ public class UINavigation
             {
                 if (right)
                 {
-                    _myNode.TriggerExitEvent();
                     if (right.IsDisabled) { right.OnMove(eventData); return; }
                     right.Navigation.NavigateToNextNode();
-
                 }
             }
         }
@@ -167,7 +146,7 @@ public class UINavigation
         {
             _myNode.Audio.Play(UIEventTypes.Highlighted);
         }
-        _myNode.TriggerEnterEvent();
+        //_myNode.TriggerEnterEvent();
         _myNode.ThisNodeIsHighLighted();
         _myNode.SetAsHighlighted();
     }

@@ -1,4 +1,5 @@
-﻿using UnityEngine.EventSystems;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public partial class UINode
 {
@@ -6,8 +7,7 @@ public partial class UINode
     {
         if (IsDisabled || _allowKeys) return;
         _pointerOver = true;
-        _actions._whenPointerOver?.Invoke(true);
-        TriggerEnterEvent();
+        _uiActions._whenPointerOver?.Invoke(true);
         _navigation.PointerEnter(eventData);
     }
 
@@ -15,8 +15,7 @@ public partial class UINode
     {
         if (IsDisabled || _allowKeys) return;
         _pointerOver = false;
-        _actions._whenPointerOver?.Invoke(false);
-        TriggerExitEvent();
+        _uiActions._whenPointerOver?.Invoke(false);
         _navigation.PointerExit(eventData);
     }
 
@@ -29,12 +28,12 @@ public partial class UINode
     public void OnPointerUp(PointerEventData eventData)
     {
         if (NotActiveSlider) return;
-        InvokeClickEvents();
         TurnNodeOnOff();
     }
 
     public void OnMove(AxisEventData eventData)
     {
+        _uiActions._whenPointerOver?.Invoke(false);
         _navigation.KeyBoardOrController(eventData);
     }
 
@@ -46,8 +45,13 @@ public partial class UINode
         if (AmSlider) //TODO Need to check this still works properly
         {
             AmSlider.interactable = IsSelected;
-            if (!IsSelected) InvokeClickEvents();
         }
         PressedActions();
+    }
+    
+    public void OnSelect(BaseEventData eventData)
+    {
+        if(!_allowKeys) return;
+        _uiActions._whenPointerOver?.Invoke(true);
     }
 }
