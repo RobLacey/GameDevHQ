@@ -60,9 +60,16 @@ public class UIColour : NodeFunctionBase
 
     private protected override void ProcessSelectedAndHighLighted()
     {
-        _tweenImageToColour = SelectedHighlight();
-        _tweenTextToColour = SelectedHighlight();
-        DoColourChange(_scheme.TweenTime);
+        if (!CanBeHighlighted())
+        {
+            ProcessSelected();
+        }
+        else
+        {
+            _tweenImageToColour = SelectedHighlight();
+            _tweenTextToColour = SelectedHighlight();
+            DoColourChange(_scheme.TweenTime);
+        }
     }
     
     private protected override void ProcessHighlighted()
@@ -74,9 +81,16 @@ public class UIColour : NodeFunctionBase
 
     private protected override void ProcessSelected()
     {
-        _tweenImageToColour = _scheme.SelectedColour;
-        _tweenTextToColour = _scheme.SelectedColour;
-        DoColourChange(_scheme.TweenTime);
+        if(_pointerOver && CanBeHighlighted())
+        {
+            ProcessSelectedAndHighLighted();
+        }
+        else
+        {
+            _tweenImageToColour = _scheme.SelectedColour;
+            _tweenTextToColour = _scheme.SelectedColour;
+            DoColourChange(_scheme.TweenTime);
+        }
     }
     
     private protected override void ProcessToNormal()

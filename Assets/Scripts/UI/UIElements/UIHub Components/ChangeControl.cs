@@ -123,7 +123,6 @@ public class ChangeControl
         _usingMouse = true;
         _usingKeysOrCtrl = false;
         SetAllowKeys();
-        _lastHighlighted.SetNotHighlighted();
     }
 
     private void ActivateKeysOrControl()

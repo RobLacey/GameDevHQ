@@ -33,8 +33,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     UIColour _colours;
     [SerializeField] [Label("Invert Colour when Highlighted or Selected")] [ShowIf("NeedInvert")] 
     UIInvertColours _invertColourCorrection;
-    [SerializeField] [Label("Swap Images, Text or SetUp Toggle Image List")] [ShowIf("NeedSwap")] 
-    UISwapper _swapImageOrText;
+    [SerializeField] [Label("Swap Images or Text on Select or Highlight")] [ShowIf("NeedSwap")] 
+    UIImageTextToggle _swapImageOrText;
     [SerializeField] [Label("Size And Position Effect Settings")] [ShowIf("NeedSize")] 
     UISizeAndPosition _sizeAndPos;
     [SerializeField] [Label("Accessories, Outline Or Shadow Settings")] [ShowIf("NeedAccessories")] 
@@ -60,7 +60,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private readonly UiActions _uiActions = new UiActions();
 
     //Delegates
-    private Action<UIEventTypes, bool> _startUiFunctions;
+    //private Action<UIEventTypes, bool> _startUiFunctions;
 
     //Events
     public static event Action<EscapeKey> DoCancelButtonPressed;
@@ -91,12 +91,17 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         }
         else if (_lastHighlighted == this)
         {
-            ThisNodeIsHighLighted();
+            //ThisNodeIsHighLighted();
             SetAsHighlighted();
         }
     }
     
-    private void SaveAllowKeys(bool allow) => _allowKeys = allow;
+    private void SaveAllowKeys(bool allow)
+    {
+        _allowKeys = allow;
+        if(!_allowKeys && _lastHighlighted == this)
+            SetNotHighlighted();
+    }
 
     private void SaveGameIsPaused(bool isPaused)
     {
@@ -113,17 +118,22 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private void SaveLastSelected(UINode newNode) // TODO Use to loose set not selected
     {
         if (DeselectNodeNotAllowed()) return;
-        
-        if (newNode.MyBranch.MyParentBranch.LastSelected != this)
+
+        if (NewNodeIsNotBranchesChild(newNode))
         {
             Deactivate();
+            SetNotSelected_NoEffects();
         }
-        
-        bool DeselectNodeNotAllowed() 
+        bool DeselectNodeNotAllowed()
             => newNode == this || !IsSelected || IsToggleGroup || IsToggleNotLinked || _holdState;
+
+        bool NewNodeIsNotBranchesChild(UINode uiNode) => uiNode.MyBranch.MyParentBranch.LastSelected != this;
     }
 
-    private void SaveHighLighted(UINode newNode) => _lastHighlighted = newNode;
+    private void SaveHighLighted(UINode newNode) //TODO Review
+    {
+        _lastHighlighted = newNode;
+    }
 
     public bool IsDisabled
     {
@@ -148,19 +158,20 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
 
     private void SetUpUiFunctions()
     {
-        _audio.OnAwake(_enabledFunctions);
         _colours.OnAwake(this, _uiActions);
-        _tooltips.OnAwake(_enabledFunctions, gameObject.name);
         _events.OnAwake(this, _uiActions);
-        _navigation.OnAwake(this, MyBranch, _enabledFunctions);
         _accessories.OnAwake(this, _uiActions);
         _invertColourCorrection.OnAwake(this, _uiActions);
+        _swapImageOrText.OnAwake(this, _uiActions);
+        _sizeAndPos.OnAwake(this, _uiActions);
+        
+        _audio.OnAwake(_enabledFunctions);
+        _navigation.OnAwake(this, MyBranch, _enabledFunctions);
+        _tooltips.OnAwake(_enabledFunctions, gameObject.name);
     }
 
     private void OnEnable()
     {
-        _startUiFunctions += _sizeAndPos.OnAwake(transform, _enabledFunctions);
-        _startUiFunctions += _swapImageOrText.OnAwake(IsSelected, _enabledFunctions);
 
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
@@ -175,8 +186,9 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _accessories.OnDisable(_uiActions);
         _events.OnDisable(_uiActions);
         _invertColourCorrection.OnDisable(_uiActions);
-        _startUiFunctions -= _sizeAndPos.OnDisable();
-        _startUiFunctions -= _swapImageOrText.OnDisable();
+        _swapImageOrText.OnDisable(_uiActions);
+        
+        //_startUiFunctions -= _sizeAndPos.OnDisable();
     }
 
     private void Start()
@@ -194,7 +206,6 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         }
 
         _lastHighlighted = this;
-        ThisNodeIsHighLighted();
         
         if (_allowKeys && _inMenu)
         {
@@ -202,7 +213,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         }
         else
         {
-            SetNotHighlighted();
+            ThisNodeIsHighLighted();
+            //SetNotHighlighted();
         }
     }
 
@@ -241,9 +253,9 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         }
         _uiActions._isSelected?.Invoke(IsSelected);
         _uiActions._isPressed?.Invoke();
-        _startUiFunctions.Invoke(UIEventTypes.Selected, IsSelected);
-        _sizeAndPos.WhenPressed(IsSelected);
-        _swapImageOrText.CycleToggle(IsSelected);
+        //_startUiFunctions.Invoke(UIEventTypes.Selected, IsSelected);
+        //_sizeAndPos.WhenPressed(IsSelected);
+        //_swapImageOrText.CycleToggle(IsSelected);
     }
 
     public void Deactivate()
@@ -278,7 +290,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     {
         if (IsDisabled) return;
         _uiActions._isHighlighted?.Invoke(true);
-        _startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
+        ThisNodeIsHighLighted();
+        //_startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
         StartCoroutine(_tooltips.StartToolTip(MyBranch, _rectForTooltip));
     }
 
@@ -287,57 +300,57 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         StopAllCoroutines();
         _tooltips.HideToolTip();
         _uiActions._isHighlighted?.Invoke(false);
+        
+       // if (IsDisabled) return;
 
-        if (IsDisabled) return;
-
-        if (IsSelected)
-        {
-            if (_pointerOver)
-            {
-                _startUiFunctions.Invoke(UIEventTypes.Selected, IsSelected);
-            }
-            else
-            {
-                _startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
-            }
-        }
-        else
-        {
-            if (_pointerOver)
-            {
-                _startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
-            }
-            else
-            {
-                _startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
-            }
-        }
+        // if (IsSelected)
+        // {
+        //     if (_pointerOver)
+        //     {
+        //         //_startUiFunctions.Invoke(UIEventTypes.Selected, IsSelected);
+        //     }
+        //     else
+        //     {
+        //         //_startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
+        //     }
+        // }
+        // else
+        // {
+        //     if (_pointerOver)
+        //     {
+        //         _startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
+        //     }
+        //     else
+        //     {
+        //         _startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
+        //     }
+        // }
     }
 
     public void SetSelected_NoEffects() //TODO Review - Add DoSelect
     {
         IsSelected = true;
         _uiActions._isSelected?.Invoke(true);
-        _uiActions._isPressed?.Invoke();
+        //_uiActions._isPressed?.Invoke();
         SetNotHighlighted();
-        _sizeAndPos.WhenPressed(IsSelected);
-        _swapImageOrText.CycleToggle(IsSelected);
+        //_sizeAndPos.WhenPressed(IsSelected);
+        //_swapImageOrText.CycleToggle(IsSelected);
     }
 
     public void SetNotSelected_NoEffects()
     {
         IsSelected = false;
         _uiActions._isSelected?.Invoke(false);
-        _uiActions._isPressed?.Invoke();
+        //_uiActions._isPressed?.Invoke();
         SetNotHighlighted();
-        _sizeAndPos.WhenPressed(IsSelected);
-        _swapImageOrText.CycleToggle(IsSelected);
+        //_sizeAndPos.WhenPressed(IsSelected);
+        //_swapImageOrText.CycleToggle(IsSelected);
     }
 
     private void HandleIfDisabled()
     {
         Deactivate();
-        _startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
+        //_startUiFunctions.Invoke(UIEventTypes.Normal, IsSelected);
        _uiActions._isDisabled?.Invoke(_isDisabled);
     }
 

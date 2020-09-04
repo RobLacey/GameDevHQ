@@ -80,7 +80,6 @@ public class UIHomeGroup
     {
         if (!_onHomeScreen) return;
         if(_lastActiveBranch == newBranch) return;
-
         _lastActiveBranch = newBranch;
         
         if (_fromHotKey)

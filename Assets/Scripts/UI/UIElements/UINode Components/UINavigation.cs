@@ -53,16 +53,16 @@ public class UINavigation
         else
         {
             _myNode.Audio.Play(UIEventTypes.Highlighted);
-            _myNode.ThisNodeIsHighLighted();
+            //_myNode.ThisNodeIsHighLighted();
             _myNode.SetAsHighlighted();
         }
     }
 
-    public void PointerExit(PointerEventData eventData)
-    {
-        if (eventData.pointerDrag) return;                      //Enables drag on slider to have pressed colour
-        _myNode.SetNotHighlighted();
-    }
+    // public void PointerExit(PointerEventData eventData)
+    // {
+    //     if (eventData.pointerDrag) return;                      //Enables drag on slider to have pressed colour
+    //     _myNode.SetNotHighlighted();
+    // }
 
     public void KeyBoardOrController(AxisEventData eventData)
     {
@@ -132,7 +132,6 @@ public class UINavigation
                 }
             }
         }
-        _myNode.SetNotHighlighted();
     }
 
     public void NavigateToNextNode()
@@ -147,7 +146,7 @@ public class UINavigation
             _myNode.Audio.Play(UIEventTypes.Highlighted);
         }
         //_myNode.TriggerEnterEvent();
-        _myNode.ThisNodeIsHighLighted();
+        //_myNode.ThisNodeIsHighLighted();
         _myNode.SetAsHighlighted();
     }
 

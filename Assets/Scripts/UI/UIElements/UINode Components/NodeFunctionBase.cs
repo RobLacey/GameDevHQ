@@ -3,11 +3,13 @@ using UnityEngine;
 
 public abstract class NodeFunctionBase
 {
-    private bool _pointerOver;
+    protected bool _pointerOver;
     //protected bool _isPressed;
     protected bool _isSelected;
+    protected bool _isHighlighted;
     protected Setting _enabledFunctions;
-    UIControlsEvents _uiControlsEvents = new UIControlsEvents();
+    readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
+    protected UINode _myNodeTestStore;
 
     //Properties
     protected virtual bool CanActivate { get; set; }
@@ -15,9 +17,15 @@ public abstract class NodeFunctionBase
     protected abstract bool CanBeHighlighted();
     protected abstract bool CanBePressed();
     protected abstract bool FunctionNotActive();
-    protected virtual void SavePointerStatus(bool pointerOver) => _pointerOver = pointerOver;
-    private void OnChangeControls() => _pointerOver = false;
 
+    protected virtual void SavePointerStatus(bool pointerOver) => _pointerOver = pointerOver;
+
+    private void OnAllowingKeys(bool allowKeys)
+    {
+        if (allowKeys)
+            _pointerOver = false;
+    }
+    
     public virtual void OnAwake(UINode node, UiActions uiActions)
     {
         uiActions._whenPointerOver += SavePointerStatus;
@@ -25,8 +33,9 @@ public abstract class NodeFunctionBase
         uiActions._isSelected += SaveIsSelected;
         uiActions._isPressed += SaveIsPressed;
         uiActions._isDisabled += IsDisabled;
-        _uiControlsEvents.SubscribeOnChangeControls(OnChangeControls);
+        _uiControlsEvents.SubscribeToAllowKeys(OnAllowingKeys);
         _enabledFunctions = node.ActiveFunctions;
+        _myNodeTestStore = node;
     }
 
     public void OnDisable(UiActions uiActions)
@@ -49,9 +58,10 @@ public abstract class NodeFunctionBase
     {
         if (FunctionNotActive()) return;
         ProcessFunctionActivation(isHighlighted);
+        _isHighlighted = isHighlighted;
     }
     
-    private void SaveIsPressed(/*bool pressed*/)
+    private void SaveIsPressed()
     {
         if (FunctionNotActive()) return;
         if (!CanBePressed()) return;

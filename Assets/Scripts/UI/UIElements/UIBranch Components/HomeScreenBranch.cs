@@ -44,7 +44,7 @@ public class HomeScreenBranchBase: BranchBase
 
         if (startBranch == _myBranch)
         {
-            SetBranchAsStartPoistion();
+            SetBranchAsStartPosition();
             return;
         }
 
@@ -52,7 +52,7 @@ public class HomeScreenBranchBase: BranchBase
         _myBranch.MoveToThisBranch();
     }
 
-    private void SetBranchAsStartPoistion()
+    private void SetBranchAsStartPosition()
     {
         _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
         _myBranch.DefaultStartOnThisNode.ThisNodeIsSelected();

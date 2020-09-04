@@ -25,8 +25,7 @@ public static class UIBranchGroups
     public static int SwitchBranchGroup(List<GroupList> groupsList, int passedIndex, SwitchType switchType)
     {
         int newIndex;
-        groupsList[passedIndex]._startNode.SetNotHighlighted();
-        
+       
         // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
         if (switchType == SwitchType.Positive)
         {

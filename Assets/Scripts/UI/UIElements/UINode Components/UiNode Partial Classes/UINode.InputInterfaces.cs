@@ -16,7 +16,8 @@ public partial class UINode
         if (IsDisabled || _allowKeys) return;
         _pointerOver = false;
         _uiActions._whenPointerOver?.Invoke(false);
-        _navigation.PointerExit(eventData);
+        SetNotHighlighted();
+       // _navigation.PointerExit(eventData);
     }
 
     public void OnPointerDown(PointerEventData eventData)
