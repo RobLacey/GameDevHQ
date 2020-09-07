@@ -26,6 +26,8 @@ public class Shake : INodeTween
         }
     }
     
+    //TODO Fix Loop to reset properly
+
     private void ShakeTo()
     {
         int loopTime = 0;

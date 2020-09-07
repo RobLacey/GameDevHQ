@@ -7,23 +7,32 @@ public class UIImageTextToggle : NodeFunctionBase
 {
     [Header("Toggle Ui Image Settings")]
     [SerializeField] private ChangeWhen _changeWhen = ChangeWhen.OnPressed;
-    [SerializeField] Image _toggleIsOff;
-    [SerializeField] Image _toggleIsOn;
+    [SerializeField] private Image _toggleIsOff;
+    [SerializeField] private Image _toggleIsOn;
+    
     [Header("Swapping UI Text Settings")]
-    [SerializeField]  Text _textToSwap;
-    [SerializeField] string _changeTextToo;
+    [SerializeField] private Text _textToSwap;
+    [SerializeField] private string _changeTextToo;
+
+    // [Header("On Controls Change Settings")] 
+    // [SerializeField] private IsActive _onControlChanged = IsActive.No;
+    // [SerializeField] private Text _newText;
+    // [SerializeField] private Image _defaultImage;
+    // [SerializeField] private Image _newImage;
 
     //variables
     private string _startingText;
+    private UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     
     //Properties
     protected override bool CanBeSelected() => _changeWhen == ChangeWhen.OnPressed;
     protected override bool CanBeHighlighted() => _changeWhen == ChangeWhen.OnHighlight;
     protected override bool CanBePressed() => false;
     protected override bool FunctionNotActive() => !CanActivate;
+    public bool ToggleOnNewControls => _changeWhen == ChangeWhen.OnControlChanged;
 
     //Enum
-    private enum ChangeWhen { OnHighlight, OnPressed }
+    private enum ChangeWhen { OnHighlight, OnPressed, OnControlChanged }
 
     public override void OnAwake(UINode node, UiActions uiActions)
     {
@@ -32,6 +41,7 @@ public class UIImageTextToggle : NodeFunctionBase
                       && CacheAndCheckForStartingUIElements();
         
         CycleToggle(_isSelected);
+        _uiControlsEvents.SubscribeToAllowKeys(OnControlsChanged);
     }
 
     private bool CacheAndCheckForStartingUIElements()
@@ -56,6 +66,13 @@ public class UIImageTextToggle : NodeFunctionBase
             ToggleImages(false);  
             ToggleText(false);
         }
+    }
+
+    private void OnControlsChanged(bool keysActive)
+    {
+        if (FunctionNotActive() || !ToggleOnNewControls) return;
+        //TODO Double check and improve this function
+        CycleToggle(keysActive);
     }
 
     private void ToggleText(bool isOn)

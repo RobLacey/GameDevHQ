@@ -309,6 +309,7 @@
               <e p="UINode Components" t="Include">
                 <e p="NodeFunctionBase.cs" t="Include" />
                 <e p="Size And Position Components" t="Include">
+                  <e p="Position.cs" t="Include" />
                   <e p="Punch.cs" t="Include" />
                   <e p="Shake.cs" t="Include" />
                 </e>
