@@ -12,63 +12,45 @@ public class UIAccessories : NodeFunctionBase
     [SerializeField] private Shadow[] _dropShadowsToUse;
 
     //Variables
-    protected override bool CanBeSelected() => (_activateWhen & AccessoryEventType.Selected) != 0;
     protected  override bool CanBeHighlighted() => (_activateWhen & AccessoryEventType.Highlighted) != 0;
-    protected override bool CanBePressed() => false;
+    protected override bool CanBePressed() => (_activateWhen & AccessoryEventType.Selected) != 0;
     protected override bool FunctionNotActive() => !CanActivate || _activateWhen == AccessoryEventType.None;
 
     public override void OnAwake(UINode node, UiActions uiActions)
     {
-        CanActivate = (node.ActiveFunctions & Setting.Accessories) != 0;
-        if(FunctionNotActive()) return;
-        
         base.OnAwake(node, uiActions);
+        CanActivate = (node.ActiveFunctions & Setting.Accessories) != 0;
         StartActivation(false);
     }
 
     private void StartActivation(bool active)
     {
-        ActivateAccessories(active);
-        ProcessOutLines(active);
-        ProcessShadows(active);
+        ProcessEffect(_accessoriesList, active);
+        ProcessEffect(_outlinesToUse, active);
+        ProcessEffect(_dropShadowsToUse, active);
     }
 
-    private void ActivateAccessories(bool active)
+    private void ProcessEffect(Array array, bool active)
     {
-        if (_accessoriesList.Length == 0) return;
-        foreach (var image in _accessoriesList)
+        if (array.Length == 0) return;
+        
+        foreach (Behaviour item in array)
         {
-            image.enabled = active;
+            item.enabled = active;
         }
     }
 
-    private void ProcessOutLines(bool active)
+    protected override void SavePointerStatus(bool pointerOver)
     {
-        if (_outlinesToUse.Length == 0) return;
-        foreach (var outLine in _outlinesToUse)
-        { 
-            outLine.enabled = active;
-        }
+        if(FunctionNotActive() || !CanBeHighlighted() || CanBePressed() && _isSelected) return;
+        StartActivation(pointerOver);
     }
 
-    private void ProcessShadows(bool active)
+    private protected override void ProcessPress()
     {
-        if (_dropShadowsToUse.Length == 0) return;
-        foreach (var shadow in _dropShadowsToUse)
-        {
-            shadow.enabled = active;
-        }
+        if(FunctionNotActive() || CanBeHighlighted() || !CanBePressed()) return;
+        StartActivation(_isSelected);
     }
-
-    private protected override void ProcessSelectedAndHighLighted() => StartActivation(true);
-
-    private protected override void ProcessHighlighted() => StartActivation(true);
-
-    private protected override void ProcessSelected() => StartActivation(true);
-
-    private protected override void ProcessToNormal() => StartActivation(false);
-    
-    private protected override void ProcessPress()  {  }
 
     private protected override void ProcessDisabled(bool isDisabled) => StartActivation(false);
 }

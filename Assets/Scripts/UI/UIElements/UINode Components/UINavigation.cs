@@ -58,11 +58,11 @@ public class UINavigation
         }
     }
 
-    // public void PointerExit(PointerEventData eventData)
-    // {
-    //     if (eventData.pointerDrag) return;                      //Enables drag on slider to have pressed colour
-    //     _myNode.SetNotHighlighted();
-    // }
+    public void PointerExit(PointerEventData eventData)
+    {
+        if (eventData.pointerDrag) return;                      //Enables drag on slider to have pressed colour
+        _myNode.SetNotHighlighted();
+    }
 
     public void KeyBoardOrController(AxisEventData eventData)
     {

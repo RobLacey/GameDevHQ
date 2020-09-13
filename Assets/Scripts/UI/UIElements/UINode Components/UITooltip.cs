@@ -8,46 +8,60 @@ using NaughtyAttributes;
 public class UITooltip
 {
     [Header("General Settings")]
-    [SerializeField] RectTransform _mainCanvas;
-    [SerializeField] Camera _UICamera = null;
-    [SerializeField] TooltipType _tooltipType = TooltipType.Follow;
-    [Header("Mouse & Global Fixed Posiiton Settings", order = 2)]
-    [SerializeField] [AllowNesting] [Label("Tooltip Position")] ToolTipAnchor _toolTipPosition;
-    [SerializeField] [AllowNesting] [ShowIf("Fixed")] RectTransform _groupFixedPosition;
-    [SerializeField] [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")] float _mousePaddingX;
-    [SerializeField] [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")] float _mousePaddingY;
+    [SerializeField]
+    private RectTransform _mainCanvas;
+    [SerializeField] private Camera _uiCamera = null;
+    [SerializeField] private TooltipType _tooltipType = TooltipType.Follow;
+    [Header("Mouse & Global Fixed Position Settings", order = 2)]
+    [SerializeField] [AllowNesting] [Label("Tooltip Position")]
+    private ToolTipAnchor _toolTipPosition;
+    [SerializeField] [AllowNesting] [ShowIf("Fixed")]
+    private RectTransform _groupFixedPosition;
+    [SerializeField] [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")]
+    private float _mousePaddingX;
+    [SerializeField] [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")]
+    private float _mousePaddingY;
     [Header("Keyboard and Controller Settings")]
-    [SerializeField] [AllowNesting] [Label("Tooltip Preset")] [HideIf("Fixed")] UseSide _positionToUse = UseSide.ToTheRightOf;
-    [SerializeField] [AllowNesting] [Label("Offset Position")] [HideIf("Fixed")] ToolTipAnchor _keyboardPosition;
-    [SerializeField] [AllowNesting] [Label("GameObject Marker")] [ShowIf("UseGameObject")] RectTransform _fixedPosition;
-    [SerializeField] [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")] float _keyboardPaddingX;
-    [SerializeField] [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")] float _keyboardPaddingY;
+    [SerializeField] [AllowNesting] [Label("Tooltip Preset")] [HideIf("Fixed")]
+    private UseSide _positionToUse = UseSide.ToTheRightOf;
+    [SerializeField] [AllowNesting] [Label("Offset Position")] [HideIf("Fixed")]
+    private ToolTipAnchor _keyboardPosition;
+    [SerializeField] [AllowNesting] [Label("GameObject Marker")] [ShowIf("UseGameObject")]
+    private RectTransform _fixedPosition;
+    [SerializeField] [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")]
+    private float _keyboardPaddingX;
+    [SerializeField] [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")]
+    private float _keyboardPaddingY;
     [Header("Other Settings")]
-    [SerializeField] [Range(0f, 50f)] float _screenSafeZone = 10;
+    [SerializeField] [Range(0f, 50f)]
+    private float _screenSafeZone = 10;
     [SerializeField] [AllowNesting] [Label("Display Tooltip Delay")] public float _delay = 1f;
-    [SerializeField] [AllowNesting] [ShowIf("BuildTips")] [Label("Delay Unitl Next..")] float _buildDelay = 1f;
-    [SerializeField] LayoutGroup[] _listOfTooltips = new LayoutGroup[0];
+    [SerializeField] [AllowNesting] [ShowIf("BuildTips")] [Label("Delay Until Next..")]
+    private float _buildDelay = 1f;
+    [SerializeField] private LayoutGroup[] _listOfTooltips = new LayoutGroup[0];
 
     //Variables
-    GameObject _tooltipsParent;
-    string _toolTipBucketName = "ToolTipHolder";
-    Vector2 tooltipPos;
-    LayoutGroup _layout;
-    RectTransform _rectTransform;
-    RectTransform[] _tooltipsRects;
-    Canvas _toolTipCanvas;
-    Canvas[] _cachedCanvas;
-    float _canvasWidth;
-    float _canvasHeight;
-    Vector3[] _myCorners = new Vector3[4];
+    private GameObject _tooltipsParent;
+    private string _toolTipBucketName = "ToolTipHolder";
+    private Vector2 _tooltipPos;
+    private LayoutGroup _layout;
+    private RectTransform _rectTransform;
+    private RectTransform[] _tooltipsRects;
+    private Canvas _toolTipCanvas;
+    private Canvas[] _cachedCanvas;
+    private Vector3[] _myCorners = new Vector3[4];
     private Coroutine _coroutineBuild;
     private Coroutine _coroutineStart;
     private bool _allowKeys;
+    private ToolTipsCalcs _calcs;
 
     //Enums & Properties
-    enum UseSide { ToTheRightOf, ToTheLeftOf, GameObjectAsPosition  }
+    private enum UseSide { ToTheRightOf, ToTheLeftOf, GameObjectAsPosition  }
     public bool IsActive { get; set; }
     public bool CanActivate { get; private set; }
+    private Vector2 KeyboardPadding => new Vector2(_keyboardPaddingX, _keyboardPaddingY);
+    private Vector2 MousePadding => new Vector2(_mousePaddingX, _mousePaddingY);
+
 
     //Editor Scripts
     public bool Fixed() { return _tooltipType == TooltipType.Fixed; }
@@ -60,24 +74,23 @@ public class UITooltip
     public void OnAwake(Setting setting, string parent) //Make OnAwake
     {
         CanActivate = (setting & Setting.TooplTip) != 0;
+        SetUp(parent);
+    }
 
-        if (CanActivate)
+    private void SetUp(string parent)
+    {
+        if (!CanActivate) return;
+        if (_listOfTooltips.Length == 0)
         {
-            if (_listOfTooltips.Length == 0)
-            {
-                Debug.Log("No tooltips set on " + parent);
-                return;
-            }
+            Debug.Log("No tooltips set on " + parent);
+            return;
+        }
 
-            CreateBucket();
-            SetUpTooltips();
+        CreateBucket();
+        SetUpTooltips();
 
-            //Debug.Log(Camera.main.pixelWidth + "Camera");
-            //Debug.Log(_mainCanvas.rect.width + "Canvas");
-            _canvasWidth = (_mainCanvas.rect.width / 2) - _screenSafeZone;
-            _canvasHeight = (_mainCanvas.rect.height / 2) - _screenSafeZone;
-            ChangeControl.DoAllowKeys += SaveAllowKeys;
-        }    
+        _calcs = new ToolTipsCalcs(_mainCanvas, _screenSafeZone);
+        ChangeControl.DoAllowKeys += SaveAllowKeys;
     }
 
     private void SaveAllowKeys(bool allow)
@@ -131,7 +144,7 @@ public class UITooltip
         IsActive = false;
     }
 
-    public IEnumerator StartToolTip(UIBranch branch, RectTransform rectForTooltip)
+    public IEnumerator StartToolTip(RectTransform rectForTooltip)
     {
         if (CanActivate)
         {
@@ -140,6 +153,7 @@ public class UITooltip
             _coroutineBuild = StaticCoroutine.StartCoroutine(ToolTipBuild(rectForTooltip));
             _coroutineStart = StaticCoroutine.StartCoroutine(ActivateTooltip(_allowKeys));
         }
+
         yield return null;
     }
 
@@ -163,121 +177,70 @@ public class UITooltip
         while (IsActive)
         {
             SetToolTipPosition(isKeyboard);
-
-            if (!isKeyboard)
-            {
-                SetExactPosition(_toolTipPosition);
-            }
-            else
-            {
-                SetExactPosition(_keyboardPosition);
-            }
-
-            _rectTransform.anchoredPosition = new Vector2(tooltipPos.x, tooltipPos.y);
+            SetExactPosition(!isKeyboard ? _toolTipPosition : _keyboardPosition);
+            _rectTransform.anchoredPosition = new Vector2(_tooltipPos.x, _tooltipPos.y);
             _toolTipCanvas.enabled = true;
             yield return null;
         }
         yield return null;
     }
 
-    private void SetToolTipPosition(bool iskeyBoard)
+    private void SetToolTipPosition(bool isKeyboard)
     {
-        Vector3 position = Vector3.zero;
+        switch (_tooltipType)
+        {
+            case TooltipType.Follow when isKeyboard:
+                SetKeyboardTooltipPosition();
+                break;
+            case TooltipType.Follow:
+                SetMouseToolTipPosition();
+                break;
+            case TooltipType.Fixed:
+                SetFixedToolTipPosition();
+                break;
+        }
+    }
 
-        if (_tooltipType == TooltipType.Follow)
+    private void SetFixedToolTipPosition()
+    {
+        var position = _groupFixedPosition.position;
+        _tooltipPos = ReturnScreenPosition(position);
+    }
+
+    private void SetMouseToolTipPosition()
+    {
+        var position = Input.mousePosition;
+        _tooltipPos = ReturnScreenPosition(position) + MousePadding;
+    }
+    
+    private void SetKeyboardTooltipPosition()
+    {
+        Vector3 position;
+        switch (_positionToUse)
         {
-            if (iskeyBoard)
-            {
-                if (_positionToUse == UseSide.ToTheRightOf)
-                {
-                    position = _myCorners[3] + ((_myCorners[2] - _myCorners[3]) / 2);
-                }
-                else if (_positionToUse == UseSide.ToTheLeftOf)
-                {
-                    position = _myCorners[1] + ((_myCorners[0] - _myCorners[1]) / 2);
-                }
-                else
-                {
-                    position = _fixedPosition.position;
-                }
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvas, position, _UICamera, out tooltipPos);
-                tooltipPos += new Vector2(_keyboardPaddingX, _keyboardPaddingY);
-            }
-            else
-            {
-                position = Input.mousePosition;
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvas, position, _UICamera, out tooltipPos);
-                tooltipPos += new Vector2(_mousePaddingX, _mousePaddingY);
-            }
+            case UseSide.ToTheRightOf:
+                position = _myCorners[3] + ((_myCorners[2] - _myCorners[3]) / 2);
+                break;
+            case UseSide.ToTheLeftOf:
+                position = _myCorners[1] + ((_myCorners[0] - _myCorners[1]) / 2);
+                break;
+            default:
+                position = _fixedPosition.position;
+                break;
         }
-        else if (_tooltipType == TooltipType.Fixed)
-        {
-            position = _groupFixedPosition.position;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvas, position, _UICamera, out tooltipPos);
-        }
+        _tooltipPos = ReturnScreenPosition(position) + KeyboardPadding;
+    }
+    
+    private Vector2 ReturnScreenPosition(Vector3 position)
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle
+            (_mainCanvas, position, _uiCamera, out var toolTipPos);
+        return toolTipPos;
     }
 
 
     private void SetExactPosition(ToolTipAnchor toolTipAnchor)
     {
-        switch (toolTipAnchor)
-        {
-            case ToolTipAnchor.Centre:
-                tooltipPos.x = Mathf.Clamp(tooltipPos.x, (-_canvasWidth) + (_layout.preferredWidth / 2),
-                                                            (_canvasWidth) - (_layout.preferredWidth / 2));
-                tooltipPos.y = Mathf.Clamp(tooltipPos.y, (_layout.preferredHeight / 2) + (-_canvasHeight),
-                                                            _canvasHeight - (_layout.preferredHeight / 2));
-                _rectTransform.pivot = new Vector2(0.5f, 0.5f);
-                break;
-            case ToolTipAnchor.MiddleLeft:
-                tooltipPos.x = Mathf.Clamp(tooltipPos.x, (-_canvasWidth) + _layout.preferredWidth, (_canvasWidth));
-                tooltipPos.y = Mathf.Clamp(tooltipPos.y, (_layout.preferredHeight / 2) + (-_canvasHeight),
-                                                            _canvasHeight - (_layout.preferredHeight / 2));
-                _rectTransform.pivot = new Vector2(1f, 0.5f);
-                break;
-            case ToolTipAnchor.MiddleRight:
-                tooltipPos.x = Mathf.Clamp(tooltipPos.x, (-_canvasWidth), (_canvasWidth) - _layout.preferredWidth);
-                tooltipPos.y = Mathf.Clamp(tooltipPos.y, (_layout.preferredHeight / 2) + (-_canvasHeight),
-                                                            _canvasHeight - (_layout.preferredHeight / 2));
-                _rectTransform.pivot = new Vector2(0f, 0.5f);
-                break;
-            case ToolTipAnchor.MiddleTop:
-                tooltipPos.x = Mathf.Clamp(tooltipPos.x, (-_canvasWidth) + (_layout.preferredWidth / 2),
-                                                            (_canvasWidth) - (_layout.preferredWidth / 2));
-                tooltipPos.y = Mathf.Clamp(tooltipPos.y, (-_canvasHeight), (_canvasHeight) - _layout.preferredHeight);
-                _rectTransform.pivot = new Vector2(0.5f, 0f);
-                break;
-            case ToolTipAnchor.MiddleBottom:
-                tooltipPos.x = Mathf.Clamp(tooltipPos.x, (-_canvasWidth) + (_layout.preferredWidth / 2),
-                                                            (_canvasWidth) - (_layout.preferredWidth / 2));
-                tooltipPos.y = Mathf.Clamp(tooltipPos.y, _layout.preferredHeight + (-_canvasHeight), _canvasHeight);
-                _rectTransform.pivot = new Vector2(0.5f, 1f);
-                break;
-            case ToolTipAnchor.TopLeft:
-                tooltipPos.x = Mathf.Clamp(tooltipPos.x, (-_canvasWidth) + _layout.preferredWidth, (_canvasWidth));
-                tooltipPos.y = Mathf.Clamp(tooltipPos.y, (-_canvasHeight), (_canvasHeight) - _layout.preferredHeight);
-                _rectTransform.pivot = new Vector2(1f, 0f);
-                break;
-            case ToolTipAnchor.TopRight:
-                tooltipPos.x = Mathf.Clamp(tooltipPos.x, (-_canvasWidth), (_canvasWidth) - _layout.preferredWidth);
-                tooltipPos.y = Mathf.Clamp(tooltipPos.y, (-_canvasHeight), (_canvasHeight) - _layout.preferredHeight);
-                _rectTransform.pivot = new Vector2(0f, 0f);
-                break;
-            case ToolTipAnchor.BottomLeft:
-                tooltipPos.x = Mathf.Clamp(tooltipPos.x, (-_canvasWidth) + _layout.preferredWidth, (_canvasWidth));
-                tooltipPos.y = Mathf.Clamp(tooltipPos.y, _layout.preferredHeight + (-_canvasHeight), _canvasHeight);
-                _rectTransform.pivot = new Vector2(1f, 1f);
-                break;
-            case ToolTipAnchor.BottomRight:
-                tooltipPos.x = Mathf.Clamp(tooltipPos.x, (-_canvasWidth), (_canvasWidth) - _layout.preferredWidth);
-                tooltipPos.y = Mathf.Clamp(tooltipPos.y, _layout.preferredHeight + (-_canvasHeight), _canvasHeight);
-                _rectTransform.pivot = new Vector2(0f, 1f);
-                break;
-            default:
-                break;
-        }
+        (_tooltipPos, _rectTransform.pivot) = _calcs.CalcCentreClamp(_tooltipPos, toolTipAnchor, _layout);
     }
 }
-
-
-

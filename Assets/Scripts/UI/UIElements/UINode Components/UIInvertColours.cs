@@ -25,9 +25,8 @@ public class UIInvertColours : NodeFunctionBase
     
     //Properties
     protected override bool FunctionNotActive() => !_text && !_image && !CanActivate;
-    protected override bool CanBeSelected() => _invertOnSelected;
     protected override bool CanBeHighlighted() => _invertOnHighlight;
-    protected override bool CanBePressed() => false;
+    protected override bool CanBePressed() => _invertOnSelected;
 
     // Editor Scripts
     private bool TextSet() => _text != null;
@@ -48,22 +47,40 @@ public class UIInvertColours : NodeFunctionBase
         _hasImage = _image;
     }
 
-    private protected override void ProcessSelectedAndHighLighted() => ChangeToInvertedColour(_invertedColour);
+    protected override void SavePointerStatus(bool pointerOver)
+    {
+        if(FunctionNotActive() || !CanBeHighlighted() || CanBePressed() && _isSelected) return;
+        
+        if (pointerOver)
+        {
+            ChangeToInvertedColour();
+        }
+        else
+        {
+            SetToStartingColour();
+        }
+    }
 
-    private protected override void ProcessHighlighted() => ChangeToInvertedColour(_invertedColour);
-
-    private protected override void ProcessSelected() => ChangeToInvertedColour(_invertedColour);
-
-    private protected override void ProcessToNormal() => SetToStartingColour();
-
-    private protected override void ProcessPress() { }
+    private protected override void ProcessPress()
+    {
+        if (FunctionNotActive() || !CanBePressed()) return;
+        if (_isSelected)
+        {
+            ChangeToInvertedColour();
+        }
+        else
+        { 
+            if(CanBeHighlighted()) return;
+            SetToStartingColour();
+        }
+    }
 
     private protected override void ProcessDisabled(bool isDisabled) => SetToStartingColour();
 
-    private void ChangeToInvertedColour(Color newColour)
+    private void ChangeToInvertedColour()
     {
-        if (_hasImage) _image.color = newColour;
-        if (_hasText) _text.color = newColour;
+        if (_hasImage) _image.color = _invertedColour;
+        if (_hasText) _text.color = _invertedColour;
     }
 
     private void SetToStartingColour()

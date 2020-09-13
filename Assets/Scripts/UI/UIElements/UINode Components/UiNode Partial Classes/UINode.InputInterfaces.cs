@@ -6,18 +6,13 @@ public partial class UINode
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (IsDisabled || _allowKeys) return;
-        _pointerOver = true;
-        _uiActions._whenPointerOver?.Invoke(true);
         _navigation.PointerEnter(eventData);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (IsDisabled || _allowKeys) return;
-        _pointerOver = false;
-        _uiActions._whenPointerOver?.Invoke(false);
-        SetNotHighlighted();
-       // _navigation.PointerExit(eventData);
+        _navigation.PointerExit(eventData);
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -29,7 +24,7 @@ public partial class UINode
     public void OnPointerUp(PointerEventData eventData)
     {
         if (NotActiveSlider) return;
-        TurnNodeOnOff();
+        //TurnNodeOnOff();
     }
 
     public void OnMove(AxisEventData eventData)

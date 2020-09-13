@@ -4452,7 +4452,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _enabledFunctions
-      value: 227
+      value: 231
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -4496,7 +4496,47 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _sizeAndPos._loop
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._pixelsToMoveBy.x
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._time
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._ease
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._scaleBy.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._scaleBy.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._tweenEffect
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._changeBy.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._changeBy.y
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 6790820044368940565, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -18209,7 +18249,7 @@ PrefabInstance:
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: _swapImageOrText._changeWhen
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
@@ -24679,7 +24719,7 @@ PrefabInstance:
     - target: {fileID: 8432195791943366033, guid: 1520ba3c28fb6824a8f5ecd400f5e649,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 0.000015258789
       objectReference: {fileID: 0}
     - target: {fileID: 8432195791943366033, guid: 1520ba3c28fb6824a8f5ecd400f5e649,
         type: 3}
@@ -24734,7 +24774,7 @@ PrefabInstance:
     - target: {fileID: 8432195791943366038, guid: 1520ba3c28fb6824a8f5ecd400f5e649,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1520ba3c28fb6824a8f5ecd400f5e649, type: 3}
@@ -29622,7 +29662,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _accessories._activateWhen
-      value: -1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -30072,7 +30112,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _enabledFunctions
-      value: 39
+      value: 167
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -30111,7 +30151,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _sizeAndPos._scaledType
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -30256,7 +30296,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _sizeAndPos._changeSizeOn
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -30428,6 +30468,26 @@ PrefabInstance:
       propertyPath: _accessories._dropShadowsToUse.Array.data[0]
       value: 
       objectReference: {fileID: 2124106919}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._fadeOut
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._tweenEffect
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._changeBy.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._changeBy.y
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 6790820044368940565, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: m_Text
@@ -31363,24 +31423,17 @@ MonoBehaviour:
     _changeTextToo: 
   _sizeAndPos:
     _changeSizeOn: 0
-    _scaledType: 1
-    _punchTime: 0.5
-    _punchScaleByX: 0.1
-    _punchScaleByY: 0.2
-    _punchVibrato: 6
-    _elasticity: 0.5
-    _shakeScaleByX: 0.1
-    _shakeScaleByY: 0.2
-    _shakeTime: 0.5
-    _shakeRandomness: 45
-    _shakeVibrato: 6
-    _fadeOut: 1
+    _tweenEffect: 1
     _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _scaleBy: {x: 0, y: 0, z: 0}
+    _changeBy: {x: 0, y: 0, z: 0}
     _time: 0
-    _ease: 0
     _loop: 0
+    _vibrato: 6
+    _elasticity: 0.5
+    _shakeRandomness: 45
+    _fadeOut: 1
     _snapping: 0
+    _ease: 0
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
@@ -31396,7 +31449,7 @@ MonoBehaviour:
     _volumeCancel: 0
   _tooltips:
     _mainCanvas: {fileID: 0}
-    _UICamera: {fileID: 0}
+    _uiCamera: {fileID: 0}
     _tooltipType: 1
     _toolTipPosition: 0
     _groupFixedPosition: {fileID: 0}
@@ -32779,24 +32832,17 @@ MonoBehaviour:
     _changeTextToo: 
   _sizeAndPos:
     _changeSizeOn: 0
-    _scaledType: 1
-    _punchTime: 0.5
-    _punchScaleByX: 0.1
-    _punchScaleByY: 0.2
-    _punchVibrato: 6
-    _elasticity: 0.5
-    _shakeScaleByX: 0.1
-    _shakeScaleByY: 0.2
-    _shakeTime: 0.5
-    _shakeRandomness: 45
-    _shakeVibrato: 6
-    _fadeOut: 1
+    _tweenEffect: 1
     _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _scaleBy: {x: 0, y: 0, z: 0}
+    _changeBy: {x: 0, y: 0, z: 0}
     _time: 0
-    _ease: 0
     _loop: 0
+    _vibrato: 6
+    _elasticity: 0.5
+    _shakeRandomness: 45
+    _fadeOut: 1
     _snapping: 0
+    _ease: 0
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
@@ -32812,7 +32858,7 @@ MonoBehaviour:
     _volumeCancel: 0
   _tooltips:
     _mainCanvas: {fileID: 0}
-    _UICamera: {fileID: 0}
+    _uiCamera: {fileID: 0}
     _tooltipType: 1
     _toolTipPosition: 0
     _groupFixedPosition: {fileID: 0}

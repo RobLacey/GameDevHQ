@@ -70,7 +70,7 @@ public enum AccessoryEventType
     Selected = 1 << 1
 }
 
-public enum ScaleType { PositionTween, ScaleTween, ScalePunch, ScaleShake }
+public enum TweenEffect { Position, Scale, Punch, Shake }
 
 public enum Choose { None, Highlighted, HighlightedAndSelected, Selected, Pressed };
 

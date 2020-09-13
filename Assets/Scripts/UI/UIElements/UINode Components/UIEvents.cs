@@ -26,7 +26,6 @@ public class UIEvents : NodeFunctionBase
     public class OnDisabledEvent : UnityEvent<bool> { }
     
     //Properties
-    protected override bool CanBeSelected() => true;
     protected override bool CanBeHighlighted() => true;
     protected override bool CanBePressed() => true;
     protected override bool FunctionNotActive() => !CanActivate;
@@ -39,6 +38,8 @@ public class UIEvents : NodeFunctionBase
 
     protected override void SavePointerStatus(bool pointerOver)
     {
+        if (FunctionNotActive()) return;
+
         if (pointerOver)
         {
             _onEnterEvent?.Invoke();
@@ -49,16 +50,9 @@ public class UIEvents : NodeFunctionBase
         }
     }
 
-    private protected override void ProcessSelectedAndHighLighted() { }
-
-    private protected override void ProcessHighlighted() { }
-
-    private protected override void ProcessSelected() { }
-
-    private protected override void ProcessToNormal() { }
-
     private protected override void ProcessPress()
     {
+        if (FunctionNotActive()) return;
         _onButtonClickEvent?.Invoke();
         _onToggleEvent?.Invoke(_isSelected);
     }

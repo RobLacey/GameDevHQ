@@ -27,9 +27,9 @@ public class UIColour : NodeFunctionBase
 
     //Properties
     protected override bool FunctionNotActive() => !CanActivate || _scheme is null;
-    protected override bool CanBeSelected() => (_scheme.ColourSettings & EventType.Selected) != 0;
     protected override bool CanBePressed() => (_scheme.ColourSettings & EventType.Pressed) != 0;
     protected override bool CanBeHighlighted() => (_scheme.ColourSettings & EventType.Highlighted) !=0; 
+    protected bool CanBeSelected() => (_scheme.ColourSettings & EventType.Selected) != 0;
 
     public override void OnAwake(UINode node, UiActions uiActions)
     {
@@ -58,42 +58,75 @@ public class UIColour : NodeFunctionBase
             Debug.LogError($"No Image or Text set on Colour settings on {_nodesName}");
     }
 
-    private protected override void ProcessSelectedAndHighLighted()
+    protected override void SavePointerStatus(bool pointerOver)
     {
-        if (!CanBeHighlighted())
+        if (FunctionNotActive()) return;
+        if (pointerOver)
         {
-            ProcessSelected();
+            PointerOverSetUp();
         }
         else
         {
-            _tweenImageToColour = SelectedHighlight();
-            _tweenTextToColour = SelectedHighlight();
-            DoColourChange(_scheme.TweenTime);
+            PointerNotOver();
+        }    
+
+    }
+
+    private void PointerOverSetUp()
+    {
+        if (CanBePressed() && _isSelected)
+        {
+            if (CanBeHighlighted())
+            {
+                _tweenImageToColour = SelectedHighlight();
+                _tweenTextToColour = SelectedHighlight();
+                DoColourChange(_scheme.TweenTime);
+            }
+            else
+            {
+                DoSelected();
+            }
+        }
+        else
+        {
+            if (CanBeHighlighted())
+            {
+                DoHighlighted();
+            }
+            else
+            {
+                DoNormal();
+            }
+        }
+    }
+
+    private void PointerNotOver()
+    {
+        if (_isSelected && CanBeSelected())
+        {
+            DoSelected();
+        }
+        else
+        {
+            DoNormal();
         }
     }
     
-    private protected override void ProcessHighlighted()
+    private void DoHighlighted()
     {
         _tweenImageToColour = _scheme.HighlightedColour;
         _tweenTextToColour = _scheme.HighlightedColour;
         DoColourChange(_scheme.TweenTime);
     }
 
-    private protected override void ProcessSelected()
+    private void DoSelected()
     {
-        if(_pointerOver && CanBeHighlighted())
-        {
-            ProcessSelectedAndHighLighted();
-        }
-        else
-        {
-            _tweenImageToColour = _scheme.SelectedColour;
-            _tweenTextToColour = _scheme.SelectedColour;
-            DoColourChange(_scheme.TweenTime);
-        }
+        _tweenImageToColour = _scheme.SelectedColour;
+        _tweenTextToColour = _scheme.SelectedColour;
+        DoColourChange(_scheme.TweenTime);
     }
     
-    private protected override void ProcessToNormal()
+    private void DoNormal()
     {
         _tweenImageToColour = _imageNormalColour;
         _tweenTextToColour = _textNormalColour;
@@ -110,7 +143,7 @@ public class UIColour : NodeFunctionBase
         }
         else
         {
-            ProcessToNormal();
+            DoNormal();
         }
     }
 
@@ -121,6 +154,20 @@ public class UIColour : NodeFunctionBase
     }
     
     private protected override void ProcessPress()
+    {
+        if (FunctionNotActive()) return;
+
+        if (CanBePressed())
+        {
+            SetUpPressedFlash();
+        }
+        else
+        {
+            PointerOverSetUp();
+        }
+    }
+
+    private void SetUpPressedFlash()
     {
         if (CanBeSelected() && _isSelected)
         {
@@ -137,6 +184,7 @@ public class UIColour : NodeFunctionBase
             _tweenImageToColour = _imageNormalColour;
             _tweenTextToColour = _textNormalColour;
         }
+
         DoFlashEffect();
     }
 

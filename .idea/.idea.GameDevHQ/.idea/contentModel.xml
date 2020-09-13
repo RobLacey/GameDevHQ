@@ -309,9 +309,17 @@
               <e p="UINode Components" t="Include">
                 <e p="NodeFunctionBase.cs" t="Include" />
                 <e p="Size And Position Components" t="Include">
+                  <e p="BasePositionAndScale.cs" t="Include" />
+                  <e p="BaseShakePunch.cs" t="Include" />
                   <e p="Position.cs" t="Include" />
                   <e p="Punch.cs" t="Include" />
+                  <e p="Scale.cs" t="Include" />
                   <e p="Shake.cs" t="Include" />
+                  <e p="SizeAndPositionInterfaces.cs" t="Include" />
+                  <e p="UISizeAndPosition_EditorScripts.cs" t="Include" />
+                </e>
+                <e p="ToolTip Components" t="Include">
+                  <e p="ToolTipsCalcs.cs" t="Include" />
                 </e>
                 <e p="UIAccessories.cs" t="Include" />
                 <e p="UiActions.cs" t="Include" />

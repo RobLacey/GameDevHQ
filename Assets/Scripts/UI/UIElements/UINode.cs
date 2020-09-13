@@ -50,7 +50,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool _isDisabled;
     private RectTransform _rectForTooltip;
     private UIToggles _toggleGroups;
-    private bool _pointerOver;
+    //private bool _pointerOver;
     private bool _inMenu;
     private bool _allowKeys;
     private UIDataEvents _uiDataEvents;
@@ -214,7 +214,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         else
         {
             ThisNodeIsHighLighted();
-            //SetNotHighlighted();
+            SetNotHighlighted();
         }
     }
 
@@ -250,6 +250,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         else
         {
             Activate();
+            Debug.Log(IsSelected + " from press");
         }
         _uiActions._isSelected?.Invoke(IsSelected);
         _uiActions._isPressed?.Invoke();
@@ -289,17 +290,19 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     public void SetAsHighlighted()
     {
         if (IsDisabled) return;
-        _uiActions._isHighlighted?.Invoke(true);
+        _uiActions._whenPointerOver?.Invoke(true);
+
         ThisNodeIsHighLighted();
         //_startUiFunctions.Invoke(UIEventTypes.Highlighted, IsSelected);
-        StartCoroutine(_tooltips.StartToolTip(MyBranch, _rectForTooltip));
+        StartCoroutine(_tooltips.StartToolTip(_rectForTooltip));
     }
 
     public void SetNotHighlighted()
     {
         StopAllCoroutines();
         _tooltips.HideToolTip();
-        _uiActions._isHighlighted?.Invoke(false);
+        _uiActions._whenPointerOver?.Invoke(false);
+
         
        // if (IsDisabled) return;
 

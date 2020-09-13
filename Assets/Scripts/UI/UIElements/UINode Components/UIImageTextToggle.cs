@@ -14,20 +14,13 @@ public class UIImageTextToggle : NodeFunctionBase
     [SerializeField] private Text _textToSwap;
     [SerializeField] private string _changeTextToo;
 
-    // [Header("On Controls Change Settings")] 
-    // [SerializeField] private IsActive _onControlChanged = IsActive.No;
-    // [SerializeField] private Text _newText;
-    // [SerializeField] private Image _defaultImage;
-    // [SerializeField] private Image _newImage;
-
     //variables
     private string _startingText;
     private UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     
     //Properties
-    protected override bool CanBeSelected() => _changeWhen == ChangeWhen.OnPressed;
     protected override bool CanBeHighlighted() => _changeWhen == ChangeWhen.OnHighlight;
-    protected override bool CanBePressed() => false;
+    protected override bool CanBePressed() => _changeWhen == ChangeWhen.OnPressed;
     protected override bool FunctionNotActive() => !CanActivate;
     public bool ToggleOnNewControls => _changeWhen == ChangeWhen.OnControlChanged;
 
@@ -70,8 +63,7 @@ public class UIImageTextToggle : NodeFunctionBase
 
     private void OnControlsChanged(bool keysActive)
     {
-        if (FunctionNotActive() || !ToggleOnNewControls) return;
-        //TODO Double check and improve this function
+        if (!ToggleOnNewControls) return;
         CycleToggle(keysActive);
     }
 
@@ -89,15 +81,17 @@ public class UIImageTextToggle : NodeFunctionBase
         _toggleIsOn.enabled = isOn;
     }
 
-    private protected override void ProcessSelectedAndHighLighted() => CycleToggle(true);
+    protected override void SavePointerStatus(bool pointerOver)
+    {
+        if(FunctionNotActive() || !CanBeHighlighted() || CanBePressed() && _isSelected) return;
+        CycleToggle(pointerOver);
+    }
 
-    private protected override void ProcessHighlighted() => CycleToggle(true);
-
-    private protected override void ProcessSelected() =>CycleToggle(true);
-
-    private protected override void ProcessToNormal() =>CycleToggle(false);
-
-    private protected override void ProcessPress() => CycleToggle(_isSelected);
+    private protected override void ProcessPress()
+    {
+        if(FunctionNotActive() || !CanBePressed()) return;
+        CycleToggle(_isSelected);
+    }
 
     private protected override void ProcessDisabled(bool isDisabled) { }
 }
