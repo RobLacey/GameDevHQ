@@ -24,9 +24,10 @@ public class UIColour : NodeFunctionBase
     private float _selectHighlightPerc;
     private int _id;
     private string _nodesName;
+    private bool _isDisabled;
 
     //Properties
-    protected override bool FunctionNotActive() => !CanActivate || _scheme is null;
+    protected override bool FunctionNotActive() => !CanActivate || _scheme is null || _isDisabled;
     protected override bool CanBePressed() => (_scheme.ColourSettings & EventType.Pressed) != 0;
     protected override bool CanBeHighlighted() => (_scheme.ColourSettings & EventType.Highlighted) !=0; 
     protected bool CanBeSelected() => (_scheme.ColourSettings & EventType.Selected) != 0;
@@ -135,7 +136,9 @@ public class UIColour : NodeFunctionBase
 
     private protected override void ProcessDisabled(bool isDisabled)
     {
-        if (isDisabled)
+        _isDisabled = isDisabled;
+        
+        if (_isDisabled)
         {
             _tweenImageToColour = _scheme.DisableColour;
             _tweenTextToColour = _scheme.DisableColour;

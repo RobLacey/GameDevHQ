@@ -47,7 +47,7 @@ public partial class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, 
     protected override bool CanBePressed() => _changeSizeOn == Choose.Pressed || _changeSizeOn == Choose.Selected; 
     protected override bool FunctionNotActive() => !CanActivate && _changeSizeOn != Choose.None;
 
-    public void OnAwake(UINode node, UiActions uiActions)
+    public override void OnAwake(UINode node, UiActions uiActions)
     {
         base.OnAwake(node, uiActions);
         CanActivate = (_enabledFunctions & Setting.SizeAndPosition) != 0;
@@ -58,7 +58,7 @@ public partial class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, 
 
     private void SetVariables(UINode node)
     {
-        GameObjectID = node.gameObject.GetInstanceID();
+        GameObjectID = node.GetInstanceID();
         MyRect = node.GetComponent<RectTransform>();
         MyTransform = node.transform;
         StartSize = MyRect.localScale;
@@ -96,7 +96,7 @@ public partial class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, 
         }
     }
 
-    private protected override void ProcessDisabled(bool isDisabled) { }
+    private protected override void ProcessDisabled(bool isDisabled) { _tween.DoTween(IsActive.No);}
 
     private void SetTweenIds()
     {

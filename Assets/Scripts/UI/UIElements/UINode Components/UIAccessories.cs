@@ -12,14 +12,14 @@ public class UIAccessories : NodeFunctionBase
     [SerializeField] private Shadow[] _dropShadowsToUse;
 
     //Variables
-    protected  override bool CanBeHighlighted() => (_activateWhen & AccessoryEventType.Highlighted) != 0;
+    protected override bool CanBeHighlighted() => (_activateWhen & AccessoryEventType.Highlighted) != 0;
     protected override bool CanBePressed() => (_activateWhen & AccessoryEventType.Selected) != 0;
     protected override bool FunctionNotActive() => !CanActivate || _activateWhen == AccessoryEventType.None;
 
     public override void OnAwake(UINode node, UiActions uiActions)
     {
         base.OnAwake(node, uiActions);
-        CanActivate = (node.ActiveFunctions & Setting.Accessories) != 0;
+        CanActivate = (_enabledFunctions & Setting.Accessories) != 0;
         StartActivation(false);
     }
 

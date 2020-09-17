@@ -1,18 +1,20 @@
 ﻿
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public abstract class NodeFunctionBase
 {
-    private bool _pointerOver;
+    protected bool _pointerOver;
     protected bool _isSelected;
     protected Setting _enabledFunctions;
+    protected MoveDirection _moveDirection;
 
     //Properties
     protected bool CanActivate { get; set; }
+    protected void axisMoveDirection(MoveDirection moveDirection) => _moveDirection = moveDirection;
     protected abstract bool CanBeHighlighted();
     protected abstract bool CanBePressed();
     protected abstract bool FunctionNotActive(); //TODO Review and fix as may not be needed
-
     
     public virtual void OnAwake(UINode node, UiActions uiActions)
     {
@@ -20,6 +22,7 @@ public abstract class NodeFunctionBase
         uiActions._isSelected += SaveIsSelected;
         uiActions._isPressed += ProcessPress;
         uiActions._isDisabled += IsDisabled;
+        uiActions._onMove += axisMoveDirection;
         _enabledFunctions = node.ActiveFunctions;
     }
 
@@ -29,6 +32,7 @@ public abstract class NodeFunctionBase
         uiActions._isSelected -= SaveIsSelected;
         uiActions._isPressed -= ProcessPress;
         uiActions._isDisabled -= IsDisabled;
+        uiActions._onMove -= axisMoveDirection;
     }
     protected abstract void SavePointerStatus(bool pointerOver);
 
@@ -37,16 +41,9 @@ public abstract class NodeFunctionBase
         if (FunctionNotActive()) return;
         _isSelected = isSelected;
     }
-    
-    // private void SaveIsPressed()
-    // {
-    //     if (FunctionNotActive()) return;
-    //     ProcessPress();
-    // }
 
     private void IsDisabled(bool isDisabled)
     {
-        if (FunctionNotActive()) return;
         ProcessDisabled(isDisabled);
     }
     

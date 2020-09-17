@@ -59,17 +59,18 @@ public class UIHomeGroup
 
     private void SetNewIndex(SwitchType switchType)
     {
-        _homeGroup[_index].LastSelected.Deactivate();
+        _homeGroup[_index].LastSelected.DeactivateAndCancelChildren();
         
-        // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
-        if (switchType == SwitchType.Positive)
+        switch (switchType)
         {
-            _index = _index.PositiveIterate(_homeGroup.Length);
+            case SwitchType.Positive:
+                _index = _index.PositiveIterate(_homeGroup.Length);
+                break;
+            case SwitchType.Negative:
+                _index = _index.NegativeIterate(_homeGroup.Length);
+                break;
         }
-        else
-        {
-            _index = _index.NegativeIterate(_homeGroup.Length);
-        }
+
         DoSetCurrentHomeBranch?.Invoke(_homeGroup[_index]);
     }
 
@@ -110,8 +111,10 @@ public class UIHomeGroup
         {
             if (_homeGroup[index] != newBranch) continue;
             _index = index;
+            
             if(_afterStartUp) 
                 DoSetCurrentHomeBranch?.Invoke(_homeGroup[_index]);
+            
             _afterStartUp = true;
             break;
         }

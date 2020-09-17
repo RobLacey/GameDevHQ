@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 public static class UIBranchGroups
 {
@@ -35,7 +36,7 @@ public static class UIBranchGroups
         {
            newIndex = passedIndex.NegativeIterate(groupsList.Count);
         }
-        groupsList[newIndex]._startNode.Navigation.NavigateToNextNode();
+        groupsList[newIndex]._startNode.OnPointerEnter(new PointerEventData(EventSystem.current));
         return newIndex;
     }
 }

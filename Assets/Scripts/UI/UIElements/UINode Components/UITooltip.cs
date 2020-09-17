@@ -1,17 +1,16 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 
 [System.Serializable]
-public class UITooltip
+public class UITooltip : NodeFunctionBase
 {
     [Header("General Settings")]
-    [SerializeField]
-    private RectTransform _mainCanvas;
-    [SerializeField] private Camera _uiCamera = null;
+    [SerializeField] private RectTransform _mainCanvas;
+    [SerializeField] private Camera _uiCamera;
     [SerializeField] private TooltipType _tooltipType = TooltipType.Follow;
+    
     [Header("Mouse & Global Fixed Position Settings", order = 2)]
     [SerializeField] [AllowNesting] [Label("Tooltip Position")]
     private ToolTipAnchor _toolTipPosition;
@@ -21,6 +20,7 @@ public class UITooltip
     private float _mousePaddingX;
     [SerializeField] [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")]
     private float _mousePaddingY;
+    
     [Header("Keyboard and Controller Settings")]
     [SerializeField] [AllowNesting] [Label("Tooltip Preset")] [HideIf("Fixed")]
     private UseSide _positionToUse = UseSide.ToTheRightOf;
@@ -32,162 +32,152 @@ public class UITooltip
     private float _keyboardPaddingX;
     [SerializeField] [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")]
     private float _keyboardPaddingY;
+    
     [Header("Other Settings")]
     [SerializeField] [Range(0f, 50f)]
     private float _screenSafeZone = 10;
-    [SerializeField] [AllowNesting] [Label("Display Tooltip Delay")] public float _delay = 1f;
+    [SerializeField] [AllowNesting] [Label("Display Tooltip Delay")]
+    private float _delay = 1f;
     [SerializeField] [AllowNesting] [ShowIf("BuildTips")] [Label("Delay Until Next..")]
     private float _buildDelay = 1f;
     [SerializeField] private LayoutGroup[] _listOfTooltips = new LayoutGroup[0];
 
     //Variables
-    private GameObject _tooltipsParent;
-    private string _toolTipBucketName = "ToolTipHolder";
     private Vector2 _tooltipPos;
-    private LayoutGroup _layout;
-    private RectTransform _rectTransform;
+    private Vector3 _anchoredPosition;
     private RectTransform[] _tooltipsRects;
-    private Canvas _toolTipCanvas;
+    private RectTransform _parentRectTransform;
     private Canvas[] _cachedCanvas;
     private Vector3[] _myCorners = new Vector3[4];
-    private Coroutine _coroutineBuild;
-    private Coroutine _coroutineStart;
-    private bool _allowKeys;
-    private ToolTipsCalcs _calcs;
+    private Coroutine _coroutineStart, _coroutineActivate, _coroutineBuild;
+    private bool _allowKeys, _setCorners;
+    private ToolTipsCalcs _calculation;
+    private int _index;
+    private UIControlsEvents _uiControlsEvents = new UIControlsEvents();
 
     //Enums & Properties
     private enum UseSide { ToTheRightOf, ToTheLeftOf, GameObjectAsPosition  }
-    public bool IsActive { get; set; }
-    public bool CanActivate { get; private set; }
     private Vector2 KeyboardPadding => new Vector2(_keyboardPaddingX, _keyboardPaddingY);
     private Vector2 MousePadding => new Vector2(_mousePaddingX, _mousePaddingY);
+    protected override bool CanBeHighlighted() => false;
+    protected override bool CanBePressed() => false;
+    private protected override void ProcessPress() { }
+    protected override bool FunctionNotActive() => !CanActivate || _listOfTooltips.Length == 0;
+    private protected override void ProcessDisabled(bool isDisabled) => HideToolTip();
+    private void SaveAllowKeys(bool allow) => _allowKeys = allow;
 
+    protected override void SavePointerStatus(bool pointerOver)
+    {
+        if(FunctionNotActive()) return;
+        _pointerOver = pointerOver;
+        
+        if(pointerOver)
+        {
+            _coroutineStart = StaticCoroutine.StartCoroutine(StartToolTip());
+        }
+        else 
+        {
+            HideToolTip();
+        }
+    }
 
     //Editor Scripts
-    public bool Fixed() { return _tooltipType == TooltipType.Fixed; }
-    public bool FollowMouse() { return _tooltipType == TooltipType.Follow; }
-    public bool BuildTips()  { return _listOfTooltips.Length > 1; }
-    public bool UseGameObject() { return _positionToUse == UseSide.GameObjectAsPosition && _tooltipType != TooltipType.Fixed; }
+    public bool Fixed() => _tooltipType == TooltipType.Fixed;
+    public bool FollowMouse() => _tooltipType == TooltipType.Follow;
+    public bool BuildTips() => _listOfTooltips.Length > 1;
+    public bool UseGameObject() => _positionToUse == UseSide.GameObjectAsPosition && _tooltipType != TooltipType.Fixed;
 
-    //TODO Change size calcs to work from camera size rather than canvas so still works when aspect changes
+    //TODO Change size calculations to work from camera size rather than canvas so still works when aspect changes
     
-    public void OnAwake(Setting setting, string parent) //Make OnAwake
+    public override void OnAwake(UINode node, UiActions uiActions) 
     {
-        CanActivate = (setting & Setting.TooplTip) != 0;
-        SetUp(parent);
+        base.OnAwake(node, uiActions);
+        CanActivate = (_enabledFunctions & Setting.TooplTip) != 0;
+        SetUp(node);
     }
 
-    private void SetUp(string parent)
+    private void SetUp(UINode node)
     {
         if (!CanActivate) return;
-        if (_listOfTooltips.Length == 0)
-        {
-            Debug.Log("No tooltips set on " + parent);
-            return;
-        }
-
-        CreateBucket();
+        _parentRectTransform = node.GetComponent<RectTransform>();
+        _anchoredPosition = _mainCanvas.anchoredPosition;
+        _calculation = new ToolTipsCalcs(_mainCanvas, _screenSafeZone);
+        _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
         SetUpTooltips();
-
-        _calcs = new ToolTipsCalcs(_mainCanvas, _screenSafeZone);
-        ChangeControl.DoAllowKeys += SaveAllowKeys;
+        CheckSetUpForError(node.name);
     }
 
-    private void SaveAllowKeys(bool allow)
+    private void CheckSetUpForError(string name)
     {
-        _allowKeys = allow;
-    }
-
-    private void CreateBucket()
-    {
-        _tooltipsParent = GameObject.Find(_toolTipBucketName);
-        if (!_tooltipsParent)
-        {
-            _tooltipsParent = new GameObject();
-            _tooltipsParent.AddComponent<RectTransform>();
-            _tooltipsParent.transform.SetParent(_mainCanvas.transform);
-            _tooltipsParent.name = _toolTipBucketName;
-            _tooltipsParent.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-
-        }
-        foreach (var tooltip in _listOfTooltips)
-        {
-            tooltip.transform.SetParent(_tooltipsParent.transform);
-        }
+        if (_listOfTooltips.Length == 0)
+            Debug.Log($"No tooltips set on {name}");
     }
 
     private void SetUpTooltips()
     {
-        IsActive = false;
         if (_listOfTooltips.Length <= 1) _buildDelay = 0;
         _tooltipsRects = new RectTransform[_listOfTooltips.Length];
         _cachedCanvas = new Canvas[_listOfTooltips.Length];
 
-        for (int i = 0; i < _listOfTooltips.Length; i++)
+        for (int index = 0; index < _listOfTooltips.Length; index++)
         {
-            _tooltipsRects[i] = _listOfTooltips[i].GetComponent<RectTransform>();
-            _cachedCanvas[i] = _listOfTooltips[i].GetComponent<Canvas>();
-            _cachedCanvas[i].enabled = false;
+            _tooltipsRects[index] = _listOfTooltips[index].GetComponent<RectTransform>();
+            _cachedCanvas[index] = _listOfTooltips[index].GetComponent<Canvas>();
+            _cachedCanvas[index].enabled = false;
         }
-
-        _toolTipCanvas = _cachedCanvas[0];
     }
-
 
     public void HideToolTip()
     {
         if (!CanActivate) return;
-        StaticCoroutine.StopCoroutines(_coroutineBuild);
         StaticCoroutine.StopCoroutines(_coroutineStart);
-
-        _toolTipCanvas.enabled = false;
-        IsActive = false;
+        StaticCoroutine.StopCoroutines(_coroutineBuild);
+        StaticCoroutine.StopCoroutines(_coroutineActivate);
+        _cachedCanvas[_index].enabled = false;
+    }
+    
+    private IEnumerator StartToolTip()
+    {
+        SetCorners();
+        yield return new WaitForSeconds(_delay);
+        _coroutineBuild = StaticCoroutine.StartCoroutine(ToolTipBuild());
+        _coroutineActivate = StaticCoroutine.StartCoroutine(ActivateTooltip(_allowKeys));
     }
 
-    public IEnumerator StartToolTip(RectTransform rectForTooltip)
+    private void SetCorners()
     {
-        if (CanActivate)
-        {
-            yield return new WaitForSeconds(_delay);
-            IsActive = true;
-            _coroutineBuild = StaticCoroutine.StartCoroutine(ToolTipBuild(rectForTooltip));
-            _coroutineStart = StaticCoroutine.StartCoroutine(ActivateTooltip(_allowKeys));
-        }
-
-        yield return null;
+        if(_setCorners) return;
+        _setCorners = true;
+        _parentRectTransform.GetWorldCorners(_myCorners);
     }
-
-    public IEnumerator ToolTipBuild(RectTransform rect)
+    
+    private IEnumerator ToolTipBuild()
     {
-        rect.GetWorldCorners(_myCorners);
-        for (int i = 0; i < _listOfTooltips.Length; i++)
+        for (int toolTipIndex = 0; toolTipIndex < _listOfTooltips.Length; toolTipIndex++)
         {
-            _layout = _listOfTooltips[i];
-            if (i - 1 >= 0) _cachedCanvas[i - 1].enabled = false;
-            _toolTipCanvas = _cachedCanvas[i];
-            _rectTransform = _tooltipsRects[i];
+            _index = toolTipIndex;
             yield return new WaitForSeconds(_buildDelay);
+            _cachedCanvas[_index].enabled = false;
         }
         yield return null;
     }
 
 
-    public IEnumerator ActivateTooltip(bool isKeyboard)
+    private IEnumerator ActivateTooltip(bool isKeyboard)
     {
-        while (IsActive)
+        while (_pointerOver)
         {
-            SetToolTipPosition(isKeyboard);
+            GetToolTipsScreenPosition(isKeyboard, _tooltipType);
             SetExactPosition(!isKeyboard ? _toolTipPosition : _keyboardPosition);
-            _rectTransform.anchoredPosition = new Vector2(_tooltipPos.x, _tooltipPos.y);
-            _toolTipCanvas.enabled = true;
+            _cachedCanvas[_index].enabled = true;
             yield return null;
         }
         yield return null;
     }
 
-    private void SetToolTipPosition(bool isKeyboard)
+    private void GetToolTipsScreenPosition(bool isKeyboard, TooltipType toolTipType)
     {
-        switch (_tooltipType)
+        switch (toolTipType)
         {
             case TooltipType.Follow when isKeyboard:
                 SetKeyboardTooltipPosition();
@@ -201,21 +191,13 @@ public class UITooltip
         }
     }
 
-    private void SetFixedToolTipPosition()
-    {
-        var position = _groupFixedPosition.position;
-        _tooltipPos = ReturnScreenPosition(position);
-    }
+    private void SetFixedToolTipPosition() => _tooltipPos = ReturnScreenPosition(_groupFixedPosition.position);
 
-    private void SetMouseToolTipPosition()
-    {
-        var position = Input.mousePosition;
-        _tooltipPos = ReturnScreenPosition(position) + MousePadding;
-    }
-    
+    private void SetMouseToolTipPosition() => _tooltipPos = ReturnScreenPosition(Input.mousePosition) + MousePadding;
+
     private void SetKeyboardTooltipPosition()
     {
-        Vector3 position;
+        var position = Vector3.zero;
         switch (_positionToUse)
         {
             case UseSide.ToTheRightOf:
@@ -224,23 +206,30 @@ public class UITooltip
             case UseSide.ToTheLeftOf:
                 position = _myCorners[1] + ((_myCorners[0] - _myCorners[1]) / 2);
                 break;
-            default:
+            case UseSide.GameObjectAsPosition:
                 position = _fixedPosition.position;
                 break;
         }
         _tooltipPos = ReturnScreenPosition(position) + KeyboardPadding;
     }
     
-    private Vector2 ReturnScreenPosition(Vector3 position)
+    
+    private Vector2 ReturnScreenPosition(Vector3 screenPosition)
     {
         RectTransformUtility.ScreenPointToLocalPointInRectangle
-            (_mainCanvas, position, _uiCamera, out var toolTipPos);
+            (_mainCanvas, screenPosition, _uiCamera, out var toolTipPos);
         return toolTipPos;
     }
 
-
     private void SetExactPosition(ToolTipAnchor toolTipAnchor)
     {
-        (_tooltipPos, _rectTransform.pivot) = _calcs.CalcCentreClamp(_tooltipPos, toolTipAnchor, _layout);
+        var position = _parentRectTransform.transform.position;
+        var offset = new Vector2(_anchoredPosition.x - position.x, 
+                                 _anchoredPosition.y - position.y);
+        var size = new Vector2( _listOfTooltips[_index].preferredWidth
+                                        , _listOfTooltips[_index].preferredHeight);
+
+        (_tooltipsRects[_index].anchoredPosition, _tooltipsRects[_index].pivot)
+            = _calculation.CalculatePosition(_tooltipPos, offset, size, toolTipAnchor);
     }
 }

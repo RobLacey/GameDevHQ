@@ -1,14 +1,11 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using static UnityEngine.Mathf;
 
 public class ToolTipsCalcs
 {
-    private readonly float _canvasWidth;
-    private readonly float _canvasHeight;
-    private float _preferredWidth;
-    private float _preferredHeight;
-    private Vector3 _toolTipData;
+    private readonly float _canvasWidth, _canvasHeight;
+    private Vector3 _toolTipPosition, _tooltipSize;
+    private Vector2 _newPivot, _parentNodePosition, _offset;
     
     public ToolTipsCalcs(RectTransform mainCanvas, float safeZone)
     {
@@ -17,49 +14,60 @@ public class ToolTipsCalcs
         _canvasHeight = (rect.height / 2) - safeZone;
     }
     
-    public (Vector3 pos, Vector2 pivot) CalcCentreClamp(Vector3 tooltipPos, ToolTipAnchor toolTipAnchor, LayoutGroup layoutGroup)
+    public (Vector3 _toolTipData, Vector2 _newPivot) CalculatePosition
+        (Vector3 tooltipPos, Vector3 offset, Vector3 toolTipSize, ToolTipAnchor toolTipAnchor)
     {
-        _preferredWidth = layoutGroup.preferredWidth;
-        _preferredHeight = layoutGroup.preferredHeight;
-        _toolTipData = tooltipPos;
+        SetVariables(tooltipPos, toolTipSize);
+        (_toolTipPosition, _newPivot) = CalculateAnchorPosition(toolTipAnchor);
+        _toolTipPosition = new Vector2(offset.x + _toolTipPosition.x, offset.y + _toolTipPosition.y);
+        return (_toolTipPosition, _newPivot);
+    }
 
+    private void SetVariables(Vector3 tooltipPos, Vector3 tooltipSize)
+    {
+        _toolTipPosition = tooltipPos;
+        _tooltipSize = tooltipSize;
+    }
+
+    private (Vector2 pos, Vector2 pivot) CalculateAnchorPosition(ToolTipAnchor toolTipAnchor)
+    {
         switch (toolTipAnchor)
         {
             case ToolTipAnchor.Centre:
-                return (new Vector3(MiddleX(), MiddleY(), tooltipPos.z), new Vector2(0.5f, 0.5f));
+                return (new Vector3(MiddleX(), MiddleY()), new Vector2(0.5f, 0.5f));
             case ToolTipAnchor.MiddleLeft:
-                return (new Vector3(LeftX(), MiddleY(), tooltipPos.z), new Vector2(1f, 0.5f));
+                return (new Vector3(LeftX(), MiddleY()), new Vector2(1f, 0.5f));
             case ToolTipAnchor.MiddleRight:
-                return (new Vector3(RightX(), MiddleY(), tooltipPos.z), new Vector2(0f, 0.5f));
+                return (new Vector3(RightX(), MiddleY()), new Vector2(0f, 0.5f));
             case ToolTipAnchor.MiddleTop:
-                return (new Vector3(MiddleX(), TopY(), tooltipPos.z), new Vector2(0.5f, 0f));
+                return (new Vector3(MiddleX(), TopY()), new Vector2(0.5f, 0f));
             case ToolTipAnchor.MiddleBottom:
-                return (new Vector3(MiddleX(), BottomY(), tooltipPos.z), new Vector2(0.5f, 1f));
+                return (new Vector3(MiddleX(), BottomY()), new Vector2(0.5f, 1f));
             case ToolTipAnchor.TopLeft:
-                return (new Vector3(LeftX(), TopY(), tooltipPos.z), new Vector2(1f, 0f));
+                return (new Vector3(LeftX(), TopY()), new Vector2(1f, 0f));
             case ToolTipAnchor.TopRight:
-                return (new Vector3(RightX(), TopY(), tooltipPos.z), new Vector2(0f, 0f));
+                return (new Vector3(RightX(), TopY()), new Vector2(0f, 0f));
             case ToolTipAnchor.BottomLeft:
-                return (new Vector3(LeftX(), BottomY(), tooltipPos.z), new Vector2(1f, 1f));
+                return (new Vector3(LeftX(), BottomY()), new Vector2(1f, 1f));
             case ToolTipAnchor.BottomRight:
-                return (new Vector3(RightX(), BottomY(), tooltipPos.z), new Vector2(0f, 1f));
+                return (new Vector3(RightX(), BottomY()), new Vector2(0f, 1f));
             default:
                 Debug.Log("No Match Found");
-                return (tooltipPos, Vector2.zero);
+                return (_toolTipPosition, _newPivot);
         }
     }
 
-    private float RightX() => Clamp(_toolTipData.x, (-_canvasWidth), (_canvasWidth) - _preferredWidth);
+    private float RightX() => Clamp(_toolTipPosition.x, (-_canvasWidth), (_canvasWidth) - _tooltipSize.x);
 
-    private float BottomY() => Clamp(_toolTipData.y, _preferredHeight + (-_canvasHeight), _canvasHeight);
+    private float BottomY() => Clamp(_toolTipPosition.y, _tooltipSize.y + (-_canvasHeight), _canvasHeight);
 
-    private float TopY() => Clamp(_toolTipData.y, (-_canvasHeight), (_canvasHeight) - _preferredHeight);
+    private float TopY() => Clamp(_toolTipPosition.y, (-_canvasHeight), (_canvasHeight) - _tooltipSize.y);
 
     private float MiddleX() 
-        => Clamp(_toolTipData.x, (-_canvasWidth) + (_preferredWidth / 2), (_canvasWidth) - (_preferredWidth / 2));
+        => Clamp(_toolTipPosition.x, (-_canvasWidth) + (_tooltipSize.x / 2), (_canvasWidth) - (_tooltipSize.x / 2));
 
     private float MiddleY() 
-        => Clamp(_toolTipData.y, (_preferredHeight / 2) + (-_canvasHeight), _canvasHeight - (_preferredHeight / 2));
+        => Clamp(_toolTipPosition.y, (_tooltipSize.y / 2) + (-_canvasHeight), _canvasHeight - (_tooltipSize.y / 2));
 
-    private float LeftX() => Clamp(_toolTipData.x, (-_canvasWidth) + _preferredWidth, (_canvasWidth));
+    private float LeftX() => Clamp(_toolTipPosition.x, (-_canvasWidth) + _tooltipSize.x, (_canvasWidth));
 }

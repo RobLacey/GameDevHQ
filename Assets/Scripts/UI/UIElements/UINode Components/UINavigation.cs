@@ -4,14 +4,19 @@ using UnityEngine.EventSystems;
 using System;
 
 [Serializable]
-public class UINavigation
+public class UINavigation : NodeFunctionBase
 {
-[SerializeField] [AllowNesting] [Label("Move To When Clicked")] [HideIf("NotAToggle")] UIBranch _childBranch;
-    [SerializeField] NavigationType _setNavigation = NavigationType.UpAndDown;
-    [SerializeField] [AllowNesting] [ShowIf("UpDownNav")] UINode up;
-    [SerializeField] [AllowNesting] [ShowIf("UpDownNav")] UINode down;
-    [SerializeField] [AllowNesting] [ShowIf("RightLeftNav")] UINode left;
-    [SerializeField] [AllowNesting] [ShowIf("RightLeftNav")] UINode right;
+[SerializeField] [AllowNesting] [Label("Move To When Clicked")] [HideIf("NotAToggle")]
+private UIBranch _childBranch;
+    [SerializeField] private NavigationType _setNavigation = NavigationType.UpAndDown;
+    [SerializeField] [AllowNesting] [ShowIf("UpDownNav")]
+    private UINode _up;
+    [SerializeField] [AllowNesting] [ShowIf("UpDownNav")]
+    private UINode _down;
+    [SerializeField] [AllowNesting] [ShowIf("RightLeftNav")]
+    private UINode _left;
+    [SerializeField] [AllowNesting] [ShowIf("RightLeftNav")]
+    private UINode _right;
 
     //Editor Scripts
     public bool NotAToggle { get; set; }
@@ -23,148 +28,118 @@ public class UINavigation
         => _setNavigation == NavigationType.RightAndLeft || _setNavigation == NavigationType.AllDirections;
 
     //Variables
-    UINode _myNode;
-    UIBranch _myBranch;
-    private bool _allowKeys;
-    public bool CanNavigate { get; private set; }
+    private UIBranch _myBranch;
 
-    public UIBranch Child { get { return _childBranch; } }
+    //Properties
+    protected override bool CanBeHighlighted() => false;
+    protected override bool CanBePressed() => _childBranch;
+    protected override bool FunctionNotActive() => !CanActivate;
+    protected override void SavePointerStatus(bool pointerOver) { }
+    public UIBranch Child => _childBranch;
 
-    public void OnAwake(UINode node, UIBranch branch, Setting setting)
+
+    public override void OnAwake(UINode node, UiActions uiActions)
     {
-        _myNode = node;
-        _myBranch = branch;
-        CanNavigate = (setting & Setting.NavigationAndOnClick) != 0;
-        ChangeControl.DoAllowKeys += SaveAllowKeys;
+        base.OnAwake(node, uiActions);
+        CanActivate = (_enabledFunctions & Setting.NavigationAndOnClick) != 0;
+        _myBranch = node.MyBranch;
     }
 
-    private void SaveAllowKeys(bool allow)
+    public void HandleAsSlider()
     {
-        _allowKeys = allow;
-    }
-
-    public void PointerEnter(PointerEventData eventData)
-    {
-        if (eventData.pointerDrag) return;                  //Enables drag on slider to have pressed colour
-        if (_myNode.Function == ButtonFunction.HoverToActivate & !_myNode.IsSelected)
+        if (_moveDirection == MoveDirection.Left || _moveDirection == MoveDirection.Right)
         {
-            _myNode.PressedActions();
+            Debug.Log("Add Audio");
+            //_myNode.Audio.Play(UIEventTypes.Selected);
+        }
+    }
+
+    public void ProcessMoves()
+    {
+        if (FunctionNotActive() || _setNavigation == NavigationType.None) return;
+        RightAndLeftMove();
+        UpAndDownMove();
+    }
+
+    private void RightAndLeftMove()
+    {
+        if (_setNavigation == NavigationType.RightAndLeft) return;
+        
+        switch (_moveDirection)
+        {
+            case MoveDirection.Down when _down:
+            {
+                HandleMove(_down);
+                break;
+            }
+            case MoveDirection.Up when _up:
+            {
+                HandleMove(_up);
+                break;
+            }
+        }
+    }
+
+    private void UpAndDownMove()
+    {
+        if (_setNavigation == NavigationType.UpAndDown) return;
+        
+        switch (_moveDirection)
+        {
+            case MoveDirection.Left when _left:
+            {
+                HandleMove(_left);
+                break;
+            }
+            case MoveDirection.Right when _right:
+            {
+                HandleMove(_right);
+                break;
+            }
+        }
+    }
+
+    private void HandleMove(UINode moveTo)
+    {
+        if (moveTo.IsDisabled)
+        {
+            moveTo.DoMove(_moveDirection);
         }
         else
         {
-            _myNode.Audio.Play(UIEventTypes.Highlighted);
-            //_myNode.ThisNodeIsHighLighted();
-            _myNode.SetAsHighlighted();
+            moveTo.OnPointerEnter(new PointerEventData(EventSystem.current));
         }
-    }
-
-    public void PointerExit(PointerEventData eventData)
-    {
-        if (eventData.pointerDrag) return;                      //Enables drag on slider to have pressed colour
-        _myNode.SetNotHighlighted();
-    }
-
-    public void KeyBoardOrController(AxisEventData eventData)
-    {
-        if (_myNode.AmSlider)
-        {
-            if (_myNode.IsSelected)
-            {
-                if (eventData.moveDir == MoveDirection.Left || eventData.moveDir == MoveDirection.Right)
-                {
-                    _myNode.Audio.Play(UIEventTypes.Selected);
-                }
-            }
-            else
-            {
-                ProcessMoves(eventData);
-            }
-        }
-        else
-        {
-            ProcessMoves(eventData);
-        }
-    }
-
-
-    private void ProcessMoves(AxisEventData eventData)
-    {
-        if (_setNavigation == NavigationType.None || !CanNavigate) return;
-
-        if (_setNavigation != NavigationType.RightAndLeft)
-        {
-            if (eventData.moveDir == MoveDirection.Down)
-            {
-                if (down)
-                {
-                    if (down.IsDisabled) { down.OnMove(eventData); return; }
-                    down.Navigation.NavigateToNextNode();
-                }
-            }
-
-            if (eventData.moveDir == MoveDirection.Up)
-            {
-                if (up)
-                {
-                    if (up.IsDisabled) { up.OnMove(eventData); return; }
-                    up.Navigation.NavigateToNextNode();
-                }
-            }
-        }
-
-        if (_setNavigation != NavigationType.UpAndDown)
-        {
-            if (eventData.moveDir == MoveDirection.Left)
-            {
-                if (left)
-                {
-                    if (left.IsDisabled) { left.OnMove(eventData); return; }
-                    left.Navigation.NavigateToNextNode();
-                }
-            }
-
-            if (eventData.moveDir == MoveDirection.Right)
-            {
-                if (right)
-                {
-                    if (right.IsDisabled) { right.OnMove(eventData); return; }
-                    right.Navigation.NavigateToNextNode();
-                }
-            }
-        }
-    }
-
-    public void NavigateToNextNode()
-    {
-        if(!_allowKeys) return;
-        if (_myNode.Function == ButtonFunction.HoverToActivate)
-        {
-            _myNode.PressedActions();
-        }
-        else
-        {
-            _myNode.Audio.Play(UIEventTypes.Highlighted);
-        }
-        //_myNode.TriggerEnterEvent();
-        //_myNode.ThisNodeIsHighLighted();
-        _myNode.SetAsHighlighted();
     }
 
     public void StartMoveToChild()
     {
         if (_childBranch.MyBranchType == BranchType.Internal)
         {
-            _childBranch.MoveToThisBranch(_myBranch);
-            return;
+            ToChildBranchProcess();
         }
-
-        _myBranch.StartOutTweenProcess(OutTweenType.MoveToChild, ToChildBranchProcess);
+        else
+        {
+            _myBranch.StartOutTweenProcess(OutTweenType.MoveToChild, ToChildBranchProcess);
+        }
 
         void ToChildBranchProcess() => _childBranch.MoveToThisBranch(_myBranch);
     }
-    
-    public void TurnOffChildren()
+
+    private protected override void ProcessPress()
     {
-        _childBranch.StartOutTweenProcess(OutTweenType.Cancel, _childBranch.LastHighlighted.Deactivate);
+        if(FunctionNotActive() && !CanBePressed()) return;
+        if (_isSelected)
+        {
+            StartMoveToChild();
+        }
+        else
+        {
+            TurnOffChildrenBranch();
+        }
     }
+
+    public void TurnOffChildrenBranch() 
+        => _childBranch.StartOutTweenProcess(OutTweenType.Cancel, _childBranch.LastHighlighted.DeactivateAndCancelChildren);
+
+    private protected override void ProcessDisabled(bool isDisabled) => TurnOffChildrenBranch();
 }

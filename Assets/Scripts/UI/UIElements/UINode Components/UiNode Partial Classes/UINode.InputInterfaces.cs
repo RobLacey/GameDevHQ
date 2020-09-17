@@ -5,32 +5,51 @@ public partial class UINode
 {
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (IsDisabled || _allowKeys) return;
-        _navigation.PointerEnter(eventData);
+        if (DontAllowPointerEvent(eventData)) return;
+        
+        if (Function == ButtonFunction.HoverToActivate & !IsSelected)
+        {
+            PressedActions();
+        }
+        else
+        {
+            SetAsHighlighted();
+        }
     }
-
+    
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (IsDisabled || _allowKeys) return;
-        _navigation.PointerExit(eventData);
+        if (DontAllowPointerEvent(eventData)) return;
+        SetNotHighlighted();
     }
+
+    private bool DontAllowPointerEvent(PointerEventData eventData) => IsDisabled || eventData.pointerDrag;
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (IsDisabled || _allowKeys) return;
+        if (DontAllowPointerEvent(eventData)) return;
         PressedActions();
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (NotActiveSlider) return;
+        //if (NotActiveSlider) return;
         //TurnNodeOnOff();
     }
 
-    public void OnMove(AxisEventData eventData)
+    public void OnMove(AxisEventData eventData) => DoMove(eventData.moveDir);
+
+    public void DoMove(MoveDirection moveDirection)
     {
-        _uiActions._whenPointerOver?.Invoke(false);
-        _navigation.KeyBoardOrController(eventData);
+        _uiActions._onMove?.Invoke(moveDirection);
+        if (AmSlider && IsSelected)
+        {
+            _navigation.HandleAsSlider();
+        }
+        else
+        {
+            _navigation.ProcessMoves();
+        }
     }
 
     public void OnSubmit(BaseEventData eventData)
