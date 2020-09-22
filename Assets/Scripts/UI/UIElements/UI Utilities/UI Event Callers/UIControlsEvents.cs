@@ -11,6 +11,8 @@ public class UIControlsEvents : UiEventCaller
     private CustomReturnEventHandler<bool> _menuAndGameSwitching;
     private CustomReturnEventHandler<bool> _hotKeyActivation;
     private CustomEventHandler _pausedPressed;
+    private CustomEventHandler<UIBranch> _turnOffChildBranches;
+    private CustomEventHandler<(UIBranch moveFrom, UIBranch moveToo)> _moveToNewBranch;
 
     protected override void OnExit()
     {
@@ -23,6 +25,8 @@ public class UIControlsEvents : UiEventCaller
         if (_menuAndGameSwitching != null) UIInput.OnGameToMenuSwitchPressed -= _menuAndGameSwitching.Event;
         if (_hotKeyActivation != null) UIInput.HotKeyActivated -= _hotKeyActivation.Event;
         if (_pausedPressed != null) UIInput.OnPausedPressed -= _pausedPressed.Event;
+        if (_moveToNewBranch != null) UINavigation.onMoveToBranch -= _moveToNewBranch.Event;
+        if (_turnOffChildBranches != null) UINavigation.onTurnOffChildBranches -= _turnOffChildBranches.Event;
     }
     
     public void SubscribeToAllowKeys(Action<bool> subscriber)
@@ -77,6 +81,18 @@ public class UIControlsEvents : UiEventCaller
     {
         _pausedPressed = new CustomEventHandler();
         UIInput.OnPausedPressed += _pausedPressed.Add(subscriber);
+    }
+    
+    public void SubscribeMoveToChildBranch(Action<(UIBranch moveFrom, UIBranch moveToo)> subscriber)
+    {
+        _moveToNewBranch = new CustomEventHandler<(UIBranch, UIBranch)>();
+        UINavigation.onMoveToBranch += _moveToNewBranch.Add(subscriber);
+    }
+    
+    public void SubscribeTurnOffChildBranches(Action<UIBranch> subscriber)
+    {
+        _turnOffChildBranches = new CustomEventHandler<UIBranch>();
+        UINavigation.onTurnOffChildBranches += _turnOffChildBranches.Add(subscriber);
     }
 
 }

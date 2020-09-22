@@ -16,8 +16,8 @@ public abstract class TweenBase
     protected float _inTime = 1;
     [SerializeField] [AllowNesting] [HideIf("UsingGlobalTime")]
     protected float _outTime = 1;
-    [SerializeField] [AllowNesting] [HideIf("Isfade")]protected Ease _easeIn = Ease.Linear;
-    [SerializeField] [AllowNesting] [HideIf("Isfade")]protected Ease _easeOut = Ease.Linear;
+    [SerializeField] protected Ease _easeIn = Ease.Linear;
+    [SerializeField] protected Ease _easeOut = Ease.Linear;
 
     //Variables
     protected float _tweenTime;

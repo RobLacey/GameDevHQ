@@ -5,7 +5,6 @@ public class ScreenData
 {
     public ScreenData()
     {
-        _uiDataEvents.SubscribeToHighlightedNode(SaveHighlighted);
         _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
@@ -14,18 +13,12 @@ public class ScreenData
 
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly List<UIBranch> _clearedBranches = new List<UIBranch>();
-    public UINode _lastSelected, _lastHighlighted;
+    public INode _lastSelected;
     public UIBranch _activeBranch;
     public bool  _wasInTheMenu, _locked;
     public bool _wasOnHomeScreen = true;
 
-    private void SaveHighlighted(UINode newNode)
-    {
-        if (_locked) return;
-        _lastHighlighted = newNode;
-    }
-
-    private void SaveSelected(UINode newNode)
+    private void SaveSelected(INode newNode)
     {
         if (_locked) return;
         _lastSelected = newNode;

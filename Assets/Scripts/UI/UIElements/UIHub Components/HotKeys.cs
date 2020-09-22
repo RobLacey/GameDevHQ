@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 using NaughtyAttributes;
 
@@ -19,7 +20,7 @@ public class HotKeys
     private bool _notHomeScreenHotKey;
     private bool _gameIsPaused;
     private bool _noActivePopUps = true;
-    private UINode _parentNode;
+    private INode _parentNode;
 
     //Properties
     private void SaveIsPaused(bool isPaused) => _gameIsPaused = isPaused;
@@ -30,7 +31,7 @@ public class HotKeys
     
     public void OnAwake()
     {
-        _notHomeScreenHotKey = _myBranch.MyBranchType != BranchType.HomeScreen;
+        _notHomeScreenHotKey = !_myBranch.IsHomeScreenBranch();
         IsAllowedType();
         OnEnable();
     }
@@ -41,7 +42,7 @@ public class HotKeys
             throw new Exception("Can't have a PopUp as a Hot Key");
         if (_myBranch.IsPauseMenuBranch())
             throw new Exception("Can't have Pause as a Hot Key");
-        if (_myBranch.MyBranchType == BranchType.Internal)
+        if (_myBranch.IsInternalBranch())
             throw new Exception("Can't have an Internal Branch as a Hot Key");
     }
 
@@ -72,14 +73,9 @@ public class HotKeys
 
     private void GetParentNode()
     {
-        if(_parentNode != null) return;
-        foreach (UINode parentNode in _myBranch.MyParentBranch.ThisGroupsUiNodes)
-        {
-            if (parentNode.HasChildBranch != _myBranch) continue;
-            _hasParentNode = true;
-            _parentNode = parentNode;
-            break;
-        }
+        var branchesNodes = _myBranch.MyParentBranch.ThisGroupsUiNodes;
+        _parentNode = branchesNodes.First(node => _myBranch == node.HasChildBranch);
+        _hasParentNode = true;
     }
     
     private void StartThisHotKeyBranch()
@@ -91,8 +87,7 @@ public class HotKeys
     private void SetHotKeyAsSelectedActions()
     {
         _parentNode.ThisNodeIsSelected();
-        _parentNode.SetSelected_NoEffects();
-        _myBranch.DefaultStartOnThisNode.Audio.Play(UIEventTypes.Selected);
+        _parentNode.SetNodeAsSelected_NoEffects();
     }
 
     private void EnsureAlwaysReturnToHomeScreen()

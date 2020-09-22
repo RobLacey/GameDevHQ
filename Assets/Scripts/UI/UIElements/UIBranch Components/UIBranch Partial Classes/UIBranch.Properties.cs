@@ -11,19 +11,20 @@ public partial class UIBranch
                || _branchType == BranchType.ResolvePopUp
                || _branchType == BranchType.TimedPopUp;
     }
-
+    public bool IsPauseMenuBranch() => _branchType == BranchType.PauseMenu;
+    public bool IsInternalBranch() => _branchType == BranchType.Internal;
+    public bool IsHomeScreenBranch() => _branchType == BranchType.HomeScreen;
     public bool IsTimedPopUp => _branchType == BranchType.TimedPopUp;
+    public bool CanvasIsEnabled => MyCanvas.enabled;
+    public bool CanStoreAndRestoreOptionalPoUp => _clearOrResetOptional == StoreAndRestorePopUps.StoreAndRestore;
     public UINode DefaultStartOnThisNode => _startOnThisNode;
+    private INode LastHighlighted { get; set; }
+    public INode LastSelected { get; private set; }
+    public UINode[] ThisGroupsUiNodes { get; private set; }
     public Canvas MyCanvas { get; private set; }
     public CanvasGroup MyCanvasGroup { get; private set; }
     public BranchBase Branch { get; private set; }
-    public UINode LastHighlighted { get; private set; }
-    public UINode LastSelected { get; private set; }
     public UIBranch MyParentBranch { get; private set; }
-    public UINode[] ThisGroupsUiNodes { get; private set; }
-    public bool CanvasIsEnabled => MyCanvas.enabled;
-    public bool CanStoreAndRestoreOptionalPoUp => _clearOrResetOptional == StoreAndRestorePopUps.StoreAndRestore;
-    public BranchType MyBranchType => _branchType;
     public EscapeKey EscapeKeySetting
     {
         get => _escapeKeyFunction;
@@ -51,5 +52,9 @@ public partial class UIBranch
     public void SetStayOn(IsActive setting) => _stayOn = setting;
 
     public float Timer => _timer;
+
+    //Editor Properties
+    public bool IsOptional() => _branchType == BranchType.OptionalPopUp;
+    public bool IsEmpty(UINode node) => node != null;
 
 }

@@ -15,20 +15,16 @@ public partial class UIHub : MonoBehaviour
 {
     [Header("Main Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    
     [SerializeField] 
-    [Label("Enable Controls After..")] float _atStartDelay;
-    
+    [Label("Enable Controls After..")] private float _atStartDelay;
     [SerializeField] 
     [ValidateInput("ProtectEscapeKeySetting", "Can't set Global Settings to Global Settings")]
-    EscapeKey _globalCancelFunction = EscapeKey.BackOneLevel;
-    
+    private EscapeKey _globalCancelFunction = EscapeKey.BackOneLevel;
     [SerializeField] 
-    [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")] 
-    List<UIBranch> _homeBranches;
-    
+    [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")]
+    private List<UIBranch> _homeBranches;
     [SerializeField] 
-    [ReorderableList] List<HotKeys> _hotKeySettings;
+    [ReorderableList] private List<HotKeys> _hotKeySettings;
 
     //Events
     public static event Action OnStart;
@@ -36,7 +32,7 @@ public partial class UIHub : MonoBehaviour
 
     //Variables
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
-    private UINode _lastHomeScreenNode, _lastHighlighted;
+    private INode _lastHighlighted;
     private bool _inMenu, _startingInGame;
 
     //Properties
@@ -86,6 +82,8 @@ public partial class UIHub : MonoBehaviour
     private void SetStartPositionsAndSettings()
     {
         _lastHighlighted = _homeBranches[0].DefaultStartOnThisNode;
+        _homeBranches[0].DefaultStartOnThisNode.ThisNodeIsSelected();
+        _homeBranches[0].DefaultStartOnThisNode.ThisNodeIsHighLighted();
         SetUpBranchesAtStart?.Invoke(_homeBranches[0]);
     }
 
@@ -110,18 +108,12 @@ public partial class UIHub : MonoBehaviour
             OnStart?.Invoke();
     }
     
-    private void SetLastHighlighted(UINode newNode)
+    private void SetLastHighlighted(INode newNode)
     {
         _lastHighlighted = newNode;
-        if(_inMenu) SetEventSystem(_lastHighlighted.gameObject);
+        if(_inMenu) SetEventSystem(_lastHighlighted.ReturnNode.gameObject);
     }
 
-    public static void SetEventSystem(GameObject newGameObject)
-    {
-        EventSystem.current.SetSelectedGameObject(newGameObject);
-    }
+    public static void SetEventSystem(GameObject newGameObject) 
+        => EventSystem.current.SetSelectedGameObject(newGameObject);
 }
-
-
-
-

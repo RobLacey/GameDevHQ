@@ -262,7 +262,6 @@
               </e>
               <e p="UI Utilities" t="Include">
                 <e p="CustomEventHandler.cs" t="Include" />
-                <e p="Interfaces.cs" t="Include" />
                 <e p="StaticCoroutine.cs" t="Include" />
                 <e p="UI Event Callers" t="Include">
                   <e p="UIAudioEvents.cs" t="Include" />
@@ -285,7 +284,7 @@
                 <e p="StandardBranch.cs" t="Include" />
                 <e p="Timed.cs" t="Include" />
                 <e p="UIBranch Partial Classes" t="Include">
-                  <e p="UIBranch.EditorScripts.cs" t="Include" />
+                  <e p="BranchInterfaces.cs" t="Include" />
                   <e p="UIBranch.Properties.cs" t="Include" />
                 </e>
                 <e p="UIBranchGroups.cs" t="Include" />
@@ -315,6 +314,7 @@
                   <e p="Punch.cs" t="Include" />
                   <e p="Scale.cs" t="Include" />
                   <e p="Shake.cs" t="Include" />
+                  <e p="SizeAndPositionFactory.cs" t="Include" />
                   <e p="SizeAndPositionInterfaces.cs" t="Include" />
                   <e p="UISizeAndPosition_EditorScripts.cs" t="Include" />
                 </e>
@@ -330,6 +330,7 @@
                 <e p="UIInvertColours.cs" t="Include" />
                 <e p="UINavigation.cs" t="Include" />
                 <e p="UiNode Partial Classes" t="Include">
+                  <e p="NodeInterfaces.cs" t="Include" />
                   <e p="UINode.EditorScripts.cs" t="Include" />
                   <e p="UINode.InputInterfaces.cs" t="Include" />
                 </e>

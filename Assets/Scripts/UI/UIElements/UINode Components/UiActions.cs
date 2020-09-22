@@ -4,6 +4,11 @@ using UnityEngine.EventSystems;
 
 public class UiActions
 {
+    public readonly int _instanceId;
+        public UiActions(int instanceId)
+        {
+            _instanceId = instanceId;
+        }
         public Action<bool> _whenPointerOver;
         public Action<bool> _isSelected;
         public Action _isPressed;

@@ -9,15 +9,14 @@ public class UIEvents : NodeFunctionBase
     [Header("Highlight Events")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     
-    public UnityEvent _onEnterEvent;
-    public UnityEvent _onExitEvent;
+    [SerializeField] private UnityEvent _onEnterEvent;
+    [SerializeField] private UnityEvent _onExitEvent;
     
     [Header("Click/Selected Events")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    
-    public UnityEvent _onButtonClickEvent;
-    public OnDisabledEvent _onDisable;
-    public OnToggleEvent _onToggleEvent;
+    [SerializeField] private UnityEvent _onButtonClickEvent;
+    [SerializeField] private OnDisabledEvent _onDisable;
+    [SerializeField] private OnToggleEvent _onToggleEvent;
 
     //Custom Unity Events
     [Serializable]
@@ -30,9 +29,9 @@ public class UIEvents : NodeFunctionBase
     protected override bool CanBePressed() => true;
     protected override bool FunctionNotActive() => !CanActivate;
     
-    public override void OnAwake(UINode node, UiActions uiActions)
+    public override void OnAwake(UiActions uiActions, Setting activeFunctions)
     {
-        base.OnAwake(node, uiActions);
+        base.OnAwake(uiActions, activeFunctions);
         CanActivate = (_enabledFunctions & Setting.Events) != 0;
     }
 
@@ -57,5 +56,9 @@ public class UIEvents : NodeFunctionBase
         _onToggleEvent?.Invoke(_isSelected);
     }
 
-    private protected override void ProcessDisabled(bool isDisabled) => _onDisable?.Invoke(isDisabled);
+    private protected override void ProcessDisabled()
+    {
+        if(FunctionNotActive()) return;
+        _onDisable?.Invoke(_isDisabled);
+    }
 }

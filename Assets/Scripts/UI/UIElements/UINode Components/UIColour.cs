@@ -24,7 +24,6 @@ public class UIColour : NodeFunctionBase
     private float _selectHighlightPerc;
     private int _id;
     private string _nodesName;
-    private bool _isDisabled;
 
     //Properties
     protected override bool FunctionNotActive() => !CanActivate || _scheme is null || _isDisabled;
@@ -32,18 +31,18 @@ public class UIColour : NodeFunctionBase
     protected override bool CanBeHighlighted() => (_scheme.ColourSettings & EventType.Highlighted) !=0; 
     protected bool CanBeSelected() => (_scheme.ColourSettings & EventType.Selected) != 0;
 
-    public override void OnAwake(UINode node, UiActions uiActions)
+    public override void OnAwake(UiActions uiActions, Setting activeFunctions)
     {
-        base.OnAwake(node, uiActions);
+        base.OnAwake(uiActions, activeFunctions);
         CanActivate = (_enabledFunctions & Setting.Colours) != 0;
-        _id = node.GetInstanceID();
-        _nodesName = node.name;
+        _id = uiActions._instanceId;
         SetUpCachedColours();
         CheckForSetUpError();
     }
 
     private void SetUpCachedColours()
     {
+        if(!CanActivate) return;
         if (_imageElements.Length > 0)
             _imageNormalColour = _imageElements[0].color;
         
@@ -55,8 +54,9 @@ public class UIColour : NodeFunctionBase
 
     private void CheckForSetUpError()
     {
+        if(!CanActivate) return;
         if (_imageElements.Length == 0 && !_textElements && CanActivate)
-            Debug.LogError($"No Image or Text set on Colour settings on {_nodesName}");
+            throw new Exception("No Image or Text set on Colour settings");
     }
 
     protected override void SavePointerStatus(bool pointerOver)
@@ -134,9 +134,9 @@ public class UIColour : NodeFunctionBase
         DoColourChange(_scheme.TweenTime);
     }
 
-    private protected override void ProcessDisabled(bool isDisabled)
+    private protected override void ProcessDisabled()
     {
-        _isDisabled = isDisabled;
+        if(!CanActivate) return;
         
         if (_isDisabled)
         {

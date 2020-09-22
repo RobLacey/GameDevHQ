@@ -38,7 +38,7 @@ public class UIInput : MonoBehaviour
     private bool _hasPauseAxis, _hasPosSwitchAxis, _hasNegSwitchAxis, 
                  _hasCancelAxis, _canStart, _inMenu, _gameIsPaused;
     private bool _noActivePopUps = true;
-    private UINode _lastHomeScreenNode, _lastSelected;
+    private UINode _lastHomeScreenNode;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private UIBranch _activeBranch;
@@ -57,7 +57,6 @@ public class UIInput : MonoBehaviour
     public bool StartInGame => _menuAndGameSwitching.StartInGame;
     private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
     private void SaveNoActivePopUps(bool noActivePopUps) => _noActivePopUps = noActivePopUps;
-    private void SetLastSelected(UINode newNode) => _lastSelected = newNode;
     private void SaveOnStart() => _canStart = true;
     private void SaveGameIsPaused(bool gameIsPaused) => _gameIsPaused = gameIsPaused;
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
@@ -79,7 +78,6 @@ public class UIInput : MonoBehaviour
 
     private void OnEnable()
     {
-        _uiDataEvents.SubscribeToSelectedNode(SetLastSelected);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiDataEvents.SubscribeToOnStart(SaveOnStart);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
@@ -118,7 +116,7 @@ public class UIInput : MonoBehaviour
     
     private bool CanPauseGame() => _hasPauseAxis && Input.GetButtonDown(_pauseOptionButton);
 
-    private void PausedPressedActions() => OnPausedPressed?.Invoke();
+    private static void PausedPressedActions() => OnPausedPressed?.Invoke();
 
     private static bool CanSwitchBetweenInGameAndMenu() => OnGameToMenuSwitchPressed?.Invoke() ?? false;
     
@@ -142,8 +140,9 @@ public class UIInput : MonoBehaviour
 
     private bool CanEnterPauseWithNothingSelected()
     {
-        return (_noActivePopUps && 
-                !_lastSelected.HasChildBranch.CanvasIsEnabled)
+        
+        return (_noActivePopUps && //Add On home screen
+                _activeBranch == _activeBranch.MyParentBranch)
                && _pauseOptionsOnEscape == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
     }
 

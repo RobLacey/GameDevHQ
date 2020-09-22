@@ -32,9 +32,9 @@ public class UIInvertColours : NodeFunctionBase
     private bool TextSet() => _text != null;
     private bool ImageSet() => _image != null;
 
-    public override void OnAwake(UINode node, UiActions uiActions)
+    public override void OnAwake(UiActions uiActions, Setting activeFunctions)
     {
-        base.OnAwake(node, uiActions);
+        base.OnAwake(uiActions, activeFunctions);
         CanActivate = (_enabledFunctions & Setting.InvertColourCorrection) != 0;
         SetInverseColourSettings();
     }
@@ -75,7 +75,11 @@ public class UIInvertColours : NodeFunctionBase
         }
     }
 
-    private protected override void ProcessDisabled(bool isDisabled) => SetToStartingColour();
+    private protected override void ProcessDisabled()
+    {
+        if(FunctionNotActive()) return;
+        SetToStartingColour();
+    }
 
     private void ChangeToInvertedColour()
     {

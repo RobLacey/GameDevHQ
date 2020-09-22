@@ -18,8 +18,8 @@ public class UICancel
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private bool _fromHotKey;
     private UIBranch _currentHomeBranch;
-    private UINode _lastSelected;
-    private UINode _lastHighlighted;
+    private INode _lastSelected;
+    private INode _lastHighlighted;
     private UIBranch _activeBranch;
     private bool _gameIsPaused;
     private bool _noResolvePopUps = true;
@@ -30,8 +30,8 @@ public class UICancel
     public static event Action<UIBranch> OnBackToAPopUp; 
 
     //Properties
-    private void SaveSelected(UINode newNode) => _lastSelected = newNode;
-    private void SaveLastHighlighted(UINode newNode) => _lastHighlighted = newNode;
+    private void SaveSelected(INode newNode) => _lastSelected = newNode;
+    private void SaveLastHighlighted(INode newNode) => _lastHighlighted = newNode;
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
     private void SaveFromHotKey() => _fromHotKey = true;
     private void SaveCurrentHomeBranch(UIBranch currentHomeBranch) => _currentHomeBranch = currentHomeBranch;
@@ -83,8 +83,6 @@ public class UICancel
 
     private void StartCancelProcess(Action endOfCancelAction) 
     {
-        _activeBranch.LastHighlighted.Audio.Play(UIEventTypes.Cancelled);
-        
         if (HasActivePopUps() && !_gameIsPaused)
         {
             _lastHighlighted.MyBranch.StartOutTweenProcess(OutTweenType.Cancel);

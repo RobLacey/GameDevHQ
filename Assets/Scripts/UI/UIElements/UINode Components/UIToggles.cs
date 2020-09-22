@@ -1,54 +1,34 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class UIToggles
 {
-    UINode _myNode;
-    List<UINode> _toggleGroupMembers = new List<UINode>();
-    ButtonFunction _myFunction;
-    bool _startAsSelected;
+    private readonly UINode _myNode;
+    private readonly List<UINode> _toggleGroupMembers = new List<UINode>();
+    private readonly ToggleGroup _groupID;
 
-    public UIToggles(UINode node, ButtonFunction function, bool startSelected)
+    public UIToggles(UINode node, ToggleGroup groupID)
     {
         _myNode = node;
-        _myFunction = function;
-        _startAsSelected = startSelected;
+        _groupID = groupID;
     }
 
     public void SetUpToggleGroup(UINode[] thisGroupsUINodes)
     {
-        if (_myFunction != ButtonFunction.ToggleGroup) return;
-
         foreach (var node in thisGroupsUINodes)
         {
-            if (node.Function == ButtonFunction.ToggleGroup)
+            if (!node.IsToggleGroup || node == _myNode) continue;
+            if (_groupID == node.ToggleGroupId)
             {
-                if (node != _myNode && _myNode.Id == node.Id)
-                {
-                    _toggleGroupMembers.Add(node);
-                }
-
+                _toggleGroupMembers.Add(node);
             }
-        }
-        if (_startAsSelected)
-        {
-            _myNode.SetSelected_NoEffects();
-            //_myNode.IsSelected = true;
-            // _myNode.SetNotHighlighted();
         }
     }
 
-    public void ToggleGroupElements()
+    public void TurnOffOtherTogglesInGroup()
     {
-        if (_myFunction == ButtonFunction.ToggleGroup)
+        foreach (var item in _toggleGroupMembers)
         {
-            foreach (var item in _toggleGroupMembers)
-            {
-                item.IsSelected = false;
-                item.SetNotHighlighted();
-            }
+            item.SetNodeAsNotSelected_NoEffects();
         }
     }
-
 }

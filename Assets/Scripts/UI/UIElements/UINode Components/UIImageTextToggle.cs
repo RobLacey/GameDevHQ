@@ -27,9 +27,9 @@ public class UIImageTextToggle : NodeFunctionBase
     //Enum
     private enum ChangeWhen { OnHighlight, OnPressed, OnControlChanged }
 
-    public override void OnAwake(UINode node, UiActions uiActions)
+    public override void OnAwake(UiActions uiActions, Setting activeFunctions)
     {
-        base.OnAwake(node, uiActions);
+        base.OnAwake(uiActions, activeFunctions);
         CanActivate = ((_enabledFunctions & Setting.SwapImageOrText) != 0) 
                       && CacheAndCheckForStartingUIElements();
         
@@ -93,5 +93,5 @@ public class UIImageTextToggle : NodeFunctionBase
         CycleToggle(_isSelected);
     }
 
-    private protected override void ProcessDisabled(bool isDisabled) { }
+    private protected override void ProcessDisabled() { }
 }

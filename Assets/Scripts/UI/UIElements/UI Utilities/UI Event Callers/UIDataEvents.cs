@@ -3,8 +3,8 @@
 public class UIDataEvents : UiEventCaller
 {
     private CustomEventHandler<bool> _gameIsPaused;
-    private CustomEventHandler<UINode> _highlightedNode;
-    private CustomEventHandler<UINode> _selectedNode;
+    private CustomEventHandler<INode> _highlightedNode;
+    private CustomEventHandler<INode> _selectedNode;
     private CustomEventHandler<UIBranch> _activeBranch;
     private CustomEventHandler<UIBranch> _currentHomeScreen;
     private CustomEventHandler<UIBranch> _setUpBranchesAtStart;
@@ -33,15 +33,15 @@ public class UIDataEvents : UiEventCaller
         PauseMenu.OnGamePaused += _gameIsPaused.Add(subscriber);
     }
 
-    public void SubscribeToHighlightedNode(Action<UINode> subscriber)
+    public void SubscribeToHighlightedNode(Action<INode> subscriber)
     {
-        _highlightedNode = new CustomEventHandler<UINode>();
+        _highlightedNode = new CustomEventHandler<INode>();
         UINode.DoHighlighted += _highlightedNode.Add(subscriber);
     }
 
-    public void SubscribeToSelectedNode(Action<UINode> subscriber)
+    public void SubscribeToSelectedNode(Action<INode> subscriber)
     {
-        _selectedNode = new CustomEventHandler<UINode>();
+        _selectedNode = new CustomEventHandler<INode>();
         UINode.DoSelected += _selectedNode.Add(subscriber);
     }
 

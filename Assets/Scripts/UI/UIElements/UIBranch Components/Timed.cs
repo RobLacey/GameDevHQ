@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class Timed : BranchBase, ITriggeredPopUp
+public class Timed : BranchBase, IStartPopUp
 {
     public Timed(UIBranch branch) : base(branch)
     {
@@ -11,7 +11,7 @@ public class Timed : BranchBase, ITriggeredPopUp
     //Variables
     private bool _running;
     private Coroutine _coroutine;
-    
+
     public void StartPopUp()
     {
         if (_gameIsPaused || !_canStart || !_noResolvePopUps) return;

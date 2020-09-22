@@ -6,8 +6,8 @@ using NaughtyAttributes;
 [Serializable]
 public class UIAccessories : NodeFunctionBase
 {
-    [SerializeField] [EnumFlags] AccessoryEventType _activateWhen = AccessoryEventType.None;
-    [SerializeField] Image[] _accessoriesList;
+    [SerializeField] [EnumFlags] private AccessoryEventType _activateWhen = AccessoryEventType.None;
+    [SerializeField] private Image[] _accessoriesList;
     [SerializeField] private Outline[] _outlinesToUse;
     [SerializeField] private Shadow[] _dropShadowsToUse;
 
@@ -16,9 +16,9 @@ public class UIAccessories : NodeFunctionBase
     protected override bool CanBePressed() => (_activateWhen & AccessoryEventType.Selected) != 0;
     protected override bool FunctionNotActive() => !CanActivate || _activateWhen == AccessoryEventType.None;
 
-    public override void OnAwake(UINode node, UiActions uiActions)
+    public override void OnAwake(UiActions uiActions, Setting activeFunctions)
     {
-        base.OnAwake(node, uiActions);
+        base.OnAwake(uiActions, activeFunctions);
         CanActivate = (_enabledFunctions & Setting.Accessories) != 0;
         StartActivation(false);
     }
@@ -52,5 +52,9 @@ public class UIAccessories : NodeFunctionBase
         StartActivation(_isSelected);
     }
 
-    private protected override void ProcessDisabled(bool isDisabled) => StartActivation(false);
+    private protected override void ProcessDisabled()
+    {
+        if(!CanActivate) return;
+        StartActivation(false);
+    }
 }

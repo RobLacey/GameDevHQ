@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 
 public partial class UINode
 {
@@ -7,7 +6,7 @@ public partial class UINode
     {
         if (DontAllowPointerEvent(eventData)) return;
         
-        if (Function == ButtonFunction.HoverToActivate & !IsSelected)
+        if (_buttonFunction == ButtonFunction.HoverToActivate & !IsSelected)
         {
             PressedActions();
         }
@@ -39,7 +38,19 @@ public partial class UINode
 
     public void OnMove(AxisEventData eventData) => DoMove(eventData.moveDir);
 
-    public void DoMove(MoveDirection moveDirection)
+    public void CheckIfMoveAllowed(MoveDirection moveDirection)
+    {
+        if (IsDisabled)
+        {
+            DoMove(moveDirection);
+        }
+        else
+        {
+            OnPointerEnter(new PointerEventData(EventSystem.current));
+        }
+    }
+    
+    private void DoMove(MoveDirection moveDirection)
     {
         _uiActions._onMove?.Invoke(moveDirection);
         if (AmSlider && IsSelected)
@@ -54,19 +65,22 @@ public partial class UINode
 
     public void OnSubmit(BaseEventData eventData)
     {
-        if (IsDisabled) return;
-        if (_buttonFunction == ButtonFunction.HoverToActivate) return;
-
-        if (AmSlider) //TODO Need to check this still works properly
-        {
-            AmSlider.interactable = IsSelected;
-        }
+        if (IsDisabled || _buttonFunction == ButtonFunction.HoverToActivate) return;
+        SetSliderUpForInteraction();
         PressedActions();
     }
-    
+
     public void OnSelect(BaseEventData eventData)
     {
         if(!_allowKeys) return;
         _uiActions._whenPointerOver?.Invoke(true);
+    }
+
+    private void SetSliderUpForInteraction()
+    {
+        if (AmSlider) //TODO Need to check this still works properly
+        {
+            AmSlider.interactable = IsSelected;
+        }
     }
 }

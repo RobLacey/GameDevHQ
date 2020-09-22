@@ -10,6 +10,7 @@ public class TestRunner : MonoBehaviour
     [SerializeField] private UINode _lastHighlighted;
     [SerializeField] private UINode _lastSelected;
     [SerializeField] private UIBranch _activeBranch;
+    [SerializeField] [ReadOnly] private bool _onHomeScreen = true;
     [SerializeField] private EventsForTest _eventsForTest;
     [SerializeField] private string _test1Test;
     [SerializeField] private string _test2Test;
@@ -18,7 +19,7 @@ public class TestRunner : MonoBehaviour
     [SerializeField] private string _test5Test;
 
 
-    [System.Serializable]
+    [Serializable]
     private class EventsForTest
     {
         [SerializeField] public UnityEvent _event1;
@@ -30,15 +31,22 @@ public class TestRunner : MonoBehaviour
 
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
 
-    private void SaveLastHighlighted(UINode newNode) => _lastHighlighted = newNode;
-    private void SaveLastSelected(UINode newNode) => _lastSelected = newNode;
-    private void SaveActivebranch(UIBranch newBranch) => _activeBranch = newBranch;
+    private void SaveLastHighlighted(INode newNode) => _lastHighlighted = newNode.ReturnNode;
+    private void SaveLastSelected(INode newNode) => _lastSelected = newNode.ReturnNode;
+    private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
+    private void SaveOnHomeScreen(bool onHome) => _onHomeScreen = onHome;
+
+    private void Awake()
+    {
+        _onHomeScreen = true;
+    }
 
     private void OnEnable()
     {
         _uiDataEvents.SubscribeToHighlightedNode(SaveLastHighlighted);
         _uiDataEvents.SubscribeToSelectedNode(SaveLastSelected);
-        _uiDataEvents.SubscribeToActiveBranch(SaveActivebranch);
+        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
+        _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
     }
 
     [Button ()]

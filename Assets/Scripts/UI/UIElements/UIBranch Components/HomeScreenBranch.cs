@@ -42,20 +42,10 @@ public class HomeScreenBranchBase: BranchBase
         _myBranch.MyCanvas.enabled = true;
         _myBranch.MyCanvasGroup.blocksRaycasts = false;
 
-        if (startBranch == _myBranch)
+        if (startBranch != _myBranch)
         {
-            SetBranchAsStartPosition();
-            return;
+            _myBranch.DontSetBranchAsActive();
         }
-
-        _myBranch.DontSetBranchAsActive();
-        _myBranch.MoveToThisBranch();
-    }
-
-    private void SetBranchAsStartPosition()
-    {
-        _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
-        _myBranch.DefaultStartOnThisNode.ThisNodeIsSelected();
         _myBranch.MoveToThisBranch();
     }
 
@@ -78,7 +68,7 @@ public class HomeScreenBranchBase: BranchBase
             _myBranch.SetNoTween();
         
         _myBranch.MoveToThisBranch();
-        InvokeOnHomeScreen(_isHomeScreenBranch);
+        InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
     }
 
     

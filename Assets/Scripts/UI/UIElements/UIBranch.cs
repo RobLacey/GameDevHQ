@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
@@ -11,54 +12,44 @@ using UnityEngine.Events;
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
-public partial class UIBranch : MonoBehaviour
+public partial class UIBranch : MonoBehaviour, IStartPopUp
 {
     [Header("Main Settings")] [HorizontalLine(4, color: EColor.Blue, order = 1)] 
     
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
-    
     [SerializeField] 
-    [ShowIf("IsTimedPopUp")] float _timer = 1f;
-    
+    [ShowIf("IsTimedPopUp")] private float _timer = 1f;
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "IsOptionalPopUp", "IsTimedPopUp", "IsHome")]
+    [HideIf(EConditionOperator.Or, "IsOptionalPopUp", "IsTimedPopUp", "IsHomeScreenBranch")]
     private ScreenType _screenType = ScreenType.FullScreen;
-
     [SerializeField] 
     [HideIf("IsAPopUpBranch")] 
     private IsActive _stayOn = IsActive.No;
-
     [SerializeField] 
     [ShowIf("IsOptional")] private StoreAndRestorePopUps _clearOrResetOptional = StoreAndRestorePopUps.Reset;
-
     [SerializeField] 
-    [ShowIf(EConditionOperator.Or, "IsHome", "IsOptional")] [Label("Tween on Return To Home")]
+    [ShowIf(EConditionOperator.Or, "IsHomeScreenBranch", "IsOptional")] 
+    [Label("Tween on Return To Home")]
     private IsActive _tweenOnHome = IsActive.No;
-
     [SerializeField] 
     [Label("Save Position On Exit")] [HideIf("IsAPopUpBranch")] private IsActive _saveExitSelection = IsActive.Yes;
-
     [SerializeField] 
     [Label("Move To Next Branch...")] private WhenToMove _moveType = WhenToMove.Immediately;
-
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "IsAPopUpBranch", "IsHome", "IsPauseMenuBranch")]
+    [HideIf(EConditionOperator.Or, "IsAPopUpBranch", "IsHomeScreenBranch", "IsPauseMenuBranch")]
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
-
     [SerializeField]
     [ValidateInput("IsEmpty", "If left Blank it will auto-assign the first UINode in hierarchy/Group")]
     private UINode _startOnThisNode;
-
     [SerializeField] 
     // ReSharper disable once NotAccessedField.Local
     [ShowIf("IsPauseMenuBranch")] private UnityEvent _whenPausePressed;
-
     [SerializeField]
-    [HideIf(EConditionOperator.Or, "IsAPopUpBranch", "IsHome")] [Label("Branch Group List (Leave blank if NO groups needed)")]
+    [HideIf(EConditionOperator.Or, "IsAPopUpBranch", "IsHomeScreenBranch")] 
+    [Label("Branch Group List (Leave blank if NO groups needed)")]
     [ReorderableList] private List<GroupList> _groupsList;
-
-    [SerializeField] BranchEvents _branchEvents;
+    [SerializeField] private BranchEvents _branchEvents;
 
     //Variables
     private UITweener _uiTweener;
@@ -73,16 +64,15 @@ public partial class UIBranch : MonoBehaviour
     
     //Properties
     private void SaveIfOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
-    private void SaveHighlighted(UINode newNode)
-        => LastHighlighted = SearchThisBranchesNodes(newNode, LastHighlighted);
-
-    private void SaveSelected(UINode newNode)
-        => LastSelected = SearchThisBranchesNodes(newNode, LastSelected);
+    private void SaveHighlighted(INode newNode)
+        => LastHighlighted = SearchThisBranchesNodes(newNode.ReturnNode, LastHighlighted.ReturnNode);
+    private void SaveSelected(INode newNode)
+        => LastSelected = SearchThisBranchesNodes(newNode.ReturnNode, LastSelected.ReturnNode);
 
     //Delegates
     public static event Action<UIBranch> DoActiveBranch;
-    public Action _onStartPopUp;
-    Action _onFinishedTrigger;
+    public Action _onStartPopUp; 
+    private Action _onFinishedTrigger;
 
     //InternalClasses
     [Serializable]
@@ -111,6 +101,8 @@ public partial class UIBranch : MonoBehaviour
         _uiDataEvents.SubscribeToHighlightedNode(SaveHighlighted);
         _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
         _uiControlsEvents.SubscribeSwitchGroups(SwitchBranchGroup);
+        _uiControlsEvents.SubscribeMoveToChildBranch(MoveToAChildBranch);
+        _uiControlsEvents.SubscribeTurnOffChildBranches(TurnOffChildBranches);
     }
 
     private void Start() => SetNodesChildrenToThisBranch();
@@ -146,16 +138,7 @@ public partial class UIBranch : MonoBehaviour
         }
     }
 
-    private void FindStartPosition()
-    {
-        foreach (Transform child in transform)
-        {
-            var isANode = child.GetComponent<UINode>();
-            if (!isANode) continue;
-            _startOnThisNode = isANode;
-            break;
-        }
-    }
+    private void FindStartPosition() => _startOnThisNode = transform.GetComponentsInChildren<UINode>().First();
 
     public void MoveToBranchWithoutTween()
     {
@@ -216,6 +199,27 @@ public partial class UIBranch : MonoBehaviour
         return defaultNode;
     }
 
+    private void MoveToAChildBranch((UIBranch moveFrom, UIBranch moveToo) data)
+    {
+        if(data.moveFrom != this) return; 
+        
+        if (data.moveToo.IsInternalBranch())
+        {
+            ToChildBranchProcess();
+        }
+        else
+        {
+            StartOutTweenProcess(OutTweenType.MoveToChild, ToChildBranchProcess);
+        }
+        void ToChildBranchProcess() => data.moveToo.MoveToThisBranch(this);
+    }
+
+    private void TurnOffChildBranches(UIBranch branchToClose)
+    {
+        if(branchToClose != this || !CanvasIsEnabled) return;
+        StartOutTweenProcess(OutTweenType.Cancel);
+    }
+
     public void StartOutTweenProcess(OutTweenType outTweenType, Action endOfTweenCallback = null)
     {
         if (WhenToMove == WhenToMove.AfterEndOfTween)
@@ -250,7 +254,7 @@ public partial class UIBranch : MonoBehaviour
         _uiTweener.DeactivateTweens(CallBack);
     }
 
-    private void OutTweenCallback(OutTweenType outTweenType) //TODO called twice
+    private void OutTweenCallback(OutTweenType outTweenType)
     {
         if(_stayOn == IsActive.No || outTweenType == OutTweenType.Cancel)
             MyCanvas.enabled = false;
@@ -270,7 +274,7 @@ public partial class UIBranch : MonoBehaviour
     }
 
     /// <summary>
-    /// Call To to start any PopUps
+    /// Call To to start any PopUps through I StartPopUp
     /// </summary>
     // ReSharper disable once UnusedMember.Global
     public void StartPopUp() => _onStartPopUp?.Invoke();

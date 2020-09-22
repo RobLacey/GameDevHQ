@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class ResolvePopUp : BranchBase, ITriggeredPopUp
+public class ResolvePopUp : BranchBase, IStartPopUp
 {
     public ResolvePopUp(UIBranch branch, UIBranch[] branchList) : base(branch)
     {

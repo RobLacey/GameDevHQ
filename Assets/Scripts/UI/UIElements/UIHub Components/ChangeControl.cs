@@ -24,7 +24,7 @@ public class ChangeControl
     private bool _usingMouse;
     private bool _usingKeysOrCtrl;
     private bool _noPopUps = true;
-    private UINode _lastHighlighted;
+    private INode _lastHighlighted;
     private UIBranch _activeBranch;
     private bool _afterStartUp;
     private bool _gameIsPaused;
@@ -34,7 +34,7 @@ public class ChangeControl
     public static event Func<UIBranch> ReturnNextPopUp; 
 
     //Properties
-    private void SaveHighlighted(UINode newNode) => _lastHighlighted = newNode;
+    private void SaveHighlighted(INode newNode) => _lastHighlighted = newNode;
 
     private void SaveActiveBranch(UIBranch newNode) => _activeBranch = newNode;
 
@@ -134,7 +134,7 @@ public class ChangeControl
         SetAllowKeys();
         if(_afterStartUp)
             SetNextHighlightedForKeys();
-        UIHub.SetEventSystem(_lastHighlighted.gameObject);
+        UIHub.SetEventSystem(_lastHighlighted.ReturnNode.gameObject);
         _afterStartUp = true;
     }
 

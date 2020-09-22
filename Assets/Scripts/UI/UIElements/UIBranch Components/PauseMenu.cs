@@ -1,9 +1,10 @@
 ﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Need To Make this a singleton or check thee is only one of these
 /// </summary>
-public class PauseMenu : BranchBase, ITriggeredPopUp
+public class PauseMenu : BranchBase, IStartPopUp
 {
     public PauseMenu(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
@@ -68,7 +69,7 @@ public class PauseMenu : BranchBase, ITriggeredPopUp
     {
         if (_onHomeScreen)
         {
-            InvokeOnHomeScreen(_isHomeScreenBranch);
+            InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
         }
         InvokeDoClearScreen(_myBranch);
     }
@@ -84,7 +85,6 @@ public class PauseMenu : BranchBase, ITriggeredPopUp
 
     private void ActivateStoredPosition()
     {
-        _screenData._lastSelected.ThisNodeIsSelected();
         _screenData._activeBranch.MoveToBranchWithoutTween();
         if (_screenData._wasOnHomeScreen)
             InvokeOnHomeScreen(true);

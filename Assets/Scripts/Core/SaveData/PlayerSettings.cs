@@ -9,7 +9,7 @@ public class PlayerSettings : MonoBehaviour
 {
     [SerializeField] Slider _musicSlider;
     [SerializeField] Slider _sfxSlider;
-    [SerializeField] UINode _hardLevel;
+    //[SerializeField] UINode _hardLevel;
     [SerializeField] Settings _playerSettings;
     [SerializeField] EventManager _Event_Save_File;
     [SerializeField] EventManager _Event_Load_File;
@@ -61,12 +61,12 @@ public class PlayerSettings : MonoBehaviour
         }
     }
 
-    private void SetUpHardLevelSettings()
+    private void SetUpHardLevelSettings() //TODO Review what is happening here
     {
-        if (_hardLevel != null)
-        {
-            _hardLevel.IsSelected = _playerSettings._hardLevel;
-        }
+        // if (_hardLevel != null)
+        // {
+        //     _hardLevel.IsSelected = _playerSettings._hardLevel;
+        // }
     }
 
     public void AdjustMusicLevel(float newValue)
@@ -85,7 +85,7 @@ public class PlayerSettings : MonoBehaviour
 
     public void AdjustHardLevel(bool newLevel)
     {
-        _hardLevel.IsSelected = newLevel;
+        //_hardLevel.IsSelected = newLevel;
         _playerSettings._hardLevel = newLevel;
     }
 

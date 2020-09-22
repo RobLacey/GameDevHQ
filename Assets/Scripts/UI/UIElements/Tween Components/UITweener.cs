@@ -9,42 +9,56 @@ using UnityEngine.Events;
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 public partial class UITweener : MonoBehaviour
 {
-    [SerializeField] [ReorderableList] [Label("List Of Objects To Apply Effects To")] 
-    List<TweenSettings> _buildObjectsList = new List<TweenSettings>();
+    [SerializeField] 
+    [ReorderableList] [Label("List Of Objects To Apply Effects To")]
+    private List<TweenSettings> _buildObjectsList = new List<TweenSettings>();
     [InfoBox("Add PARENT to apply effects as a whole or add each CHILD for a build effect. List is DRAG & DROP", order = 0)]
     [Header("Effect Tween Settings", order = 1)] [HorizontalLine(4, color: EColor.Blue, order = 2)]
     [Header("Time Settings", order = 3)]
-    [SerializeField] IsActive _useGlobalTime = IsActive.No;
-    [SerializeField] [ShowIf("GlobalTime")] float _globalInTime = 1;
-    [SerializeField] [ShowIf("GlobalTime")] float _globalOutTime = 1;
+    [SerializeField]
+    private IsActive _useGlobalTime = IsActive.No;
+    [SerializeField] 
+    [ShowIf("GlobalTime")]
+    private float _globalInTime = 1;
+    [SerializeField] 
+    [ShowIf("GlobalTime")]
+    private float _globalOutTime = 1;
+    
     [Header("Tween Settings")]
-    [SerializeField] public PositionTweenType _positionTween = PositionTweenType.NoTween;
-    [SerializeField] public RotationTweenType _rotationTween = RotationTweenType.NoTween;
-    [SerializeField] [Label("Fade (Canvas Group Only)")] public FadeTween _canvasGroupFade = FadeTween.NoTween;
-    [SerializeField] [Label("Scale Tween")] public ScaleTween _scaleTransition = ScaleTween.NoTween;
-    [SerializeField] [Label("Shake or Punch Tween")] public PunchShakeTween _punchShakeTween = PunchShakeTween.NoTween;
-    [SerializeField] [Label("Shake/Punch At End (In Only)")] IsActive _shakeOrPunchAtEnd = IsActive.No;
-    [SerializeField] IsActive _addTweenEventTriggers = IsActive.No;
-    [SerializeField] [ShowIf("AddTweenEvent")] [Label("Event At After Start/Mid-Point of Tween")] 
-    TweenTrigger _middleOfTweenAction;
-    [SerializeField] [ShowIf("AddTweenEvent")] [Label("Event At End of Tween")] 
-    TweenTrigger _endOfTweenAction;
+    [SerializeField] 
+    private PositionTweenType _positionTween = PositionTweenType.NoTween;
+    [SerializeField] 
+    private RotationTweenType _rotationTween = RotationTweenType.NoTween;
+    [SerializeField] 
+    [Label("Fade (Canvas Group Only)")] private FadeTween _canvasGroupFade = FadeTween.NoTween;
+    [SerializeField] 
+    [Label("Scale Tween")] private ScaleTween _scaleTransition = ScaleTween.NoTween;
+    [SerializeField] 
+    [Label("Shake or Punch Tween")] private PunchShakeTween _punchShakeTween = PunchShakeTween.NoTween;
+    [SerializeField] 
+    [Label("Shake/Punch At End (In Only)")] private IsActive _shakeOrPunchAtEnd = IsActive.No;
+    [SerializeField] 
+    private IsActive _addTweenEventTriggers = IsActive.No;
+    [SerializeField] 
+    [ShowIf("AddTweenEvent")] [Label("Event At After Start/Mid-Point of Tween")] 
+    private TweenTrigger _middleOfTweenAction;
+    [SerializeField] [ShowIf("AddTweenEvent")] [Label("Event At End of Tween")]
+    private TweenTrigger _endOfTweenAction;
     [SerializeField] [Label("Settings")] [ShowIf("Position")] [BoxGroup("Position Tween")]
     private PositionTween _posTween;
     [SerializeField] [Label("Settings")] [ShowIf("Rotation")] [BoxGroup("Rotation Tween")]
     private RotateTween _rotateTween;
-    [SerializeField] [Label("Settings")] [ShowIf("Scale")] [BoxGroup("Scale Tween")] 
-    ScaleTweener _scaleTween;
-    [SerializeField]  [Label("Settings")] [ShowIf("Punch")] [BoxGroup("Punch Tween")] 
-    PunchTweener _punchTween;
-    [SerializeField] [Label("Settings")] [ShowIf("Shake")] [BoxGroup("Shake Tween")] 
-    ShakeTweener _shakeTween;
-    [SerializeField] [Label("Settings")] [ShowIf("Fade")] [BoxGroup("Fade Tween")] 
-    FadeTweener _fadeTween;
+    [SerializeField] [Label("Settings")] [ShowIf("Scale")] [BoxGroup("Scale Tween")]
+    private ScaleTweener _scaleTween;
+    [SerializeField]  [Label("Settings")] [ShowIf("Punch")] [BoxGroup("Punch Tween")]
+    private PunchTweener _punchTween;
+    [SerializeField] [Label("Settings")] [ShowIf("Shake")] [BoxGroup("Shake Tween")]
+    private ShakeTweener _shakeTween;
+    [SerializeField] [Label("Settings")] [ShowIf("Fade")] [BoxGroup("Fade Tween")]
+    private FadeTweener _fadeTween;
 
     //Variables
-    private int _counter;
-    private int _effectCounter;
+    private int _counter, _effectCounter;
     private IsActive _doEffectOnInTween = IsActive.No;
 
     //Delegates
@@ -67,21 +81,21 @@ public partial class UITweener : MonoBehaviour
     {
         if (_positionTween == PositionTweenType.NoTween) return;
         _counter++;
-        _posTween.SetUpTweens(_buildObjectsList, InEndEffect);
+        _posTween.SetUpTweens(_buildObjectsList, InTweenEndEffect);
     }
 
     private void SetUpRotationTween()
     {
         if (_rotationTween == RotationTweenType.NoTween) return;
         _counter++;
-        _rotateTween.SetUpTweens(_buildObjectsList, InEndEffect);
+        _rotateTween.SetUpTweens(_buildObjectsList, InTweenEndEffect);
     }
 
     private void SetUpScaleTween()
     {
         if (_scaleTransition == ScaleTween.NoTween) return;
         _counter++;
-        _scaleTween.SetUpTweens(_buildObjectsList, InEndEffect);
+        _scaleTween.SetUpTweens(_buildObjectsList, InTweenEndEffect);
     }
 
     private void SetUpPunchShakeTween()
@@ -108,30 +122,34 @@ public partial class UITweener : MonoBehaviour
     public void ActivateTweens(Action callBack)
     {        
         _finishedTweenCallback = callBack;
-
-        if (_counter <= 0)
-        {
-            InTweenEndAction();
-            return;
-        }
-
+        if (IfTweenCounterIsZero_In()) return;
         SetTweensUp(_globalInTime, TweenType.In, InTweenEndAction, IsActive.Yes);
+    }
+
+    private bool IfTweenCounterIsZero_In()
+    {
+        if (_counter > 0) return false;
+        InTweenEndAction();
+        return true;
     }
 
     public void DeactivateTweens(Action callBack)
     {
         _finishedTweenCallback = callBack;
-        if (_counter <= 0)
-        {
-            OutTweenEndAction();
-            _endOfTweenAction.Invoke();
-            return;
-        }
+        if (IfTweenCounterIsZero_Out()) return;
         SetTweensUp(_globalOutTime, TweenType.Out, OutTweenEndAction, IsActive.No);
     }
 
+    private bool IfTweenCounterIsZero_Out()
+    {
+        if (_counter > 0) return false;
+        OutTweenEndAction();
+        _endOfTweenAction.Invoke();
+        return true;
+    }
+
     private void SetTweensUp(float globalTime, TweenType tweenType, 
-                         TweenCallback callback, IsActive allowInTweenEffect)
+                             TweenCallback callback, IsActive allowInTweenEffect)
     {
         StopAllCoroutines();
         _effectCounter = _counter;
@@ -145,12 +163,10 @@ public partial class UITweener : MonoBehaviour
         _scaleTween.StartTween(_scaleTransition, tweenTime, tweenType, endaction);
         _rotateTween.StartTween(_rotationTween, tweenTime, tweenType, endaction);
         _fadeTween.StartTween(_canvasGroupFade, tweenTime, tweenType, endaction);
-        
-        if (_shakeOrPunchAtEnd == IsActive.No)
-        {
-            _punchTween.DoPunch(_punchShakeTween, tweenType, endaction);
-            _shakeTween.DoShake(_punchShakeTween, tweenType, endaction);
-        }
+
+        if (_shakeOrPunchAtEnd != IsActive.No) return;
+        _punchTween.DoPunch(_punchShakeTween, tweenType, endaction);
+        _shakeTween.DoShake(_punchShakeTween, tweenType, endaction);
     }
     
     private void InTweenEndAction()
@@ -169,27 +185,19 @@ public partial class UITweener : MonoBehaviour
         _finishedTweenCallback?.Invoke();
     }
     
-    private float TimeToUseForTween(float timeToUse)
-    {
-        if (_useGlobalTime == IsActive.Yes)
-        {
-            return timeToUse;
-        }
-        return 0;
-    }
-    
-    private void InEndEffect(RectTransform uiObject = null)
+    private float TimeToUseForTween(float timeToUse) => _useGlobalTime == IsActive.Yes ? timeToUse : 0;
+
+    private void InTweenEndEffect(RectTransform uiObject = null)
     {
         if (_shakeOrPunchAtEnd == IsActive.No) return;
-        if (_punchShakeTween == PunchShakeTween.Shake)
+        switch (_punchShakeTween)
         {
-            _shakeTween.EndEffect(uiObject, _doEffectOnInTween);
-        }
-        if (_punchShakeTween == PunchShakeTween.Punch)
-        {
-            _punchTween.EndEffect(uiObject, _doEffectOnInTween);
+            case PunchShakeTween.Shake:
+                _shakeTween.EndEffect(uiObject, _doEffectOnInTween);
+                break;
+            case PunchShakeTween.Punch:
+                _punchTween.EndEffect(uiObject, _doEffectOnInTween);
+                break;
         }
     }
 }
-
-

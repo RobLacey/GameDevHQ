@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 /// <summary>
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
@@ -17,7 +16,6 @@ public class UIHomeGroup
     private readonly UIBranch[] _homeGroup;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
-    private bool _allowKeys;
     private bool _fromHotKey;
     private bool _onHomeScreen = true;
     private int _index;
@@ -28,7 +26,6 @@ public class UIHomeGroup
     public static event Action<UIBranch> DoSetCurrentHomeBranch; // Subscribe To track if on Home Screen
     
     //Properties
-    private void SaveAllowKeys(bool allow) => _allowKeys = allow;
     private void SaveFromHotKey() => _fromHotKey = true;
     private void SaveOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
 
@@ -36,7 +33,6 @@ public class UIHomeGroup
     {
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
-        _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
         _uiControlsEvents.SubscribeFromHotKey(SaveFromHotKey);
         _uiControlsEvents.SubscribeSwitchGroups(SwitchHomeGroups);
     }
@@ -46,15 +42,7 @@ public class UIHomeGroup
         if (!_onHomeScreen) return;
         if(_homeGroup.Length == 1) return;
         SetNewIndex(switchType);
-        
-        if (ActivateHoverOverIfKeysAllowed()) //TODO redo with Node refactor
-        {
-           _homeGroup[_index].MoveToThisBranch();
-        }
-        else
-        {
-            _homeGroup[_index].MoveToBranchWithoutTween();
-        }
+        _homeGroup[_index].MoveToBranchWithoutTween();
     }
 
     private void SetNewIndex(SwitchType switchType)
@@ -73,9 +61,6 @@ public class UIHomeGroup
 
         DoSetCurrentHomeBranch?.Invoke(_homeGroup[_index]);
     }
-
-    private bool ActivateHoverOverIfKeysAllowed() 
-        => _homeGroup[_index].LastSelected.Function == ButtonFunction.HoverToActivate && _allowKeys;
 
     private void SaveActiveBranch(UIBranch newBranch)
     {

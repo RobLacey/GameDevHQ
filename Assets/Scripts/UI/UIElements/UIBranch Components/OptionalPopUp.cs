@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class OptionalPopUp : BranchBase, ITriggeredPopUp
+public class OptionalPopUp : BranchBase, IStartPopUp
 {
     public OptionalPopUp(UIBranch branch, UIBranch[] branchList) : base(branch)
     {

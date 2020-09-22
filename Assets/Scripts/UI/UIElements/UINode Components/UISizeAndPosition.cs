@@ -40,34 +40,36 @@ public partial class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, 
     public float Randomness => _shakeRandomness;
     public bool FadeOut => _fadeOut;
     public bool Snapping => _snapping;
+    public bool IsPunch() => _tweenEffect == TweenEffect.Punch && _changeSizeOn != Choose.None;
+    public bool IsShake() => _tweenEffect == TweenEffect.Shake && _changeSizeOn != Choose.None;
     public bool DontAllowLoop() => _changeSizeOn == Choose.Pressed || _changeSizeOn == Choose.None;
-
-    protected override bool CanBeHighlighted() => _changeSizeOn == Choose.Highlighted 
-                                                  || _changeSizeOn == Choose.HighlightedAndSelected;
+    protected override bool CanBeHighlighted() => _changeSizeOn == 
+        Choose.Highlighted || _changeSizeOn == Choose.HighlightedAndSelected; 
     protected override bool CanBePressed() => _changeSizeOn == Choose.Pressed || _changeSizeOn == Choose.Selected; 
-    protected override bool FunctionNotActive() => !CanActivate && _changeSizeOn != Choose.None;
+    protected override bool FunctionNotActive() =>  !CanActivate && _changeSizeOn != Choose.None;
 
-    public override void OnAwake(UINode node, UiActions uiActions)
+    public void OnAwake(UiActions uiActions, Setting activeFunctions, RectTransform rectTransform)
     {
-        base.OnAwake(node, uiActions);
+        base.OnAwake(uiActions, activeFunctions);
         CanActivate = (_enabledFunctions & Setting.SizeAndPosition) != 0;
         if (DontAllowLoop()) _loop = false;
-        SetVariables(node);
-        SetTweenIds();
+        GameObjectID = uiActions._instanceId;
+        SetVariables(rectTransform);
     }
 
-    private void SetVariables(UINode node)
+    private void SetVariables(RectTransform rectTransform)
     {
-        GameObjectID = node.GetInstanceID();
-        MyRect = node.GetComponent<RectTransform>();
-        MyTransform = node.transform;
+        MyRect = rectTransform;
+        MyTransform = MyRect.transform;
         StartSize = MyRect.localScale;
         StartPosition = MyRect.anchoredPosition3D;
+        if(CanActivate)
+            _tween = SizeAndPositionFactory.AssignType(_tweenEffect, this, GameObjectID.ToString());
     }
 
     protected override void SavePointerStatus(bool pointerOver)
     {
-        if(FunctionNotActive()|| !CanBeHighlighted() || !CanActivate) return;
+        if(FunctionNotActive()|| !CanBeHighlighted()) return;
         
         if(pointerOver)
         {
@@ -83,7 +85,8 @@ public partial class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, 
 
     private protected override void ProcessPress()
     {
-        if(FunctionNotActive() ||!CanBePressed() || !CanActivate) return;
+        if(FunctionNotActive() ||!CanBePressed()) return;
+        
         if(_changeSizeOn == Choose.Pressed)
         {
             IsPressed = true;
@@ -96,24 +99,9 @@ public partial class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, 
         }
     }
 
-    private protected override void ProcessDisabled(bool isDisabled) { _tween.DoTween(IsActive.No);}
-
-    private void SetTweenIds()
+    private protected override void ProcessDisabled()
     {
-        switch (_tweenEffect)
-        {
-            case TweenEffect.Punch:
-                _tween = new Punch(this, GameObjectID.ToString());
-                break;
-            case TweenEffect.Shake:
-                _tween = new Shake(this, GameObjectID.ToString());
-                break;
-            case TweenEffect.Position:
-                _tween = new Position(this, GameObjectID.ToString());
-                break;
-            case TweenEffect.Scale:
-                _tween = new Scale(this, GameObjectID.ToString());
-                break;
-        }
+        if(!CanActivate) return;
+        _tween.DoTween(IsActive.No);
     }
 }

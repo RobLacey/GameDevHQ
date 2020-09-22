@@ -43,7 +43,7 @@ public enum ToggleGroup { None, TG1, TG2, TG3, TG4, TG5 }
 
 public enum EscapeKey { None, BackOneLevel, BackToHome, GlobalSetting }
 
-public enum ButtonFunction { Standard, ToggleGroup, ToggleNotLinked, HoverToActivate }
+public enum ButtonFunction { Standard, ToggleGroup, ToggleNotLinked, HoverToActivate, CancelOrBack }
 
 [Flags]
 public enum Setting

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
@@ -12,35 +13,36 @@ public class UITooltip : NodeFunctionBase
     [SerializeField] private TooltipType _tooltipType = TooltipType.Follow;
     
     [Header("Mouse & Global Fixed Position Settings", order = 2)]
-    [SerializeField] [AllowNesting] [Label("Tooltip Position")]
-    private ToolTipAnchor _toolTipPosition;
-    [SerializeField] [AllowNesting] [ShowIf("Fixed")]
-    private RectTransform _groupFixedPosition;
-    [SerializeField] [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")]
-    private float _mousePaddingX;
-    [SerializeField] [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")]
-    private float _mousePaddingY;
+    [SerializeField] 
+    [AllowNesting] [Label("Tooltip Position")] private ToolTipAnchor _toolTipPosition;
+    [SerializeField] 
+    [AllowNesting] [ShowIf("Fixed")] private RectTransform _groupFixedPosition;
+    [SerializeField] 
+    [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")] private float _mousePaddingX;
+    [SerializeField] 
+    [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")] private float _mousePaddingY;
     
     [Header("Keyboard and Controller Settings")]
-    [SerializeField] [AllowNesting] [Label("Tooltip Preset")] [HideIf("Fixed")]
-    private UseSide _positionToUse = UseSide.ToTheRightOf;
-    [SerializeField] [AllowNesting] [Label("Offset Position")] [HideIf("Fixed")]
-    private ToolTipAnchor _keyboardPosition;
-    [SerializeField] [AllowNesting] [Label("GameObject Marker")] [ShowIf("UseGameObject")]
-    private RectTransform _fixedPosition;
-    [SerializeField] [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")]
-    private float _keyboardPaddingX;
-    [SerializeField] [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")]
-    private float _keyboardPaddingY;
+    [SerializeField] 
+    [AllowNesting] [Label("Tooltip Preset")] [HideIf("Fixed")] private UseSide _positionToUse = UseSide.ToTheRightOf;
+    [SerializeField] 
+    [AllowNesting] [Label("Offset Position")] [HideIf("Fixed")] private ToolTipAnchor _keyboardPosition;
+    [SerializeField] 
+    [AllowNesting] [Label("GameObject Marker")] [ShowIf("UseGameObject")] private RectTransform _fixedPosition;
+    [SerializeField] 
+    [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")] private float _keyboardPaddingX;
+    [SerializeField] 
+    [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")] private float _keyboardPaddingY;
     
     [Header("Other Settings")]
-    [SerializeField] [Range(0f, 50f)]
-    private float _screenSafeZone = 10;
-    [SerializeField] [AllowNesting] [Label("Display Tooltip Delay")]
-    private float _delay = 1f;
-    [SerializeField] [AllowNesting] [ShowIf("BuildTips")] [Label("Delay Until Next..")]
-    private float _buildDelay = 1f;
-    [SerializeField] private LayoutGroup[] _listOfTooltips = new LayoutGroup[0];
+    [SerializeField] 
+    [Range(0f, 50f)] private float _screenSafeZone = 10;
+    [SerializeField] 
+    [AllowNesting] [Label("Display Tooltip Delay")] private float _delay = 1f;
+    [SerializeField] 
+    [AllowNesting] [ShowIf("BuildTips")] [Label("Delay Until Next..")] private float _buildDelay = 1f;
+    [SerializeField] 
+    private LayoutGroup[] _listOfTooltips = new LayoutGroup[0];
 
     //Variables
     private Vector2 _tooltipPos;
@@ -63,8 +65,39 @@ public class UITooltip : NodeFunctionBase
     protected override bool CanBePressed() => false;
     private protected override void ProcessPress() { }
     protected override bool FunctionNotActive() => !CanActivate || _listOfTooltips.Length == 0;
-    private protected override void ProcessDisabled(bool isDisabled) => HideToolTip();
+    private protected override void ProcessDisabled()
+    {
+        if(FunctionNotActive()) return;
+        HideToolTip();
+    }
     private void SaveAllowKeys(bool allow) => _allowKeys = allow;
+
+    //Editor Scripts
+    public bool Fixed() => _tooltipType == TooltipType.Fixed;
+    public bool FollowMouse() => _tooltipType == TooltipType.Follow;
+    public bool BuildTips() => _listOfTooltips.Length > 1;
+    public bool UseGameObject() => _positionToUse == UseSide.GameObjectAsPosition && _tooltipType != TooltipType.Fixed;
+
+
+    //TODO Change size calculations to work from camera size rather than canvas so still works when aspect changes
+
+    public void OnAwake(UiActions uiActions, Setting activeFunctions, RectTransform rectTransform) 
+    {
+        base.OnAwake(uiActions, activeFunctions);
+        CanActivate = (_enabledFunctions & Setting.TooplTip) != 0;
+        SetUp(rectTransform);
+    }
+
+    private void SetUp(RectTransform rectTransform)
+    {
+        if (!CanActivate) return;
+        _parentRectTransform = rectTransform;
+        _anchoredPosition = _mainCanvas.anchoredPosition;
+        _calculation = new ToolTipsCalcs(_mainCanvas, _screenSafeZone);
+        _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
+        SetUpTooltips();
+        CheckSetUpForError();
+    }
 
     protected override void SavePointerStatus(bool pointerOver)
     {
@@ -81,36 +114,10 @@ public class UITooltip : NodeFunctionBase
         }
     }
 
-    //Editor Scripts
-    public bool Fixed() => _tooltipType == TooltipType.Fixed;
-    public bool FollowMouse() => _tooltipType == TooltipType.Follow;
-    public bool BuildTips() => _listOfTooltips.Length > 1;
-    public bool UseGameObject() => _positionToUse == UseSide.GameObjectAsPosition && _tooltipType != TooltipType.Fixed;
-
-    //TODO Change size calculations to work from camera size rather than canvas so still works when aspect changes
-    
-    public override void OnAwake(UINode node, UiActions uiActions) 
-    {
-        base.OnAwake(node, uiActions);
-        CanActivate = (_enabledFunctions & Setting.TooplTip) != 0;
-        SetUp(node);
-    }
-
-    private void SetUp(UINode node)
-    {
-        if (!CanActivate) return;
-        _parentRectTransform = node.GetComponent<RectTransform>();
-        _anchoredPosition = _mainCanvas.anchoredPosition;
-        _calculation = new ToolTipsCalcs(_mainCanvas, _screenSafeZone);
-        _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
-        SetUpTooltips();
-        CheckSetUpForError(node.name);
-    }
-
-    private void CheckSetUpForError(string name)
+    private void CheckSetUpForError()
     {
         if (_listOfTooltips.Length == 0)
-            Debug.Log($"No tooltips set on {name}");
+            throw new Exception("No tooltips set");
     }
 
     private void SetUpTooltips()
