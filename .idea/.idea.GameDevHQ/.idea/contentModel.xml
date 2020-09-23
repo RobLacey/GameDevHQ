@@ -259,9 +259,13 @@
               <e p="UI Scritpables" t="Include">
                 <e p="AudioScheme.cs" t="Include" />
                 <e p="ColourScheme.cs" t="Include" />
+                <e p="InputScheme.cs" t="Include" />
+                <e p="ToolTipScheme.cs" t="Include" />
               </e>
               <e p="UI Utilities" t="Include">
+                <e p="BucketCreator.cs" t="Include" />
                 <e p="CustomEventHandler.cs" t="Include" />
+                <e p="ServiceLocator.cs" t="Include" />
                 <e p="StaticCoroutine.cs" t="Include" />
                 <e p="UI Event Callers" t="Include">
                   <e p="UIAudioEvents.cs" t="Include" />

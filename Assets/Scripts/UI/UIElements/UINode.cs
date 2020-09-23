@@ -19,6 +19,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")] 
     private ToggleGroup _toggleGroupId = ToggleGroup.None;
+    [SerializeField]
+    [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")] private Canvas _tab;
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")] private bool _startAsSelected;
 
@@ -144,7 +146,16 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _uiDataEvents = new UIDataEvents();
         _uiControlsEvents = new UIControlsEvents();
         SetUpUiFunctions();
-        if(IsToggleGroup) _toggleGroups = new UIToggles(this, _toggleGroupId);
+        SetUpIfNodeIsAToggle();
+    }
+
+    private void SetUpIfNodeIsAToggle()
+    {
+        if (IsToggleGroup)
+            _toggleGroups = new UIToggles(this, _toggleGroupId, _tab);
+
+        if (IsToggleNotLinked || IsToggleGroup)
+            _navigation.Child = null;
     }
 
     private void SetUpUiFunctions()
@@ -193,7 +204,9 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private void SeTUpToggleGroup()
     {
         _toggleGroups.SetUpToggleGroup(MyBranch.ThisGroupsUiNodes);
-        if (_startAsSelected) SetNodeAsSelected_NoEffects();
+        if (!_startAsSelected) return;
+        _toggleGroups.TurnOffOtherTogglesInGroup();
+        SetNodeAsSelected_NoEffects();
     }
 
     public void SetNodeAsActive()
@@ -242,7 +255,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         }
         else
         {
-            if (IsToggleGroup) _toggleGroups.TurnOffOtherTogglesInGroup();
+            if (IsToggleGroup) 
+                _toggleGroups.TurnOffOtherTogglesInGroup();
             Activate();
         }
         SetSlider(IsSelected);

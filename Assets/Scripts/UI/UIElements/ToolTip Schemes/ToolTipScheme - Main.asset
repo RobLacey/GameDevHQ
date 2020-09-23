@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba0795612f67412288cc7dc8e7b56c47, type: 3}
+  m_Name: ToolTipScheme - Main
+  m_EditorClassIdentifier: 
+  _tooltipType: 1
+  _toolTipPosition: 8
+  _groupFixedPosition: {fileID: 0}
+  _mousePaddingX: 0
+  _mousePaddingY: 0
+  _positionToUse: 0
+  _keyboardPosition: 0
+  _fixedPosition: {fileID: 0}
+  _keyboardPaddingX: 0
+  _keyboardPaddingY: 0
+  _screenSafeZone: 10
+  _displayTooltipDelay: 1
+  _buildDelay: 1

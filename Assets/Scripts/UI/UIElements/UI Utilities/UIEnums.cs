@@ -103,4 +103,8 @@ public enum SwitchType { Positive, Negative }
 public enum TweenType { In, Out }
 public enum BlockRayCast { Yes, No }
 public enum OutTweenType { Cancel, MoveToChild }
+public enum UseSide { ToTheRightOf, ToTheLeftOf, GameObjectAsPosition  }
+public enum InGameSystem { On, Off }
+
+
 

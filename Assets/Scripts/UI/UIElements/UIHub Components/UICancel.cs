@@ -92,6 +92,7 @@ public class UICancel
         {
             _activeBranch.StartOutTweenProcess(OutTweenType.Cancel, endOfCancelAction);
         }
+        _fromHotKey = false;    //Ensures HotKey rules don't apply next time we visit branch
     }
 
     private bool HasActivePopUps() => !_noPopUps && _lastHighlighted.MyBranch.IsAPopUpBranch();

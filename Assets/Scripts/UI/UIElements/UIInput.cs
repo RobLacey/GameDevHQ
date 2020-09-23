@@ -1,71 +1,90 @@
 ﻿using System;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class UIInput : MonoBehaviour
 {
-    [SerializeField] private ControlMethod _mainControlType = ControlMethod.MouseOnly;
+    [SerializeField] 
+    private ControlMethod _mainControlType = ControlMethod.MouseOnly;
+
+    [SerializeField] private ScriptableObject _inputScheme;
 
     [Header("Pause Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    
     [SerializeField] 
-    [Label("Nothing to Cancel")] 
-    PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.DoNothing;
-    
+    [Label("Nothing to Cancel")]
+    private PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.DoNothing;
     [SerializeField] 
-    [Label("Pause / Option Button")] [InputAxis] string _pauseOptionButton;
+    [Label("Pause / Option Button")] [InputAxis]
+    private string _pauseOptionButton;
     
     [Header("Home Branch Switch Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    
     [SerializeField]
-    [HideIf("MouseOnly")] [InputAxis] string _posSwitchButton;
-    
+    [HideIf("MouseOnly")] [InputAxis] private string _posSwitchButton;
     [SerializeField] 
-    [HideIf("MouseOnly")] [InputAxis] string _negSwitchButton;
+    [HideIf("MouseOnly")] [InputAxis] private string _negSwitchButton;
     
     [Header("Cancel Settings")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    
     [SerializeField] 
-    [InputAxis] string _cancelButton;
+    [InputAxis] private string _cancelButton;
     
+    [Header("In-Game Menu Settings")]
     [SerializeField]
-    MenuAndGameSwitching _menuAndGameSwitching = new MenuAndGameSwitching();
+    [DisableIf("MouseOnly")] private InGameSystem _inGameMenuSystem = InGameSystem.Off;
+    [SerializeField] 
+    private StartInMenu _startGameWhere = StartInMenu.InGameControl;
+    [SerializeField] 
+    [Label("Switch To/From Game Menus")] [InputAxis] private string _switchToMenusButton;
+    [SerializeField] 
+    private InGameOrInMenu _returnToGameControl;
+
 
     //Variables
     private bool _hasPauseAxis, _hasPosSwitchAxis, _hasNegSwitchAxis, 
-                 _hasCancelAxis, _canStart, _inMenu, _gameIsPaused;
+                 _hasCancelAxis,_hasSwitchToMenusButton, _canStart, 
+                 _inMenu, _gameIsPaused;
     private bool _noActivePopUps = true;
     private UINode _lastHomeScreenNode;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private UIBranch _activeBranch;
+    private MenuAndGameSwitching _menuToGameSwitching;
 
     //Events
     public static event Action OnChangeControls, OnCancelPressed, OnPausedPressed;
     public static event Action<SwitchType> OnSwitchGroupsPressed;
     public static event Func<bool> HotKeyActivated, OnGameToMenuSwitchPressed;
+    [Serializable]
+    public class InGameOrInMenu : UnityEvent<bool> { }
+
 
     //Properties
     private bool MouseOnly()
     {
-        if(_mainControlType == ControlMethod.MouseOnly) _menuAndGameSwitching.TurnOffGameSwitchSystem();
+        if(_mainControlType == ControlMethod.MouseOnly) _inGameMenuSystem = InGameSystem.Off;
          return _mainControlType == ControlMethod.MouseOnly;
     }
-    public bool StartInGame => _menuAndGameSwitching.StartInGame;
-    private void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
+
+    public bool StartInGame => _startGameWhere == StartInMenu.InGameControl && _inGameMenuSystem == InGameSystem.On;
+    private void SaveInMenu(bool isInMenu)
+    {
+        _returnToGameControl?.Invoke(isInMenu);
+        _inMenu = isInMenu;
+    }
     private void SaveNoActivePopUps(bool noActivePopUps) => _noActivePopUps = noActivePopUps;
     private void SaveOnStart() => _canStart = true;
     private void SaveGameIsPaused(bool gameIsPaused) => _gameIsPaused = gameIsPaused;
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
-
+    
     private void Awake()
     {
         CheckForControls();
         var unused4 = new ChangeControl(_mainControlType, StartInGame);
-        _menuAndGameSwitching.OnAwake();
+        if(_inGameMenuSystem == InGameSystem.On)
+            _menuToGameSwitching = new MenuAndGameSwitching(_startGameWhere);
     }
 
     private void CheckForControls()
@@ -74,6 +93,7 @@ public class UIInput : MonoBehaviour
         _hasPosSwitchAxis = _posSwitchButton != string.Empty;
         _hasNegSwitchAxis = _negSwitchButton != string.Empty;
         _hasCancelAxis = _cancelButton != string.Empty;
+        _hasSwitchToMenusButton = _switchToMenusButton != string.Empty;
     }
 
     private void OnEnable()
@@ -118,8 +138,17 @@ public class UIInput : MonoBehaviour
 
     private static void PausedPressedActions() => OnPausedPressed?.Invoke();
 
-    private static bool CanSwitchBetweenInGameAndMenu() => OnGameToMenuSwitchPressed?.Invoke() ?? false;
-    
+    private bool CanSwitchBetweenInGameAndMenu()
+    {
+        if (CantSwitchBetweenGameAndMenu()) return false;
+        if (!Input.GetButtonDown(_switchToMenusButton)) return false;
+        OnGameToMenuSwitchPressed?.Invoke(); //Might need to move
+        return true;
+    }
+
+    private bool CantSwitchBetweenGameAndMenu() 
+        => _inGameMenuSystem == InGameSystem.Off || !_hasSwitchToMenusButton;
+
     private static bool CheckIfHotKeyAllowed() => HotKeyActivated?.Invoke() ?? false;
     
     private bool CanDoCancel() => _hasCancelAxis && Input.GetButtonDown(_cancelButton);
@@ -138,13 +167,9 @@ public class UIInput : MonoBehaviour
 
     private bool CanUnpauseGame() => _gameIsPaused && _activeBranch.IsPauseMenuBranch();
 
-    private bool CanEnterPauseWithNothingSelected()
-    {
-        
-        return (_noActivePopUps && //Add On home screen
-                _activeBranch == _activeBranch.MyParentBranch)
-               && _pauseOptionsOnEscape == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
-    }
+    private bool CanEnterPauseWithNothingSelected() =>
+        (_noActivePopUps && _activeBranch == _activeBranch.MyParentBranch)
+        && _pauseOptionsOnEscape == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
 
     private bool CanSwitchBranches() => _noActivePopUps && !MouseOnly();
 

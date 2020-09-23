@@ -4,67 +4,40 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 
-[System.Serializable]
+[Serializable]
 public class UITooltip : NodeFunctionBase
 {
     [Header("General Settings")]
-    [SerializeField] private RectTransform _mainCanvas;
-    [SerializeField] private Camera _uiCamera;
-    [SerializeField] private TooltipType _tooltipType = TooltipType.Follow;
-    
-    [Header("Mouse & Global Fixed Position Settings", order = 2)]
     [SerializeField] 
-    [AllowNesting] [Label("Tooltip Position")] private ToolTipAnchor _toolTipPosition;
+    private RectTransform _mainCanvas;
     [SerializeField] 
-    [AllowNesting] [ShowIf("Fixed")] private RectTransform _groupFixedPosition;
+    private Camera _uiCamera;
     [SerializeField] 
-    [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")] private float _mousePaddingX;
-    [SerializeField] 
-    [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")] private float _mousePaddingY;
-    
-    [Header("Keyboard and Controller Settings")]
-    [SerializeField] 
-    [AllowNesting] [Label("Tooltip Preset")] [HideIf("Fixed")] private UseSide _positionToUse = UseSide.ToTheRightOf;
-    [SerializeField] 
-    [AllowNesting] [Label("Offset Position")] [HideIf("Fixed")] private ToolTipAnchor _keyboardPosition;
-    [SerializeField] 
-    [AllowNesting] [Label("GameObject Marker")] [ShowIf("UseGameObject")] private RectTransform _fixedPosition;
-    [SerializeField] 
-    [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")] private float _keyboardPaddingX;
-    [SerializeField] 
-    [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")] private float _keyboardPaddingY;
-    
-    [Header("Other Settings")]
-    [SerializeField] 
-    [Range(0f, 50f)] private float _screenSafeZone = 10;
-    [SerializeField] 
-    [AllowNesting] [Label("Display Tooltip Delay")] private float _delay = 1f;
-    [SerializeField] 
-    [AllowNesting] [ShowIf("BuildTips")] [Label("Delay Until Next..")] private float _buildDelay = 1f;
+    [AllowNesting] [ValidateInput("IsNull", "Add a Tooltip Scheme")] private ToolTipScheme _scheme;
     [SerializeField] 
     private LayoutGroup[] _listOfTooltips = new LayoutGroup[0];
 
     //Variables
     private Vector2 _tooltipPos;
-    private Vector3 _anchoredPosition;
     private RectTransform[] _tooltipsRects;
     private RectTransform _parentRectTransform;
+    private Transform _bucketPosition;
     private Canvas[] _cachedCanvas;
     private Vector3[] _myCorners = new Vector3[4];
     private Coroutine _coroutineStart, _coroutineActivate, _coroutineBuild;
     private bool _allowKeys, _setCorners;
     private ToolTipsCalcs _calculation;
     private int _index;
+    private float _buildDelay;
     private UIControlsEvents _uiControlsEvents = new UIControlsEvents();
 
     //Enums & Properties
-    private enum UseSide { ToTheRightOf, ToTheLeftOf, GameObjectAsPosition  }
-    private Vector2 KeyboardPadding => new Vector2(_keyboardPaddingX, _keyboardPaddingY);
-    private Vector2 MousePadding => new Vector2(_mousePaddingX, _mousePaddingY);
+    private Vector2 KeyboardPadding => new Vector2(_scheme.KeyboardXPadding, _scheme.KeyboardYPadding);
+    private Vector2 MousePadding => new Vector2(_scheme.MouseXPadding, _scheme.MouseYPadding);
     protected override bool CanBeHighlighted() => false;
     protected override bool CanBePressed() => false;
     private protected override void ProcessPress() { }
-    protected override bool FunctionNotActive() => !CanActivate || _listOfTooltips.Length == 0;
+    protected override bool FunctionNotActive() => !CanActivate || _listOfTooltips.Length == 0 || _scheme is null;
     private protected override void ProcessDisabled()
     {
         if(FunctionNotActive()) return;
@@ -73,12 +46,8 @@ public class UITooltip : NodeFunctionBase
     private void SaveAllowKeys(bool allow) => _allowKeys = allow;
 
     //Editor Scripts
-    public bool Fixed() => _tooltipType == TooltipType.Fixed;
-    public bool FollowMouse() => _tooltipType == TooltipType.Follow;
-    public bool BuildTips() => _listOfTooltips.Length > 1;
-    public bool UseGameObject() => _positionToUse == UseSide.GameObjectAsPosition && _tooltipType != TooltipType.Fixed;
-
-
+    private bool IsNull(ToolTipScheme scheme) => scheme;
+    
     //TODO Change size calculations to work from camera size rather than canvas so still works when aspect changes
 
     public void OnAwake(UiActions uiActions, Setting activeFunctions, RectTransform rectTransform) 
@@ -90,10 +59,9 @@ public class UITooltip : NodeFunctionBase
 
     private void SetUp(RectTransform rectTransform)
     {
-        if (!CanActivate) return;
+        if (FunctionNotActive()) return;
         _parentRectTransform = rectTransform;
-        _anchoredPosition = _mainCanvas.anchoredPosition;
-        _calculation = new ToolTipsCalcs(_mainCanvas, _screenSafeZone);
+        _calculation = new ToolTipsCalcs(_mainCanvas, _scheme.ScreenSafeZone);
         _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
         SetUpTooltips();
         CheckSetUpForError();
@@ -122,7 +90,9 @@ public class UITooltip : NodeFunctionBase
 
     private void SetUpTooltips()
     {
-        if (_listOfTooltips.Length <= 1) _buildDelay = 0;
+        if (_listOfTooltips.Length > 1)
+            _buildDelay = _scheme.BuildDelay;
+        
         _tooltipsRects = new RectTransform[_listOfTooltips.Length];
         _cachedCanvas = new Canvas[_listOfTooltips.Length];
 
@@ -146,7 +116,8 @@ public class UITooltip : NodeFunctionBase
     private IEnumerator StartToolTip()
     {
         SetCorners();
-        yield return new WaitForSeconds(_delay);
+        SetBucket();
+        yield return new WaitForSeconds(_scheme.StartDelay);
         _coroutineBuild = StaticCoroutine.StartCoroutine(ToolTipBuild());
         _coroutineActivate = StaticCoroutine.StartCoroutine(ActivateTooltip(_allowKeys));
     }
@@ -157,7 +128,13 @@ public class UITooltip : NodeFunctionBase
         _setCorners = true;
         _parentRectTransform.GetWorldCorners(_myCorners);
     }
-    
+
+    private void SetBucket()
+    {
+        if(!(_bucketPosition is null)) return;
+        _bucketPosition = ServiceLocator.GetBucket().CreateBucket();
+    }
+
     private IEnumerator ToolTipBuild()
     {
         for (int toolTipIndex = 0; toolTipIndex < _listOfTooltips.Length; toolTipIndex++)
@@ -174,8 +151,9 @@ public class UITooltip : NodeFunctionBase
     {
         while (_pointerOver)
         {
-            GetToolTipsScreenPosition(isKeyboard, _tooltipType);
-            SetExactPosition(!isKeyboard ? _toolTipPosition : _keyboardPosition);
+            GetToolTipsScreenPosition(isKeyboard, _scheme.ToolTipType);
+            SetExactPosition(!isKeyboard ? _scheme.ToolTipPosition : _scheme.KeyboardPosition);
+            _tooltipsRects[_index].transform.parent = _bucketPosition.transform;
             _cachedCanvas[_index].enabled = true;
             yield return null;
         }
@@ -198,14 +176,14 @@ public class UITooltip : NodeFunctionBase
         }
     }
 
-    private void SetFixedToolTipPosition() => _tooltipPos = ReturnScreenPosition(_groupFixedPosition.position);
+    private void SetFixedToolTipPosition() => _tooltipPos = ReturnScreenPosition(_scheme.GroupFixedPosition.position);
 
     private void SetMouseToolTipPosition() => _tooltipPos = ReturnScreenPosition(Input.mousePosition) + MousePadding;
 
     private void SetKeyboardTooltipPosition()
     {
         var position = Vector3.zero;
-        switch (_positionToUse)
+        switch (_scheme.PositionToUse)
         {
             case UseSide.ToTheRightOf:
                 position = _myCorners[3] + ((_myCorners[2] - _myCorners[3]) / 2);
@@ -214,7 +192,7 @@ public class UITooltip : NodeFunctionBase
                 position = _myCorners[1] + ((_myCorners[0] - _myCorners[1]) / 2);
                 break;
             case UseSide.GameObjectAsPosition:
-                position = _fixedPosition.position;
+                position = _scheme.FixedPosition.position;
                 break;
         }
         _tooltipPos = ReturnScreenPosition(position) + KeyboardPadding;
@@ -230,13 +208,10 @@ public class UITooltip : NodeFunctionBase
 
     private void SetExactPosition(ToolTipAnchor toolTipAnchor)
     {
-        var position = _parentRectTransform.transform.position;
-        var offset = new Vector2(_anchoredPosition.x - position.x, 
-                                 _anchoredPosition.y - position.y);
         var size = new Vector2( _listOfTooltips[_index].preferredWidth
                                         , _listOfTooltips[_index].preferredHeight);
 
         (_tooltipsRects[_index].anchoredPosition, _tooltipsRects[_index].pivot)
-            = _calculation.CalculatePosition(_tooltipPos, offset, size, toolTipAnchor);
+            = _calculation.CalculatePosition(_tooltipPos, size, toolTipAnchor);
     }
 }

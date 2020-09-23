@@ -46,6 +46,7 @@ public partial class UIHub : MonoBehaviour
     {
         CreateSubClasses();
         _startingInGame = GetComponent<UIInput>().StartInGame;
+        ServiceLocator.SetBucketCreateService(new BucketCreator(transform, "Tooltip Holder"));
     }
 
     private void CreateSubClasses()

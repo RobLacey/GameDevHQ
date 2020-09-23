@@ -7,12 +7,9 @@ using DG.Tweening;
 [Serializable]
 public class UIColour : NodeFunctionBase
 {
-    [SerializeField] [AllowNesting] [Label("Colour Scheme")]
-    private ColourScheme _scheme;
-    
-    [HorizontalLine(4, EColor.Blue, order = 1)]
-    [SerializeField] [Header("UI Elements To Use (MUST Assign at Least One)", order = 0)]
-    private Text _textElements;
+    [SerializeField] 
+    [AllowNesting] [Label("Colour Scheme")] private ColourScheme _scheme;
+    [SerializeField] private Text _textElements;
     [SerializeField] private Image[] _imageElements;
 
     //Variables
@@ -23,7 +20,6 @@ public class UIColour : NodeFunctionBase
     private Color _selectHighlightColour;
     private float _selectHighlightPerc;
     private int _id;
-    private string _nodesName;
 
     //Properties
     protected override bool FunctionNotActive() => !CanActivate || _scheme is null || _isDisabled;
@@ -31,13 +27,15 @@ public class UIColour : NodeFunctionBase
     protected override bool CanBeHighlighted() => (_scheme.ColourSettings & EventType.Highlighted) !=0; 
     protected bool CanBeSelected() => (_scheme.ColourSettings & EventType.Selected) != 0;
 
+    private bool NoText(Text text) => text && _imageElements.Length == 0;
+
     public override void OnAwake(UiActions uiActions, Setting activeFunctions)
     {
         base.OnAwake(uiActions, activeFunctions);
         CanActivate = (_enabledFunctions & Setting.Colours) != 0;
         _id = uiActions._instanceId;
-        SetUpCachedColours();
         CheckForSetUpError();
+        SetUpCachedColours();
     }
 
     private void SetUpCachedColours()
@@ -49,12 +47,16 @@ public class UIColour : NodeFunctionBase
         if (_textElements)
             _textNormalColour = _textElements.color;
         
-        _selectHighlightColour = SelectedHighlight();
+        _selectHighlightColour = SelectedHighlightColour();
     }
 
-    private void CheckForSetUpError()
+    private void CheckForSetUpError() //TODO Improve error handling - Add data to UiActions to gather
     {
         if(!CanActivate) return;
+        if (_imageElements.Length > 0 && _imageElements[0] is null)
+        {
+            _imageElements = new Image[0];
+        }
         if (_imageElements.Length == 0 && !_textElements && CanActivate)
             throw new Exception("No Image or Text set on Colour settings");
     }
@@ -79,8 +81,8 @@ public class UIColour : NodeFunctionBase
         {
             if (CanBeHighlighted())
             {
-                _tweenImageToColour = SelectedHighlight();
-                _tweenTextToColour = SelectedHighlight();
+                _tweenImageToColour = SelectedHighlightColour();
+                _tweenTextToColour = SelectedHighlightColour();
                 DoColourChange(_scheme.TweenTime);
             }
             else
@@ -174,8 +176,8 @@ public class UIColour : NodeFunctionBase
     {
         if (CanBeSelected() && _isSelected)
         {
-            _tweenImageToColour = SelectedHighlight();
-            _tweenTextToColour = SelectedHighlight();
+            _tweenImageToColour = SelectedHighlightColour();
+            _tweenTextToColour = SelectedHighlightColour();
         }
         else if (CanBeHighlighted())
         {
@@ -229,7 +231,7 @@ public class UIColour : NodeFunctionBase
                      .Play();
     }
     
-    private Color SelectedHighlight()
+    private Color SelectedHighlightColour()
     {
         bool highlightPercIsTheSame = Mathf.Approximately(_selectHighlightPerc, _scheme.SelectedPerc);
         if (highlightPercIsTheSame) return _selectHighlightColour;
@@ -244,14 +246,7 @@ public class UIColour : NodeFunctionBase
         return _selectHighlightColour;
     }
 
-    private float ColourCalc(float value)
-    {
-        if (value < 0.1f && _scheme.SelectedPerc > 1)
-        {
-            return 0.2f;
-        }
-        return value;
-    }
+    private float ColourCalc(float value) => value < 0.1f && _scheme.SelectedPerc > 1 ? 0.2f : value;
 
     private void KillTweens()
     {

@@ -14,12 +14,11 @@ public class ToolTipsCalcs
         _canvasHeight = (rect.height / 2) - safeZone;
     }
     
-    public (Vector3 _toolTipData, Vector2 _newPivot) CalculatePosition
-        (Vector3 tooltipPos, Vector3 offset, Vector3 toolTipSize, ToolTipAnchor toolTipAnchor)
+    public (Vector3 _toolTipData, Vector2 _newPivot) 
+        CalculatePosition (Vector3 tooltipPos, Vector3 toolTipSize, ToolTipAnchor toolTipAnchor)
     {
         SetVariables(tooltipPos, toolTipSize);
         (_toolTipPosition, _newPivot) = CalculateAnchorPosition(toolTipAnchor);
-        _toolTipPosition = new Vector2(offset.x + _toolTipPosition.x, offset.y + _toolTipPosition.y);
         return (_toolTipPosition, _newPivot);
     }
 

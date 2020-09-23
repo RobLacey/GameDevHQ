@@ -5,17 +5,17 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Sound Scheme", menuName = "New Audio Scheme")]
 public class AudioScheme : ScriptableObject
 {
-    [SerializeField] AudioClip _highlighted;
-    [SerializeField] float _highlightedVolume;
-    [SerializeField] AudioClip _select;
-    [SerializeField] float _selectedVolume;
-    [SerializeField] AudioClip _cancel;
-    [SerializeField] float _cancelVolume;
+    [SerializeField] private AudioClip _highlighted;
+    [SerializeField] private float _highlightedVolume;
+    [SerializeField] private AudioClip _select;
+    [SerializeField] private float _selectedVolume;
+    [SerializeField] private AudioClip _cancel;
+    [SerializeField] private float _cancelVolume;
 
-    public AudioClip HighlightedClip { get { return _highlighted; } }
-    public AudioClip SelectedClip { get { return _select; } }
-    public AudioClip CancelledClip { get { return _cancel; } }
-    public float HighlighVolume { get { return _highlightedVolume; } }
-    public float SelectedVolume { get { return _selectedVolume; } }
-    public float CancelledVolume { get { return _cancelVolume; } }
+    public AudioClip HighlightedClip => _highlighted;
+    public AudioClip SelectedClip => _select;
+    public AudioClip CancelledClip => _cancel;
+    public float HighlighVolume => _highlightedVolume;
+    public float SelectedVolume => _selectedVolume;
+    public float CancelledVolume => _cancelVolume;
 }

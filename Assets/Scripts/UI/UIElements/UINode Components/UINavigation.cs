@@ -31,7 +31,7 @@ public class UINavigation : NodeFunctionBase
     //Variables
     private UIBranch _myBranch;
     private UIBranch _activeBranch;
-    UIDataEvents _uiDataEvents = new UIDataEvents();
+    private UIDataEvents _uiDataEvents = new UIDataEvents();
 
     //Events
     public static Action<(UIBranch moveFrom, UIBranch moveToo)> onMoveToBranch;
@@ -43,7 +43,11 @@ public class UINavigation : NodeFunctionBase
     protected override bool CanBePressed() => !(_childBranch is null);
     protected override bool FunctionNotActive() => !CanActivate;
     protected override void SavePointerStatus(bool pointerOver) { }
-    public UIBranch Child => _childBranch;
+    public UIBranch Child
+    {
+        get => _childBranch;
+        set => _childBranch = value;
+    }
 
     public void OnAwake(UiActions uiActions, Setting activeFunctions, UIBranch myBranch)
     {
@@ -52,7 +56,7 @@ public class UINavigation : NodeFunctionBase
         _myBranch = myBranch;
         _uiDataEvents.SubscribeToActiveBranch(ActiveBranch);
     }
-
+    
     public void HandleAsSlider()
     {
         if (_moveDirection == MoveDirection.Left || _moveDirection == MoveDirection.Right)
@@ -95,7 +99,7 @@ public class UINavigation : NodeFunctionBase
 
     private protected override void ProcessPress()
     {
-        if(FunctionNotActive() || !CanBePressed()) return;
+        if(FunctionNotActive() || !CanBePressed() || _childBranch is null) return;
         
         if (_isSelected)
         {
