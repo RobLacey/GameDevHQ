@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public abstract class BranchBase
 {
@@ -51,7 +52,7 @@ public abstract class BranchBase
 
     protected virtual void MoveBackToThisBranch(UIBranch lastBranch)
     {
-        _myBranch.LastSelected.SetNodeAsNotSelected_NoEffects(); //TODO Review
+        _myBranch.LastSelected.SetNodeAsNotSelected_NoEffects();
         _myBranch.MyParentBranch.LastSelected.ThisNodeIsSelected();
     }
     

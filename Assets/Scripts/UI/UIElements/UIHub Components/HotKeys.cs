@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
-using NaughtyAttributes;
 
 [Serializable]
 public class HotKeys
 {
     [SerializeField] 
-    [InputAxis] [AllowNesting] private string _hotKeyAxis;
-    
+    private HotKey _hotKeyInput;
     [SerializeField] 
     private UIBranch _myBranch;
     
@@ -21,7 +19,8 @@ public class HotKeys
     private bool _gameIsPaused;
     private bool _noActivePopUps = true;
     private INode _parentNode;
-
+    private InputScheme _inputScheme;
+    
     //Properties
     private void SaveIsPaused(bool isPaused) => _gameIsPaused = isPaused;
     private void SaveNoActivePopUps(bool noaActivePopUps) => _noActivePopUps = noaActivePopUps;
@@ -29,8 +28,9 @@ public class HotKeys
     //Events
     public static event Action FromHotKey;
     
-    public void OnAwake()
+    public void OnAwake(InputScheme inputScheme)
     {
+        _inputScheme = inputScheme;
         _notHomeScreenHotKey = !_myBranch.IsHomeScreenBranch();
         IsAllowedType();
         OnEnable();
@@ -55,7 +55,7 @@ public class HotKeys
 
     public bool CheckHotKeys()
     {
-        if (!Input.GetButtonDown(_hotKeyAxis)) return false;
+        if (!_inputScheme.HotKeyChecker(_hotKeyInput)) return false;
         if (_myBranch.CanvasIsEnabled || _gameIsPaused || !_noActivePopUps) return false;
         HotKeyActivation();
         return true;
@@ -87,6 +87,7 @@ public class HotKeys
     private void SetHotKeyAsSelectedActions()
     {
         _parentNode.ThisNodeIsSelected();
+        _parentNode.ThisNodeIsHighLighted();
         _parentNode.SetNodeAsSelected_NoEffects();
     }
 

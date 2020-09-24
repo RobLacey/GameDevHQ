@@ -7,15 +7,15 @@ using UnityEngine;
 ///
 public class ChangeControl
 {
-    public ChangeControl(ControlMethod controlMethod, bool startInGame)
+    public ChangeControl(InputScheme inputScheme, bool startInGame)
     {
-        _controlMethod = controlMethod;
+        _controlMethod = inputScheme.ControlType;
+        _inputScheme = inputScheme;
         _startInGame = startInGame;
         OnEnable();
     }
 
     //Variables
-    private Vector3 _mousePos = Vector3.zero;
     private readonly ControlMethod _controlMethod;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
@@ -26,9 +26,9 @@ public class ChangeControl
     private bool _noPopUps = true;
     private INode _lastHighlighted;
     private UIBranch _activeBranch;
-    private bool _afterStartUp;
     private bool _gameIsPaused;
-
+    private readonly InputScheme _inputScheme;
+ 
     //Events
     public static event Action<bool> DoAllowKeys;
     public static event Func<UIBranch> ReturnNextPopUp; 
@@ -53,7 +53,7 @@ public class ChangeControl
 
     private void StartGame()
     {
-        _mousePos = Input.mousePosition;
+        _inputScheme.SetMousePosition();
         if (MousePreferredControlMethod())
         {
             SetUpMouse();
@@ -95,29 +95,20 @@ public class ChangeControl
 
     private void ChangeControlType()
     {
-        if (CanSwitchToMouseControl())
+        if (_inputScheme.CanSwitchToMouse)
         {
             ActivateMouse();
         }
-        else if(CanSwitchToKeysOrController())
+        else if(_inputScheme.CanSwitchToKeysOrController)
         {
-            if (MouseButtonsClicked()) return;
+            if (_inputScheme.MouseClicked) return;
             ActivateKeysOrControl();
         }
     }
 
-    private bool CanSwitchToMouseControl() 
-        => _mousePos != Input.mousePosition && _controlMethod != ControlMethod.KeysOrControllerOnly;
-
-    private bool CanSwitchToKeysOrController() 
-        => Input.anyKeyDown &&_controlMethod != ControlMethod.MouseOnly;
-
-    private static bool MouseButtonsClicked()
-        => !(!Input.GetMouseButton(0) & !Input.GetMouseButton(1));
-
     private void ActivateMouse()
     {
-        _mousePos = Input.mousePosition;
+        _inputScheme.SetMousePosition();
         Cursor.visible = true;
         if (_usingMouse) return;
         _usingMouse = true;
@@ -132,10 +123,8 @@ public class ChangeControl
         _usingMouse = false;
         _usingKeysOrCtrl = true;
         SetAllowKeys();
-        if(_afterStartUp)
-            SetNextHighlightedForKeys();
+        SetNextHighlightedForKeys();
         UIHub.SetEventSystem(_lastHighlighted.ReturnNode.gameObject);
-        _afterStartUp = true;
     }
 
     private void SetAllowKeys()

@@ -1,51 +1,14 @@
 ﻿using System;
-using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class UIInput : MonoBehaviour
 {
-    [SerializeField] 
-    private ControlMethod _mainControlType = ControlMethod.MouseOnly;
-
-    [SerializeField] private ScriptableObject _inputScheme;
-
-    [Header("Pause Settings")]
-    [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] 
-    [Label("Nothing to Cancel")]
-    private PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.DoNothing;
-    [SerializeField] 
-    [Label("Pause / Option Button")] [InputAxis]
-    private string _pauseOptionButton;
-    
-    [Header("Home Branch Switch Settings")]
-    [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField]
-    [HideIf("MouseOnly")] [InputAxis] private string _posSwitchButton;
-    [SerializeField] 
-    [HideIf("MouseOnly")] [InputAxis] private string _negSwitchButton;
-    
-    [Header("Cancel Settings")]
-    [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] 
-    [InputAxis] private string _cancelButton;
-    
-    [Header("In-Game Menu Settings")]
-    [SerializeField]
-    [DisableIf("MouseOnly")] private InGameSystem _inGameMenuSystem = InGameSystem.Off;
-    [SerializeField] 
-    private StartInMenu _startGameWhere = StartInMenu.InGameControl;
-    [SerializeField] 
-    [Label("Switch To/From Game Menus")] [InputAxis] private string _switchToMenusButton;
-    [SerializeField] 
-    private InGameOrInMenu _returnToGameControl;
-
+    [SerializeField] private InputScheme _inputScheme;
+    [SerializeField] private InGameOrInMenu _returnToGameControl;
 
     //Variables
-    private bool _hasPauseAxis, _hasPosSwitchAxis, _hasNegSwitchAxis, 
-                 _hasCancelAxis,_hasSwitchToMenusButton, _canStart, 
-                 _inMenu, _gameIsPaused;
+    private bool _canStart, _inMenu, _gameIsPaused;
     private bool _noActivePopUps = true;
     private UINode _lastHomeScreenNode;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
@@ -57,18 +20,25 @@ public class UIInput : MonoBehaviour
     public static event Action OnChangeControls, OnCancelPressed, OnPausedPressed;
     public static event Action<SwitchType> OnSwitchGroupsPressed;
     public static event Func<bool> HotKeyActivated, OnGameToMenuSwitchPressed;
+    
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
-
 
     //Properties
     private bool MouseOnly()
     {
-        if(_mainControlType == ControlMethod.MouseOnly) _inGameMenuSystem = InGameSystem.Off;
-         return _mainControlType == ControlMethod.MouseOnly;
+        if(_inputScheme.ControlType == ControlMethod.MouseOnly) _inputScheme.TurnOffInGameMenuSystem();
+         return _inputScheme.ControlType == ControlMethod.MouseOnly;
     }
 
-    public bool StartInGame => _startGameWhere == StartInMenu.InGameControl && _inGameMenuSystem == InGameSystem.On;
+    public bool StartInGame()
+    {
+        if (_inputScheme.InGameMenuSystem == InGameSystem.On)
+        {
+            return _inputScheme.WhereToStartGame == StartInMenu.InGameControl;
+        }
+        return false;
+    }
     private void SaveInMenu(bool isInMenu)
     {
         _returnToGameControl?.Invoke(isInMenu);
@@ -78,22 +48,15 @@ public class UIInput : MonoBehaviour
     private void SaveOnStart() => _canStart = true;
     private void SaveGameIsPaused(bool gameIsPaused) => _gameIsPaused = gameIsPaused;
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
+    public InputScheme ReturnScheme => _inputScheme;
     
     private void Awake()
     {
-        CheckForControls();
-        var unused4 = new ChangeControl(_mainControlType, StartInGame);
-        if(_inGameMenuSystem == InGameSystem.On)
-            _menuToGameSwitching = new MenuAndGameSwitching(_startGameWhere);
-    }
-
-    private void CheckForControls()
-    {
-        _hasPauseAxis = _pauseOptionButton != string.Empty;
-        _hasPosSwitchAxis = _posSwitchButton != string.Empty;
-        _hasNegSwitchAxis = _negSwitchButton != string.Empty;
-        _hasCancelAxis = _cancelButton != string.Empty;
-        _hasSwitchToMenusButton = _switchToMenusButton != string.Empty;
+        _inputScheme.OnAwake();
+        var unused4 = new ChangeControl(_inputScheme, StartInGame());
+        _menuToGameSwitching = new MenuAndGameSwitching();
+        if (_inputScheme.InGameMenuSystem == InGameSystem.On)
+            _menuToGameSwitching.StartWhere = _inputScheme.WhereToStartGame;
     }
 
     private void OnEnable()
@@ -104,10 +67,11 @@ public class UIInput : MonoBehaviour
         _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
     }
-    
+
     private void Update()
     {
         if (!_canStart) return;
+        
         if (CanPauseGame())
         {
             PausedPressedActions();
@@ -133,25 +97,21 @@ public class UIInput : MonoBehaviour
 
         OnChangeControls?.Invoke();
     }
-    
-    private bool CanPauseGame() => _hasPauseAxis && Input.GetButtonDown(_pauseOptionButton);
+
+    private bool CanPauseGame() => _inputScheme.PressPause();
 
     private static void PausedPressedActions() => OnPausedPressed?.Invoke();
 
     private bool CanSwitchBetweenInGameAndMenu()
     {
-        if (CantSwitchBetweenGameAndMenu()) return false;
-        if (!Input.GetButtonDown(_switchToMenusButton)) return false;
+        if (!_inputScheme.PressedMenuToGameSwitch()) return false;
         OnGameToMenuSwitchPressed?.Invoke(); //Might need to move
         return true;
     }
 
-    private bool CantSwitchBetweenGameAndMenu() 
-        => _inGameMenuSystem == InGameSystem.Off || !_hasSwitchToMenusButton;
-
     private static bool CheckIfHotKeyAllowed() => HotKeyActivated?.Invoke() ?? false;
-    
-    private bool CanDoCancel() => _hasCancelAxis && Input.GetButtonDown(_cancelButton);
+
+    private bool CanDoCancel() => _inputScheme.PressedCancel();
 
     private void WhenCancelPressed()
     {
@@ -169,19 +129,19 @@ public class UIInput : MonoBehaviour
 
     private bool CanEnterPauseWithNothingSelected() =>
         (_noActivePopUps && _activeBranch == _activeBranch.MyParentBranch)
-        && _pauseOptionsOnEscape == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
+        && _inputScheme.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
 
     private bool CanSwitchBranches() => _noActivePopUps && !MouseOnly();
 
     private bool SwitchGroupProcess()
     {
-        if (_hasPosSwitchAxis && Input.GetButtonDown(_posSwitchButton))
+        if (_inputScheme.PressedPositiveSwitch())
         {
             OnSwitchGroupsPressed?.Invoke(SwitchType.Positive);
             return true;
         }
 
-        if (_hasNegSwitchAxis && Input.GetButtonDown(_negSwitchButton))
+        if (_inputScheme.PressedNegativeSwitch())
         {
             OnSwitchGroupsPressed?.Invoke(SwitchType.Negative);
             return true;

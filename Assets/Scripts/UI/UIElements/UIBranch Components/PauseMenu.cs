@@ -78,13 +78,13 @@ public class PauseMenu : BranchBase, IStartPopUp
 
     private void RestoreLastStoredState()
     {
-        _screenData.RestoreScreen();
         if (WasInGame()) return;
         ActivateStoredPosition();
     }
 
     private void ActivateStoredPosition()
     {
+        _screenData.RestoreScreen();
         _screenData._activeBranch.MoveToBranchWithoutTween();
         if (_screenData._wasOnHomeScreen)
             InvokeOnHomeScreen(true);

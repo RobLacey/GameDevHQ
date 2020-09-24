@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Class handles all UI cancel behaviour from cancel type to context sensitive cases

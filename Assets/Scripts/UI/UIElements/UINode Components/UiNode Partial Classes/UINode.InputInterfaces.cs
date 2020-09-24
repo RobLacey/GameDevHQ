@@ -5,7 +5,13 @@ public partial class UINode
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (DontAllowPointerEvent(eventData)) return;
-        
+
+        HandleOnEnter();
+    }
+
+    public void HandleOnEnter()
+    {
+        if(IsDisabled) return;
         if (_buttonFunction == ButtonFunction.HoverToActivate & !IsSelected)
         {
             PressedActions();
@@ -15,14 +21,14 @@ public partial class UINode
             SetAsHighlighted();
         }
     }
-    
+
     public void OnPointerExit(PointerEventData eventData)
     {
         if (DontAllowPointerEvent(eventData)) return;
         SetNotHighlighted();
     }
 
-    private bool DontAllowPointerEvent(PointerEventData eventData) => IsDisabled || eventData.pointerDrag;
+    private bool DontAllowPointerEvent(PointerEventData eventData) => _allowKeys || eventData.pointerDrag;
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -40,18 +46,21 @@ public partial class UINode
 
     public void CheckIfMoveAllowed(MoveDirection moveDirection)
     {
+        if(!_allowKeys) return;
         if (IsDisabled)
         {
             DoMove(moveDirection);
         }
         else
         {
-            OnPointerEnter(new PointerEventData(EventSystem.current));
+            HandleOnEnter();
+            //OnPointerEnter(new PointerEventData(EventSystem.current));
         }
     }
     
     private void DoMove(MoveDirection moveDirection)
     {
+        if(!_allowKeys) return;
         _uiActions._onMove?.Invoke(moveDirection);
         if (AmSlider && IsSelected)
         {
@@ -65,6 +74,7 @@ public partial class UINode
 
     public void OnSubmit(BaseEventData eventData)
     {
+        if(!_allowKeys) return;
         if (IsDisabled || _buttonFunction == ButtonFunction.HoverToActivate) return;
         SetSliderUpForInteraction();
         PressedActions();

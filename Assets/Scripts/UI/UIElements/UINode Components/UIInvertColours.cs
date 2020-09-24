@@ -9,24 +9,32 @@ public class UIInvertColours : NodeFunctionBase
     [InfoBox("ONLY set to objects not effected by the Colour effects", EInfoBoxType.Warning)]
     
     [SerializeField]
-    private bool _invertOnHighlight;
-    [SerializeField] private bool _invertOnSelected;
-    [SerializeField] [AllowNesting] [DisableIf("ImageSet")]
-    private Text _text;
-    [SerializeField] [AllowNesting] [DisableIf("TextSet")]
-    private Image _image;
-     [SerializeField] private Color _invertedColour = Color.white;
+    private ActivateWhen _activateWhen;
+    [SerializeField] 
+    [AllowNesting] [DisableIf("ImageSet")] private Text _text;
+    [SerializeField] 
+    [AllowNesting] [DisableIf("TextSet")] private Image _image;
+    [SerializeField] 
+    private Color _invertedColour = Color.white;
 
     //Variables
     private Color _checkMarkStartColour = Color.white;
     private Color _textStartColour = Color.white;
     private bool _hasText;
     private bool _hasImage;
+
+    [Flags]
+    private enum ActivateWhen
+    {
+        None = 0,
+        OnHighlighted = 1 << 0,
+        OnSelected = 2 <<1
+    }
     
     //Properties
     protected override bool FunctionNotActive() => !_text && !_image && !CanActivate;
-    protected override bool CanBeHighlighted() => _invertOnHighlight;
-    protected override bool CanBePressed() => _invertOnSelected;
+    protected override bool CanBeHighlighted() => (_activateWhen & ActivateWhen.OnHighlighted) != 0;
+    protected override bool CanBePressed() => (_activateWhen & ActivateWhen.OnSelected) != 0;
 
     // Editor Scripts
     private bool TextSet() => _text != null;

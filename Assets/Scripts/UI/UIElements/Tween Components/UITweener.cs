@@ -12,9 +12,8 @@ public partial class UITweener : MonoBehaviour
     [SerializeField] 
     [ReorderableList] [Label("List Of Objects To Apply Effects To")]
     private List<TweenSettings> _buildObjectsList = new List<TweenSettings>();
-    [InfoBox("Add PARENT to apply effects as a whole or add each CHILD for a build effect. List is DRAG & DROP", order = 0)]
-    [Header("Effect Tween Settings", order = 1)] [HorizontalLine(4, color: EColor.Blue, order = 2)]
-    [Header("Time Settings", order = 3)]
+    
+    [Header("Time Settings", order = 1)] [HorizontalLine(1, EColor.Blue , order = 2)]
     [SerializeField]
     private IsActive _useGlobalTime = IsActive.No;
     [SerializeField] 
@@ -24,7 +23,7 @@ public partial class UITweener : MonoBehaviour
     [ShowIf("GlobalTime")]
     private float _globalOutTime = 1;
     
-    [Header("Tween Settings")]
+    [Header("Tween Settings")] [HorizontalLine(1, EColor.Blue , order = 2)]
     [SerializeField] 
     private PositionTweenType _positionTween = PositionTweenType.NoTween;
     [SerializeField] 
@@ -37,6 +36,8 @@ public partial class UITweener : MonoBehaviour
     [Label("Shake or Punch Tween")] private PunchShakeTween _punchShakeTween = PunchShakeTween.NoTween;
     [SerializeField] 
     [Label("Shake/Punch At End (In Only)")] private IsActive _shakeOrPunchAtEnd = IsActive.No;
+    
+    [Header("Event Settings")] [HorizontalLine(1, EColor.Blue , order = 2)]
     [SerializeField] 
     private IsActive _addTweenEventTriggers = IsActive.No;
     [SerializeField] 
@@ -44,6 +45,9 @@ public partial class UITweener : MonoBehaviour
     private TweenTrigger _middleOfTweenAction;
     [SerializeField] [ShowIf("AddTweenEvent")] [Label("Event At End of Tween")]
     private TweenTrigger _endOfTweenAction;
+    
+    //[HorizontalLine(1, EColor.Blue , order = 0)]
+
     [SerializeField] [Label("Settings")] [ShowIf("Position")] [BoxGroup("Position Tween")]
     private PositionTween _posTween;
     [SerializeField] [Label("Settings")] [ShowIf("Rotation")] [BoxGroup("Rotation Tween")]

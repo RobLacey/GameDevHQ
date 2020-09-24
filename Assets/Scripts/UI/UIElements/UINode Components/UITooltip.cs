@@ -153,7 +153,7 @@ public class UITooltip : NodeFunctionBase
         {
             GetToolTipsScreenPosition(isKeyboard, _scheme.ToolTipType);
             SetExactPosition(!isKeyboard ? _scheme.ToolTipPosition : _scheme.KeyboardPosition);
-            _tooltipsRects[_index].transform.parent = _bucketPosition.transform;
+            _tooltipsRects[_index].SetParent(_bucketPosition);
             _cachedCanvas[_index].enabled = true;
             yield return null;
         }

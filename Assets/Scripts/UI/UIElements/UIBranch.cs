@@ -14,8 +14,6 @@ using UnityEngine.Events;
 
 public partial class UIBranch : MonoBehaviour, IStartPopUp
 {
-    [Header("Main Settings")] [HorizontalLine(4, color: EColor.Blue, order = 1)] 
-    
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
     [SerializeField] 
@@ -151,9 +149,9 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
     
     public void DontSetBranchAsActive() => _canActivateBranch = false;
 
-    public void MoveToThisBranch(UIBranch newParentController = null)
+    public void MoveToThisBranch(UIBranch newParentBranch = null)
     {
-        Branch.SetUpBranch(newParentController);
+        Branch.SetUpBranch(newParentBranch);
         if (_canActivateBranch) SetAsActiveBranch();
         
         if (_tweenOnChange)
@@ -177,9 +175,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
 
     private void SwitchBranchGroup(SwitchType switchType)
     {
-        if (_onHomeScreen || !CanvasIsEnabled) return;
-        if (_groupsList.Count > 1)
-            _groupIndex = UIBranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, switchType);
+        if (_onHomeScreen || !CanvasIsEnabled || _groupsList.Count <= 1) return;
+        _groupIndex = UIBranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, switchType);
     }
 
     public void ResetBranchesStartPosition()
@@ -201,7 +198,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
 
     private void MoveToAChildBranch((UIBranch moveFrom, UIBranch moveToo) data)
     {
-        if(data.moveFrom != this) return; 
+        if(data.moveFrom != this) return;
+        StopReturnFlashFromFullScreen(data);
         
         if (data.moveToo.IsInternalBranch())
         {
@@ -212,6 +210,12 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
             StartOutTweenProcess(OutTweenType.MoveToChild, ToChildBranchProcess);
         }
         void ToChildBranchProcess() => data.moveToo.MoveToThisBranch(this);
+    }
+
+    private static void StopReturnFlashFromFullScreen((UIBranch moveFrom, UIBranch moveToo) data)
+    {
+        if (data.moveToo._screenType == ScreenType.FullScreen)
+            data.moveFrom.LastSelected.SetNodeAsNotSelected_NoEffects();
     }
 
     private void TurnOffChildBranches(UIBranch branchToClose)

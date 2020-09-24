@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
@@ -64,7 +65,6 @@ public class UIHomeGroup
 
     private void SaveActiveBranch(UIBranch newBranch)
     {
-        if (!_onHomeScreen) return;
         if(_lastActiveBranch == newBranch) return;
         _lastActiveBranch = newBranch;
         

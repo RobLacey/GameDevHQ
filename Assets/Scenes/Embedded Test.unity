@@ -725,6 +725,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2,
         type: 2}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _navigation._up
+      value: 
+      objectReference: {fileID: 1684183391}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _navigation._down
+      value: 
+      objectReference: {fileID: 44861013}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1664,8 +1674,7 @@ MonoBehaviour:
     _imageElements:
     - {fileID: 584906878}
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -1955,8 +1964,7 @@ MonoBehaviour:
     _imageElements:
     - {fileID: 743369386}
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -2611,8 +2619,7 @@ MonoBehaviour:
     _imageElements:
     - {fileID: 431125846}
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -5916,6 +5923,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _globalOutTime
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _rotationTween
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -10854,7 +10866,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _groupsList.Array.data[1]._nodes.Array.data[2]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 794321763}
     - target: {fileID: 997165033627275256, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: _groupsList.Array.data[1]._nodes.Array.data[3]
@@ -14863,8 +14875,7 @@ MonoBehaviour:
     _imageElements:
     - {fileID: 467767381}
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -16387,6 +16398,11 @@ PrefabInstance:
       propertyPath: _navigation._down
       value: 
       objectReference: {fileID: 316116780}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _invertColourCorrection._activateWhen
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -17189,8 +17205,7 @@ MonoBehaviour:
     _textElements: {fileID: 0}
     _imageElements: []
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -20036,8 +20051,7 @@ MonoBehaviour:
     _imageElements:
     - {fileID: 1845286865}
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -20163,8 +20177,7 @@ MonoBehaviour:
     _imageElements:
     - {fileID: 1409156513}
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -22042,8 +22055,7 @@ MonoBehaviour:
     _textElements: {fileID: 0}
     _imageElements: []
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -22947,8 +22959,7 @@ MonoBehaviour:
     _textElements: {fileID: 0}
     _imageElements: []
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -24963,6 +24974,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2,
         type: 2}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _navigation._down
+      value: 
+      objectReference: {fileID: 699193046}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -25393,6 +25409,11 @@ PrefabInstance:
       propertyPath: _navigation._down
       value: 
       objectReference: {fileID: 2128693704}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _invertColourCorrection._activateWhen
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -28244,8 +28265,7 @@ MonoBehaviour:
     _imageElements:
     - {fileID: 1192719502}
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -31289,8 +31309,7 @@ MonoBehaviour:
     _imageElements:
     - {fileID: 327850751}
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -31586,8 +31605,7 @@ MonoBehaviour:
     _imageElements:
     - {fileID: 1547117427}
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -33692,7 +33710,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _enabledFunctions
-      value: 167
+      value: 495
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -34084,6 +34102,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 1d75a1f59e9599344bd34614897019fd,
         type: 2}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _invertColourCorrection._invertOnHighlight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _invertColourCorrection._invertOnSelected
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _invertColourCorrection._activateWhen
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6790820044368940565, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: m_Text
@@ -34788,6 +34821,11 @@ PrefabInstance:
       propertyPath: _buttonFunction
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _navigation._up
+      value: 
+      objectReference: {fileID: 699193046}
     m_RemovedComponents:
     - {fileID: 3688934388505339738, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 86ed9c2d3160af54887a9f55908252df, type: 3}
@@ -35053,8 +35091,7 @@ MonoBehaviour:
     _imageElements:
     - {fileID: 1675654970245166847}
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 0}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}
@@ -36284,6 +36321,27 @@ PrefabInstance:
       propertyPath: _homeBranches.Array.data[3]
       value: 
       objectReference: {fileID: 1396258919}
+    - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _inputScheme
+      value: 
+      objectReference: {fileID: 11400000, guid: 347a3b76907f353408c0de665cac7c85,
+        type: 2}
+    - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[1]._hotKeyInput
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[2]._hotKeyInput
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[3]._hotKeyInput
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4421614741907461036, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _onScreenAtStart
@@ -36414,6 +36472,12 @@ PrefabInstance:
       propertyPath: _returnToGameControl.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _inputScheme
+      value: 
+      objectReference: {fileID: 11400000, guid: 347a3b76907f353408c0de665cac7c85,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d4d4ae77ac7463a40afa29655e938f81, type: 3}
 --- !u!114 &6446246268114113608
@@ -36525,8 +36589,7 @@ MonoBehaviour:
     _textElements: {fileID: 6446246268114113608}
     _imageElements: []
   _invertColourCorrection:
-    _invertOnHighlight: 0
-    _invertOnSelected: 0
+    _activateWhen: 0
     _text: {fileID: 0}
     _image: {fileID: 6446246269124665236}
     _invertedColour: {r: 1, g: 1, b: 1, a: 1}

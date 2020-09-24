@@ -1,45 +1,47 @@
-﻿
-using NaughtyAttributes;
+﻿using NaughtyAttributes;
 using UnityEngine;
 
-public interface IInput
+public abstract class InputScheme : ScriptableObject
 {
-    
-}
-[CreateAssetMenu(menuName = "New Input Scheme - Old", fileName = "Scheme - Old")]
-public class InputScheme : ScriptableObject, IInput
-{
+    [SerializeField] protected ControlMethod _mainControlType = ControlMethod.MouseOnly;
+    [SerializeField] [Header("In Game System")] [Space(10f)]
+    protected InGameSystem _inGameMenuSystem = InGameSystem.Off;
+    [SerializeField] [EnableIf("InGameOn")]
+    protected StartInMenu _startGameWhere = StartInMenu.InGameControl;
+    [SerializeField] [Header("Cancel / Back Settings")] [Space(10f)]
+    [Label("Nothing to Cancel Action")]
+    protected PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.DoNothing;
     [SerializeField] 
-    private ControlMethod _mainControlType = ControlMethod.MouseOnly;
+    [ValidateInput("ProtectEscapeKeySetting", "Can't set Global Settings to Global Settings")]
+    protected EscapeKey _globalCancelFunction = EscapeKey.BackOneLevel;
+    [SerializeField] [Header("Start Delay")] [Space(10f)]
+    [Label("Enable Controls After..")]
+    protected float _atStartDelay;
 
-    [Header("Pause Settings")]
-    [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] 
-    [Label("Nothing to Cancel")]
-    private PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.DoNothing;
-    [SerializeField] 
-    [Label("Pause / Option Button")] [InputAxis]
-    private string _pauseOptionButton;
-    
-    [Header("Home Branch Switch Settings")]
-    [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField]
-    [HideIf("MouseOnly")] [InputAxis] private string _posSwitchButton;
-    [SerializeField] 
-    [HideIf("MouseOnly")] [InputAxis] private string _negSwitchButton;
-    
-    [Header("Cancel Settings")]
-    [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] 
-    [InputAxis] private string _cancelButton;
-    [Header("In-Game Menu Settings")]
-    [SerializeField]
-    [DisableIf("MouseOnly")] private InGameSystem _inGameMenuSystem = InGameSystem.Off;
-    [SerializeField] 
-    private StartInMenu _startGameWhere = StartInMenu.InGameControl;
-    [SerializeField] 
-    [Label("Switch To/From Game Menus")] [InputAxis] private string _switchToMenusButton;
+    protected Vector3 _mousePosition;
 
-    //Editor
-    private bool MouseOnly() => _mainControlType == ControlMethod.MouseOnly;
+    public abstract ControlMethod ControlType { get; }
+    public abstract PauseOptionsOnEscape PauseOptions { get; }
+    protected abstract string PauseButton { get; }
+    protected abstract string PositiveSwitch { get; }
+    protected abstract string NegativeSwitch { get; }
+    protected abstract string CancelButton { get; }
+    protected abstract string MenuToGameSwitch { get; }
+    public abstract InGameSystem InGameMenuSystem { get; }
+    public abstract StartInMenu WhereToStartGame { get; }
+    public abstract EscapeKey GlobalCancelAction { get; }
+    public abstract float StartDelay { get; }
+    public abstract bool  MouseClicked { get; }
+    public abstract bool CanSwitchToKeysOrController { get; }
+    public abstract bool CanSwitchToMouse { get; }
+    public abstract Vector3 SetMousePosition();
+
+    public abstract void OnAwake();
+    public abstract void TurnOffInGameMenuSystem();
+    public abstract bool PressPause();
+    public abstract bool PressedMenuToGameSwitch();
+    public abstract bool PressedCancel();
+    public abstract bool PressedPositiveSwitch();
+    public abstract bool PressedNegativeSwitch();
+    public abstract bool HotKeyChecker(HotKey hotKey);
 }

@@ -5,6 +5,7 @@ public class HomeScreenBranchBase: BranchBase
     public HomeScreenBranchBase(UIBranch branch) : base(branch)
     {
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
+        _uiControlsEvents.SubscribeFromHotKey(HotKeyActivated);
     }
 
     //Variables
@@ -14,6 +15,12 @@ public class HomeScreenBranchBase: BranchBase
     //Properties
     private bool CannotTweenOnHome => _myBranch.TweenOnHome == IsActive.No && !_onHomeScreen;
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
+    private void HotKeyActivated() //TODO Review
+    {
+        if (_onHomeScreen) return;
+        InvokeOnHomeScreen(true);
+    }
+
     protected override void SaveInMenu(bool inMenu)
     {
         _inMenu = inMenu;
@@ -74,7 +81,7 @@ public class HomeScreenBranchBase: BranchBase
     
     private void ResetHomeScreenBranch()
     {
-        if (_activeBranch == _myBranch) return;
+        if (_activeBranch == _myBranch || _myBranch.CanvasIsEnabled) return;
         
         if (_myBranch.TweenOnHome == IsActive.No)
             _myBranch.SetNoTween();

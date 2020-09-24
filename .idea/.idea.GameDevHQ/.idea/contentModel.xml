@@ -260,6 +260,8 @@
                 <e p="AudioScheme.cs" t="Include" />
                 <e p="ColourScheme.cs" t="Include" />
                 <e p="InputScheme.cs" t="Include" />
+                <e p="NewSystem.cs" t="Include" />
+                <e p="OldSystem.cs" t="Include" />
                 <e p="ToolTipScheme.cs" t="Include" />
               </e>
               <e p="UI Utilities" t="Include">
@@ -302,9 +304,6 @@
                 <e p="UIAudioManager.cs" t="Include" />
                 <e p="UICancel.cs" t="Include" />
                 <e p="UIHomeGroup.cs" t="Include" />
-                <e p="UIHub Partial Classes" t="Include">
-                  <e p="UIHub.EditorScripts.cs" t="Include" />
-                </e>
                 <e p="UIHubInterfaces.cs" t="Include" />
               </e>
               <e p="UIHub.cs" t="Include" />

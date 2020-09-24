@@ -16,6 +16,7 @@ public interface INode
     void SetNodeAsSelected_NoEffects();
     void SetNodeAsNotSelected_NoEffects();
     void ThisNodeIsSelected();
+    void ThisNodeIsHighLighted();
 }
 
 

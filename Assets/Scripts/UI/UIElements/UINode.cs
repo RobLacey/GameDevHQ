@@ -11,43 +11,56 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
                               ISelectHandler, IDisabled, INode
 {
     [Header("Main Settings")]
-    [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    [HorizontalLine(1, color: EColor.Blue, order = 1)]
     [SerializeField] 
-    [ValidateInput("SetChildBranch")] [Label("Button/Toggle Function")] private ButtonFunction _buttonFunction;
+    [ValidateInput("SetChildBranch")] [Label("Button/Toggle Function")] 
+    private ButtonFunction _buttonFunction;
     [SerializeField] 
-    [ShowIf("IsCancelOrBack")] private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
+    [ShowIf("IsCancelOrBack")] 
+    private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")] 
     private ToggleGroup _toggleGroupId = ToggleGroup.None;
     [SerializeField]
-    [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")] private Canvas _tab;
+    [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")] 
+    private Canvas _tab;
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")] private bool _startAsSelected;
-
-    //[Header("Settings (Click Arrows To Expand)")]
-    [HorizontalLine(4, color: EColor.Blue, order = 1)]
+    [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")] 
+    private bool _startAsSelected;
     [SerializeField] 
-    [Label("UI Functions To Use")] public Setting _enabledFunctions;
+    [Label("UI Functions To Use")] [BoxGroup("Node Functions")] 
+    private Setting _enabledFunctions;
+    [SerializeField] [Space(5f)]
+    [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")] [BoxGroup("Node Functions")] 
+    private UINavigation _navigation;
     [SerializeField] 
-    [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")] private UINavigation _navigation;
+    [Space(5f)] [Label("Colour Settings")] [ShowIf("NeedColour")] [BoxGroup("Node Functions")] 
+    private UIColour _colours;
     [SerializeField] 
-    [Label("Colour Settings")] [ShowIf("NeedColour")] private UIColour _colours;
-    [SerializeField] 
-    [Label("Invert Colour when Highlighted or Selected")] [ShowIf("NeedInvert")] 
+    [Space(5f)] [Label("Invert Colour when Highlighted or Selected")] 
+    [ShowIf("NeedInvert")] [BoxGroup("Node Functions")] 
     private UIInvertColours _invertColourCorrection;
     [SerializeField] 
-    [Label("Swap Images or Text on Select or Highlight")] [ShowIf("NeedSwap")] 
+    [Space(5f)] [Label("Swap Images or Text on Select or Highlight")] 
+    [ShowIf("NeedSwap")] [BoxGroup("Node Functions")]
     private UIImageTextToggle _swapImageOrText;
     [SerializeField] 
-    [Label("Size And Position Effect Settings")] [ShowIf("NeedSize")] private UISizeAndPosition _sizeAndPos;
+    [Space(5f)] [Label("Size And Position Effect Settings")] 
+    [ShowIf("NeedSize")] [BoxGroup("Node Functions")] 
+    private UISizeAndPosition _sizeAndPos;
     [SerializeField] 
-    [Label("Accessories, Outline Or Shadow Settings")] [ShowIf("NeedAccessories")] private UIAccessories _accessories;
+    [Space(5f)] [Label("Accessories, Outline Or Shadow Settings")] 
+    [ShowIf("NeedAccessories")] [BoxGroup("Node Functions")] 
+    private UIAccessories _accessories;
     [SerializeField] 
-    [Label("Audio Settings")] [ShowIf("NeedAudio")] private UIAudio _audio;
+    [Space(5f)] [Label("Audio Settings")] [ShowIf("NeedAudio")] [BoxGroup("Node Functions")] 
+    private UIAudio _audio;
     [SerializeField] 
-    [Label("Tooltip Settings")] [ShowIf("NeedTooltip")] private UITooltip _tooltips;
+    [Space(5f)] [Label("Tooltip Settings")] [ShowIf("NeedTooltip")] [BoxGroup("Node Functions")] 
+    private UITooltip _tooltips;
     [SerializeField] 
-    [Label("Event Settings")] [ShowIf("NeedEvents")] private UIEvents _events;
+    [Space(5f)] [Label("Event Settings")] [ShowIf("NeedEvents")] [BoxGroup("Node Functions")] 
+    private UIEvents _events;
 
     //Variables
     private bool _isDisabled, _inMenu, _allowKeys, _holdStateOnPause;
@@ -79,7 +92,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         {
             SetNotHighlighted();
         }
-        else if (_lastHighlighted.ReturnNode == this)
+        else if (_lastHighlighted.ReturnNode == this && _allowKeys)
         {
             SetAsHighlighted();
         }
