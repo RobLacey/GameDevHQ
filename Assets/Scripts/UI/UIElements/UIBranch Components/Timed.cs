@@ -25,7 +25,7 @@ public class Timed : BranchBase, IStartPopUp
     {
         if (!_running)
         {
-            ActivateBranch();
+            ActivateBranchCanvas();
             _running = true;
         }
         else
@@ -46,7 +46,7 @@ public class Timed : BranchBase, IStartPopUp
         ExitTimedPopUp();
     }
 
-    protected override void MoveBackToThisBranch(UIBranch lastBranch)
+    public override void MoveBackToThisBranch(UIBranch lastBranch)
     {
         if (lastBranch != _myBranch) return;
 
@@ -57,6 +57,6 @@ public class Timed : BranchBase, IStartPopUp
     private void ExitTimedPopUp()
     {
         _running = false;
-        _myBranch.StartOutTweenProcess(OutTweenType.Cancel);
+        _myBranch.StartBranchExitProcess(OutTweenType.Cancel);
     }
 }

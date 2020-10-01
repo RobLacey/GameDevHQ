@@ -28,12 +28,12 @@ public class ResolvePopUp : BranchBase, IStartPopUp
     {
         if(_myBranch.CanvasIsEnabled) return;
         
-        ActivateBranch();
+        ActivateBranchCanvas();
         _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRayCast.Yes);
         AddResolvePopUp?.Invoke(_myBranch);
     }
 
-    protected override void MoveBackToThisBranch(UIBranch lastBranch)
+    public override void MoveBackToThisBranch(UIBranch lastBranch)
     {
         if (lastBranch != _myBranch) return;
         

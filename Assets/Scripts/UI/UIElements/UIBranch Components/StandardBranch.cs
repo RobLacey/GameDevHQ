@@ -8,13 +8,13 @@ public class StandardBranchBase : BranchBase
         if (_myBranch.CanvasIsEnabled) 
             _myBranch.SetNoTween();
         
-        ActivateBranch();
+        ActivateBranchCanvas();
         CanGoToFullscreen();
         _myBranch.ResetBranchesStartPosition();
-        _myBranch.SetNewParentBranch(newParentController);
+        SetNewParentBranch(newParentController);
     }
 
-    protected override void MoveBackToThisBranch(UIBranch lastBranch)
+    public override void MoveBackToThisBranch(UIBranch lastBranch)
     {
         if (lastBranch != _myBranch) return;
         
@@ -25,4 +25,11 @@ public class StandardBranchBase : BranchBase
         
         _myBranch.MoveToThisBranch();
     }
+
+    private void SetNewParentBranch(UIBranch newParentController) 
+    {
+        if(newParentController is null) return;
+        _myBranch.MyParentBranch = newParentController;
+    }
+
 }

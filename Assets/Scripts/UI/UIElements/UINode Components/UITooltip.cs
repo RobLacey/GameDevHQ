@@ -132,7 +132,7 @@ public class UITooltip : NodeFunctionBase
     private void SetBucket()
     {
         if(!(_bucketPosition is null)) return;
-        _bucketPosition = ServiceLocator.GetBucket().CreateBucket();
+        _bucketPosition = ServiceLocator.GetNewService<IBucketCreator>().CreateBucket();
     }
 
     private IEnumerator ToolTipBuild()

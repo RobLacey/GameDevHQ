@@ -17,6 +17,7 @@ public interface INode
     void SetNodeAsNotSelected_NoEffects();
     void ThisNodeIsSelected();
     void ThisNodeIsHighLighted();
+    void PlayCancelAudio();
 }
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public class OptionalPopUp : BranchBase, IStartPopUp
 {
@@ -30,8 +31,13 @@ public class OptionalPopUp : BranchBase, IStartPopUp
         }
         else
         {
-            ActivateBranch();
-        }
+            ActivateBranchCanvas();
+            if(_noResolvePopUps) //Check Here
+            {
+                Debug.Log(_myBranch);
+
+                ActivateBlockRaycast();
+            }        }
     }
 
     public void StartPopUp() //TODO add to buffer goes here for when paused. trigger from SaveOnHome?
@@ -48,7 +54,7 @@ public class OptionalPopUp : BranchBase, IStartPopUp
             AddOptionalPopUp?.Invoke(_myBranch);
             
         IfActiveResolvePopUps();
-        ActivateBranch();
+        ActivateBranchCanvas();
         _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRayCast.No);
         _restoreOnHome = false;
     }
@@ -60,7 +66,7 @@ public class OptionalPopUp : BranchBase, IStartPopUp
         _myBranch.MyCanvasGroup.blocksRaycasts = false;
     }
 
-    protected override void MoveBackToThisBranch(UIBranch lastBranch)
+    public override void MoveBackToThisBranch(UIBranch lastBranch)
     {
         if (lastBranch != _myBranch) return;
         

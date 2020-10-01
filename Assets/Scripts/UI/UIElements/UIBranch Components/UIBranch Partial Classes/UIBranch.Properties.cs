@@ -16,7 +16,7 @@ public partial class UIBranch
     public bool IsHomeScreenBranch() => _branchType == BranchType.HomeScreen;
     public bool IsTimedPopUp => _branchType == BranchType.TimedPopUp;
     public bool CanvasIsEnabled => MyCanvas.enabled;
-    public bool CanStoreAndRestoreOptionalPoUp => _clearOrResetOptional == StoreAndRestorePopUps.StoreAndRestore;
+    public bool CanStoreAndRestoreOptionalPoUp => _storeOrResetOptional == StoreAndRestorePopUps.StoreAndRestore;
     public UINode DefaultStartOnThisNode => _startOnThisNode;
     private INode LastHighlighted { get; set; }
     public INode LastSelected { get; private set; }
@@ -24,7 +24,7 @@ public partial class UIBranch
     public Canvas MyCanvas { get; private set; }
     public CanvasGroup MyCanvasGroup { get; private set; }
     public BranchBase Branch { get; private set; }
-    public UIBranch MyParentBranch { get; private set; }
+    public UIBranch MyParentBranch { get; set; }
     public EscapeKey EscapeKeySetting
     {
         get => _escapeKeyFunction;
@@ -55,6 +55,9 @@ public partial class UIBranch
 
     //Editor Properties
     public bool IsOptional() => _branchType == BranchType.OptionalPopUp;
+
+    public bool IsStored() =>
+        _branchType == BranchType.OptionalPopUp && _storeOrResetOptional == StoreAndRestorePopUps.StoreAndRestore; 
     public bool IsEmpty(UINode node) => node != null;
 
 }

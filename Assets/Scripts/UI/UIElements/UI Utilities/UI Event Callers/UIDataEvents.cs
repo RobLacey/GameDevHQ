@@ -22,7 +22,7 @@ public class UIDataEvents : UiEventCaller
         if (_currentHomeScreen != null) UIHomeGroup.DoSetCurrentHomeBranch -= _currentHomeScreen.Event;
         if (_setUpBranchesAtStart != null) UIHub.SetUpBranchesAtStart -= _setUpBranchesAtStart.Event;
         if (_onStartUp != null) UIHub.OnStart -= _onStartUp.Event;
-        if (_onBackOneLevel != null) UICancel.OnBackOneLevel -= _onBackOneLevel.Event;
+        if (_onBackOneLevel != null) UICancel.OnBackOrCancel -= _onBackOneLevel.Event;
         if (_onHomeScreen != null) BranchBase.SetIsOnHomeScreen -= _onHomeScreen.Event;
         if (_inMenu != null) MenuAndGameSwitching.IsInTheMenu -= _inMenu.Event;
     }
@@ -63,10 +63,10 @@ public class UIDataEvents : UiEventCaller
         UIHub.OnStart += _onStartUp.Add(subscriber);
     }
     
-    public void SubscribeToBackOneLevel(Action<UIBranch> subscriber)
+    public void SubscribeToBackOrCancel(Action<UIBranch> subscriber)
     {
         _onBackOneLevel = new CustomEventHandler<UIBranch>();
-        UICancel.OnBackOneLevel += _onBackOneLevel.Add(subscriber);
+        UICancel.OnBackOrCancel += _onBackOneLevel.Add(subscriber);
     }
 
     public void SubscribeToOnHomeScreen(Action<bool> subscriber)

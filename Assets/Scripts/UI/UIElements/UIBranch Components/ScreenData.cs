@@ -67,7 +67,8 @@ public class ScreenData
     {
         foreach (var branch in _clearedBranches)
         {
-            branch.Branch.ActivateBranch();
+            branch.Branch.ActivateBranchCanvas();
+            branch.Branch.ActivateBlockRaycast();
         }
     }
 }

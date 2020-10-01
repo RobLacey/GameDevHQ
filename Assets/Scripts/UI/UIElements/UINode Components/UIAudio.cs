@@ -1,78 +1,84 @@
 ﻿using System;
 using UnityEngine;
-using NaughtyAttributes;
 
 [Serializable]
-public class UIAudio
+public class UIAudio : NodeFunctionBase
 {
-    [SerializeField] 
-    AudioScheme _audioScheme;
-    [SerializeField] 
-    [AllowNesting] [HideIf("UsingScheme")] [Label("Highlighted Clip")] AudioClip _soundHighlighted;
-    [SerializeField] 
-    [AllowNesting] [HideIf("UsingScheme")] [Label("Highlighted Volume")] float _volumeHighlighted;
-    [SerializeField] 
-    [AllowNesting] [HideIf("UsingScheme")] [Label("Selected Clip")] AudioClip _soundSelect;
-    [SerializeField] 
-    [AllowNesting] [HideIf("UsingScheme")] [Label("Selected Volume")] float _volumeSelect;
-    [SerializeField] 
-    [AllowNesting] [HideIf("UsingScheme")] [Label("Cancelled Clip")] AudioClip _soundCancel;
-    [SerializeField] 
-    [AllowNesting] [HideIf("UsingScheme")] [Label("Cancelled Volume")] float _volumeCancel;
+    [SerializeField] private AudioScheme _audioScheme;
 
     //Variables 
-    bool _canPlay;
-
-    //Events
-    public static event Action<AudioClip, float> PlayAudio;
+    private IAudioService _audioService;
+    private bool _canStart;
+    private UIDataEvents _uiDataEvents = new UIDataEvents();
 
     //Properties
     private bool UsingScheme() => _audioScheme;
+    private void OnStart() => _canStart = true;
+    private void SetPlayCancelAudio() => PlayCancelAudio();
 
-    public void OnAwake(Setting setting) => _canPlay = (setting & Setting.Audio) != 0;
-
-    public void Play(UIEventTypes uIEventTypes)
+    //Main
+    public override void OnAwake(UiActions uiActions, Setting activeFunctions)
     {
-        if (!_canPlay) return;
+        base.OnAwake(uiActions, activeFunctions);
+        uiActions._canPlayCancelAudio += SetPlayCancelAudio;
 
-        switch (uIEventTypes)
-        {
-            case UIEventTypes.Highlighted:
-                if (UsingScheme())
-                {
-                    //UIAudioManager.PlayAudio.Invoke(_audioScheme.HighlightedClip, _audioScheme.HighlighVolume);
-                    PlayAudio?.Invoke(_audioScheme.HighlightedClip, _audioScheme.HighlighVolume);
-                }
-                else
-                {
-                    //UIAudioManager.PlayAudio.Invoke(_soundHighlighted, _volumeHighlighted);
-                    PlayAudio?.Invoke(_soundHighlighted, _volumeHighlighted);
-                }
-                break;
-            case UIEventTypes.Cancelled:
-                if (UsingScheme())
-                {
-                    PlayAudio?.Invoke(_audioScheme.CancelledClip, _audioScheme.CancelledVolume);
-                    // UIAudioManager.PlayAudio.Invoke(_audioScheme.CancelledClip, _audioScheme.CancelledVolume);
-                }
-                else
-                {
-                    PlayAudio?.Invoke(_soundCancel, _volumeCancel);
-                    // UIAudioManager.PlayAudio.Invoke(_soundCancel, _volumeCancel);
-                }
-                break;
-            case UIEventTypes.Selected:
-                if (UsingScheme())
-                {
-                    PlayAudio?.Invoke(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
-                    // UIAudioManager.PlayAudio.Invoke(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
-                }
-                else
-                {
-                    PlayAudio?.Invoke(_soundSelect, _volumeSelect);
-                    // UIAudioManager.PlayAudio.Invoke(_soundSelect, _volumeSelect);
-                }
-                break;
-        }
+        _uiDataEvents.SubscribeToOnStart(OnStart);
+        CanActivate = (_enabledFunctions & Setting.Audio) != 0;
     }
+
+
+    private void Play(AudioClip clip, float volume)
+    {
+        if(FunctionNotActive() || !_canStart) return;
+        
+        if(_audioService is null)
+            _audioService = ServiceLocator.GetNewService<IAudioService>();
+
+        _audioService.Play(clip, volume);
+    }
+
+    protected override bool CanBeHighlighted() => !UsingScheme() ? false : _audioScheme.HighlightedClip;
+
+    protected override bool CanBePressed() => !UsingScheme() ? false : _audioScheme.SelectedClip;
+
+    protected override bool FunctionNotActive() => !CanActivate || !UsingScheme();
+
+    protected override void SavePointerStatus(bool pointerOver)
+    {
+        if(!CanBeHighlighted() || !pointerOver) return;
+        Play(_audioScheme.HighlightedClip, _audioScheme.HighlighVolume);
+    }
+
+    protected override void SaveIsSelected(bool isSelected)
+    {
+        base.SaveIsSelected(isSelected);
+        if(!isSelected) 
+            ProcessPress();
+    }
+
+    private protected override void ProcessPress()
+    {
+        if(!CanBePressed()) return;
+        
+        if (_isSelected)
+        {
+            Play(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
+        }
+        // else
+        // {
+        //     PlayCancelAudio();
+        // }
+    }
+
+    private void PlayCancelAudio()
+    {
+        if(FunctionNotActive()) return;
+        Play(_audioScheme.CancelledClip, _audioScheme.CancelledVolume);
+    }
+
+    private protected override void ProcessDisabled()
+    {
+        //Do Nothing currently
+    }
+    
 }

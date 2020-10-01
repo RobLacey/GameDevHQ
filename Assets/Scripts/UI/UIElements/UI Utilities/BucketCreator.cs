@@ -5,6 +5,7 @@ public interface IBucketCreator
     void SetParentTransFrom(Transform parent);
     Transform CreateBucket();
 }
+
 public class BucketCreator : IBucketCreator
 {
     private Transform _parent;
@@ -33,3 +34,15 @@ public class BucketCreator : IBucketCreator
         return newBucket.transform;
     }
 }
+
+public class NullObject : IBucketCreator
+{
+    public void SetParentTransFrom(Transform parent) { }
+
+    public Transform CreateBucket()
+    {
+        Debug.Log("Null Bucket Service Running - Expect inconsistent behaviour");
+        return null;
+    }
+}
+

@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cf72707778a495380664443a05e90e8, type: 3}
-  m_Name: Scheme - Old
+  m_Script: {fileID: 11500000, guid: 426eb39d9ead40649cbb3b4df531a7fe, type: 3}
+  m_Name: Scheme - New
   m_EditorClassIdentifier: 
   _mainControlType: 2
   _inGameMenuSystem: 1
@@ -18,12 +18,3 @@ MonoBehaviour:
   _pauseOptionsOnEscape: 0
   _pauseFunction: 1
   _atStartDelay: 0
-  _pauseOptionButton: Pause
-  _posSwitchButton: Posivtive Group Switch
-  _negSwitchButton: Negative Group Switch
-  _cancelButton: Cancel
-  _switchToMenusButton: SwitchToInGameMenus
-  _hotKey1: HotKey 1
-  _hotKey2: HotKey 2
-  _hotKey3: Hotkey 3
-  _hotKey4: Hotkey 4

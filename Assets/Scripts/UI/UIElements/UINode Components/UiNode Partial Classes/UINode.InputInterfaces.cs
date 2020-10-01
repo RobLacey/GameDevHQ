@@ -1,11 +1,11 @@
-﻿using UnityEngine.EventSystems;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public partial class UINode
 {
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (DontAllowPointerEvent(eventData)) return;
-
         HandleOnEnter();
     }
 
@@ -47,6 +47,9 @@ public partial class UINode
     public void CheckIfMoveAllowed(MoveDirection moveDirection)
     {
         if(!_allowKeys) return;
+        
+        if(!MyBranch.CanvasIsEnabled)return;
+        
         if (IsDisabled)
         {
             DoMove(moveDirection);
@@ -54,7 +57,6 @@ public partial class UINode
         else
         {
             HandleOnEnter();
-            //OnPointerEnter(new PointerEventData(EventSystem.current));
         }
     }
     
@@ -62,6 +64,7 @@ public partial class UINode
     {
         if(!_allowKeys) return;
         _uiActions._onMove?.Invoke(moveDirection);
+        
         if (AmSlider && IsSelected)
         {
             _navigation.HandleAsSlider();

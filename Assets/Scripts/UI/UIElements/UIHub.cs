@@ -41,14 +41,14 @@ public partial class UIHub : MonoBehaviour
     {
         _inputScheme = GetComponent<UIInput>().ReturnScheme;
         _startingInGame = GetComponent<UIInput>().StartInGame();
+        ServiceLocator.AddService<IBucketCreator>(new BucketCreator(transform, "Tooltip Holder"));
+        ServiceLocator.AddService<IAudioService>(new UIAudioManager(GetComponent<AudioSource>()));
         CreateSubClasses();
-        ServiceLocator.SetBucketCreateService(new BucketCreator(transform, "Tooltip Holder"));
     }
 
     private void CreateSubClasses()
     {
         var unused = new PopUpController();
-        var unused1 = new UIAudioManager(GetComponent<AudioSource>());
         var unused3 = new UIHomeGroup(_homeBranches.ToArray());
         var unused2 = new UICancel(_inputScheme.GlobalCancelAction);
         SetUpHotKeys();
@@ -80,6 +80,7 @@ public partial class UIHub : MonoBehaviour
     {
         _lastHighlighted = _homeBranches[0].DefaultStartOnThisNode;
         _homeBranches[0].DefaultStartOnThisNode.ThisNodeIsSelected();
+        _homeBranches[0].DefaultStartOnThisNode.ThisNodeIsHighLighted();
         SetUpBranchesAtStart?.Invoke(_homeBranches[0]);
     }
 

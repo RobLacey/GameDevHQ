@@ -6,7 +6,6 @@ using UnityEngine;
 /// This Class Looks after managing switching between PopUps
 /// </summary>
 ///
-// TODO Need to make sure Optionals don't appear when not on main screen but buffered for return to homescreen
 public class PopUpController
 {
     public PopUpController() => OnEnable();

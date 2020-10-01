@@ -24,13 +24,15 @@ public class HomeScreenBranchBase: BranchBase
     protected override void SaveInMenu(bool inMenu)
     {
         _inMenu = inMenu;
-        ActivateBranch();
+        _myBranch.MyCanvasGroup.blocksRaycasts = _inMenu;
+        ActivateBranchCanvas();
+        ActivateBlockRaycast();
     }
 
     protected override void SaveOnStart() 
     {
         base.SaveOnStart();
-        ActivateBranch();
+        ActivateBranchCanvas();
     }
     
     //Main
@@ -63,10 +65,10 @@ public class HomeScreenBranchBase: BranchBase
 
         if (_onHomeScreen) _myBranch.SetNoTween();
         
-        ActivateBranch();
+        ActivateBranchCanvas();
     }
 
-    protected override void MoveBackToThisBranch(UIBranch lastBranch)
+    public override void MoveBackToThisBranch(UIBranch lastBranch)
     {
         if (lastBranch != _myBranch) return;
         
@@ -85,7 +87,7 @@ public class HomeScreenBranchBase: BranchBase
         
         if (_myBranch.TweenOnHome == IsActive.No)
             _myBranch.SetNoTween();
-        
+
         _myBranch.DontSetBranchAsActive();
         _myBranch.MoveToThisBranch();
     }

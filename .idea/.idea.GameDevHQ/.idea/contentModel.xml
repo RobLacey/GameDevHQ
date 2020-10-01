@@ -270,7 +270,6 @@
                 <e p="ServiceLocator.cs" t="Include" />
                 <e p="StaticCoroutine.cs" t="Include" />
                 <e p="UI Event Callers" t="Include">
-                  <e p="UIAudioEvents.cs" t="Include" />
                   <e p="UIControlsEvents.cs" t="Include" />
                   <e p="UIDataEvents.cs" t="Include" />
                   <e p="UIPopUpEvents.cs" t="Include" />

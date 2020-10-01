@@ -27,45 +27,25 @@ public class OldSystem : InputScheme
     [SerializeField] 
     [InputAxis] private string _hotKey4;
 
+    //Variables
     private bool _hasPauseAxis, _hasPosSwitchAxis, _hasNegSwitchAxis, _hasCancelAxis, _hasSwitchToMenusButton
         , _hasHotKey1, _hasHotKey2, _hasHotKey3, _hasHotKey4;
-
-    //Editor
-
-    private bool InGameOn => _inGameMenuSystem == InGameSystem.On;
-
-    private bool ProtectEscapeKeySetting(EscapeKey escapeKey)
-    {
-        if (_globalCancelFunction == EscapeKey.GlobalSetting)
-        {
-            Debug.Log("Escape KeyError");
-        }
-
-        return escapeKey != EscapeKey.GlobalSetting;
-    }
-
-    public override ControlMethod ControlType => _mainControlType;
-    public override PauseOptionsOnEscape PauseOptions => _pauseOptionsOnEscape;
+    
+    //Properties and Setter/Getters
     protected override string PauseButton => _pauseOptionButton;
     protected override string PositiveSwitch => _posSwitchButton;
     protected override string NegativeSwitch => _negSwitchButton;
     protected override string CancelButton => _cancelButton;
     protected override string MenuToGameSwitch => _switchToMenusButton;
-    public override InGameSystem InGameMenuSystem => _inGameMenuSystem;
-    public override StartInMenu WhereToStartGame => _startGameWhere;
-    public override EscapeKey GlobalCancelAction => _globalCancelFunction;
-    public override float StartDelay => _atStartDelay;
     public override bool MouseClicked => Input.GetMouseButton(0) || Input.GetMouseButton(1);
     public override bool CanSwitchToKeysOrController => Input.anyKeyDown && ControlType != ControlMethod.MouseOnly;
     public override bool CanSwitchToMouse 
         => _mousePosition != Input.mousePosition && ControlType != ControlMethod.KeysOrControllerOnly;
 
-    public override Vector3 SetMousePosition() => _mousePosition = Input.mousePosition;
+    public override void SetMousePosition() => _mousePosition = Input.mousePosition;
 
     //Main
-    public override void OnAwake() => CheckForControls();
-
-    private void CheckForControls()
+    protected override void SetUpUInputScheme()
     {
         _hasPauseAxis = PauseButton != string.Empty;
         _hasPosSwitchAxis = PositiveSwitch != string.Empty;
@@ -78,18 +58,13 @@ public class OldSystem : InputScheme
         _hasHotKey4 = _hotKey4 != string.Empty;
     }
 
-
-    public override void TurnOffInGameMenuSystem() => _inGameMenuSystem = InGameSystem.Off;
-
     public override bool PressPause() => _hasPauseAxis && Input.GetButtonDown(PauseButton);
-
     public override bool PressedMenuToGameSwitch() 
         => InGameMenuSystem == InGameSystem.On && _hasSwitchToMenusButton && Input.GetButtonDown(MenuToGameSwitch);
-
     public override bool PressedCancel() => _hasCancelAxis && Input.GetButtonDown(CancelButton);
-
     public override bool PressedPositiveSwitch() => _hasPosSwitchAxis && Input.GetButtonDown(PositiveSwitch);
     public override bool PressedNegativeSwitch() => _hasNegSwitchAxis && Input.GetButtonDown(NegativeSwitch);
+    
     public override bool HotKeyChecker(HotKey hotKey)
     {
         switch (hotKey)    

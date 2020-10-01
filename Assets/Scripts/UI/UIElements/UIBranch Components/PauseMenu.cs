@@ -60,7 +60,7 @@ public class PauseMenu : BranchBase, IStartPopUp
 
     public override void SetUpBranch(UIBranch newParentController = null)
     {
-        ActivateBranch();
+        ActivateBranchCanvas();
         CanGoToFullscreen();
         _myBranch.ResetBranchesStartPosition();
     }
@@ -74,7 +74,7 @@ public class PauseMenu : BranchBase, IStartPopUp
         InvokeDoClearScreen(_myBranch);
     }
 
-    private void ExitPause() => _myBranch.StartOutTweenProcess(OutTweenType.Cancel, RestoreLastStoredState);
+    private void ExitPause() => _myBranch.StartBranchExitProcess(OutTweenType.Cancel, RestoreLastStoredState);
 
     private void RestoreLastStoredState()
     {
@@ -92,7 +92,7 @@ public class PauseMenu : BranchBase, IStartPopUp
         _screenData._locked = false;
     }
 
-    protected override void MoveBackToThisBranch(UIBranch lastBranch)
+    public override void MoveBackToThisBranch(UIBranch lastBranch)
     {
         if (lastBranch != _myBranch) return;
         

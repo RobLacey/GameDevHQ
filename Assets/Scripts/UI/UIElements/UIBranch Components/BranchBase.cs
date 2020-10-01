@@ -35,7 +35,7 @@ public abstract class BranchBase
         _uiDataEvents.SubscribeToOnHomeScreen(SaveIfOnHomeScreen);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiDataEvents.SubscribeToOnStart(SaveOnStart);
-        _uiDataEvents.SubscribeToBackOneLevel(MoveBackToThisBranch);
+        _uiDataEvents.SubscribeToBackOrCancel(MoveBackToThisBranch);
         _uiDataEvents.SubscribeToGameIsPaused(SaveIfGamePaused);
         _uiDataEvents.SubscribeSetUpBranchesAtStart(SetUpBranchesOnStart);
         _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
@@ -50,17 +50,25 @@ public abstract class BranchBase
 
     public abstract void SetUpBranch(UIBranch newParentController = null);
 
-    protected virtual void MoveBackToThisBranch(UIBranch lastBranch)
+    public virtual void MoveBackToThisBranch(UIBranch lastBranch)
     {
         _myBranch.LastSelected.SetNodeAsNotSelected_NoEffects();
         _myBranch.MyParentBranch.LastSelected.ThisNodeIsSelected();
     }
     
-    public void ActivateBranch()
+    public void ActivateBranchCanvas()
+    {
+        _myBranch.MyCanvas.enabled = true;
+    }
+
+    public void ActivateBlockRaycast()
     {
         if(!_canStart) return; 
-        _myBranch.MyCanvasGroup.blocksRaycasts = _inMenu;
-        _myBranch.MyCanvas.enabled = true;
+        if(_myBranch.IsOptional() && _noResolvePopUps) //Check here
+        {
+            Debug.Log(_myBranch);
+            _myBranch.MyCanvasGroup.blocksRaycasts = _inMenu;
+        }    
     }
 
     protected virtual void ClearBranchForFullscreen(UIBranch ignoreThisBranch = null)

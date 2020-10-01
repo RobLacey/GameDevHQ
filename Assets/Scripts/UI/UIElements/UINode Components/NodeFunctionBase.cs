@@ -11,7 +11,7 @@ public abstract class NodeFunctionBase
     private void AxisMoveDirection(MoveDirection moveDirection) => _moveDirection = moveDirection;
     protected abstract bool CanBeHighlighted();
     protected abstract bool CanBePressed();
-    protected abstract bool FunctionNotActive(); //TODO Review and fix as may not be needed
+    protected abstract bool FunctionNotActive();
     
     public virtual void OnAwake(UiActions uiActions, Setting activeFunctions)
     {
@@ -33,7 +33,7 @@ public abstract class NodeFunctionBase
     }
     protected abstract void SavePointerStatus(bool pointerOver);
 
-    private void SaveIsSelected(bool isSelected)
+    protected virtual void SaveIsSelected(bool isSelected)
     {
         if (FunctionNotActive()) return;
         _isSelected = isSelected;

@@ -27,7 +27,7 @@ public class UICancel
     private bool _noPopUps = true;
 
     //Events
-    public static event Action<UIBranch> OnBackOneLevel; 
+    public static event Action<UIBranch> OnBackOrCancel; 
     public static event Action<UIBranch> OnBackToAPopUp; 
 
     //Properties
@@ -70,7 +70,7 @@ public class UICancel
     private void ProcessCancelType(EscapeKey escapeKey)
     {
         if (escapeKey == EscapeKey.GlobalSetting) escapeKey = _globalEscapeSetting;
-
+        
         switch (escapeKey)
         {
             case EscapeKey.BackOneLevel:
@@ -86,12 +86,14 @@ public class UICancel
     {
         if (HasActivePopUps() && !_gameIsPaused)
         {
-            _lastHighlighted.MyBranch.StartOutTweenProcess(OutTweenType.Cancel);
+            _lastHighlighted.PlayCancelAudio();
+            _lastHighlighted.MyBranch.StartBranchExitProcess(OutTweenType.Cancel);
             ToNextPopUp();
         }
         else
         {
-            _activeBranch.StartOutTweenProcess(OutTweenType.Cancel, endOfCancelAction);
+            _activeBranch.MyParentBranch.LastSelected.PlayCancelAudio();
+            _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, endOfCancelAction);
         }
         _fromHotKey = false;    //Ensures HotKey rules don't apply next time we visit branch
     }
@@ -101,5 +103,5 @@ public class UICancel
     private void BackToHome() => InvokeCancelEvent(_currentHomeBranch);
     private void CancelTimedPopUp() => InvokeCancelEvent(_lastHighlighted.MyBranch);
     private void ToNextPopUp() => OnBackToAPopUp?.Invoke(_lastHighlighted.MyBranch);
-    private static void InvokeCancelEvent(UIBranch targetBranch) => OnBackOneLevel?.Invoke(targetBranch);
+    private static void InvokeCancelEvent(UIBranch targetBranch) => OnBackOrCancel?.Invoke(targetBranch);
 }

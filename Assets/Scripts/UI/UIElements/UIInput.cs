@@ -50,6 +50,7 @@ public class UIInput : MonoBehaviour
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
     public InputScheme ReturnScheme => _inputScheme;
     
+    //Main
     private void Awake()
     {
         _inputScheme.OnAwake();

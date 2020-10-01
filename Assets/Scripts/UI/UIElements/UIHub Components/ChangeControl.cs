@@ -35,9 +35,7 @@ public class ChangeControl
 
     //Properties
     private void SaveHighlighted(INode newNode) => _lastHighlighted = newNode;
-
     private void SaveActiveBranch(UIBranch newNode) => _activeBranch = newNode;
-
     private void SaveNoPopUps(bool noPopUps) => _noPopUps = noPopUps;
     private void SaveGameIsPaused(bool isPaused) => _gameIsPaused = isPaused;
 
