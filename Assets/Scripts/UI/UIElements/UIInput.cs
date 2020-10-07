@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -6,10 +9,14 @@ public class UIInput : MonoBehaviour
 {
     [SerializeField] private InputScheme _inputScheme;
     [SerializeField] private InGameOrInMenu _returnToGameControl;
+    [SerializeField] 
+    [ReorderableList] private List<HotKeys> _hotKeySettings;
+
 
     //Variables
     private bool _canStart, _inMenu, _gameIsPaused;
     private bool _noActivePopUps = true;
+    private bool _onHomeScreen = true;
     private UINode _lastHomeScreenNode;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
@@ -19,7 +26,7 @@ public class UIInput : MonoBehaviour
     //Events
     public static event Action OnChangeControls, OnCancelPressed, OnPausedPressed;
     public static event Action<SwitchType> OnSwitchGroupsPressed;
-    public static event Func<bool> HotKeyActivated, OnGameToMenuSwitchPressed;
+    public static event Func<bool> OnGameToMenuSwitchPressed;
     
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
@@ -48,6 +55,8 @@ public class UIInput : MonoBehaviour
     private void SaveOnStart() => _canStart = true;
     private void SaveGameIsPaused(bool gameIsPaused) => _gameIsPaused = gameIsPaused;
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
+    private void SaveOnHomeScreen (bool onHomeScreen) => _onHomeScreen = onHomeScreen;
+
     public InputScheme ReturnScheme => _inputScheme;
     
     //Main
@@ -58,7 +67,18 @@ public class UIInput : MonoBehaviour
         _menuToGameSwitching = new MenuAndGameSwitching();
         if (_inputScheme.InGameMenuSystem == InGameSystem.On)
             _menuToGameSwitching.StartWhere = _inputScheme.WhereToStartGame;
+        SetUpHotKeys();
     }
+    
+    private void SetUpHotKeys()
+    {
+        if (_hotKeySettings.Count == 0) return;
+        foreach (var hotKey in _hotKeySettings)
+        {
+            hotKey.OnAwake(_inputScheme);
+        }
+    }
+
 
     private void OnEnable()
     {
@@ -67,6 +87,8 @@ public class UIInput : MonoBehaviour
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
+        _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
+
     }
 
     private void Update()
@@ -79,7 +101,7 @@ public class UIInput : MonoBehaviour
             return;
         }
 
-        if (CanSwitchBetweenInGameAndMenu()) return;
+        if (CanSwitchBetweenInGameAndMenu() && _onHomeScreen) return;
 
         if (CheckIfHotKeyAllowed()) return;
 
@@ -110,7 +132,13 @@ public class UIInput : MonoBehaviour
         return true;
     }
 
-    private static bool CheckIfHotKeyAllowed() => HotKeyActivated?.Invoke() ?? false;
+    private bool CheckIfHotKeyAllowed()
+    {
+        if (!_hotKeySettings.Any(hotKey => hotKey.CheckHotKeys())) return false;
+        if(!_inMenu)
+            OnGameToMenuSwitchPressed?.Invoke();
+        return true;
+    }
 
     private bool CanDoCancel() => _inputScheme.PressedCancel();
 

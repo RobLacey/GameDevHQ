@@ -62,56 +62,27 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
     private enum StoreAndRestorePopUps { StoreAndRestore, Reset }
     
     //Properties
-    private void SaveActiveBranch(UIBranch newBranch)
-    {
-        if (newBranch != this && IsInternalBranch() && CanvasIsEnabled)
-        {
-            TurnOffChildBranches(this);
-        }
-    }
     private void SaveIfOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
     private void SaveHighlighted(INode newNode)
         => LastHighlighted = SearchThisBranchesNodes(newNode.ReturnNode, LastHighlighted.ReturnNode);
-    private void SaveSelected(INode newNode)
-    {
-        var currentSelection = SearchThisBranchesNodes(newNode.ReturnNode, LastSelected.ReturnNode);
-        if(LastSelected.ReturnNode != currentSelection)
-        {
-            LastSelected.DeactivateAndCancelChildren();
-        }
-        LastSelected = currentSelection;
-    }
-    private void SaveAllowKeys(bool obj) => _allowKeys = obj;
-    private void CheckForHomeBranch(UIBranch newBranch)
-    {
-        if(_branchType != BranchType.HomeScreen) return;
-        
-        if (newBranch != this)
-        {
-            LastSelected.DeactivateAndCancelChildren();
-        }
-        else if(_allowKeys)
-        {
-            MoveToBranchWithoutTween();
-        }
-    }
+    private void SaveSelected(INode newNode) 
+        => LastSelected = SearchThisBranchesNodes(newNode.ReturnNode, LastSelected.ReturnNode);
     public void SetNoTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
     public void IsTabBranch() => _branchType = BranchType.Standard;
 
     
     //Delegates
-    public static event Action<UIBranch> DoActiveBranch;
-    public Action _onStartPopUp; 
-    private Action _onFinishedTrigger;
-    private bool _allowKeys;
+    public static event Action<UIBranch> SetActiveBranch;
+    public Action OnStartPopUp; 
+    private Action OnFinishTweenCallBack;
 
     //InternalClasses
     [Serializable]
     private class BranchEvents
     {
-        public UnityEvent _onBranchEnter;
-        public UnityEvent _onBranchExit;
+        public UnityEvent OnBranchEnter;
+        public UnityEvent OnBranchExit;
     }
 
     private void Awake()
@@ -132,12 +103,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
         _uiDataEvents.SubscribeToOnHomeScreen(SaveIfOnHomeScreen);
         _uiDataEvents.SubscribeToHighlightedNode(SaveHighlighted);
         _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
-        _uiDataEvents.SubscribeToCurrentHomeScreen(CheckForHomeBranch);
-        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiControlsEvents.SubscribeSwitchGroups(SwitchBranchGroup);
-        _uiControlsEvents.SubscribeMoveToChildBranch(MoveToAChildBranch);
-        _uiControlsEvents.SubscribeTurnOffChildBranches(TurnOffChildBranches);
-        _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
     }
     
     private void Start() => SetNodesChildrenToThisBranch();
@@ -198,7 +164,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
         _tweenOnChange = true;
     }
     
-    private void SetAsActiveBranch() => DoActiveBranch?.Invoke(this);
+    private void SetAsActiveBranch() => SetActiveBranch?.Invoke(this);
 
     private void SwitchBranchGroup(SwitchType switchType)
     {
@@ -215,6 +181,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
 
     private UINode SearchThisBranchesNodes(UINode newNode, UINode defaultNode)
     {
+        if(!CanvasIsEnabled) return defaultNode; 
         for (var i = ThisGroupsUiNodes.Length - 1; i >= 0; i--)
         {
             if (ThisGroupsUiNodes[i] != newNode) continue;
@@ -223,11 +190,9 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
         return defaultNode;
     }
 
-    private void MoveToAChildBranch((UIBranch moveFrom, UIBranch moveToo) data)
+    public void MoveToAChildBranch(UIBranch moveToo)
     {
-        if(data.moveFrom != this) return;
-        
-        if (data.moveToo.IsInternalBranch())
+        if (moveToo.IsInternalBranch())
         {
             ToChildBranchProcess();
         }
@@ -235,25 +200,13 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
         {
             StartBranchExitProcess(OutTweenType.MoveToChild, ToChildBranchProcess);
         }
-        StopReturnFlashFromFullScreen(data);
-        void ToChildBranchProcess() => data.moveToo.MoveToThisBranch(this);
-    }
-
-    private static void StopReturnFlashFromFullScreen((UIBranch moveFrom, UIBranch moveToo) data)
-    {
-        if (data.moveToo._screenType == ScreenType.FullScreen)
-            data.moveFrom.LastSelected.SetNodeAsNotSelected_NoEffects();
-    }
-
-    public void TurnOffChildBranches(UIBranch branchToClose)
-    {
-        if(branchToClose != this || !CanvasIsEnabled) return;
-        StartBranchExitProcess(OutTweenType.Cancel);
-        LastSelected.DeactivateAndCancelChildren();
+        void ToChildBranchProcess() => moveToo.MoveToThisBranch(newParentBranch:this);
     }
 
     public void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null)
     {
+        if(!CanvasIsEnabled) return;
+
         if (WhenToMove == WhenToMove.AfterEndOfTween)
         {
             StartOutTween(outTweenType, endOfTweenCallback);
@@ -268,13 +221,13 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
     private void StartOutTween(OutTweenType outTweenType, Action endOfTweenCallBack = null)
     {
         SetUpBranchForTween(outTweenType);
-        _onFinishedTrigger = endOfTweenCallBack;
+        OnFinishTweenCallBack = endOfTweenCallBack;
         ProcessTween(outTweenType);
     }
 
     private void SetUpBranchForTween(OutTweenType outTweenType)
     {
-        _branchEvents?._onBranchExit.Invoke();
+        _branchEvents?.OnBranchExit.Invoke();
         if (_stayOn == IsActive.No || outTweenType == OutTweenType.Cancel)
             MyCanvasGroup.blocksRaycasts = false;
     }
@@ -282,8 +235,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
     private void ProcessTween(OutTweenType outTweenType)
     {
         _uiTweener.StopAllCoroutines();
-        void CallBack() => OutTweenCallback(outTweenType);
-        _uiTweener.DeactivateTweens(CallBack);
+        _uiTweener.DeactivateTweens(callBack:()=> OutTweenCallback(outTweenType));
     }
 
     private void OutTweenCallback(OutTweenType outTweenType)
@@ -291,20 +243,19 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
         if(_stayOn == IsActive.No || outTweenType == OutTweenType.Cancel)
             MyCanvas.enabled = false;
         
-        _onFinishedTrigger?.Invoke();
+        OnFinishTweenCallBack?.Invoke();
     }
 
-    private void ActivateInTweens() => _uiTweener.ActivateTweens(InTweenCallback);
+    private void ActivateInTweens() => _uiTweener.ActivateTweens(callBack: InTweenCallback);
 
     private void InTweenCallback()
     {
         if (_canActivateBranch)
         {
             LastHighlighted.SetNodeAsActive();
-            Branch.ActivateBlockRaycast();
         }
-        MyCanvasGroup.blocksRaycasts = true;
-        _branchEvents?._onBranchEnter.Invoke();
+        Branch.ActivateBlockRaycast();
+        _branchEvents?.OnBranchEnter.Invoke();
         _canActivateBranch = true;
     }
 
@@ -312,6 +263,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
     /// Call To to start any PopUps through I StartPopUp
     /// </summary>
     // ReSharper disable once UnusedMember.Global
-    public void StartPopUp() => _onStartPopUp?.Invoke();
+    public void StartPopUp() => OnStartPopUp?.Invoke();
 }
 

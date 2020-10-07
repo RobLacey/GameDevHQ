@@ -17,8 +17,6 @@ public partial class UIHub : MonoBehaviour
     [SerializeField]
     [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")]
     private List<UIBranch> _homeBranches;
-    [SerializeField] 
-    [ReorderableList] private List<HotKeys> _hotKeySettings;
 
     //Events
     public static event Action OnStart;
@@ -51,16 +49,6 @@ public partial class UIHub : MonoBehaviour
         var unused = new PopUpController();
         var unused3 = new UIHomeGroup(_homeBranches.ToArray());
         var unused2 = new UICancel(_inputScheme.GlobalCancelAction);
-        SetUpHotKeys();
-    }
-
-    private void SetUpHotKeys()
-    {
-        if (_hotKeySettings.Count == 0) return;
-        foreach (var hotKey in _hotKeySettings)
-        {
-            hotKey.OnAwake(_inputScheme);
-        }
     }
 
     private void OnEnable()

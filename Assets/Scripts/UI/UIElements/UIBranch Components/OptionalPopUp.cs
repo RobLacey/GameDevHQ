@@ -6,7 +6,7 @@ public class OptionalPopUp : BranchBase, IStartPopUp
     public OptionalPopUp(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
         _allBranches = branchList;
-        _myBranch._onStartPopUp = StartPopUp;
+        _myBranch.OnStartPopUp = StartPopUp;
         _uiPopUpEvents.SubscribeToNextNodeFromPopUp(RestoreLastPosition);
     }
     

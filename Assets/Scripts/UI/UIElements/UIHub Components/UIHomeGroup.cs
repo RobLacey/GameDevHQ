@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 /// <summary>
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
 /// is for keyboard or controller. Differ from internal branch groups as involve Branches not Nodes
@@ -18,11 +17,7 @@ public class UIHomeGroup
     private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private bool _onHomeScreen = true;
     private int _index;
-    private bool _afterStartUp;
     private UIBranch _lastActiveHomeBranch;
-
-    //Delegate
-    public static event Action<UIBranch> DoSetCurrentHomeBranch; // Subscribe To track if on Home Screen
     
     //Properties
     private void SaveOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
@@ -32,6 +27,7 @@ public class UIHomeGroup
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
         _uiControlsEvents.SubscribeSwitchGroups(SwitchHomeGroups);
+        HistoryTracker.OnHome += SetHomeGroup;
     }
 
     private void SwitchHomeGroups(SwitchType switchType)
@@ -53,7 +49,9 @@ public class UIHomeGroup
                 break;
         }
         _lastActiveHomeBranch = _homeGroup[_index];
-        DoSetCurrentHomeBranch?.Invoke(_homeGroup[_index]);
+        _homeGroup[_index].MoveToBranchWithoutTween();
+        
+         HistoryTracker.clearHistory?.Invoke();
     }
 
     private void SaveActiveBranch(UIBranch newBranch)
@@ -65,28 +63,30 @@ public class UIHomeGroup
 
     private void FindHomeScreenBranch(UIBranch newBranch)
     {
-        UIBranch homeBranch = newBranch;
+        UIBranch searchableBranch = newBranch;
         
-        while (homeBranch.MyParentBranch != homeBranch)
+        while (!searchableBranch.IsHomeScreenBranch())
         {
-            homeBranch = homeBranch.MyParentBranch;
+            searchableBranch = searchableBranch.MyParentBranch;
         }
-        SearchHomeBranchesAndSet(homeBranch);
+        SearchHomeBranchesAndSet(searchableBranch);
     }
 
     private void SearchHomeBranchesAndSet(UIBranch newBranch)
     {
-        var currentIndex = _index;
         for (var index = 0; index < _homeGroup.Length; index++)
         {
             if (_homeGroup[index] != newBranch) continue;
             _index = index;
-
-            if(_afterStartUp && currentIndex != _index) 
-                DoSetCurrentHomeBranch?.Invoke(_homeGroup[_index]);
-            
-            _afterStartUp = true;
             break;
+        }
+    }
+
+    private void SetHomeGroup()
+    {
+        foreach (var branch in _homeGroup)
+        {
+            branch.Branch.MoveBackToThisBranch(_homeGroup[_index]);
         }
     }
 }

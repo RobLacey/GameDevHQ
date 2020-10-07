@@ -1,31 +1,14 @@
-﻿using UnityEngine;
-
+﻿
 public class HomeScreenBranchBase: BranchBase
 {
-    public HomeScreenBranchBase(UIBranch branch) : base(branch)
-    {
-        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiControlsEvents.SubscribeFromHotKey(HotKeyActivated);
-    }
-
-    //Variables
-    private UIBranch _activeBranch;
-    private bool _canActivate;
+    public HomeScreenBranchBase(UIBranch branch) : base(branch) { }
     
     //Properties
-    private bool CannotTweenOnHome => _myBranch.TweenOnHome == IsActive.No && !_onHomeScreen;
-    private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
-    private void HotKeyActivated() //TODO Review
-    {
-        if (_onHomeScreen) return;
-        InvokeOnHomeScreen(true);
-    }
+    private bool CannotTweenOnHome => _myBranch.TweenOnHome == IsActive.No;
 
     protected override void SaveInMenu(bool inMenu)
     {
         _inMenu = inMenu;
-        _myBranch.MyCanvasGroup.blocksRaycasts = _inMenu;
-        ActivateBranchCanvas();
         ActivateBlockRaycast();
     }
 
@@ -36,16 +19,6 @@ public class HomeScreenBranchBase: BranchBase
     }
     
     //Main
-    protected override void SaveIfOnHomeScreen(bool currentlyOnHomeScreen)
-    {
-        if(currentlyOnHomeScreen && _onHomeScreen) return;
-        
-        base.SaveIfOnHomeScreen(currentlyOnHomeScreen);
-        
-        if (_onHomeScreen)
-            ResetHomeScreenBranch();
-    }
-
     protected override void SetUpBranchesOnStart(UIBranch startBranch)
     {
         _myBranch.MyCanvas.enabled = true;
@@ -62,34 +35,19 @@ public class HomeScreenBranchBase: BranchBase
     {
         _myBranch.ResetBranchesStartPosition();
         if(!_canStart || !_inMenu) return;
-
-        if (_onHomeScreen) _myBranch.SetNoTween();
-        
         ActivateBranchCanvas();
     }
 
     public override void MoveBackToThisBranch(UIBranch lastBranch)
     {
-        if (lastBranch != _myBranch) return;
-        
         base.MoveBackToThisBranch(lastBranch);
         if (CannotTweenOnHome)
             _myBranch.SetNoTween();
         
+        if(lastBranch != _myBranch)
+            _myBranch.DontSetBranchAsActive();
         _myBranch.MoveToThisBranch();
         InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
-    }
-
-    
-    private void ResetHomeScreenBranch()
-    {
-        if (_activeBranch == _myBranch || _myBranch.CanvasIsEnabled) return;
-        
-        if (_myBranch.TweenOnHome == IsActive.No)
-            _myBranch.SetNoTween();
-
-        _myBranch.DontSetBranchAsActive();
-        _myBranch.MoveToThisBranch();
     }
 }
 

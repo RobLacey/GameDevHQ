@@ -52,8 +52,10 @@ public abstract class BranchBase
 
     public virtual void MoveBackToThisBranch(UIBranch lastBranch)
     {
-        _myBranch.LastSelected.SetNodeAsNotSelected_NoEffects();
-        _myBranch.MyParentBranch.LastSelected.ThisNodeIsSelected();
+        if(lastBranch == _myBranch)
+        {
+            _myBranch.MyParentBranch.LastSelected.ThisNodeIsSelected();
+        }    
     }
     
     public void ActivateBranchCanvas()
@@ -64,11 +66,7 @@ public abstract class BranchBase
     public void ActivateBlockRaycast()
     {
         if(!_canStart) return; 
-        if(_myBranch.IsOptional() && _noResolvePopUps) //Check here
-        {
-            Debug.Log(_myBranch);
-            _myBranch.MyCanvasGroup.blocksRaycasts = _inMenu;
-        }    
+        _myBranch.MyCanvasGroup.blocksRaycasts = _inMenu;
     }
 
     protected virtual void ClearBranchForFullscreen(UIBranch ignoreThisBranch = null)
@@ -80,7 +78,7 @@ public abstract class BranchBase
 
     protected virtual void CanGoToFullscreen()
     {
-        if (_myBranch.ScreenType != ScreenType.FullScreen || !_onHomeScreen) return;
+        if (_myBranch.ScreenType != ScreenType.FullScreen) return;
         InvokeDoClearScreen(_myBranch);
         InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
     }

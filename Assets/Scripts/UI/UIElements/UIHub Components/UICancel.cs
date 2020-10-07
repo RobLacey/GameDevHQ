@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 /// <summary>
 /// Class handles all UI cancel behaviour from cancel type to context sensitive cases
@@ -17,9 +16,7 @@ public class UICancel
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
-    private bool _fromHotKey;
     private UIBranch _currentHomeBranch;
-    private INode _lastSelected;
     private INode _lastHighlighted;
     private UIBranch _activeBranch;
     private bool _gameIsPaused;
@@ -31,24 +28,17 @@ public class UICancel
     public static event Action<UIBranch> OnBackToAPopUp; 
 
     //Properties
-    private void SaveSelected(INode newNode) => _lastSelected = newNode;
     private void SaveLastHighlighted(INode newNode) => _lastHighlighted = newNode;
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
-    private void SaveFromHotKey() => _fromHotKey = true;
-    private void SaveCurrentHomeBranch(UIBranch currentHomeBranch) => _currentHomeBranch = currentHomeBranch;
     private void SaveNoResolvePopUps(bool noResolvePopUps) => _noResolvePopUps = noResolvePopUps;
     private void SaveNoPopUps(bool noPopUps) => _noPopUps = noPopUps;
     private void SaveGameIsPaused(bool isPaused) => _gameIsPaused = isPaused;
 
     private void OnEnable()
     {
-        _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiDataEvents.SubscribeToCurrentHomeScreen(SaveCurrentHomeBranch);
-        _uiDataEvents.SubscribeSetUpBranchesAtStart(SaveCurrentHomeBranch);
         _uiDataEvents.SubscribeToHighlightedNode(SaveLastHighlighted);
         _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
-        _uiControlsEvents.SubscribeFromHotKey(SaveFromHotKey);
         _uiControlsEvents.SubscribeCancelOrBackButtonPressed(ProcessCancelType);
         _uiControlsEvents.SubscribeOnCancel(CancelPressed);
         _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
@@ -64,7 +54,7 @@ public class UICancel
             return;
         }
 
-        ProcessCancelType(_fromHotKey ? EscapeKey.BackToHome : _activeBranch.EscapeKeySetting);
+        ProcessCancelType(_activeBranch.EscapeKeySetting);
     }
 
     private void ProcessCancelType(EscapeKey escapeKey)
@@ -95,12 +85,11 @@ public class UICancel
             _activeBranch.MyParentBranch.LastSelected.PlayCancelAudio();
             _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, endOfCancelAction);
         }
-        _fromHotKey = false;    //Ensures HotKey rules don't apply next time we visit branch
     }
 
     private bool HasActivePopUps() => !_noPopUps && _lastHighlighted.MyBranch.IsAPopUpBranch();
-    private void BackOneLevel() => InvokeCancelEvent(_lastSelected.MyBranch);
-    private void BackToHome() => InvokeCancelEvent(_currentHomeBranch);
+    private static void BackOneLevel() => HistoryTracker.backOneLevel.Invoke();
+    private static void BackToHome() => HistoryTracker.clearHome.Invoke();
     private void CancelTimedPopUp() => InvokeCancelEvent(_lastHighlighted.MyBranch);
     private void ToNextPopUp() => OnBackToAPopUp?.Invoke(_lastHighlighted.MyBranch);
     private static void InvokeCancelEvent(UIBranch targetBranch) => OnBackOrCancel?.Invoke(targetBranch);

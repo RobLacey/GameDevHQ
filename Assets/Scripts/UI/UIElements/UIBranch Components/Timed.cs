@@ -5,7 +5,7 @@ public class Timed : BranchBase, IStartPopUp
 {
     public Timed(UIBranch branch) : base(branch)
     {
-        _myBranch._onStartPopUp = StartPopUp;
+        _myBranch.OnStartPopUp = StartPopUp;
     }
 
     //Variables

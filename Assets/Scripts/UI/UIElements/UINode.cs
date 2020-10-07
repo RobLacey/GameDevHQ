@@ -77,6 +77,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     //Properties & Enums
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
+    public bool DontStoreNodeInHistory => IsToggleGroup || IsToggleNotLinked;
     private bool IsCancelOrBack => _buttonFunction == ButtonFunction.CancelOrBack;
     private bool IsSelected { get; set; }
     private Slider AmSlider { get; set; }
@@ -165,7 +166,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _swapImageOrText.OnAwake(_uiActions, _enabledFunctions);
         _sizeAndPos.OnAwake(_uiActions, _enabledFunctions, rectTransform);
         _tooltips.OnAwake(_uiActions, _enabledFunctions, rectTransform);
-        _navigation.OnAwake(_uiActions, _enabledFunctions, MyBranch);
+        _navigation.OnAwake(_uiActions, _enabledFunctions, this);
         _audio.OnAwake(_uiActions, _enabledFunctions);
     }
 
@@ -256,6 +257,9 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             Activate();
         }
         SetSlider(IsSelected);
+        
+        HistoryTracker.selected.Invoke(this);
+
     }
     
     private void Deactivate() => SetSelectedStatus(false, DoPress);
@@ -270,20 +274,20 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     
     public void PlayCancelAudio()
     {
-        Debug.Log(this);
+        //Debug.Log(this);
         _uiActions?._canPlayCancelAudio.Invoke();
     }
 
-    public void DeactivateAndCancelChildren()
+    public void DeactivateNode()
     {
         if (!IsSelected || IsToggleGroup || IsToggleNotLinked) return;
         Deactivate();
         SetNotHighlighted();
         
-        if (HasChildBranch)
-        {
-            HasChildBranch.TurnOffChildBranches(HasChildBranch);
-        }
+        // if (HasChildBranch)
+        // {
+        //     //HasChildBranch.TurnOffChildBranches(HasChildBranch);
+        // }
     }
     
     private void SetAsHighlighted() 
@@ -313,7 +317,10 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         AmSlider.interactable = IsSelected;
     }
     
-    public void ThisNodeIsSelected() => DoSelected?.Invoke(this); 
+    public void ThisNodeIsSelected()
+    {
+        DoSelected?.Invoke(this);
+    }
 
     public void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this); 
 }

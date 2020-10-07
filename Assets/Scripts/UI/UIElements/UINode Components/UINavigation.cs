@@ -30,16 +30,10 @@ public class UINavigation : NodeFunctionBase
 
     //Variables
     private UIBranch _myBranch;
-    private UIBranch _activeBranch;
-    private UIDataEvents _uiDataEvents = new UIDataEvents();
-
-    //Events
-    public static Action<(UIBranch moveFrom, UIBranch moveToo)> onMoveToBranch;
-    public static Action<UIBranch> onTurnOffChildBranches;
+    private INode _myNode;
 
     //Properties
     protected override bool CanBeHighlighted() => false;
-    private void ActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
     protected override bool CanBePressed() => !(_childBranch is null);
     protected override bool FunctionNotActive() => !CanActivate;
     protected override void SavePointerStatus(bool pointerOver) { }
@@ -49,12 +43,12 @@ public class UINavigation : NodeFunctionBase
         set => _childBranch = value;
     }
 
-    public void OnAwake(UiActions uiActions, Setting activeFunctions, UIBranch myBranch)
+    public void OnAwake(UiActions uiActions, Setting activeFunctions, UINode myNode)
     {
         base.OnAwake(uiActions, activeFunctions);
         CanActivate = (_enabledFunctions & Setting.NavigationAndOnClick) != 0;
-        _myBranch = myBranch;
-        _uiDataEvents.SubscribeToActiveBranch(ActiveBranch);
+        _myNode = myNode;
+        _myBranch = _myNode.MyBranch;
     }
     
     public void HandleAsSlider()
@@ -97,29 +91,26 @@ public class UINavigation : NodeFunctionBase
 
     private void HandleMove(UINode moveTo) => moveTo.CheckIfMoveAllowed(_moveDirection);
 
-    private protected override void ProcessPress()
+    private protected override void ProcessPress() //TODO REJIG
     {
         if(FunctionNotActive() || !CanBePressed() || _childBranch is null) return;
-        
-        if (_isSelected)
-        {
-            onMoveToBranch?.Invoke((_myBranch, _childBranch));
-        }
-        else
-        {
-            onTurnOffChildBranches?.Invoke(_childBranch);
-        }
+
+        if (!_isSelected) return;
+        StopReturnFlashFromFullScreen();
+        _myBranch.MoveToAChildBranch(_childBranch);
+    }
+    
+    private void StopReturnFlashFromFullScreen()
+    {
+        if (_childBranch.ScreenType == ScreenType.FullScreen)
+            _myNode.SetNodeAsNotSelected_NoEffects();
     }
 
     private protected override void ProcessDisabled()
     {
         if(FunctionNotActive()) return;
-        
-        if (_activeBranch.MyParentBranch == _myBranch)
-        {
-            _myBranch.MoveToThisBranch();
-        }
-        onTurnOffChildBranches?.Invoke(_childBranch);
+        _myBranch.MoveToBranchWithoutTween();
+        HistoryTracker.clearDisabledChildren?.Invoke(_myBranch.LastSelected.ReturnNode);
     }
 
     public void MoveToNextFreeNode()

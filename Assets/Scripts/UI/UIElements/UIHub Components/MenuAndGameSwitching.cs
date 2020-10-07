@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public class MenuAndGameSwitching
 {
@@ -8,7 +9,7 @@ public class MenuAndGameSwitching
     private UIDataEvents _uiDataEvents;
     private UIControlsEvents _uiControlsEvents;
     private UIPopUpEvents _uiPopUpEvents;
-    private bool _onHomeScreen = true;
+    // private bool _onHomeScreen = true;
     private bool _noPopUps = true;
     private bool _wasInGame;
 
@@ -17,7 +18,7 @@ public class MenuAndGameSwitching
 
     //Properties
     private bool InTheMenu { get; set; } = true;
-    private void SaveOnHomeScreen (bool onHomeScreen) => _onHomeScreen = onHomeScreen;
+    // private void SaveOnHomeScreen (bool onHomeScreen) => _onHomeScreen = onHomeScreen;
     public StartInMenu StartWhere { get; set; }
 
     private void SaveNoPopUps(bool noActivePopUps)
@@ -39,21 +40,14 @@ public class MenuAndGameSwitching
     {
         _uiDataEvents.SubscribeToOnStart(StartUp);
         _uiDataEvents.SubscribeToGameIsPaused(WhenTheGameIsPaused);
-        _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
+        //_uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
-        _uiControlsEvents.SubscribeFromHotKey(HotKeyActivated);
         _uiControlsEvents.SubscribeMenuGameSwitching(CheckForActivation);
     }
     
-    private void HotKeyActivated() //TODO Review
-    {
-        if (!_onHomeScreen || InTheMenu) return;
-        SwitchBetweenGameAndMenu();
-    }
-
     private bool CheckForActivation()
     {
-        if (!_onHomeScreen || !_noPopUps) return false;
+        if (/*!_onHomeScreen || */!_noPopUps) return false;
         SwitchBetweenGameAndMenu();
         return true;
     }

@@ -5,7 +5,7 @@ public class ResolvePopUp : BranchBase, IStartPopUp
     public ResolvePopUp(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
         _allBranches = branchList;
-        _myBranch._onStartPopUp = StartPopUp;
+        _myBranch.OnStartPopUp = StartPopUp;
         _uiPopUpEvents.SubscribeToNextNodeFromPopUp(RestoreLastPosition);
     }    
 

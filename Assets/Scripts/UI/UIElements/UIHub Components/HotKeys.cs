@@ -11,11 +11,9 @@ public class HotKeys
     private UIBranch _myBranch;
     
     //Variables
-    private UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private UIDataEvents _uiDataEvents = new UIDataEvents();
     private bool _hasParentNode;
-    private bool _notHomeScreenHotKey;
     private bool _gameIsPaused;
     private bool _noActivePopUps = true;
     private INode _parentNode;
@@ -24,14 +22,10 @@ public class HotKeys
     //Properties
     private void SaveIsPaused(bool isPaused) => _gameIsPaused = isPaused;
     private void SaveNoActivePopUps(bool noaActivePopUps) => _noActivePopUps = noaActivePopUps;
-
-    //Events
-    public static event Action FromHotKey;
     
     public void OnAwake(InputScheme inputScheme)
     {
         _inputScheme = inputScheme;
-        _notHomeScreenHotKey = !_myBranch.IsHomeScreenBranch();
         IsAllowedType();
         OnEnable();
     }
@@ -49,7 +43,6 @@ public class HotKeys
     public void OnEnable()
     {
         _uiDataEvents.SubscribeToGameIsPaused(SaveIsPaused);
-        _uiControlsEvents.SubscribeHotKeyActivation(CheckHotKeys);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
     }
 
@@ -67,8 +60,8 @@ public class HotKeys
         {
             GetParentNode();
         }
-        StartThisHotKeyBranch();
         SetHotKeyAsSelectedActions();
+        StartThisHotKeyBranch();
     }
 
     private void GetParentNode()
@@ -80,20 +73,14 @@ public class HotKeys
     
     private void StartThisHotKeyBranch()
     {
-        EnsureAlwaysReturnToHomeScreen();
         _myBranch.MoveToThisBranch();
+        HistoryTracker.setFromHotKey?.Invoke(_myBranch, _parentNode);
     }
 
     private void SetHotKeyAsSelectedActions()
-    {
+    { 
         _parentNode.ThisNodeIsSelected();
         _parentNode.ThisNodeIsHighLighted();
         _parentNode.SetNodeAsSelected_NoEffects();
-    }
-
-    private void EnsureAlwaysReturnToHomeScreen()
-    {
-        if (_notHomeScreenHotKey)
-             FromHotKey?.Invoke();  //Ensures back to home is used on cancel
     }
 }

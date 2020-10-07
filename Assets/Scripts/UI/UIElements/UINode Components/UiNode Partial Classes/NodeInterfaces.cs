@@ -12,7 +12,7 @@ public interface INode
     UIBranch HasChildBranch { get; }
     UINode ReturnNode { get; }
     void SetNodeAsActive();
-    void DeactivateAndCancelChildren();
+    void DeactivateNode();
     void SetNodeAsSelected_NoEffects();
     void SetNodeAsNotSelected_NoEffects();
     void ThisNodeIsSelected();

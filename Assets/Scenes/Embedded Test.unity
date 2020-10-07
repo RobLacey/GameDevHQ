@@ -3838,10 +3838,10 @@ MonoBehaviour:
       m_Calls: []
   _groupsList: []
   _branchEvents:
-    _onBranchEnter:
+    OnBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    _onBranchExit:
+    OnBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &246213781
@@ -4071,10 +4071,10 @@ MonoBehaviour:
       m_Calls: []
   _groupsList: []
   _branchEvents:
-    _onBranchEnter:
+    OnBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    _onBranchExit:
+    OnBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &274292516
@@ -11072,10 +11072,10 @@ MonoBehaviour:
       m_Calls: []
   _groupsList: []
   _branchEvents:
-    _onBranchEnter:
+    OnBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    _onBranchExit:
+    OnBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &620683491
@@ -12854,6 +12854,7 @@ GameObject:
   m_Component:
   - component: {fileID: 663133645}
   - component: {fileID: 663133644}
+  - component: {fileID: 663133646}
   m_Layer: 0
   m_Name: Test Runner
   m_TagString: Untagged
@@ -12972,6 +12973,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &663133646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 663133643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfa07d6a628b4e53ae05e94bbcf60d3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _history: []
+  _lastHighlighted: {fileID: 0}
+  _lastSelected: {fileID: 0}
+  _activeBranch: {fileID: 0}
 --- !u!1 &669941710
 GameObject:
   m_ObjectHideFlags: 0
@@ -20234,10 +20251,10 @@ MonoBehaviour:
       m_Calls: []
   _groupsList: []
   _branchEvents:
-    _onBranchEnter:
+    OnBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    _onBranchExit:
+    OnBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1064311446
@@ -22333,10 +22350,10 @@ MonoBehaviour:
       m_Calls: []
   _groupsList: []
   _branchEvents:
-    _onBranchEnter:
+    OnBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    _onBranchExit:
+    OnBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1248739662
@@ -23530,10 +23547,10 @@ MonoBehaviour:
       m_Calls: []
   _groupsList: []
   _branchEvents:
-    _onBranchEnter:
+    OnBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    _onBranchExit:
+    OnBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1396258920
@@ -25461,10 +25478,10 @@ MonoBehaviour:
       m_Calls: []
   _groupsList: []
   _branchEvents:
-    _onBranchEnter:
+    OnBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    _onBranchExit:
+    OnBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1478859610
@@ -29115,10 +29132,10 @@ MonoBehaviour:
       m_Calls: []
   _groupsList: []
   _branchEvents:
-    _onBranchEnter:
+    OnBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    _onBranchExit:
+    OnBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1712214355
@@ -29845,10 +29862,10 @@ MonoBehaviour:
       m_Calls: []
   _groupsList: []
   _branchEvents:
-    _onBranchEnter:
+    OnBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    _onBranchExit:
+    OnBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1743252784
@@ -33208,10 +33225,10 @@ MonoBehaviour:
       m_Calls: []
   _groupsList: []
   _branchEvents:
-    _onBranchEnter:
+    OnBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    _onBranchExit:
+    OnBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &2018220712
@@ -38148,6 +38165,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
+      propertyPath: _hotKeySettings.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
       propertyPath: _mainControlType
       value: 3
       objectReference: {fileID: 0}
@@ -38267,6 +38289,41 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 347a3b76907f353408c0de665cac7c85,
         type: 2}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[3]._hotKeyInput
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[2]._hotKeyInput
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[1]._hotKeyInput
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[0]._myBranch
+      value: 
+      objectReference: {fileID: 616071579}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[1]._myBranch
+      value: 
+      objectReference: {fileID: 375905088}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[2]._myBranch
+      value: 
+      objectReference: {fileID: 634434330}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[3]._myBranch
+      value: 
+      objectReference: {fileID: 1154447021}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d4d4ae77ac7463a40afa29655e938f81, type: 3}
 --- !u!114 &6446246268114113608
