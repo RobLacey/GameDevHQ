@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 public abstract class BranchBase
 {
@@ -27,7 +26,15 @@ public abstract class BranchBase
     private void SaveNoResolvePopUps(bool activeResolvePopUps) => _noResolvePopUps = activeResolvePopUps;
     private void SaveIfGamePaused(bool paused) => _gameIsPaused = paused;
     protected virtual void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
-    protected virtual void SaveIfOnHomeScreen(bool currentlyOnHomeScreen) => _onHomeScreen = currentlyOnHomeScreen;
+    protected virtual void SaveIfOnHomeScreen(bool currentlyOnHomeScreen)
+    {
+        _onHomeScreen = currentlyOnHomeScreen;
+        if (_myBranch.IsHomeScreenBranch() && _onHomeScreen && !_myBranch.CanvasIsEnabled)
+        {
+            ActivateBranchCanvas();
+            ActivateBlockRaycast();
+        }
+    }
     protected virtual void SaveOnStart() => _canStart = true;
     
     private void OnEnable()

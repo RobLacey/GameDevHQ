@@ -9,9 +9,9 @@ public class HistoryTracker : MonoBehaviour
     [SerializeField] private UINode _lastHighlighted;
     [SerializeField] private UINode _lastSelected;
     [SerializeField] private UIBranch _activeBranch;
-   // [SerializeField] private bool _onHomeScreen = true;
+    [SerializeField] private UINode _hotKeyParent;
 
-    UIDataEvents _uiDataEvents = new UIDataEvents();
+    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private bool _canStart;
     public static Action<UINode> selected;
     public static Action<UINode> clearDisabledChildren;
@@ -19,156 +19,164 @@ public class HistoryTracker : MonoBehaviour
     public static Action backOneLevel;
     public static Action clearHome;
     public static Action clearHistory;
-   // private UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     public static event Action OnHome;
-    private INode _hotKeyParent;
     
     private void OnEnable()
     {
         selected += SetSelected;
-        clearHome += ToHome;
+        clearHome += SetToHome;
         backOneLevel += BackOneLevel;
-        clearHistory += ClearHistory;
-        clearDisabledChildren += ClearDisableChildren;
+        clearHistory += ReverseAndClearHistory;
+        clearDisabledChildren += CloseAllChildNodesAfterPoint;
         setFromHotKey += SetFromHotkey;
         _uiDataEvents.SubscribeToHighlightedNode(SetLastHighlighted);
         _uiDataEvents.SubscribeToActiveBranch(SetActiveBranch);
         _uiDataEvents.SubscribeToOnStart(SetCanStart);
-        //_uiControlsEvents.SubscribeFromHotKey(ClearHistory);
-
-       // _uiDataEvents.SubscribeToOnHomeScreen(SetIfOnHomeScreen);
     }
 
-    private void SetLastHighlighted(INode node)
-    {
-        _lastHighlighted = node.ReturnNode;
-    }
+    private void SetLastHighlighted(INode node) => _lastHighlighted = node.ReturnNode;
+    private void SetActiveBranch(UIBranch branch) => _activeBranch = branch;
+    private void SetCanStart() => _canStart = true;
 
-    // void SetIfOnHomeScreen(bool onHomeScreen)
-    // {
-    //     _onHomeScreen = onHomeScreen;
-    // }
-    
+    //Main
     private void SetSelected(INode node)
     {
         if(!_canStart) return;
-        if(node.ReturnNode.DontStoreNodeInHistory) return;
-        if (_lastSelected is null)
-        {
-            _lastSelected = node.ReturnNode;
-        }
+        if(node.ReturnNode.DontStoreTheseNodeTypesInHistory) return;
+        SetNullLastSelected(node);
+        _hotKeyParent = null;
         
         if (_history.Contains(node.ReturnNode))
         {
-            var delete = _history.SkipWhile(x => x != node.ReturnNode).ToArray();
-            
-            foreach (var t in delete)
-            {
-                t.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
-                t.DeactivateNode();
-                _history.Remove(t);
-            }
-
-            if(_history.Count > 0)
-            {
-                _lastSelected = _history.Last();
-            }
-            else
-            {
-                _lastSelected = node.ReturnNode;
-            }
+            CloseAllChildNodesAfterPoint(node);
+            SetLastSelectedWhenNoHistory(node);
         }
         else
         {
-            if (_lastSelected.HasChildBranch != node.ReturnNode.MyBranch)
-            {
-                Debug.Log("Here");
-                ClearHistory();
-            }
+            SelectedNodeInDifferentBranch(node);
             _history.Add(node.ReturnNode);
             _lastSelected = node.ReturnNode;
         }
     }
 
-    private void BackOneLevel()
+    private void SelectedNodeInDifferentBranch(INode node)
     {
-        _history.Last().HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
-        _history.Last().DeactivateNode();
-        if (_hotKeyParent != null)
-        {
-            _hotKeyParent.SetNodeAsNotSelected_NoEffects();
-            _hotKeyParent = null;
-        }
-        if(_history.Last().MyBranch.IsHomeScreenBranch())
-        {
-            Debug.Log("On Home");
-            OnHome?.Invoke();
-        }
-        _history.Last().MyBranch.Branch.MoveBackToThisBranch(_history.Last().MyBranch); //TODO may not need parameter
-        _history.Remove(_history.Last());
-        if(_history.Count > 0) _lastSelected = _history.Last();
+        if (_lastSelected.HasChildBranch != node.ReturnNode.MyBranch)
+            ReverseAndClearHistory();
     }
 
-    private void ToHome()
+    private void SetNullLastSelected(INode node)
     {
-        if(_history.Count > 0)
-        {
-            ClearHistory();
-            OnHome?.Invoke();
-        }        
+        if (_lastSelected is null)
+            _lastSelected = node.ReturnNode;
     }
 
-    private void ClearHistory()
+    private void CloseAllChildNodesAfterPoint(INode newNode)
     {
-        _history.Reverse();
-        foreach (var uiNode in _history)
+        if (!_history.Contains(newNode.ReturnNode)) return;
+
+        foreach (var uiNode in _history.SkipWhile(node => node != node.ReturnNode).ToArray())
         {
             uiNode.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
-            if (uiNode.HasChildBranch.IsInternalBranch())
-            {
-                _history.Remove(uiNode);
-                _history.Reverse();
-                return;
-            }
             uiNode.DeactivateNode();
+            _history.Remove(uiNode);
         }
+    }
+
+    private void SetLastSelectedWhenNoHistory(INode node) 
+        => _lastSelected = _history.Count > 0 ? _history.Last() : node.ReturnNode;
+
+    private void BackOneLevel()
+    {
+        var lastNode = _history.Last();
+        DoMoveBackOneLevel(lastNode);
+        IfLastSelectedIsOnHomeScreen(lastNode);
+        if(_history.Count > 0) 
+            _lastSelected = _history.Last();
+    }
+
+    private void DoMoveBackOneLevel(UINode lastNode)
+    {
+        lastNode.MyBranch.Branch.MoveBackToThisBranch(lastNode.MyBranch);
+        lastNode.DeactivateNode();
+        if(_hotKeyParent) _hotKeyParent.DeactivateNode();
+        _hotKeyParent = null;
+    }
+
+
+    private void IfLastSelectedIsOnHomeScreen(UINode lastNode)
+    {
+        if (lastNode.MyBranch.IsHomeScreenBranch())
+        {
+            SetToHome();
+        }
+        else
+        {
+            _history.Remove(lastNode);
+        }
+    }
+
+    private void SetToHome()
+    {
+        if (_history.Count <= 0) return;
+        ReverseAndClearHistory();
+        OnHome?.Invoke();
+    }
+
+    private void ReverseAndClearHistory()
+    {
+        _history.Reverse();
+        if (HistoryProcessed()) return;
         _history.Clear();
     }
 
-    private void ClearDisableChildren(INode node)
+    private bool HistoryProcessed()
     {
-        if (_history.Contains(node.ReturnNode))
+        foreach (var uiNode in _history)
         {
-            var delete = _history.SkipWhile(x => x != node.ReturnNode).ToArray();
-            
-            foreach (var t in delete)
-            {
-                t.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
-                t.DeactivateNode();
-                _history.Remove(t);
-            }
+            uiNode.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
+            uiNode.DeactivateNode();
+            if (IfNodeIsInternalBranch(uiNode)) return true;
         }
+        return false;
     }
 
-    private void SetFromHotkey(UIBranch branch, INode node)
+    private bool IfNodeIsInternalBranch(UINode uiNode)
     {
-        _hotKeyParent = node;
-        ClearHistory();
-        var temp = branch;
-        while (!temp.IsHomeScreenBranch())
-        {
-            temp = temp.MyParentBranch;
-        }
+        if (!uiNode.HasChildBranch.IsInternalBranch()) return false;
+        _history.Remove(uiNode);
+        _history.Reverse();
+        return true;
+    }
 
-        _lastSelected = temp.LastSelected.ReturnNode;
+    private void SetFromHotkey(UIBranch branch, INode parentNode)
+    {
+        HotKeyOnHomeScreen(branch);
+        IfLastKeyPressedWasHotkey(parentNode);
+        FindHomeScreenRoot(branch);
+        _history.Clear();
         _history.Add(_lastSelected);
     }
 
-
-    private void SetActiveBranch(UIBranch branch)
+    private static void HotKeyOnHomeScreen(UIBranch branch)
     {
-        _activeBranch = branch;
+        if (branch.ScreenType == ScreenType.FullScreen) return;
+        OnHome?.Invoke();
     }
 
-    private void SetCanStart() => _canStart = true;
+    private void IfLastKeyPressedWasHotkey(INode parentNode)
+    {
+        if (_hotKeyParent)
+            _hotKeyParent.DeactivateNode();
+        _hotKeyParent = parentNode.ReturnNode;
+    }
+
+    private void FindHomeScreenRoot(UIBranch branch)
+    {
+        while (!branch.IsHomeScreenBranch())
+        {
+            branch = branch.MyParentBranch;
+        }
+        _lastSelected = branch.LastSelected.ReturnNode;
+    }
 }

@@ -17,10 +17,12 @@ public class HotKeys
     private bool _gameIsPaused;
     private bool _noActivePopUps = true;
     private INode _parentNode;
+    private UIBranch _activeBranch;
     private InputScheme _inputScheme;
     
     //Properties
     private void SaveIsPaused(bool isPaused) => _gameIsPaused = isPaused;
+    private void SaveActiveBranch(UIBranch branch) => _activeBranch = branch;
     private void SaveNoActivePopUps(bool noaActivePopUps) => _noActivePopUps = noaActivePopUps;
     
     public void OnAwake(InputScheme inputScheme)
@@ -43,6 +45,7 @@ public class HotKeys
     public void OnEnable()
     {
         _uiDataEvents.SubscribeToGameIsPaused(SaveIsPaused);
+        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
     }
 
@@ -60,8 +63,7 @@ public class HotKeys
         {
             GetParentNode();
         }
-        SetHotKeyAsSelectedActions();
-        StartThisHotKeyBranch();
+        _activeBranch.StartBranchExitProcess(OutTweenType.Cancel,StartThisHotKeyBranch);
     }
 
     private void GetParentNode()
@@ -73,6 +75,7 @@ public class HotKeys
     
     private void StartThisHotKeyBranch()
     {
+        SetHotKeyAsSelectedActions();
         _myBranch.MoveToThisBranch();
         HistoryTracker.setFromHotKey?.Invoke(_myBranch, _parentNode);
     }

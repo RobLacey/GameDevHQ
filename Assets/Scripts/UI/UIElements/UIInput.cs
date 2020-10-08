@@ -95,14 +95,14 @@ public class UIInput : MonoBehaviour
     {
         if (!_canStart) return;
         
-        if (CanPauseGame())
-        {
-            PausedPressedActions();
-            return;
-        }
-
+         if (CanPauseGame())
+         {
+             PausedPressedActions();
+             return;
+         }
+        
         if (CanSwitchBetweenInGameAndMenu() && _onHomeScreen) return;
-
+        
         if (CheckIfHotKeyAllowed()) return;
 
         if (_inMenu) InMenuControls();
@@ -115,15 +115,18 @@ public class UIInput : MonoBehaviour
             WhenCancelPressed();
             return;
         }
-
-        if (CanSwitchBranches() && SwitchGroupProcess()) return;
+        
+         if (CanSwitchBranches() && SwitchGroupProcess()) return;
 
         OnChangeControls?.Invoke();
     }
 
     private bool CanPauseGame() => _inputScheme.PressPause();
 
-    private static void PausedPressedActions() => OnPausedPressed?.Invoke();
+    private static void PausedPressedActions()
+    {
+        OnPausedPressed?.Invoke();
+    }
 
     private bool CanSwitchBetweenInGameAndMenu()
     {
@@ -144,14 +147,14 @@ public class UIInput : MonoBehaviour
 
     private void WhenCancelPressed()
     {
-        if (CanEnterPauseWithNothingSelected() || CanUnpauseGame())
-        {
+         if (CanEnterPauseWithNothingSelected() || CanUnpauseGame())
+         {
             PausedPressedActions();
-        }
-        else
-        {
-            OnCancelPressed?.Invoke();
-        }
+         }
+         else
+         {
+             OnCancelPressed?.Invoke();
+         }
     }
 
     private bool CanUnpauseGame() => _gameIsPaused && _activeBranch.IsPauseMenuBranch();

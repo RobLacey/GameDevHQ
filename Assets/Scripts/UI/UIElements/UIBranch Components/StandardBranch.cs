@@ -17,7 +17,6 @@ public class StandardBranchBase : BranchBase
     public override void MoveBackToThisBranch(UIBranch lastBranch)
     {
         if (lastBranch != _myBranch) return;
-        
         base.MoveBackToThisBranch(lastBranch);
         
         if (_myBranch.CanvasIsEnabled)

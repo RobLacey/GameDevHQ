@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
+using System.Collections.Generic;
 using NaughtyAttributes;
 
 [RequireComponent(typeof(RectTransform))]
@@ -69,6 +70,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private UIControlsEvents _uiControlsEvents;
     private INode _lastHighlighted;
     private UiActions _uiActions;
+    private List<NodeFunctionBase> _list;
 
     //Events
     public static event Action<EscapeKey> DoCancelButtonPressed;
@@ -77,7 +79,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     //Properties & Enums
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
-    public bool DontStoreNodeInHistory => IsToggleGroup || IsToggleNotLinked;
+    public bool DontStoreTheseNodeTypesInHistory => IsToggleGroup || IsToggleNotLinked;
     private bool IsCancelOrBack => _buttonFunction == ButtonFunction.CancelOrBack;
     private bool IsSelected { get; set; }
     private Slider AmSlider { get; set; }
@@ -257,9 +259,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             Activate();
         }
         SetSlider(IsSelected);
-        
-        HistoryTracker.selected.Invoke(this);
-
+        HistoryTracker.selected?.Invoke(this);
     }
     
     private void Deactivate() => SetSelectedStatus(false, DoPress);

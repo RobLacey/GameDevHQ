@@ -16,7 +16,6 @@ public class UICancel
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
-    private UIBranch _currentHomeBranch;
     private INode _lastHighlighted;
     private UIBranch _activeBranch;
     private bool _gameIsPaused;
@@ -88,8 +87,8 @@ public class UICancel
     }
 
     private bool HasActivePopUps() => !_noPopUps && _lastHighlighted.MyBranch.IsAPopUpBranch();
-    private static void BackOneLevel() => HistoryTracker.backOneLevel.Invoke();
-    private static void BackToHome() => HistoryTracker.clearHome.Invoke();
+    private static void BackOneLevel() => HistoryTracker.backOneLevel?.Invoke();
+    private static void BackToHome() => HistoryTracker.clearHome?.Invoke();
     private void CancelTimedPopUp() => InvokeCancelEvent(_lastHighlighted.MyBranch);
     private void ToNextPopUp() => OnBackToAPopUp?.Invoke(_lastHighlighted.MyBranch);
     private static void InvokeCancelEvent(UIBranch targetBranch) => OnBackOrCancel?.Invoke(targetBranch);

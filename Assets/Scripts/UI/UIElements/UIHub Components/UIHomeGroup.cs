@@ -1,5 +1,4 @@
-﻿
-/// <summary>
+﻿/// <summary>
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
 /// is for keyboard or controller. Differ from internal branch groups as involve Branches not Nodes
 /// </summary>
@@ -56,6 +55,7 @@ public class UIHomeGroup
 
     private void SaveActiveBranch(UIBranch newBranch)
     {
+        if(newBranch.IsAPopUpBranch() || newBranch.IsPauseMenuBranch()) return;
         if(_lastActiveHomeBranch == newBranch) return;
         _lastActiveHomeBranch = newBranch;
         FindHomeScreenBranch(newBranch);
@@ -63,13 +63,11 @@ public class UIHomeGroup
 
     private void FindHomeScreenBranch(UIBranch newBranch)
     {
-        UIBranch searchableBranch = newBranch;
-        
-        while (!searchableBranch.IsHomeScreenBranch())
+        while (!newBranch.IsHomeScreenBranch())
         {
-            searchableBranch = searchableBranch.MyParentBranch;
+            newBranch = newBranch.MyParentBranch;
         }
-        SearchHomeBranchesAndSet(searchableBranch);
+        SearchHomeBranchesAndSet(newBranch);
     }
 
     private void SearchHomeBranchesAndSet(UIBranch newBranch)
@@ -84,9 +82,8 @@ public class UIHomeGroup
 
     private void SetHomeGroup()
     {
-        foreach (var branch in _homeGroup)
-        {
-            branch.Branch.MoveBackToThisBranch(_homeGroup[_index]);
-        }
+        _homeGroup[_index].DontSetBranchAsActive();
+        _homeGroup[_index].Branch.MoveBackToThisBranch(_homeGroup[_index]);
     }
+    
 }

@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Canvas))]
 [RequireComponent(typeof(CanvasGroup))]
@@ -64,9 +63,11 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
     //Properties
     private void SaveIfOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
     private void SaveHighlighted(INode newNode)
-        => LastHighlighted = SearchThisBranchesNodes(newNode.ReturnNode, LastHighlighted.ReturnNode);
+        => LastHighlighted = SearchThisBranchesNodes
+            (newNode.ReturnNode, defaultNode: LastHighlighted.ReturnNode);
     private void SaveSelected(INode newNode) 
-        => LastSelected = SearchThisBranchesNodes(newNode.ReturnNode, LastSelected.ReturnNode);
+        => LastSelected = SearchThisBranchesNodes
+            (newNode.ReturnNode, defaultNode: LastSelected.ReturnNode);
     public void SetNoTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
     public void IsTabBranch() => _branchType = BranchType.Standard;
@@ -139,7 +140,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
         }
     }
 
-    private void FindStartPosition() => _startOnThisNode = transform.GetComponentsInChildren<UINode>().First();
+    private void FindStartPosition() 
+        => _startOnThisNode = transform.GetComponentsInChildren<UINode>().First();
 
     public void MoveToBranchWithoutTween()
     {
@@ -153,15 +155,15 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
         Branch.SetUpBranch(newParentBranch);
         if (_canActivateBranch) SetAsActiveBranch();
         
-        if (_tweenOnChange)
-        {
-            ActivateInTweens();
-        }
-        else
-        {
-            InTweenCallback();
-        }
-        _tweenOnChange = true;
+         if (_tweenOnChange)
+         {
+             ActivateInTweens();
+         }
+         else
+         {
+             InTweenCallback();
+         }
+         _tweenOnChange = true;
     }
     
     private void SetAsActiveBranch() => SetActiveBranch?.Invoke(this);
@@ -206,7 +208,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
     public void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null)
     {
         if(!CanvasIsEnabled) return;
-
         if (WhenToMove == WhenToMove.AfterEndOfTween)
         {
             StartOutTween(outTweenType, endOfTweenCallback);
@@ -252,7 +253,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
     {
         if (_canActivateBranch)
         {
-            LastHighlighted.SetNodeAsActive();
+           LastHighlighted.SetNodeAsActive();
         }
         Branch.ActivateBlockRaycast();
         _branchEvents?.OnBranchEnter.Invoke();
