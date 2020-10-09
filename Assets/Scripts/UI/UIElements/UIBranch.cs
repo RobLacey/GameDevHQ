@@ -106,7 +106,9 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
         _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
         _uiControlsEvents.SubscribeSwitchGroups(SwitchBranchGroup);
     }
-    
+
+    private void OnDisable() => Branch.OnDisable();
+
     private void Start() => SetNodesChildrenToThisBranch();
     
     private void SetNodesChildrenToThisBranch()

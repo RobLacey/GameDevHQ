@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cf72707778a495380664443a05e90e8, type: 3}
   m_Name: Scheme - Old
   m_EditorClassIdentifier: 
-  _mainControlType: 3
+  _mainControlType: 2
   _inGameMenuSystem: 1
   _startGameWhere: 1
   _pauseOptionsOnEscape: 0
   _pauseFunction: 1
-  _atStartDelay: 0
+  _atStartDelay: 2
   _pauseOptionButton: Pause
   _posSwitchButton: Posivtive Group Switch
   _negSwitchButton: Negative Group Switch

@@ -27,7 +27,9 @@ public partial class UIHub : MonoBehaviour
     private INode _lastHighlighted;
     private bool _inMenu, _startingInGame;
     private InputScheme _inputScheme;
-
+    private UICancel _cancel;
+    private UIHomeGroup _homeGroup;
+    
     //Properties
     private void SaveInMenu(bool isInMenu)
     {
@@ -39,16 +41,16 @@ public partial class UIHub : MonoBehaviour
     {
         _inputScheme = GetComponent<UIInput>().ReturnScheme;
         _startingInGame = GetComponent<UIInput>().StartInGame();
-        ServiceLocator.AddService<IBucketCreator>(new BucketCreator(transform, "Tooltip Holder"));
-        ServiceLocator.AddService<IAudioService>(new UIAudioManager(GetComponent<AudioSource>()));
+        //ServiceLocator.AddService<IBucketCreator>(new BucketCreator(transform, "Tooltip Holder"));
+        // ServiceLocator.AddService<IAudioService>(new UIAudioManager(GetComponent<AudioSource>()));
         CreateSubClasses();
     }
 
     private void CreateSubClasses()
     {
         var unused = new PopUpController();
-        var unused3 = new UIHomeGroup(_homeBranches.ToArray());
-        var unused2 = new UICancel(_inputScheme.GlobalCancelAction);
+        _homeGroup = new UIHomeGroup(_homeBranches.ToArray());
+        _cancel = new UICancel(_inputScheme.GlobalCancelAction);
     }
 
     private void OnEnable()
@@ -57,8 +59,16 @@ public partial class UIHub : MonoBehaviour
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
     }
 
+    private void OnDisable()
+    {
+        _homeGroup.OnDisable();
+        _cancel.OnDisable();
+    }
+
     private void Start()
     {
+        ServiceLocator.AddService<IAudioService>(new UIAudioManager(GetComponent<AudioSource>()));
+        ServiceLocator.AddService<IBucketCreator>(new BucketCreator(transform, "Tooltip Holder"));
         SetStartPositionsAndSettings();
         CheckIfStartingInGame();
         StartCoroutine(EnableStartControls());

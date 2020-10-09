@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using System;
 
 [Serializable]
-public class UINavigation : NodeFunctionBase
+public class UINavigation : NodeFunctionBase, IServiceUser
 {
     [SerializeField] 
     [AllowNesting] [Label("Move To When Clicked")] [HideIf("CantNavigate")] private UIBranch _childBranch;
@@ -31,6 +31,7 @@ public class UINavigation : NodeFunctionBase
     //Variables
     private UIBranch _myBranch;
     private INode _myNode;
+    private IHistoryTrack _uiHistoryTrack;
 
     //Properties
     protected override bool CanBeHighlighted() => false;
@@ -49,8 +50,15 @@ public class UINavigation : NodeFunctionBase
         CanActivate = (_enabledFunctions & Setting.NavigationAndOnClick) != 0;
         _myNode = myNode;
         _myBranch = _myNode.MyBranch;
+        SubscribeToService();
     }
     
+    public void SubscribeToService()
+    {
+        _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+        //return _uiHistoryTrack is null;
+    }
+
     public void HandleAsSlider()
     {
         if (_moveDirection == MoveDirection.Left || _moveDirection == MoveDirection.Right)
@@ -110,7 +118,7 @@ public class UINavigation : NodeFunctionBase
     {
         if(FunctionNotActive()) return;
         _myBranch.MoveToBranchWithoutTween();
-        HistoryTracker.clearDisabledChildren?.Invoke(_myBranch.LastSelected.ReturnNode);
+        _uiHistoryTrack.CloseAllChildNodesAfterPoint(_myBranch.LastSelected.ReturnNode);
     }
 
     public void MoveToNextFreeNode()
@@ -134,4 +142,5 @@ public class UINavigation : NodeFunctionBase
         }
         return null;
     }
+
 }

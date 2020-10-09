@@ -1,9 +1,10 @@
 ﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Class handles all UI cancel behaviour from cancel type to context sensitive cases
 /// </summary>
-public class UICancel
+public class UICancel : IServiceUser, IEventUser
 {
     public UICancel(EscapeKey globalSetting)
     {
@@ -21,6 +22,7 @@ public class UICancel
     private bool _gameIsPaused;
     private bool _noResolvePopUps = true;
     private bool _noPopUps = true;
+    private IHistoryTrack _uiHistoryTrack;
 
     //Events
     public static event Action<UIBranch> OnBackOrCancel; 
@@ -39,10 +41,34 @@ public class UICancel
         _uiDataEvents.SubscribeToHighlightedNode(SaveLastHighlighted);
         _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
         _uiControlsEvents.SubscribeCancelOrBackButtonPressed(ProcessCancelType);
-        _uiControlsEvents.SubscribeOnCancel(CancelPressed);
+        //_uiControlsEvents.SubscribeOnCancel(CancelPressed);
         _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
+        SubscribeToService();
+        ObserveEvents();
     }
+
+    public void OnDisable()
+    {
+        RemoveFromEvents();
+    }
+    
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<ICancelPressed>(CancelPressed);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<ICancelPressed>(CancelPressed);
+    }
+
+    public void SubscribeToService()
+    {
+        _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+        //return _uiHistoryTrack is null;
+    }
+
 
     private void CancelPressed()
     {
@@ -87,8 +113,8 @@ public class UICancel
     }
 
     private bool HasActivePopUps() => !_noPopUps && _lastHighlighted.MyBranch.IsAPopUpBranch();
-    private static void BackOneLevel() => HistoryTracker.backOneLevel?.Invoke();
-    private static void BackToHome() => HistoryTracker.clearHome?.Invoke();
+    private void BackOneLevel() => _uiHistoryTrack.BackOneLevel();
+    private void BackToHome() => _uiHistoryTrack.BackToHome();
     private void CancelTimedPopUp() => InvokeCancelEvent(_lastHighlighted.MyBranch);
     private void ToNextPopUp() => OnBackToAPopUp?.Invoke(_lastHighlighted.MyBranch);
     private static void InvokeCancelEvent(UIBranch targetBranch) => OnBackOrCancel?.Invoke(targetBranch);

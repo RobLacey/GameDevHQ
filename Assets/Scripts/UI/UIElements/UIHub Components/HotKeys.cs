@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [Serializable]
-public class HotKeys
+public class HotKeys : IServiceUser
 {
     [SerializeField] 
     private HotKey _hotKeyInput;
@@ -19,6 +19,7 @@ public class HotKeys
     private INode _parentNode;
     private UIBranch _activeBranch;
     private InputScheme _inputScheme;
+    private IHistoryTrack _uiHistoryTrack;
     
     //Properties
     private void SaveIsPaused(bool isPaused) => _gameIsPaused = isPaused;
@@ -30,6 +31,12 @@ public class HotKeys
         _inputScheme = inputScheme;
         IsAllowedType();
         OnEnable();
+    }
+    
+    public void SubscribeToService()
+    {
+        _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+       // return _uiHistoryTrack is null;
     }
 
     private void IsAllowedType()
@@ -77,7 +84,7 @@ public class HotKeys
     {
         SetHotKeyAsSelectedActions();
         _myBranch.MoveToThisBranch();
-        HistoryTracker.setFromHotKey?.Invoke(_myBranch, _parentNode);
+        _uiHistoryTrack.SetFromHotkey(_myBranch, _parentNode);
     }
 
     private void SetHotKeyAsSelectedActions()
@@ -86,4 +93,5 @@ public class HotKeys
         _parentNode.ThisNodeIsHighLighted();
         _parentNode.SetNodeAsSelected_NoEffects();
     }
+
 }

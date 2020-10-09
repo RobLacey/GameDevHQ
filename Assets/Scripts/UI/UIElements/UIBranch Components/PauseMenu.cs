@@ -1,15 +1,14 @@
 ﻿using System;
-using UnityEngine;
 
 /// <summary>
 /// Need To Make this a singleton or check thee is only one of these
 /// </summary>
-public class PauseMenu : BranchBase, IStartPopUp
+public class PauseMenu : BranchBase, IStartPopUp, IEventUser
 {
     public PauseMenu(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
         _allBranches = branchList;
-        _uiControlsEvents.SubscribePausedPressed(StartPopUp);
+        ObserveEvents();
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
     }
 
@@ -20,9 +19,12 @@ public class PauseMenu : BranchBase, IStartPopUp
     //Properties
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
     private bool WasInGame() => !_screenData._wasInTheMenu;
-
-    
     public static event Action<bool> OnGamePaused; // Subscribe to trigger pause operations
+    public void ObserveEvents() => EventLocator.SubscribeToEvent<IPausePressed>(StartPopUp);
+    public void RemoveFromEvents() => EventLocator.UnsubscribeFromEvent<IPausePressed>(StartPopUp);
+
+    //Main
+    public override void OnDisable() => RemoveFromEvents();
 
     public void StartPopUp()
     {

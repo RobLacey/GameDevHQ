@@ -9,7 +9,7 @@ using NaughtyAttributes;
 
 public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
                               IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler, 
-                              ISelectHandler, IDisabled, INode
+                              ISelectHandler, IDisabled, INode, IServiceUser
 {
     [Header("Main Settings")]
     [HorizontalLine(1, color: EColor.Blue, order = 1)]
@@ -71,6 +71,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private INode _lastHighlighted;
     private UiActions _uiActions;
     private List<NodeFunctionBase> _list;
+    private IHistoryTrack _uiHistoryTrack;
 
     //Events
     public static event Action<EscapeKey> DoCancelButtonPressed;
@@ -179,6 +180,12 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
     }
     
+    public void SubscribeToService()
+    {
+        _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+        //return _uiHistoryTrack is null;
+    }
+
     private void OnDisable()
     {
         _colours.OnDisable(_uiActions);
@@ -194,6 +201,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
 
     private void Start()
     {
+        SubscribeToService();
         if (AmSlider) AmSlider.interactable = false;
         if (!IsToggleGroup) return;
         SetUpToggleGroup();
@@ -259,7 +267,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
             Activate();
         }
         SetSlider(IsSelected);
-        HistoryTracker.selected?.Invoke(this);
+        _uiHistoryTrack.SetSelected(this);
+       // HistoryTracker.selected?.Invoke(this);
     }
     
     private void Deactivate() => SetSelectedStatus(false, DoPress);
@@ -322,5 +331,5 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         DoSelected?.Invoke(this);
     }
 
-    public void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this); 
+    public void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this);
 }

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using NaughtyAttributes;
 
 [Serializable]
-public class UITooltip : NodeFunctionBase
+public class UITooltip : NodeFunctionBase,  IServiceUser
 {
     [Header("General Settings")]
     [SerializeField] 
@@ -30,6 +30,7 @@ public class UITooltip : NodeFunctionBase
     private int _index;
     private float _buildDelay;
     private UIControlsEvents _uiControlsEvents = new UIControlsEvents();
+    private IBucketCreator _bucketCreator;
 
     //Enums & Properties
     private Vector2 KeyboardPadding => new Vector2(_scheme.KeyboardXPadding, _scheme.KeyboardYPadding);
@@ -55,6 +56,7 @@ public class UITooltip : NodeFunctionBase
         base.OnAwake(uiActions, activeFunctions);
         CanActivate = (_enabledFunctions & Setting.TooplTip) != 0;
         SetUp(rectTransform);
+        SubscribeToService();
     }
 
     private void SetUp(RectTransform rectTransform)
@@ -66,6 +68,13 @@ public class UITooltip : NodeFunctionBase
         SetUpTooltips();
         CheckSetUpForError();
     }
+    
+    public void SubscribeToService()
+    {
+        _bucketCreator = ServiceLocator.GetNewService<IBucketCreator>(this);
+        //return _bucketCreator is null;
+    }
+
 
     protected override void SavePointerStatus(bool pointerOver)
     {
@@ -132,7 +141,7 @@ public class UITooltip : NodeFunctionBase
     private void SetBucket()
     {
         if(!(_bucketPosition is null)) return;
-        _bucketPosition = ServiceLocator.GetNewService<IBucketCreator>().CreateBucket();
+        _bucketPosition = _bucketCreator.CreateBucket();
     }
 
     private IEnumerator ToolTipBuild()
@@ -214,4 +223,5 @@ public class UITooltip : NodeFunctionBase
         (_tooltipsRects[_index].anchoredPosition, _tooltipsRects[_index].pivot)
             = _calculation.CalculatePosition(_tooltipPos, size, toolTipAnchor);
     }
+
 }

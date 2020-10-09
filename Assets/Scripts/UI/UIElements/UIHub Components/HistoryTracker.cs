@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class HistoryTracker : MonoBehaviour
+public interface IReturnToHome { }
+
+public class HistoryTracker : MonoBehaviour, IHistoryTrack, IReturnToHome
 {
     [SerializeField] private List<UINode> _history;
     [SerializeField] private UINode _lastHighlighted;
@@ -13,25 +14,24 @@ public class HistoryTracker : MonoBehaviour
 
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private bool _canStart;
-    public static Action<UINode> selected;
-    public static Action<UINode> clearDisabledChildren;
-    public static Action<UIBranch, INode> setFromHotKey;
-    public static Action backOneLevel;
-    public static Action clearHome;
-    public static Action clearHistory;
-    public static event Action OnHome;
+    private ICustomEvent<IReturnToHome> ReturnedToHome { get; set; }
+
+    private void Awake()
+    {
+        ServiceLocator.AddService<IHistoryTrack>(this);
+        ReturnedToHome = new CustomEvent<IReturnToHome>();
+    }
     
     private void OnEnable()
     {
-        selected += SetSelected;
-        clearHome += SetToHome;
-        backOneLevel += BackOneLevel;
-        clearHistory += ReverseAndClearHistory;
-        clearDisabledChildren += CloseAllChildNodesAfterPoint;
-        setFromHotKey += SetFromHotkey;
         _uiDataEvents.SubscribeToHighlightedNode(SetLastHighlighted);
         _uiDataEvents.SubscribeToActiveBranch(SetActiveBranch);
         _uiDataEvents.SubscribeToOnStart(SetCanStart);
+    }
+
+    private void Start()
+    {
+        // ReturnedToHome = new TesTEvent<IReturnToHome>();
     }
 
     private void SetLastHighlighted(INode node) => _lastHighlighted = node.ReturnNode;
@@ -39,7 +39,7 @@ public class HistoryTracker : MonoBehaviour
     private void SetCanStart() => _canStart = true;
 
     //Main
-    private void SetSelected(INode node)
+    public void SetSelected(INode node)
     {
         if(!_canStart) return;
         if(node.ReturnNode.DontStoreTheseNodeTypesInHistory) return;
@@ -71,7 +71,7 @@ public class HistoryTracker : MonoBehaviour
             _lastSelected = node.ReturnNode;
     }
 
-    private void CloseAllChildNodesAfterPoint(INode newNode)
+    public void CloseAllChildNodesAfterPoint(INode newNode)
     {
         if (!_history.Contains(newNode.ReturnNode)) return;
 
@@ -86,7 +86,7 @@ public class HistoryTracker : MonoBehaviour
     private void SetLastSelectedWhenNoHistory(INode node) 
         => _lastSelected = _history.Count > 0 ? _history.Last() : node.ReturnNode;
 
-    private void BackOneLevel()
+    public void BackOneLevel()
     {
         var lastNode = _history.Last();
         DoMoveBackOneLevel(lastNode);
@@ -108,7 +108,7 @@ public class HistoryTracker : MonoBehaviour
     {
         if (lastNode.MyBranch.IsHomeScreenBranch())
         {
-            SetToHome();
+            BackToHome();
         }
         else
         {
@@ -116,14 +116,14 @@ public class HistoryTracker : MonoBehaviour
         }
     }
 
-    private void SetToHome()
+    public void BackToHome()
     {
         if (_history.Count <= 0) return;
         ReverseAndClearHistory();
-        OnHome?.Invoke();
+        ReturnedToHome.RaiseEvent();
     }
 
-    private void ReverseAndClearHistory()
+    public void ReverseAndClearHistory()
     {
         _history.Reverse();
         if (HistoryProcessed()) return;
@@ -149,7 +149,7 @@ public class HistoryTracker : MonoBehaviour
         return true;
     }
 
-    private void SetFromHotkey(UIBranch branch, INode parentNode)
+    public void SetFromHotkey(UIBranch branch, INode parentNode)
     {
         HotKeyOnHomeScreen(branch);
         IfLastKeyPressedWasHotkey(parentNode);
@@ -158,14 +158,16 @@ public class HistoryTracker : MonoBehaviour
         _history.Add(_lastSelected);
     }
 
-    private static void HotKeyOnHomeScreen(UIBranch branch)
+    private void HotKeyOnHomeScreen(UIBranch branch)
     {
         if (branch.ScreenType == ScreenType.FullScreen) return;
-        OnHome?.Invoke();
+        ReturnedToHome.RaiseEvent();
     }
 
     private void IfLastKeyPressedWasHotkey(INode parentNode)
     {
+        if(_lastSelected)
+            _lastSelected.DeactivateNode();
         if (_hotKeyParent)
             _hotKeyParent.DeactivateNode();
         _hotKeyParent = parentNode.ReturnNode;

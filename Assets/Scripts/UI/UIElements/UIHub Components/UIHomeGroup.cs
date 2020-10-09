@@ -1,8 +1,10 @@
-﻿/// <summary>
+﻿using UnityEngine;
+
+/// <summary>
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
 /// is for keyboard or controller. Differ from internal branch groups as involve Branches not Nodes
 /// </summary>
-public class UIHomeGroup
+public class UIHomeGroup : IServiceUser, IEventUser
 {
     public UIHomeGroup(UIBranch[] homeBranches)
     {
@@ -17,6 +19,7 @@ public class UIHomeGroup
     private bool _onHomeScreen = true;
     private int _index;
     private UIBranch _lastActiveHomeBranch;
+    private IHistoryTrack _uiHistoryTrack;
     
     //Properties
     private void SaveOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
@@ -26,8 +29,21 @@ public class UIHomeGroup
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
         _uiControlsEvents.SubscribeSwitchGroups(SwitchHomeGroups);
-        HistoryTracker.OnHome += SetHomeGroup;
+        SubscribeToService();
+        ObserveEvents();
     }
+
+    public void OnDisable() => RemoveFromEvents();
+
+    public void ObserveEvents() => EventLocator.SubscribeToEvent<IReturnToHome>(SetHomeGroup);
+    public void RemoveFromEvents() => EventLocator.UnsubscribeFromEvent<IReturnToHome>(SetHomeGroup);
+
+    public void SubscribeToService()
+    {
+        _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+        //return _uiHistoryTrack is null;
+    }
+
 
     private void SwitchHomeGroups(SwitchType switchType)
     {
@@ -49,8 +65,7 @@ public class UIHomeGroup
         }
         _lastActiveHomeBranch = _homeGroup[_index];
         _homeGroup[_index].MoveToBranchWithoutTween();
-        
-         HistoryTracker.clearHistory?.Invoke();
+        _uiHistoryTrack.ReverseAndClearHistory();
     }
 
     private void SaveActiveBranch(UIBranch newBranch)
@@ -82,8 +97,8 @@ public class UIHomeGroup
 
     private void SetHomeGroup()
     {
+        Debug.Log("Here");
         _homeGroup[_index].DontSetBranchAsActive();
         _homeGroup[_index].Branch.MoveBackToThisBranch(_homeGroup[_index]);
     }
-    
 }

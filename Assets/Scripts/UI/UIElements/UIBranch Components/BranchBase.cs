@@ -48,6 +48,8 @@ public abstract class BranchBase
         _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
         DoClearScreen += ClearBranchForFullscreen;
     }
+    
+    public virtual void OnDisable() { }
 
     protected virtual void SetUpBranchesOnStart(UIBranch startBranch)
     {

@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-public class UIAudio : NodeFunctionBase
+public class UIAudio : NodeFunctionBase, IServiceUser
 {
     [SerializeField] private AudioScheme _audioScheme;
 
@@ -24,6 +24,7 @@ public class UIAudio : NodeFunctionBase
 
         _uiDataEvents.SubscribeToOnStart(OnStart);
         CanActivate = (_enabledFunctions & Setting.Audio) != 0;
+        SubscribeToService();
     }
 
 
@@ -31,8 +32,8 @@ public class UIAudio : NodeFunctionBase
     {
         if(FunctionNotActive() || !_canStart) return;
         
-        if(_audioService is null)
-            _audioService = ServiceLocator.GetNewService<IAudioService>();
+        // if(_audioService is null)
+        //     SubscribeToService();
 
         _audioService.Play(clip, volume);
     }
@@ -80,5 +81,10 @@ public class UIAudio : NodeFunctionBase
     {
         //Do Nothing currently
     }
-    
+
+    public void SubscribeToService()
+    {
+        _audioService = ServiceLocator.GetNewService<IAudioService>(this);
+        //return _audioService is null;
+    }
 }

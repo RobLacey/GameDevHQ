@@ -16,6 +16,7 @@ public class HomeScreenBranchBase: BranchBase
     {
         base.SaveOnStart();
         ActivateBranchCanvas();
+        ActivateBlockRaycast();
     }
     
     //Main

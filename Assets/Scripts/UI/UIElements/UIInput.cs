@@ -5,6 +5,10 @@ using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
 
+public interface IPausePressed { }
+public interface ICancelPressed { }
+
+
 public class UIInput : MonoBehaviour
 {
     [SerializeField] private InputScheme _inputScheme;
@@ -24,9 +28,11 @@ public class UIInput : MonoBehaviour
     private MenuAndGameSwitching _menuToGameSwitching;
 
     //Events
-    public static event Action OnChangeControls, OnCancelPressed, OnPausedPressed;
+    public static event Action OnChangeControls/*, OnCancelPressed*/;
     public static event Action<SwitchType> OnSwitchGroupsPressed;
     public static event Func<bool> OnGameToMenuSwitchPressed;
+    private ICustomEvent<IPausePressed> OnPausePressed { get; set; }
+    private ICustomEvent<ICancelPressed> OnCancelPressed { get; set; }
     
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
@@ -63,6 +69,8 @@ public class UIInput : MonoBehaviour
     private void Awake()
     {
         _inputScheme.OnAwake();
+        OnPausePressed = new CustomEvent<IPausePressed>();
+        OnCancelPressed = new CustomEvent<ICancelPressed>();
         var unused4 = new ChangeControl(_inputScheme, StartInGame());
         _menuToGameSwitching = new MenuAndGameSwitching();
         if (_inputScheme.InGameMenuSystem == InGameSystem.On)
@@ -88,7 +96,14 @@ public class UIInput : MonoBehaviour
         _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
         _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
+    }
 
+    private void Start()
+    {
+        foreach (HotKeys hotKey in _hotKeySettings)
+        {
+            hotKey.SubscribeToService();
+        }
     }
 
     private void Update()
@@ -116,16 +131,16 @@ public class UIInput : MonoBehaviour
             return;
         }
         
-         if (CanSwitchBranches() && SwitchGroupProcess()) return;
+        if (CanSwitchBranches() && SwitchGroupProcess()) return;
 
         OnChangeControls?.Invoke();
     }
 
     private bool CanPauseGame() => _inputScheme.PressPause();
 
-    private static void PausedPressedActions()
+    private void PausedPressedActions()
     {
-        OnPausedPressed?.Invoke();
+        OnPausePressed.RaiseEvent();
     }
 
     private bool CanSwitchBetweenInGameAndMenu()
@@ -153,7 +168,8 @@ public class UIInput : MonoBehaviour
          }
          else
          {
-             OnCancelPressed?.Invoke();
+             OnCancelPressed.RaiseEvent();
+             //OnCancelPressed?.Invoke();
          }
     }
 
