@@ -1,6 +1,6 @@
 ﻿using UnityEngine.EventSystems;
 
-public abstract class NodeFunctionBase
+public abstract class NodeFunctionBase : IEventUser
 {
     protected bool _pointerOver, _isSelected, _isDisabled;
     protected Setting _enabledFunctions;
@@ -21,7 +21,13 @@ public abstract class NodeFunctionBase
         uiActions._isDisabled += IsDisabled;
         uiActions._onMove += AxisMoveDirection;
         _enabledFunctions = activeFunctions;
+        ObserveEvents();
     }
+    
+    public virtual void ObserveEvents() { }
+
+    public virtual void RemoveFromEvents() { }
+
 
     public void OnDisable(UiActions uiActions)
     {

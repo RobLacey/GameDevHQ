@@ -3,12 +3,11 @@
 /// <summary>
 /// Need To Make this a singleton or check thee is only one of these
 /// </summary>
-public class PauseMenu : BranchBase, IStartPopUp, IEventUser
+public class PauseMenu : BranchBase, IStartPopUp
 {
     public PauseMenu(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
         _allBranches = branchList;
-        ObserveEvents();
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
     }
 
@@ -19,12 +18,28 @@ public class PauseMenu : BranchBase, IStartPopUp, IEventUser
     //Properties
     private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
     private bool WasInGame() => !_screenData._wasInTheMenu;
-    public static event Action<bool> OnGamePaused; // Subscribe to trigger pause operations
-    public void ObserveEvents() => EventLocator.SubscribeToEvent<IPausePressed>(StartPopUp);
-    public void RemoveFromEvents() => EventLocator.UnsubscribeFromEvent<IPausePressed>(StartPopUp);
+    
+    //Events
+    private static CustomEvent<IGameIsPaused, bool> OnGamePaused { get; } = new CustomEvent<IGameIsPaused, bool>();
+    
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EventLocator.SubscribeToEvent<IPausePressed>(StartPopUp, this);
+    }
+    
+    public override void RemoveFromEvents()
+    {
+        base.RemoveFromEvents();
+        EventLocator.UnsubscribeFromEvent<IPausePressed>(StartPopUp);
+    }
 
     //Main
-    public override void OnDisable() => RemoveFromEvents();
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        RemoveFromEvents();
+    }
 
     public void StartPopUp()
     {
@@ -43,14 +58,14 @@ public class PauseMenu : BranchBase, IStartPopUp, IEventUser
     private void PauseGame()
     {
         _gameIsPaused = true;
-        OnGamePaused?.Invoke(_gameIsPaused);
+        OnGamePaused?.RaiseEvent(_gameIsPaused);
         EnterPause();
     }
 
     private void UnPauseGame()
     {
         _gameIsPaused = false;
-        OnGamePaused?.Invoke(_gameIsPaused);
+        OnGamePaused?.RaiseEvent(_gameIsPaused);
         ExitPause();
     }
 

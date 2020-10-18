@@ -6,7 +6,7 @@ using UnityEngine;
 /// This Class Looks after managing switching between PopUps
 /// </summary>
 ///
-public class PopUpController
+public class PopUpController : IEventUser
 {
     public PopUpController() => OnEnable();
 
@@ -52,8 +52,19 @@ public class PopUpController
         _uiPopUpEvents.SubscribeToRemoveOptionalPopUp(OnLeavingHomeScreen);
         _uiPopUpEvents.SubscribeToReturnNextPopUp(NextPopUp);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
+        ObserveEvents();
     }
+    
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveGameIsPaused, this);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveGameIsPaused);
+    }
+
 
     private UIBranch NextPopUp()
     {

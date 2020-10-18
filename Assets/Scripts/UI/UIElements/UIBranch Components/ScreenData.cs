@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class ScreenData
+public class ScreenData : IEventUser
 {
     public ScreenData()
     {
-        _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
+        ObserveEvents();
     }
 
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
@@ -17,6 +17,16 @@ public class ScreenData
     public UIBranch _activeBranch;
     public bool  _wasInTheMenu, _locked;
     public bool _wasOnHomeScreen = true;
+
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<ISelectedNode, INode>(SaveSelected, this);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<ISelectedNode, INode>(SaveSelected);
+    }
 
     private void SaveSelected(INode newNode)
     {
@@ -71,4 +81,5 @@ public class ScreenData
             branch.Branch.ActivateBlockRaycast();
         }
     }
+
 }

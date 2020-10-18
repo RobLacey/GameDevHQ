@@ -12,7 +12,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
-public partial class UIBranch : MonoBehaviour, IStartPopUp
+public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
 {
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
@@ -53,7 +53,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
     private UITweener _uiTweener;
     private int _groupIndex;
     private UIDataEvents _uiDataEvents;
-    private UIControlsEvents _uiControlsEvents;
     private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
     private bool _activePopUp;
 
@@ -93,21 +92,36 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
         _uiTweener = GetComponent<UITweener>();
         MyCanvas = GetComponent<Canvas>();
         _uiDataEvents = new UIDataEvents();
-        _uiControlsEvents = new UIControlsEvents();
         Branch = BranchFactory.AssignType(this, _branchType, FindObjectsOfType<UIBranch>());
         MyParentBranch = this;
         SetStartPositions();
+        ObserveEvents();
+    }
+    
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<ISwitchGroupPressed, SwitchType>(SwitchBranchGroup, this);
+        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SaveHighlighted, this);
+        EventLocator.SubscribeToEvent<ISelectedNode, INode>(SaveSelected, this);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<ISwitchGroupPressed, SwitchType>(SwitchBranchGroup);
+        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SaveHighlighted);
+        EventLocator.UnsubscribeFromEvent<ISelectedNode, INode>(SaveSelected);
     }
 
     private void OnEnable()
     {
         _uiDataEvents.SubscribeToOnHomeScreen(SaveIfOnHomeScreen);
-        _uiDataEvents.SubscribeToHighlightedNode(SaveHighlighted);
-        _uiDataEvents.SubscribeToSelectedNode(SaveSelected);
-        _uiControlsEvents.SubscribeSwitchGroups(SwitchBranchGroup);
     }
-
-    private void OnDisable() => Branch.OnDisable();
+    
+    private void OnDisable()
+    {
+        Branch.OnDisable();
+        RemoveFromEvents();
+    }
 
     private void Start() => SetNodesChildrenToThisBranch();
     
@@ -267,5 +281,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp
     /// </summary>
     // ReSharper disable once UnusedMember.Global
     public void StartPopUp() => OnStartPopUp?.Invoke();
+
 }
 

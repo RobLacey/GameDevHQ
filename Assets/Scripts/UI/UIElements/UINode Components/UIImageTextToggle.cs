@@ -16,7 +16,6 @@ public class UIImageTextToggle : NodeFunctionBase
 
     //variables
     private string _startingText;
-    private UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     
     //Properties
     protected override bool CanBeHighlighted() => _changeWhen == ChangeWhen.OnHighlight;
@@ -34,7 +33,16 @@ public class UIImageTextToggle : NodeFunctionBase
                       && CacheAndCheckForStartingUIElements();
         
         CycleToggle(_isSelected);
-        _uiControlsEvents.SubscribeToAllowKeys(OnControlsChanged);
+    }
+
+    public override void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IAllowKeys, bool>(OnControlsChanged, this);
+    }
+
+    public override void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IAllowKeys,bool>(OnControlsChanged);
     }
 
     private bool CacheAndCheckForStartingUIElements()

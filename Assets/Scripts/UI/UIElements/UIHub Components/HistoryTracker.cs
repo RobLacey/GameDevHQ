@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public interface IReturnToHome { }
 
-public class HistoryTracker : MonoBehaviour, IHistoryTrack, IReturnToHome
+public class HistoryTracker : MonoBehaviour, IHistoryTrack, IReturnToHome, IEventUser
 {
     [SerializeField] private List<UINode> _history;
     [SerializeField] private UINode _lastHighlighted;
@@ -14,24 +15,39 @@ public class HistoryTracker : MonoBehaviour, IHistoryTrack, IReturnToHome
 
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private bool _canStart;
-    private ICustomEvent<IReturnToHome> ReturnedToHome { get; set; }
+    private CustomEvent<IReturnToHome> ReturnedToHome { get; set; }
 
     private void Awake()
     {
         ServiceLocator.AddService<IHistoryTrack>(this);
-        ReturnedToHome = new CustomEvent<IReturnToHome>();
+        ObserveEvents();
     }
+    
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(listener: SetLastHighlighted, caller: this);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SetLastHighlighted);
+    }
+
     
     private void OnEnable()
     {
-        _uiDataEvents.SubscribeToHighlightedNode(SetLastHighlighted);
         _uiDataEvents.SubscribeToActiveBranch(SetActiveBranch);
         _uiDataEvents.SubscribeToOnStart(SetCanStart);
     }
 
+    private void OnDisable()
+    {
+        RemoveFromEvents();
+    }
+
     private void Start()
     {
-        // ReturnedToHome = new TesTEvent<IReturnToHome>();
+         ReturnedToHome = new CustomEvent<IReturnToHome>();
     }
 
     private void SetLastHighlighted(INode node) => _lastHighlighted = node.ReturnNode;

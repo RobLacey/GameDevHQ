@@ -18,7 +18,7 @@ MonoBehaviour:
   _mousePaddingX: 0
   _mousePaddingY: 0
   _positionToUse: 0
-  _keyboardPosition: 0
+  _keyboardPosition: 2
   _fixedPosition: {fileID: 0}
   _keyboardPaddingX: 0
   _keyboardPaddingY: 0

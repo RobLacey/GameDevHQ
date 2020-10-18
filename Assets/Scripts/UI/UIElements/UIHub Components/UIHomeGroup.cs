@@ -15,7 +15,6 @@ public class UIHomeGroup : IServiceUser, IEventUser
     //Variables
     private readonly UIBranch[] _homeGroup;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
-    private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private bool _onHomeScreen = true;
     private int _index;
     private UIBranch _lastActiveHomeBranch;
@@ -28,15 +27,22 @@ public class UIHomeGroup : IServiceUser, IEventUser
     {
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
-        _uiControlsEvents.SubscribeSwitchGroups(SwitchHomeGroups);
         SubscribeToService();
         ObserveEvents();
     }
 
     public void OnDisable() => RemoveFromEvents();
 
-    public void ObserveEvents() => EventLocator.SubscribeToEvent<IReturnToHome>(SetHomeGroup);
-    public void RemoveFromEvents() => EventLocator.UnsubscribeFromEvent<IReturnToHome>(SetHomeGroup);
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IReturnToHome>(SetHomeGroup, this);
+        EventLocator.SubscribeToEvent<ISwitchGroupPressed, SwitchType>(SwitchHomeGroups, this);
+    }
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IReturnToHome>(SetHomeGroup);
+        EventLocator.UnsubscribeFromEvent<ISwitchGroupPressed, SwitchType>(SwitchHomeGroups);
+    }
 
     public void SubscribeToService()
     {
@@ -97,7 +103,6 @@ public class UIHomeGroup : IServiceUser, IEventUser
 
     private void SetHomeGroup()
     {
-        Debug.Log("Here");
         _homeGroup[_index].DontSetBranchAsActive();
         _homeGroup[_index].Branch.MoveBackToThisBranch(_homeGroup[_index]);
     }

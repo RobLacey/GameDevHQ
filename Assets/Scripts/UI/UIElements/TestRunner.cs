@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using NaughtyAttributes;
 
-public class TestRunner : MonoBehaviour
+public class TestRunner : MonoBehaviour, IEventUser
 {
     [SerializeField] private UINode _lastHighlighted;
     [SerializeField] private UINode _lastSelected;
@@ -39,15 +37,28 @@ public class TestRunner : MonoBehaviour
     private void Awake()
     {
         _onHomeScreen = true;
+        ObserveEvents();
+    }
+
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SaveLastHighlighted, this);
+        EventLocator.SubscribeToEvent<ISelectedNode, INode>(SaveLastSelected, this);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SaveLastHighlighted);
+        EventLocator.UnsubscribeFromEvent<ISelectedNode, INode>(SaveLastSelected);
     }
 
     private void OnEnable()
     {
-        _uiDataEvents.SubscribeToHighlightedNode(SaveLastHighlighted);
-        _uiDataEvents.SubscribeToSelectedNode(SaveLastSelected);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
     }
+
+    private void OnDisable() => RemoveFromEvents();
 
     [Button ()]
     public void Button_Event1()
@@ -95,4 +106,5 @@ public class TestRunner : MonoBehaviour
     {
         Debug.Log(_test5Test + " : " + value);
     }
+
 }

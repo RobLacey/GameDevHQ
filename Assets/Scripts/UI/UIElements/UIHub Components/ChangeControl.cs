@@ -5,20 +5,20 @@ using UnityEngine;
 /// Class that handles switching control from the mouse to a keyboard or controller
 /// </summary>
 ///
-public class ChangeControl
+public class ChangeControl : IEventUser
 {
     public ChangeControl(InputScheme inputScheme, bool startInGame)
     {
         _controlMethod = inputScheme.ControlType;
         _inputScheme = inputScheme;
         _startInGame = startInGame;
+        ObserveEvents();
         OnEnable();
     }
 
     //Variables
     private readonly ControlMethod _controlMethod;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
-    private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private readonly bool _startInGame;
     private bool _usingMouse;
@@ -28,9 +28,8 @@ public class ChangeControl
     private UIBranch _activeBranch;
     private bool _gameIsPaused;
     private readonly InputScheme _inputScheme;
- 
+
     //Events
-    public static event Action<bool> DoAllowKeys;
     public static event Func<UIBranch> ReturnNextPopUp; 
 
     //Properties
@@ -38,14 +37,27 @@ public class ChangeControl
     private void SaveActiveBranch(UIBranch newNode) => _activeBranch = newNode;
     private void SaveNoPopUps(bool noPopUps) => _noPopUps = noPopUps;
     private void SaveGameIsPaused(bool isPaused) => _gameIsPaused = isPaused;
+    private static CustomEvent<IAllowKeys, bool> AllowKeysEvent { get; } 
+        = new CustomEvent<IAllowKeys, bool>();
+
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IChangeControlsPressed>(listener: ChangeControlType, caller: this);
+        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(listener: SaveGameIsPaused, caller: this);
+        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(listener: SaveHighlighted, caller: this);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IChangeControlsPressed>(listener: ChangeControlType);
+        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(listener: SaveGameIsPaused);
+        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(listener: SaveHighlighted);
+    }
 
     private void OnEnable()
     {
-        _uiDataEvents.SubscribeToHighlightedNode(SaveHighlighted);
         _uiDataEvents.SubscribeToOnStart(StartGame);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
-        _uiControlsEvents.SubscribeOnChangeControls(ChangeControlType);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
     }
 
@@ -128,8 +140,8 @@ public class ChangeControl
     private void SetAllowKeys()
     {
         if (_controlMethod == ControlMethod.MouseOnly) return;
-        DoAllowKeys?.Invoke(_usingKeysOrCtrl);
-    }
+        AllowKeysEvent?.RaiseEvent(_usingKeysOrCtrl);
+   }
 
     //Must track active branch in case user closes branches while PopUps are open
     private void SetNextHighlightedForKeys() 

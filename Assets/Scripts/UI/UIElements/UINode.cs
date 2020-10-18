@@ -9,7 +9,7 @@ using NaughtyAttributes;
 
 public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler,
                               IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler, 
-                              ISelectHandler, IDisabled, INode, IServiceUser
+                              ISelectHandler, IDisabled, INode, IServiceUser, IEventUser
 {
     [Header("Main Settings")]
     [HorizontalLine(1, color: EColor.Blue, order = 1)]
@@ -67,15 +67,18 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool _isDisabled, _inMenu, _allowKeys;
     private UIToggles _toggleGroups;
     private UIDataEvents _uiDataEvents;
-    private UIControlsEvents _uiControlsEvents;
     private INode _lastHighlighted;
     private UiActions _uiActions;
     private List<NodeFunctionBase> _list;
     private IHistoryTrack _uiHistoryTrack;
 
     //Events
-    public static event Action<EscapeKey> DoCancelButtonPressed;
-    public static event Action<INode> DoHighlighted, DoSelected; 
+    private static CustomEvent<IHighlightedNode, INode> DoHighlighted { get; } 
+        = new CustomEvent<IHighlightedNode, INode>();
+    private static CustomEvent<ISelectedNode, INode> DoSelected { get; } 
+        = new CustomEvent<ISelectedNode, INode>();
+    private static CustomEvent<ICancelButtonActivated, EscapeKey> CancelButtonActive { get; } 
+        = new CustomEvent<ICancelButtonActivated, EscapeKey>();
     
     //Properties & Enums
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
@@ -143,7 +146,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         AmSlider = GetComponent<Slider>();
         MyBranch = GetComponentInParent<UIBranch>();
         _uiDataEvents = new UIDataEvents();
-        _uiControlsEvents = new UIControlsEvents();
+        //_uiControlsEvents = new UIControlsEvents();
         if (_tabBranch && IsToggleGroup)
             _tabBranch.IsTabBranch();
         SetUpUiFunctions();
@@ -176,10 +179,22 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private void OnEnable()
     {
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
-        _uiDataEvents.SubscribeToHighlightedNode(SaveHighLighted);
-        _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
+        ObserveEvents();
     }
-    
+
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IAllowKeys, bool>(SaveAllowKeys, this);
+        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SaveHighLighted, this);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IAllowKeys, bool>(SaveAllowKeys);
+        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SaveHighLighted);
+    }
+
+
     public void SubscribeToService()
     {
         _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
@@ -247,7 +262,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool CancelOrBackButton()
     {
         if (!IsCancelOrBack) return false;
-        DoCancelButtonPressed?.Invoke(_escapeKeyFunction);
+        CancelButtonActive?.RaiseEvent(_escapeKeyFunction);
+        //DoCancelButtonPressed?.Invoke(_escapeKeyFunction);
         return true;
     }
 
@@ -328,8 +344,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     
     public void ThisNodeIsSelected()
     {
-        DoSelected?.Invoke(this);
+        DoSelected?.RaiseEvent(this);
     }
 
-    public void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this);
+    public void ThisNodeIsHighLighted() => DoHighlighted?.RaiseEvent(this);
 }

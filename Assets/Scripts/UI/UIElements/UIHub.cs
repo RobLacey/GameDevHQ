@@ -12,7 +12,7 @@ using NaughtyAttributes;
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(UIInput))]
 
-public partial class UIHub : MonoBehaviour
+public class UIHub : MonoBehaviour, IEventUser
 {
     [SerializeField]
     [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")]
@@ -29,6 +29,7 @@ public partial class UIHub : MonoBehaviour
     private InputScheme _inputScheme;
     private UICancel _cancel;
     private UIHomeGroup _homeGroup;
+    private PopUpController _popUpController;
     
     //Properties
     private void SaveInMenu(bool isInMenu)
@@ -41,30 +42,41 @@ public partial class UIHub : MonoBehaviour
     {
         _inputScheme = GetComponent<UIInput>().ReturnScheme;
         _startingInGame = GetComponent<UIInput>().StartInGame();
-        //ServiceLocator.AddService<IBucketCreator>(new BucketCreator(transform, "Tooltip Holder"));
-        // ServiceLocator.AddService<IAudioService>(new UIAudioManager(GetComponent<AudioSource>()));
         CreateSubClasses();
+        ObserveEvents();
     }
 
     private void CreateSubClasses()
     {
-        var unused = new PopUpController();
+        _popUpController = new PopUpController();
         _homeGroup = new UIHomeGroup(_homeBranches.ToArray());
         _cancel = new UICancel(_inputScheme.GlobalCancelAction);
     }
+    
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SetLastHighlighted, this);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SetLastHighlighted);
+    }
+
 
     private void OnEnable()
     {
-        _uiDataEvents.SubscribeToHighlightedNode(SetLastHighlighted);
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
     }
 
     private void OnDisable()
     {
+        RemoveFromEvents();
         _homeGroup.OnDisable();
         _cancel.OnDisable();
+        _popUpController.RemoveFromEvents();
     }
-
+    
     private void Start()
     {
         ServiceLocator.AddService<IAudioService>(new UIAudioManager(GetComponent<AudioSource>()));

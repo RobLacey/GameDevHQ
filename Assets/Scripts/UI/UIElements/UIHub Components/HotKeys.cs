@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [Serializable]
-public class HotKeys : IServiceUser
+public class HotKeys : IServiceUser, IEventUser
 {
     [SerializeField] 
     private HotKey _hotKeyInput;
@@ -33,6 +33,17 @@ public class HotKeys : IServiceUser
         OnEnable();
     }
     
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveIsPaused, this);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveIsPaused);
+    }
+
+    
     public void SubscribeToService()
     {
         _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
@@ -51,7 +62,6 @@ public class HotKeys : IServiceUser
 
     public void OnEnable()
     {
-        _uiDataEvents.SubscribeToGameIsPaused(SaveIsPaused);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
     }
@@ -93,5 +103,4 @@ public class HotKeys : IServiceUser
         _parentNode.ThisNodeIsHighLighted();
         _parentNode.SetNodeAsSelected_NoEffects();
     }
-
 }

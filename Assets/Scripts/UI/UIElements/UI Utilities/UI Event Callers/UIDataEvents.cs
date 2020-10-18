@@ -2,9 +2,9 @@
 
 public class UIDataEvents : UiEventCaller
 {
-    private CustomEventHandler<bool> _gameIsPaused;
-    private CustomEventHandler<INode> _highlightedNode;
-    private CustomEventHandler<INode> _selectedNode;
+    //private CustomEventHandler<bool> _gameIsPaused;
+    //private CustomEventHandler<INode> _highlightedNode;
+   // private CustomEventHandler<INode> _selectedNode;
     private CustomEventHandler<UIBranch> _activeBranch;
     private CustomEventHandler<UIBranch> _setUpBranchesAtStart;
     private CustomEventHandler _onStartUp;
@@ -14,9 +14,9 @@ public class UIDataEvents : UiEventCaller
 
     protected override void OnExit()
     {
-        if (_gameIsPaused != null) PauseMenu.OnGamePaused -= _gameIsPaused.Event;
-        if (_highlightedNode != null) UINode.DoHighlighted -= _highlightedNode.Event;
-        if (_selectedNode != null) UINode.DoSelected -= _selectedNode.Event;
+        //if (_gameIsPaused != null) PauseMenu.OnGamePaused -= _gameIsPaused.Event;
+        //if (_highlightedNode != null) UINode.DoHighlighted -= _highlightedNode.Event;
+        //if (_selectedNode != null) UINode.DoSelected -= _selectedNode.Event;
         if (_activeBranch != null) UIBranch.SetActiveBranch -= _activeBranch.Event;
         if (_setUpBranchesAtStart != null) UIHub.SetUpBranchesAtStart -= _setUpBranchesAtStart.Event;
         if (_onStartUp != null) UIHub.OnStart -= _onStartUp.Event;
@@ -25,23 +25,23 @@ public class UIDataEvents : UiEventCaller
         if (_inMenu != null) MenuAndGameSwitching.IsInTheMenu -= _inMenu.Event;
     }
 
-    public void SubscribeToGameIsPaused(Action<bool> subscriber)
-    {
-        _gameIsPaused = new CustomEventHandler<bool>();
-        PauseMenu.OnGamePaused += _gameIsPaused.Add(subscriber);
-    }
+    // public void SubscribeToGameIsPaused(Action<bool> subscriber)
+    // {
+    //     _gameIsPaused = new CustomEventHandler<bool>();
+    //     PauseMenu.OnGamePaused += _gameIsPaused.Add(subscriber);
+    // }
 
-    public void SubscribeToHighlightedNode(Action<INode> subscriber)
-    {
-        _highlightedNode = new CustomEventHandler<INode>();
-        UINode.DoHighlighted += _highlightedNode.Add(subscriber);
-    }
+    // public void SubscribeToHighlightedNode(Action<INode> subscriber)
+    // {
+    //     _highlightedNode = new CustomEventHandler<INode>();
+    //     UINode.DoHighlighted += _highlightedNode.Add(subscriber);
+    // }
 
-    public void SubscribeToSelectedNode(Action<INode> subscriber)
-    {
-        _selectedNode = new CustomEventHandler<INode>();
-        UINode.DoSelected += _selectedNode.Add(subscriber);
-    }
+    // public void SubscribeToSelectedNode(Action<INode> subscriber)
+    // {
+    //     _selectedNode = new CustomEventHandler<INode>();
+    //     UINode.DoSelected += _selectedNode.Add(subscriber);
+    // }
 
     public void SubscribeToActiveBranch(Action<UIBranch> subscriber)
     {

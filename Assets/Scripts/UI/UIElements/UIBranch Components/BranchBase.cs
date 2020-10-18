@@ -1,6 +1,6 @@
 ﻿using System;
 
-public abstract class BranchBase
+public abstract class BranchBase : IEventUser
 {
     protected BranchBase(UIBranch branch)
     {
@@ -11,7 +11,6 @@ public abstract class BranchBase
     protected readonly UIBranch _myBranch;
     protected readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     protected readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
-    protected readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     protected readonly ScreenData _screenData = new ScreenData();
     protected bool _onHomeScreen = true, _noResolvePopUps = true;
     protected bool _inMenu, _canStart, _gameIsPaused;
@@ -43,13 +42,28 @@ public abstract class BranchBase
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiDataEvents.SubscribeToOnStart(SaveOnStart);
         _uiDataEvents.SubscribeToBackOrCancel(MoveBackToThisBranch);
-        _uiDataEvents.SubscribeToGameIsPaused(SaveIfGamePaused);
         _uiDataEvents.SubscribeSetUpBranchesAtStart(SetUpBranchesOnStart);
         _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
+        ObserveEvents();
         DoClearScreen += ClearBranchForFullscreen;
     }
+
+    public virtual void OnDisable()
+    {
+        RemoveFromEvents();
+        _screenData.RemoveFromEvents();
+    }
     
-    public virtual void OnDisable() { }
+    public virtual void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveIfGamePaused, this);
+    }
+
+    public virtual void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveIfGamePaused);
+    }
+
 
     protected virtual void SetUpBranchesOnStart(UIBranch startBranch)
     {
@@ -94,4 +108,5 @@ public abstract class BranchBase
     
     protected static void ReturnToMenuOrGame((UIBranch nextPopUp, UIBranch currentPopUp) data) 
         => data.nextPopUp.MoveToBranchWithoutTween();
+
 }

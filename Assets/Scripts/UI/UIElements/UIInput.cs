@@ -5,17 +5,14 @@ using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
 
-public interface IPausePressed { }
-public interface ICancelPressed { }
-
-
-public class UIInput : MonoBehaviour
+public class UIInput : MonoBehaviour, IEventUser
 {
-    [SerializeField] private InputScheme _inputScheme;
-    [SerializeField] private InGameOrInMenu _returnToGameControl;
+    [SerializeField] 
+    private InputScheme _inputScheme;
+    [SerializeField] 
+    private InGameOrInMenu _returnToGameControl;
     [SerializeField] 
     [ReorderableList] private List<HotKeys> _hotKeySettings;
-
 
     //Variables
     private bool _canStart, _inMenu, _gameIsPaused;
@@ -26,13 +23,17 @@ public class UIInput : MonoBehaviour
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private UIBranch _activeBranch;
     private MenuAndGameSwitching _menuToGameSwitching;
+    private ChangeControl _changeControl;
 
     //Events
-    public static event Action OnChangeControls/*, OnCancelPressed*/;
-    public static event Action<SwitchType> OnSwitchGroupsPressed;
-    public static event Func<bool> OnGameToMenuSwitchPressed;
-    private ICustomEvent<IPausePressed> OnPausePressed { get; set; }
-    private ICustomEvent<ICancelPressed> OnCancelPressed { get; set; }
+    private static CustomEvent<IMenuGameSwitchingPressed> OnMenuAndGameSwitch { get; } 
+        = new CustomEvent<IMenuGameSwitchingPressed>();
+    private static CustomEvent<IPausePressed> OnPausePressed { get; } = new CustomEvent<IPausePressed>();
+    private static CustomEvent<ICancelPressed> OnCancelPressed { get; } = new CustomEvent<ICancelPressed>();
+    private static CustomEvent<IChangeControlsPressed> OnChangeControlPressed { get; } 
+        = new CustomEvent<IChangeControlsPressed>();
+    private static CustomEvent<ISwitchGroupPressed, SwitchType> OnSwitchGroupPressed { get; } 
+        = new CustomEvent<ISwitchGroupPressed, SwitchType>();
     
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
@@ -69,13 +70,12 @@ public class UIInput : MonoBehaviour
     private void Awake()
     {
         _inputScheme.OnAwake();
-        OnPausePressed = new CustomEvent<IPausePressed>();
-        OnCancelPressed = new CustomEvent<ICancelPressed>();
-        var unused4 = new ChangeControl(_inputScheme, StartInGame());
+        _changeControl = new ChangeControl(_inputScheme, StartInGame());
         _menuToGameSwitching = new MenuAndGameSwitching();
         if (_inputScheme.InGameMenuSystem == InGameSystem.On)
             _menuToGameSwitching.StartWhere = _inputScheme.WhereToStartGame;
         SetUpHotKeys();
+        ObserveEvents();
     }
     
     private void SetUpHotKeys()
@@ -86,6 +86,16 @@ public class UIInput : MonoBehaviour
             hotKey.OnAwake(_inputScheme);
         }
     }
+    
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveGameIsPaused, this);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveGameIsPaused);
+    }
 
 
     private void OnEnable()
@@ -93,9 +103,19 @@ public class UIInput : MonoBehaviour
         _uiDataEvents.SubscribeToInMenu(SaveInMenu);
         _uiDataEvents.SubscribeToOnStart(SaveOnStart);
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
         _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
+    }
+
+    private void OnDisable()
+    {
+        RemoveFromEvents();
+        _changeControl.RemoveFromEvents();
+        _menuToGameSwitching.RemoveFromEvents();
+        foreach (HotKeys hotKeys in _hotKeySettings)
+        {
+            hotKeys.RemoveFromEvents();
+        }
     }
 
     private void Start()
@@ -103,6 +123,7 @@ public class UIInput : MonoBehaviour
         foreach (HotKeys hotKey in _hotKeySettings)
         {
             hotKey.SubscribeToService();
+            hotKey.ObserveEvents();
         }
     }
 
@@ -133,20 +154,20 @@ public class UIInput : MonoBehaviour
         
         if (CanSwitchBranches() && SwitchGroupProcess()) return;
 
-        OnChangeControls?.Invoke();
+        OnChangeControlPressed?.RaiseEvent();
     }
 
     private bool CanPauseGame() => _inputScheme.PressPause();
 
     private void PausedPressedActions()
     {
-        OnPausePressed.RaiseEvent();
+        OnPausePressed?.RaiseEvent();
     }
 
     private bool CanSwitchBetweenInGameAndMenu()
     {
         if (!_inputScheme.PressedMenuToGameSwitch()) return false;
-        OnGameToMenuSwitchPressed?.Invoke(); //Might need to move
+        OnMenuAndGameSwitch?.RaiseEvent();
         return true;
     }
 
@@ -154,7 +175,7 @@ public class UIInput : MonoBehaviour
     {
         if (!_hotKeySettings.Any(hotKey => hotKey.CheckHotKeys())) return false;
         if(!_inMenu)
-            OnGameToMenuSwitchPressed?.Invoke();
+            OnMenuAndGameSwitch?.RaiseEvent();
         return true;
     }
 
@@ -168,8 +189,7 @@ public class UIInput : MonoBehaviour
          }
          else
          {
-             OnCancelPressed.RaiseEvent();
-             //OnCancelPressed?.Invoke();
+             OnCancelPressed?.RaiseEvent();
          }
     }
 
@@ -185,13 +205,13 @@ public class UIInput : MonoBehaviour
     {
         if (_inputScheme.PressedPositiveSwitch())
         {
-            OnSwitchGroupsPressed?.Invoke(SwitchType.Positive);
+            OnSwitchGroupPressed?.RaiseEvent(SwitchType.Positive);
             return true;
         }
 
         if (_inputScheme.PressedNegativeSwitch())
         {
-            OnSwitchGroupsPressed?.Invoke(SwitchType.Negative);
+            OnSwitchGroupPressed?.RaiseEvent(SwitchType.Negative);
             return true;
         }
         return false;

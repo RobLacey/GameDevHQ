@@ -29,7 +29,6 @@ public class UITooltip : NodeFunctionBase,  IServiceUser
     private ToolTipsCalcs _calculation;
     private int _index;
     private float _buildDelay;
-    private UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private IBucketCreator _bucketCreator;
 
     //Enums & Properties
@@ -59,12 +58,21 @@ public class UITooltip : NodeFunctionBase,  IServiceUser
         SubscribeToService();
     }
 
+    public override void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IAllowKeys, bool>(SaveAllowKeys, this);
+    }
+
+    public override void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IAllowKeys, bool>(SaveAllowKeys);
+    }
+
     private void SetUp(RectTransform rectTransform)
     {
         if (FunctionNotActive()) return;
         _parentRectTransform = rectTransform;
         _calculation = new ToolTipsCalcs(_mainCanvas, _scheme.ScreenSafeZone);
-        _uiControlsEvents.SubscribeToAllowKeys(SaveAllowKeys);
         SetUpTooltips();
         CheckSetUpForError();
     }

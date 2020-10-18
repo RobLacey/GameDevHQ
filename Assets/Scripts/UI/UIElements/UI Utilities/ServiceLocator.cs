@@ -54,7 +54,7 @@ public static class ServiceLocator
     //
     private static void CheckForWaitingServiceUser(Type type)
     {
-        if(waitingForServicesStore.Count == 0) return;
+        if(waitingForServicesStore.Count == 0 || !waitingForServicesStore.ContainsKey(type)) return;
         
         foreach (var service in waitingForServicesStore[type])
         {

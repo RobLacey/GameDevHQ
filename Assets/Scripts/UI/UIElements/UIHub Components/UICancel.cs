@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 /// <summary>
 /// Class handles all UI cancel behaviour from cancel type to context sensitive cases
@@ -15,7 +14,6 @@ public class UICancel : IServiceUser, IEventUser
     //Variables
     private readonly EscapeKey _globalEscapeSetting;
     private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
-    private readonly UIControlsEvents _uiControlsEvents = new UIControlsEvents();
     private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private INode _lastHighlighted;
     private UIBranch _activeBranch;
@@ -38,35 +36,33 @@ public class UICancel : IServiceUser, IEventUser
     private void OnEnable()
     {
         _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiDataEvents.SubscribeToHighlightedNode(SaveLastHighlighted);
-        _uiDataEvents.SubscribeToGameIsPaused(SaveGameIsPaused);
-        _uiControlsEvents.SubscribeCancelOrBackButtonPressed(ProcessCancelType);
-        //_uiControlsEvents.SubscribeOnCancel(CancelPressed);
         _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
         SubscribeToService();
         ObserveEvents();
     }
 
-    public void OnDisable()
-    {
-        RemoveFromEvents();
-    }
-    
+    public void OnDisable() => RemoveFromEvents();
+
     public void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<ICancelPressed>(CancelPressed);
+        EventLocator.SubscribeToEvent<ICancelPressed>(CancelPressed, this);
+        EventLocator.SubscribeToEvent<ICancelButtonActivated, EscapeKey>(ProcessCancelType, this);
+        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveGameIsPaused, this);
+        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SaveLastHighlighted, this);
     }
 
     public void RemoveFromEvents()
     {
         EventLocator.UnsubscribeFromEvent<ICancelPressed>(CancelPressed);
+        EventLocator.UnsubscribeFromEvent<ICancelButtonActivated, EscapeKey>(ProcessCancelType);
+        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveGameIsPaused);
+        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SaveLastHighlighted);
     }
 
     public void SubscribeToService()
     {
         _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
-        //return _uiHistoryTrack is null;
     }
 
 

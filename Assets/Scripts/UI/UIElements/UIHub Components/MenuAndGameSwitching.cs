@@ -1,15 +1,12 @@
 ﻿using System;
-using UnityEngine;
 
-public class MenuAndGameSwitching
+public class MenuAndGameSwitching : IEventUser
 {
     public MenuAndGameSwitching() => OnAwake();
 
     //Variables
     private UIDataEvents _uiDataEvents;
-    private UIControlsEvents _uiControlsEvents;
     private UIPopUpEvents _uiPopUpEvents;
-    // private bool _onHomeScreen = true;
     private bool _noPopUps = true;
     private bool _wasInGame;
 
@@ -18,7 +15,6 @@ public class MenuAndGameSwitching
 
     //Properties
     private bool InTheMenu { get; set; } = true;
-    // private void SaveOnHomeScreen (bool onHomeScreen) => _onHomeScreen = onHomeScreen;
     public StartInMenu StartWhere { get; set; }
 
     private void SaveNoPopUps(bool noActivePopUps)
@@ -31,25 +27,34 @@ public class MenuAndGameSwitching
     private void OnAwake()
     {
         _uiDataEvents = new UIDataEvents();
-        _uiControlsEvents = new UIControlsEvents();
         _uiPopUpEvents = new UIPopUpEvents();
         OnEnable();
+        ObserveEvents();
     }
+    
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IMenuGameSwitchingPressed>(CheckForActivation, this);
+        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(WhenTheGameIsPaused, this);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IMenuGameSwitchingPressed>(CheckForActivation);
+        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(WhenTheGameIsPaused);
+    }
+
 
     private void OnEnable()
     {
         _uiDataEvents.SubscribeToOnStart(StartUp);
-        _uiDataEvents.SubscribeToGameIsPaused(WhenTheGameIsPaused);
-        //_uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
         _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
-        _uiControlsEvents.SubscribeMenuGameSwitching(CheckForActivation);
     }
     
-    private bool CheckForActivation()
+    private void CheckForActivation()
     {
-        if (/*!_onHomeScreen || */!_noPopUps) return false;
+        if (!_noPopUps) return;
         SwitchBetweenGameAndMenu();
-        return true;
     }
     
     private void PopUpEventHandler()
