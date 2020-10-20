@@ -1,9 +1,11 @@
 ﻿using System;
 
+interface ICancel : IMonoBehaviourSub { }
+
 /// <summary>
 /// Class handles all UI cancel behaviour from cancel type to context sensitive cases
 /// </summary>
-public class UICancel : IServiceUser, IEventUser
+public class UICancel : ICancel, IServiceUser, IEventUser
 {
     public UICancel(EscapeKey globalSetting)
     {
@@ -13,8 +15,6 @@ public class UICancel : IServiceUser, IEventUser
 
     //Variables
     private readonly EscapeKey _globalEscapeSetting;
-    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
-    private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private INode _lastHighlighted;
     private UIBranch _activeBranch;
     private bool _gameIsPaused;
@@ -23,8 +23,10 @@ public class UICancel : IServiceUser, IEventUser
     private IHistoryTrack _uiHistoryTrack;
 
     //Events
-    public static event Action<UIBranch> OnBackOrCancel; 
-    public static event Action<UIBranch> OnBackToAPopUp; 
+    private static CustomEvent<IBackToNextPopUp, UIBranch> OnBackToAPopUp { get; } 
+        = new CustomEvent<IBackToNextPopUp, UIBranch>();
+    private static CustomEvent<IBackOrCancel, UIBranch> OnBackOrCancel { get;  } 
+        = new CustomEvent<IBackOrCancel, UIBranch>();
 
     //Properties
     private void SaveLastHighlighted(INode newNode) => _lastHighlighted = newNode;
@@ -33,11 +35,8 @@ public class UICancel : IServiceUser, IEventUser
     private void SaveNoPopUps(bool noPopUps) => _noPopUps = noPopUps;
     private void SaveGameIsPaused(bool isPaused) => _gameIsPaused = isPaused;
 
-    private void OnEnable()
+    public void OnEnable()
     {
-        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiPopUpEvents.SubscribeNoResolvePopUps(SaveNoResolvePopUps);
-        _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
         SubscribeToService();
         ObserveEvents();
     }
@@ -50,6 +49,9 @@ public class UICancel : IServiceUser, IEventUser
         EventLocator.SubscribeToEvent<ICancelButtonActivated, EscapeKey>(ProcessCancelType, this);
         EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveGameIsPaused, this);
         EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SaveLastHighlighted, this);
+        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
+        EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoPopUps, this);
+        EventLocator.SubscribeToEvent<INoResolvePopUp, bool>(SaveNoResolvePopUps, this);
     }
 
     public void RemoveFromEvents()
@@ -58,6 +60,9 @@ public class UICancel : IServiceUser, IEventUser
         EventLocator.UnsubscribeFromEvent<ICancelButtonActivated, EscapeKey>(ProcessCancelType);
         EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveGameIsPaused);
         EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SaveLastHighlighted);
+        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
+        EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoPopUps);
+        EventLocator.UnsubscribeFromEvent<INoResolvePopUp, bool>(SaveNoResolvePopUps);
     }
 
     public void SubscribeToService()
@@ -112,6 +117,6 @@ public class UICancel : IServiceUser, IEventUser
     private void BackOneLevel() => _uiHistoryTrack.BackOneLevel();
     private void BackToHome() => _uiHistoryTrack.BackToHome();
     private void CancelTimedPopUp() => InvokeCancelEvent(_lastHighlighted.MyBranch);
-    private void ToNextPopUp() => OnBackToAPopUp?.Invoke(_lastHighlighted.MyBranch);
-    private static void InvokeCancelEvent(UIBranch targetBranch) => OnBackOrCancel?.Invoke(targetBranch);
+    private void ToNextPopUp() => OnBackToAPopUp?.RaiseEvent(_lastHighlighted.MyBranch);
+    private static void InvokeCancelEvent(UIBranch targetBranch) => OnBackOrCancel?.RaiseEvent(targetBranch);
 }

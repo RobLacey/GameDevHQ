@@ -1,32 +1,33 @@
 ﻿using UnityEngine;
 
+public interface IHomeGroup : IMonoBehaviourSub { }
+
 /// <summary>
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
 /// is for keyboard or controller. Differ from internal branch groups as involve Branches not Nodes
 /// </summary>
-public class UIHomeGroup : IServiceUser, IEventUser
+public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
 {
-    public UIHomeGroup(UIBranch[] homeBranches)
+    public UIHomeGroup(UIBranch[] homeGroupBranches)
     {
-        _homeGroup = homeBranches;
+        _homeGroup = homeGroupBranches;
         OnEnable();
     }
-
+    
     //Variables
     private readonly UIBranch[] _homeGroup;
-    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private bool _onHomeScreen = true;
+    private bool _gameIsPaused = false;
     private int _index;
     private UIBranch _lastActiveHomeBranch;
     private IHistoryTrack _uiHistoryTrack;
     
     //Properties
     private void SaveOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
+    private void GameIsPaused(bool paused) => _gameIsPaused = paused;
 
-    private void OnEnable()
+    public void OnEnable()
     {
-        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
         SubscribeToService();
         ObserveEvents();
     }
@@ -37,11 +38,17 @@ public class UIHomeGroup : IServiceUser, IEventUser
     {
         EventLocator.SubscribeToEvent<IReturnToHome>(SetHomeGroup, this);
         EventLocator.SubscribeToEvent<ISwitchGroupPressed, SwitchType>(SwitchHomeGroups, this);
+        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
+        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(GameIsPaused, this);
+        EventLocator.SubscribeToEvent<IOnHomeScreen, bool>(SaveOnHomeScreen, this);
     }
     public void RemoveFromEvents()
     {
         EventLocator.UnsubscribeFromEvent<IReturnToHome>(SetHomeGroup);
         EventLocator.UnsubscribeFromEvent<ISwitchGroupPressed, SwitchType>(SwitchHomeGroups);
+        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
+        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(GameIsPaused);
+        EventLocator.UnsubscribeFromEvent<IOnHomeScreen, bool>(SaveOnHomeScreen);
     }
 
     public void SubscribeToService()
@@ -49,7 +56,6 @@ public class UIHomeGroup : IServiceUser, IEventUser
         _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
         //return _uiHistoryTrack is null;
     }
-
 
     private void SwitchHomeGroups(SwitchType switchType)
     {
@@ -76,7 +82,7 @@ public class UIHomeGroup : IServiceUser, IEventUser
 
     private void SaveActiveBranch(UIBranch newBranch)
     {
-        if(newBranch.IsAPopUpBranch() || newBranch.IsPauseMenuBranch()) return;
+        if(newBranch.IsAPopUpBranch() || newBranch.IsPauseMenuBranch() || _gameIsPaused) return;
         if(_lastActiveHomeBranch == newBranch) return;
         _lastActiveHomeBranch = newBranch;
         FindHomeScreenBranch(newBranch);

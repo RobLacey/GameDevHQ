@@ -99,7 +99,7 @@ public class UINavigation : NodeFunctionBase, IServiceUser
 
     private void HandleMove(UINode moveTo) => moveTo.CheckIfMoveAllowed(_moveDirection);
 
-    private protected override void ProcessPress() //TODO REJIG
+    private protected override void ProcessPress()
     {
         if(FunctionNotActive() || !CanBePressed() || _childBranch is null) return;
 

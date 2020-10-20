@@ -26,10 +26,22 @@ public class OldSystem : InputScheme
     [InputAxis] private string _hotKey3;
     [SerializeField] 
     [InputAxis] private string _hotKey4;
+    [SerializeField] 
+    [InputAxis] private string _hotKey5;
+    [SerializeField] 
+    [InputAxis] private string _hotKey6;
+    [SerializeField] 
+    [InputAxis] private string _hotKey7;
+    [SerializeField] 
+    [InputAxis] private string _hotKey8;
+    [SerializeField] 
+    [InputAxis] private string _hotKey9;
+    [SerializeField] 
+    [InputAxis] private string _hotKey0;
 
     //Variables
     private bool _hasPauseAxis, _hasPosSwitchAxis, _hasNegSwitchAxis, _hasCancelAxis, _hasSwitchToMenusButton
-        , _hasHotKey1, _hasHotKey2, _hasHotKey3, _hasHotKey4;
+        , _hasHotKey1, _hasHotKey2, _hasHotKey3, _hasHotKey4, _hasHotKey5;
     
     //Properties and Setter/Getters
     protected override string PauseButton => _pauseOptionButton;
@@ -56,6 +68,7 @@ public class OldSystem : InputScheme
         _hasHotKey2 = _hotKey2 != string.Empty;
         _hasHotKey3 = _hotKey3 != string.Empty;
         _hasHotKey4 = _hotKey4 != string.Empty;
+        _hasHotKey5 = _hotKey5 != string.Empty;
     }
 
     public override bool PressPause() => _hasPauseAxis && Input.GetButtonDown(PauseButton);
@@ -77,6 +90,8 @@ public class OldSystem : InputScheme
                 return _hasHotKey3 & Input.GetButtonDown(_hotKey3);
             case HotKey.HotKey4:
                 return _hasHotKey4 & Input.GetButtonDown(_hotKey4);
+            case HotKey.HotKey5:
+                return _hasHotKey5 & Input.GetButtonDown(_hotKey5);
             default:
                 throw new ArgumentOutOfRangeException(nameof(hotKey), hotKey, null);
         }

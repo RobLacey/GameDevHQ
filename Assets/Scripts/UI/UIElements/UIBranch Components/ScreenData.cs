@@ -1,17 +1,9 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public class ScreenData : IEventUser
 {
-    public ScreenData()
-    {
-        _uiDataEvents.SubscribeToInMenu(SaveInMenu);
-        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
-        ObserveEvents();
-    }
+    public ScreenData() => ObserveEvents();
 
-    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private readonly List<UIBranch> _clearedBranches = new List<UIBranch>();
     public INode _lastSelected;
     public UIBranch _activeBranch;
@@ -21,11 +13,17 @@ public class ScreenData : IEventUser
     public void ObserveEvents()
     {
         EventLocator.SubscribeToEvent<ISelectedNode, INode>(SaveSelected, this);
+        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
+        EventLocator.SubscribeToEvent<IOnHomeScreen,bool>(SaveOnHomeScreen, this);
+        EventLocator.SubscribeToEvent<IInMenu, bool>(SaveInMenu, this);
     }
 
     public void RemoveFromEvents()
     {
         EventLocator.UnsubscribeFromEvent<ISelectedNode, INode>(SaveSelected);
+        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
+        EventLocator.UnsubscribeFromEvent<IOnHomeScreen, bool>(SaveOnHomeScreen);
+        EventLocator.UnsubscribeFromEvent<IInMenu, bool>(SaveInMenu);
     }
 
     private void SaveSelected(INode newNode)

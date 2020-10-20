@@ -1,4 +1,4 @@
-﻿public interface IHistoryTrack
+﻿public interface IHistoryTrack : IMonoBehaviourSub
 {
     void SetSelected(INode node);
     void BackToHome();

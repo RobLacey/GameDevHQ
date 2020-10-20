@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Scheme - Old
   m_EditorClassIdentifier: 
   _mainControlType: 2
-  _inGameMenuSystem: 0
-  _startGameWhere: 0
+  _inGameMenuSystem: 1
+  _startGameWhere: 1
   _pauseOptionsOnEscape: 0
-  _pauseFunction: 1
-  _atStartDelay: 2
+  _globalEscapeFunction: 2
+  _atStartDelay: 1
   _pauseOptionButton: Pause
   _posSwitchButton: Posivtive Group Switch
   _negSwitchButton: Negative Group Switch
@@ -27,3 +27,9 @@ MonoBehaviour:
   _hotKey2: HotKey 2
   _hotKey3: Hotkey 3
   _hotKey4: Hotkey 4
+  _hotKey5: Hotkey 5
+  _hotKey6: 
+  _hotKey7: 
+  _hotKey8: 
+  _hotKey9: 
+  _hotKey0: 

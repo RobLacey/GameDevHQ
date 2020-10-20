@@ -25,9 +25,8 @@ public class TestRunner : MonoBehaviour, IEventUser
         [SerializeField] public UnityEvent _event3;
         [SerializeField] public UnityEvent _event4;
         [SerializeField] public UnityEvent _event5;
+        [SerializeField] public UnityEvent _event6;
     }
-
-    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
 
     private void SaveLastHighlighted(INode newNode) => _lastHighlighted = newNode.ReturnNode;
     private void SaveLastSelected(INode newNode) => _lastSelected = newNode.ReturnNode;
@@ -44,18 +43,16 @@ public class TestRunner : MonoBehaviour, IEventUser
     {
         EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SaveLastHighlighted, this);
         EventLocator.SubscribeToEvent<ISelectedNode, INode>(SaveLastSelected, this);
+        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
+        EventLocator.SubscribeToEvent<IOnHomeScreen, bool>(SaveOnHomeScreen, this);
     }
 
     public void RemoveFromEvents()
     {
         EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SaveLastHighlighted);
         EventLocator.UnsubscribeFromEvent<ISelectedNode, INode>(SaveLastSelected);
-    }
-
-    private void OnEnable()
-    {
-        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
+        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
+        EventLocator.UnsubscribeFromEvent<IOnHomeScreen, bool>(SaveOnHomeScreen);
     }
 
     private void OnDisable() => RemoveFromEvents();
@@ -84,6 +81,11 @@ public class TestRunner : MonoBehaviour, IEventUser
     public void Button_Event5()
     {
         _eventsForTest._event5?.Invoke();
+    }
+    [Button]
+    public void Button_Event6()
+    {
+        _eventsForTest._event6?.Invoke();
     }
 
     public void PrintTest1()

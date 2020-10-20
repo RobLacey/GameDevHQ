@@ -19,7 +19,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
     [SerializeField] 
     [ShowIf("IsTimedPopUp")] private float _timer = 1f;
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "IsOptionalPopUp", "IsTimedPopUp", "IsHomeScreenBranch")]
+    [HideIf(EConditionOperator.Or, "IsOptional", "IsTimedPopUp", "IsHomeScreenBranch")]
     private ScreenType _screenType = ScreenType.FullScreen;
     [SerializeField] 
     [HideIf("IsAPopUpBranch")] 
@@ -52,7 +52,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
     //Variables
     private UITweener _uiTweener;
     private int _groupIndex;
-    private UIDataEvents _uiDataEvents;
     private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
     private bool _activePopUp;
 
@@ -71,11 +70,18 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
     public void DontSetBranchAsActive() => _canActivateBranch = false;
     public void IsTabBranch() => _branchType = BranchType.Standard;
 
+    /// <summary>
+    /// Call To to start any PopUps through I StartPopUp
+    /// </summary>
+    // ReSharper disable once UnusedMember.Global
+    public void StartPopUp() => OnStartPopUp?.Invoke();
     
     //Delegates
-    public static event Action<UIBranch> SetActiveBranch;
     public Action OnStartPopUp; 
     private Action OnFinishTweenCallBack;
+    
+    private static ICustomEvent<IActiveBranch, UIBranch> SetActiveBranch { get; } 
+        = new CustomEvent<IActiveBranch, UIBranch>();
 
     //InternalClasses
     [Serializable]
@@ -91,7 +97,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
         MyCanvasGroup = GetComponent<CanvasGroup>();
         _uiTweener = GetComponent<UITweener>();
         MyCanvas = GetComponent<Canvas>();
-        _uiDataEvents = new UIDataEvents();
         Branch = BranchFactory.AssignType(this, _branchType, FindObjectsOfType<UIBranch>());
         MyParentBranch = this;
         SetStartPositions();
@@ -103,6 +108,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
         EventLocator.SubscribeToEvent<ISwitchGroupPressed, SwitchType>(SwitchBranchGroup, this);
         EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SaveHighlighted, this);
         EventLocator.SubscribeToEvent<ISelectedNode, INode>(SaveSelected, this);
+        EventLocator.SubscribeToEvent<IOnHomeScreen, bool>(SaveIfOnHomeScreen, this);
     }
 
     public void RemoveFromEvents()
@@ -110,11 +116,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
         EventLocator.UnsubscribeFromEvent<ISwitchGroupPressed, SwitchType>(SwitchBranchGroup);
         EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SaveHighlighted);
         EventLocator.UnsubscribeFromEvent<ISelectedNode, INode>(SaveSelected);
-    }
-
-    private void OnEnable()
-    {
-        _uiDataEvents.SubscribeToOnHomeScreen(SaveIfOnHomeScreen);
+        EventLocator.UnsubscribeFromEvent<IOnHomeScreen, bool>(SaveIfOnHomeScreen);
     }
     
     private void OnDisable()
@@ -182,7 +184,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
          _tweenOnChange = true;
     }
     
-    private void SetAsActiveBranch() => SetActiveBranch?.Invoke(this);
+    private void SetAsActiveBranch() => SetActiveBranch?.RaiseEvent(this);
 
     private void SwitchBranchGroup(SwitchType switchType)
     {
@@ -275,12 +277,5 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
         _branchEvents?.OnBranchEnter.Invoke();
         _canActivateBranch = true;
     }
-
-    /// <summary>
-    /// Call To to start any PopUps through I StartPopUp
-    /// </summary>
-    // ReSharper disable once UnusedMember.Global
-    public void StartPopUp() => OnStartPopUp?.Invoke();
-
 }
 

@@ -267,20 +267,19 @@
               <e p="UI Utilities" t="Include">
                 <e p="BucketCreator.cs" t="Include" />
                 <e p="EventLocator" t="Include">
-                  <e p="CustomEventHandler.cs" t="Include" />
+                  <e p="CustomEvent.cs" t="Include" />
                   <e p="EventInterfaces.cs" t="Include" />
                   <e p="EventLocator.cs" t="Include" />
                 </e>
+                <e p="IMonoBehaviourSub.cs" t="Include" />
                 <e p="ServiceLocator.cs" t="Include" />
                 <e p="StaticCoroutine.cs" t="Include" />
-                <e p="UI Event Callers" t="Include">
-                  <e p="CustomEvent.cs" t="Include" />
-                  <e p="UIControlsEvents.cs" t="Include" />
+                <e p="UI Event Callers (Depreciated)" t="Include">
+                  <e p="CustomEventHandler.cs" t="Include" />
                   <e p="UIDataEvents.cs" t="Include" />
-                  <e p="UIPopUpEvents.cs" t="Include" />
+                  <e p="UiEventCaller.cs" t="Include" />
                 </e>
                 <e p="UIEnums.cs" t="Include" />
-                <e p="UiEventCaller.cs" t="Include" />
               </e>
               <e p="UIBranch Components" t="Include">
                 <e p="BranchBase.cs" t="Include" />
@@ -302,9 +301,11 @@
               <e p="UIBranch.cs" t="Include" />
               <e p="UIHub Components" t="Include">
                 <e p="ChangeControl.cs" t="Include" />
-                <e p="HistoryTracker.cs" t="Include" />
+                <e p="HistoryTracker" t="Include">
+                  <e p="HistoryTracker.cs" t="Include" />
+                  <e p="IHistoryTrack.cs" t="Include" />
+                </e>
                 <e p="HotKeys.cs" t="Include" />
-                <e p="IHistoryTrack.cs" t="Include" />
                 <e p="MenuAndGameSwitching.cs" t="Include" />
                 <e p="PopUpController.cs" t="Include" />
                 <e p="UIAudioManager.cs" t="Include" />

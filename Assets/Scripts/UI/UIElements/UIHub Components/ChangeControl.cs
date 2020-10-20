@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// Class that handles switching control from the mouse to a keyboard or controller
@@ -13,13 +12,10 @@ public class ChangeControl : IEventUser
         _inputScheme = inputScheme;
         _startInGame = startInGame;
         ObserveEvents();
-        OnEnable();
     }
 
     //Variables
     private readonly ControlMethod _controlMethod;
-    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
-    private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private readonly bool _startInGame;
     private bool _usingMouse;
     private bool _usingKeysOrCtrl;
@@ -30,7 +26,8 @@ public class ChangeControl : IEventUser
     private readonly InputScheme _inputScheme;
 
     //Events
-    public static event Func<UIBranch> ReturnNextPopUp; 
+    private static CustomEvent<IReturnNextPopUp, UIBranch> ReturnNextPopUp { get; } 
+        = new CustomEvent<IReturnNextPopUp, UIBranch>();
 
     //Properties
     private void SaveHighlighted(INode newNode) => _lastHighlighted = newNode;
@@ -42,23 +39,22 @@ public class ChangeControl : IEventUser
 
     public void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<IChangeControlsPressed>(listener: ChangeControlType, caller: this);
-        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(listener: SaveGameIsPaused, caller: this);
-        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(listener: SaveHighlighted, caller: this);
+        EventLocator.SubscribeToEvent<IChangeControlsPressed>(ChangeControlType, this);
+        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveGameIsPaused, this);
+        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SaveHighlighted, this);
+        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
+        EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoPopUps, this);
+        EventLocator.SubscribeToEvent<IOnStart>(StartGame, this);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<IChangeControlsPressed>(listener: ChangeControlType);
-        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(listener: SaveGameIsPaused);
-        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(listener: SaveHighlighted);
-    }
-
-    private void OnEnable()
-    {
-        _uiDataEvents.SubscribeToOnStart(StartGame);
-        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
+        EventLocator.UnsubscribeFromEvent<IChangeControlsPressed>(ChangeControlType);
+        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveGameIsPaused);
+        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SaveHighlighted);
+        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
+        EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoPopUps);
+        EventLocator.UnsubscribeFromEvent<IOnStart>(StartGame);
     }
 
     private void StartGame()
@@ -153,7 +149,7 @@ public class ChangeControl : IEventUser
 
     private UIBranch FindActiveBranchesEndNode(UIBranch nextBranch)
     {
-        if (!_noPopUps && !_gameIsPaused) return ReturnNextPopUp?.Invoke();
+        if (!_noPopUps && !_gameIsPaused) return ReturnNextPopUp?.RaiseEvent();
         if (nextBranch.LastSelected.HasChildBranch is null) return nextBranch;
         
         while (nextBranch.LastSelected.HasChildBranch.CanvasIsEnabled)

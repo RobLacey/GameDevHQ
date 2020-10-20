@@ -24,6 +24,8 @@ public class HomeScreenBranchBase: BranchBase
     {
         _myBranch.MyCanvas.enabled = true;
         _myBranch.MyCanvasGroup.blocksRaycasts = false;
+        _myBranch.DefaultStartOnThisNode.ThisNodeIsSelected();        
+        _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
 
         if (startBranch != _myBranch)
         {

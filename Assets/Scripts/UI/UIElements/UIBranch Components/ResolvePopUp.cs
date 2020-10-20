@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public class ResolvePopUp : BranchBase, IStartPopUp
 {
@@ -6,14 +7,28 @@ public class ResolvePopUp : BranchBase, IStartPopUp
     {
         _allBranches = branchList;
         _myBranch.OnStartPopUp = StartPopUp;
-        _uiPopUpEvents.SubscribeToNextNodeFromPopUp(RestoreLastPosition);
     }    
 
     //Variables
     private readonly UIBranch[] _allBranches;
 
     //Events
-    public static event Action<UIBranch> AddResolvePopUp;
+    private static CustomEvent<IAddResolvePopUp, UIBranch> AddResolvePopUp { get; } 
+        = new CustomEvent<IAddResolvePopUp, UIBranch>();
+    
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EventLocator.SubscribeToEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)>
+            (RestoreLastPosition, this);
+    }
+
+    public override void RemoveFromEvents()
+    {
+        base.RemoveFromEvents();
+        EventLocator.UnsubscribeFromEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)>
+            (RestoreLastPosition);
+    }
 
     public void StartPopUp()
     {
@@ -28,9 +43,10 @@ public class ResolvePopUp : BranchBase, IStartPopUp
     {
         if(_myBranch.CanvasIsEnabled) return;
         
-        ActivateBranchCanvas();
         _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRayCast.Yes);
-        AddResolvePopUp?.Invoke(_myBranch);
+        ActivateBranchCanvas();
+        CanGoToFullscreen();
+        AddResolvePopUp?.RaiseEvent(_myBranch);
     }
 
     public override void MoveBackToThisBranch(UIBranch lastBranch)
@@ -45,7 +61,7 @@ public class ResolvePopUp : BranchBase, IStartPopUp
     {
         if (data.currentPopUp != _myBranch) return;
         
-        _screenData.RestoreScreen();
-        ReturnToMenuOrGame(data);
+        ActivateStoredPosition();
+        GoToNextPopUp(data);
     }
 }

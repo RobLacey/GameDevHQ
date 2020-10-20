@@ -16,7 +16,7 @@ public abstract class InputScheme : ScriptableObject
     [Header("Cancel / Back Settings")] [Space(10f)] [Label("Nothing to Cancel Action")]
     protected PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.DoNothing;
     [SerializeField]
-    private PauseFunction _pauseFunction;
+    private PauseFunction _globalEscapeFunction;
     [SerializeField] 
     [Header("Start Delay")] [Space(10f)] [Label("Enable Controls After..")]
     protected float _atStartDelay;
@@ -58,7 +58,7 @@ public abstract class InputScheme : ScriptableObject
 
     private EscapeKey SetGlobalEscapeFunction()
     {
-        switch (_pauseFunction)
+        switch (_globalEscapeFunction)
         {
             case PauseFunction.DoNothing:
                 return EscapeKey.None;

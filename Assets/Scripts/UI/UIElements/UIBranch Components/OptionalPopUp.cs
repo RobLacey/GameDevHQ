@@ -7,7 +7,6 @@ public class OptionalPopUp : BranchBase, IStartPopUp
     {
         _allBranches = branchList;
         _myBranch.OnStartPopUp = StartPopUp;
-        _uiPopUpEvents.SubscribeToNextNodeFromPopUp(RestoreLastPosition);
     }
     
     //Variables
@@ -15,8 +14,24 @@ public class OptionalPopUp : BranchBase, IStartPopUp
     private bool _restoreOnHome;
 
     //Events
-    public static event Action<UIBranch> AddOptionalPopUp;
-    public static event Action<UIBranch> RemoveOptionalPopUp;
+    private static CustomEvent<IAddOptionalPopUp, UIBranch> AddOptionalPopUp { get; } 
+        = new CustomEvent<IAddOptionalPopUp, UIBranch>();
+    private static CustomEvent<IRemoveOptionalPopUp, UIBranch> RemoveOptionalPopUp { get; } 
+        = new CustomEvent<IRemoveOptionalPopUp, UIBranch>();
+
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EventLocator.SubscribeToEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)>
+            (RestoreLastPosition, this);
+    }
+
+    public override void RemoveFromEvents()
+    {
+        base.RemoveFromEvents();
+        EventLocator.UnsubscribeFromEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)>
+            (RestoreLastPosition);
+    }
 
     protected override void SaveIfOnHomeScreen(bool currentlyOnHomeScreen)
     {
@@ -32,12 +47,11 @@ public class OptionalPopUp : BranchBase, IStartPopUp
         else
         {
             ActivateBranchCanvas();
-            if(_noResolvePopUps) //Check Here
+            if(_noResolvePopUps)
             {
-                Debug.Log(_myBranch);
-
                 ActivateBlockRaycast();
-            }        }
+            }        
+        }
     }
 
     public void StartPopUp() //TODO add to buffer goes here for when paused. trigger from SaveOnHome?
@@ -51,7 +65,7 @@ public class OptionalPopUp : BranchBase, IStartPopUp
     public override void SetUpBranch(UIBranch newParentController = null)
     {
         if(!_myBranch.CanvasIsEnabled && !_restoreOnHome) 
-            AddOptionalPopUp?.Invoke(_myBranch);
+            AddOptionalPopUp?.RaiseEvent(_myBranch);
             
         IfActiveResolvePopUps();
         ActivateBranchCanvas();
@@ -81,6 +95,12 @@ public class OptionalPopUp : BranchBase, IStartPopUp
         RemoveOrStorePopUp();
     }
 
+    public override void ActivateBlockRaycast()
+    {
+        if(!_noResolvePopUps) return;
+        base.ActivateBlockRaycast();
+    }
+
     private void RemoveOrStorePopUp()
     {
         if (_myBranch.CanStoreAndRestoreOptionalPoUp)
@@ -89,7 +109,7 @@ public class OptionalPopUp : BranchBase, IStartPopUp
         }
         else
         {
-            RemoveOptionalPopUp?.Invoke(_myBranch);
+            RemoveOptionalPopUp?.RaiseEvent(_myBranch);
         }
     }
 
@@ -99,6 +119,6 @@ public class OptionalPopUp : BranchBase, IStartPopUp
         
         if (_restoreOnHome) InvokeOnHomeScreen(true);
         
-        ReturnToMenuOrGame(uiData);
+        GoToNextPopUp(uiData);
     }
 }

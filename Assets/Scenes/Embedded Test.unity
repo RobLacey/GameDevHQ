@@ -12866,7 +12866,6 @@ GameObject:
   m_Component:
   - component: {fileID: 663133645}
   - component: {fileID: 663133644}
-  - component: {fileID: 663133646}
   m_Layer: 0
   m_Name: Test Runner
   m_TagString: Untagged
@@ -12966,6 +12965,21 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+    _event6:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 537329691}
+          m_TargetAssemblyTypeName: UIHub, Assembly-CSharp
+          m_MethodName: RemoveService
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   _test1Test: Button Click
   _test2Test: OnEnter
   _test3Test: OnExit
@@ -12985,23 +12999,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &663133646
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 663133643}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfa07d6a628b4e53ae05e94bbcf60d3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _history: []
-  _lastHighlighted: {fileID: 0}
-  _lastSelected: {fileID: 0}
-  _activeBranch: {fileID: 0}
-  _hotKeyParent: {fileID: 0}
 --- !u!1 &669941710
 GameObject:
   m_ObjectHideFlags: 0
@@ -15005,7 +15002,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.size
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -15370,7 +15367,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasGroupFade
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -26503,7 +26500,7 @@ PrefabInstance:
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: _escapeKeyFunction
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
@@ -29349,7 +29346,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1712214352}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 2
   m_Camera: {fileID: 0}
@@ -33327,7 +33324,7 @@ MonoBehaviour:
   _timer: 5
   _screenType: 0
   _stayOn: 1
-  _storeOrResetOptional: 1
+  _storeOrResetOptional: 0
   _tweenOnHome: 0
   _saveExitSelection: 0
   _moveType: 1
@@ -36997,7 +36994,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f5dfd11c59dde44c933280df0ae6aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buttonFunction: 0
+  _buttonFunction: 2
   _escapeKeyFunction: 2
   _toggleGroupId: 0
   _tabBranch: {fileID: 0}
@@ -38019,12 +38016,12 @@ PrefabInstance:
         type: 3}
       propertyPath: _homeBranches.Array.data[0]
       value: 
-      objectReference: {fileID: 1592079424}
+      objectReference: {fileID: 2054211502}
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _homeBranches.Array.data[1]
       value: 
-      objectReference: {fileID: 2054211502}
+      objectReference: {fileID: 1592079424}
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _homeBranches.Array.data[2]
@@ -38244,8 +38241,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _inputScheme
       value: 
-      objectReference: {fileID: 11400000, guid: 347a3b76907f353408c0de665cac7c85,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _hotKeySettings.Array.data[1]._hotKeyInput
@@ -38279,7 +38275,7 @@ PrefabInstance:
     - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _hotKeySettings.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
@@ -38437,6 +38433,16 @@ PrefabInstance:
       propertyPath: _hotKeySettings.Array.data[3]._myBranch
       value: 
       objectReference: {fileID: 1154447021}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[4]._hotKeyInput
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _hotKeySettings.Array.data[4]._myBranch
+      value: 
+      objectReference: {fileID: 1712214354}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d4d4ae77ac7463a40afa29655e938f81, type: 3}
 --- !u!114 &6446246268114113608
@@ -38530,7 +38536,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f5dfd11c59dde44c933280df0ae6aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buttonFunction: 0
+  _buttonFunction: 2
   _escapeKeyFunction: 2
   _toggleGroupId: 0
   _tabBranch: {fileID: 0}

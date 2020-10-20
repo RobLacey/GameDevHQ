@@ -9,7 +9,6 @@ public class UIAudio : NodeFunctionBase, IServiceUser
     //Variables 
     private IAudioService _audioService;
     private bool _canStart;
-    private UIDataEvents _uiDataEvents = new UIDataEvents();
 
     //Properties
     private bool UsingScheme() => _audioScheme;
@@ -21,19 +20,25 @@ public class UIAudio : NodeFunctionBase, IServiceUser
     {
         base.OnAwake(uiActions, activeFunctions);
         uiActions._canPlayCancelAudio += SetPlayCancelAudio;
-
-        _uiDataEvents.SubscribeToOnStart(OnStart);
         CanActivate = (_enabledFunctions & Setting.Audio) != 0;
         SubscribeToService();
     }
 
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EventLocator.SubscribeToEvent<IOnStart>(OnStart, this);
+    }
+
+    public override void RemoveFromEvents()
+    {
+        base.RemoveFromEvents();
+        EventLocator.UnsubscribeFromEvent<IOnStart>(OnStart);
+    }
 
     private void Play(AudioClip clip, float volume)
     {
         if(FunctionNotActive() || !_canStart) return;
-        
-        // if(_audioService is null)
-        //     SubscribeToService();
 
         _audioService.Play(clip, volume);
     }
@@ -65,10 +70,6 @@ public class UIAudio : NodeFunctionBase, IServiceUser
         {
             Play(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
         }
-        // else
-        // {
-        //     PlayCancelAudio();
-        // }
     }
 
     private void PlayCancelAudio()

@@ -19,8 +19,6 @@ public class UIInput : MonoBehaviour, IEventUser
     private bool _noActivePopUps = true;
     private bool _onHomeScreen = true;
     private UINode _lastHomeScreenNode;
-    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
-    private readonly UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
     private UIBranch _activeBranch;
     private MenuAndGameSwitching _menuToGameSwitching;
     private ChangeControl _changeControl;
@@ -90,23 +88,23 @@ public class UIInput : MonoBehaviour, IEventUser
     public void ObserveEvents()
     {
         EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveGameIsPaused, this);
+        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
+        EventLocator.SubscribeToEvent<IOnStart>(SaveOnStart, this);
+        EventLocator.SubscribeToEvent<IOnHomeScreen, bool>(SaveOnHomeScreen, this);
+        EventLocator.SubscribeToEvent<IInMenu, bool>(SaveInMenu, this);
+        EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoActivePopUps, this);
     }
 
     public void RemoveFromEvents()
     {
         EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveGameIsPaused);
+        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
+        EventLocator.UnsubscribeFromEvent<IOnStart>(SaveOnStart);
+        EventLocator.UnsubscribeFromEvent<IOnHomeScreen, bool>(SaveOnHomeScreen);
+        EventLocator.UnsubscribeFromEvent<IInMenu, bool>(SaveInMenu);
+        EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoActivePopUps);
     }
-
-
-    private void OnEnable()
-    {
-        _uiDataEvents.SubscribeToInMenu(SaveInMenu);
-        _uiDataEvents.SubscribeToOnStart(SaveOnStart);
-        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
-        _uiDataEvents.SubscribeToOnHomeScreen(SaveOnHomeScreen);
-    }
-
+    
     private void OnDisable()
     {
         RemoveFromEvents();
@@ -115,15 +113,6 @@ public class UIInput : MonoBehaviour, IEventUser
         foreach (HotKeys hotKeys in _hotKeySettings)
         {
             hotKeys.RemoveFromEvents();
-        }
-    }
-
-    private void Start()
-    {
-        foreach (HotKeys hotKey in _hotKeySettings)
-        {
-            hotKey.SubscribeToService();
-            hotKey.ObserveEvents();
         }
     }
 

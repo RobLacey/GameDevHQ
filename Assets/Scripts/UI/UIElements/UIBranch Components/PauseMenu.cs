@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Need To Make this a singleton or check thee is only one of these
@@ -8,7 +9,6 @@ public class PauseMenu : BranchBase, IStartPopUp
     public PauseMenu(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
         _allBranches = branchList;
-        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
     }
 
     //Variables
@@ -26,12 +26,14 @@ public class PauseMenu : BranchBase, IStartPopUp
     {
         base.ObserveEvents();
         EventLocator.SubscribeToEvent<IPausePressed>(StartPopUp, this);
+        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
     }
     
     public override void RemoveFromEvents()
     {
         base.RemoveFromEvents();
         EventLocator.UnsubscribeFromEvent<IPausePressed>(StartPopUp);
+        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
     }
 
     //Main
@@ -98,17 +100,7 @@ public class PauseMenu : BranchBase, IStartPopUp
         if (WasInGame()) return;
         ActivateStoredPosition();
     }
-
-    private void ActivateStoredPosition()
-    {
-        _screenData.RestoreScreen();
-        _screenData._activeBranch.MoveToBranchWithoutTween();
-        if (_screenData._wasOnHomeScreen)
-            InvokeOnHomeScreen(true);
-        
-        _screenData._locked = false;
-    }
-
+    
     public override void MoveBackToThisBranch(UIBranch lastBranch)
     {
         if (lastBranch != _myBranch) return;

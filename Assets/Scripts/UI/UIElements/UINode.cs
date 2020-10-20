@@ -29,38 +29,38 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")] 
     private bool _startAsSelected;
     [SerializeField] 
-    [Label("UI Functions To Use")] [BoxGroup("Node Functions")] 
+    [Space(15f)] [Label("UI Functions To Use")]  
     private Setting _enabledFunctions;
-    [SerializeField] [Space(5f)]
-    [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")] [BoxGroup("Node Functions")] 
+    [SerializeField] 
+    [Space(15f)] [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")]  
     private UINavigation _navigation;
     [SerializeField] 
-    [Space(5f)] [Label("Colour Settings")] [ShowIf("NeedColour")] [BoxGroup("Node Functions")] 
+    [Space(5f)] [Label("Colour Settings")] [ShowIf("NeedColour")]  
     private UIColour _colours;
     [SerializeField] 
     [Space(5f)] [Label("Invert Colour when Highlighted or Selected")] 
-    [ShowIf("NeedInvert")] [BoxGroup("Node Functions")] 
+    [ShowIf("NeedInvert")]  
     private UIInvertColours _invertColourCorrection;
     [SerializeField] 
     [Space(5f)] [Label("Swap Images or Text on Select or Highlight")] 
-    [ShowIf("NeedSwap")] [BoxGroup("Node Functions")]
+    [ShowIf("NeedSwap")] 
     private UIImageTextToggle _swapImageOrText;
     [SerializeField] 
     [Space(5f)] [Label("Size And Position Effect Settings")] 
-    [ShowIf("NeedSize")] [BoxGroup("Node Functions")] 
+    [ShowIf("NeedSize")]  
     private UISizeAndPosition _sizeAndPos;
     [SerializeField] 
     [Space(5f)] [Label("Accessories, Outline Or Shadow Settings")] 
-    [ShowIf("NeedAccessories")] [BoxGroup("Node Functions")] 
+    [ShowIf("NeedAccessories")]  
     private UIAccessories _accessories;
     [SerializeField] 
-    [Space(5f)] [Label("Audio Settings")] [ShowIf("NeedAudio")] [BoxGroup("Node Functions")] 
+    [Space(5f)] [Label("Audio Settings")] [ShowIf("NeedAudio")]  
     private UIAudio _audio;
     [SerializeField] 
-    [Space(5f)] [Label("Tooltip Settings")] [ShowIf("NeedTooltip")] [BoxGroup("Node Functions")] 
+    [Space(5f)] [Label("Tooltip Settings")] [ShowIf("NeedTooltip")]  
     private UITooltip _tooltips;
     [SerializeField] 
-    [Space(5f)] [Label("Event Settings")] [ShowIf("NeedEvents")] [BoxGroup("Node Functions")] 
+    [Space(5f)] [Label("Event Settings")] [ShowIf("NeedEvents")]  
     private UIEvents _events;
 
     //Variables
@@ -83,7 +83,7 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     //Properties & Enums
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
-    public bool DontStoreTheseNodeTypesInHistory => IsToggleGroup || IsToggleNotLinked;
+    public bool DontStoreTheseNodeTypesInHistory => IsToggleGroup || IsToggleNotLinked || !HasChildBranch;
     private bool IsCancelOrBack => _buttonFunction == ButtonFunction.CancelOrBack;
     private bool IsSelected { get; set; }
     private Slider AmSlider { get; set; }
@@ -145,12 +145,11 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _uiActions = new UiActions(gameObject.GetInstanceID());
         AmSlider = GetComponent<Slider>();
         MyBranch = GetComponentInParent<UIBranch>();
-        _uiDataEvents = new UIDataEvents();
-        //_uiControlsEvents = new UIControlsEvents();
         if (_tabBranch && IsToggleGroup)
             _tabBranch.IsTabBranch();
         SetUpUiFunctions();
         SetUpIfNodeIsAToggle();
+        ObserveEvents();
     }
 
     private void SetUpIfNodeIsAToggle()
@@ -176,24 +175,19 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _audio.OnAwake(_uiActions, _enabledFunctions);
     }
 
-    private void OnEnable()
-    {
-        _uiDataEvents.SubscribeToInMenu(SaveInMenu);
-        ObserveEvents();
-    }
-
     public void ObserveEvents()
     {
         EventLocator.SubscribeToEvent<IAllowKeys, bool>(SaveAllowKeys, this);
         EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SaveHighLighted, this);
+        EventLocator.SubscribeToEvent<IInMenu, bool>(SaveInMenu, this);
     }
 
     public void RemoveFromEvents()
     {
         EventLocator.UnsubscribeFromEvent<IAllowKeys, bool>(SaveAllowKeys);
         EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SaveHighLighted);
+        EventLocator.UnsubscribeFromEvent<IInMenu, bool>(SaveInMenu);
     }
-
 
     public void SubscribeToService()
     {
@@ -212,6 +206,8 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         _tooltips.OnDisable(_uiActions);
         _navigation.OnDisable(_uiActions);
         _audio.OnDisable(_uiActions);
+        if(IsToggleGroup)
+            _toggleGroups.RemoveFromEvents();
     }
 
     private void Start()
@@ -262,8 +258,14 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     private bool CancelOrBackButton()
     {
         if (!IsCancelOrBack) return false;
-        CancelButtonActive?.RaiseEvent(_escapeKeyFunction);
-        //DoCancelButtonPressed?.Invoke(_escapeKeyFunction);
+        if (MyBranch.IsTimedPopUp)
+        {
+            MyBranch.Branch.MoveBackToThisBranch(MyBranch);
+        }
+        else
+        {
+            CancelButtonActive?.RaiseEvent(_escapeKeyFunction);
+        }
         return true;
     }
 
@@ -284,7 +286,6 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         }
         SetSlider(IsSelected);
         _uiHistoryTrack.SetSelected(this);
-       // HistoryTracker.selected?.Invoke(this);
     }
     
     private void Deactivate() => SetSelectedStatus(false, DoPress);
@@ -299,7 +300,6 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
     
     public void PlayCancelAudio()
     {
-        //Debug.Log(this);
         _uiActions?._canPlayCancelAudio.Invoke();
     }
 
@@ -308,11 +308,6 @@ public partial class UINode : MonoBehaviour, IPointerEnterHandler, IPointerDownH
         if (!IsSelected || IsToggleGroup || IsToggleNotLinked) return;
         Deactivate();
         SetNotHighlighted();
-        
-        // if (HasChildBranch)
-        // {
-        //     //HasChildBranch.TurnOffChildBranches(HasChildBranch);
-        // }
     }
     
     private void SetAsHighlighted() 

@@ -1,17 +1,14 @@
-﻿using System;
-
+﻿
 public class MenuAndGameSwitching : IEventUser
 {
     public MenuAndGameSwitching() => OnAwake();
 
     //Variables
-    private UIDataEvents _uiDataEvents;
-    private UIPopUpEvents _uiPopUpEvents;
     private bool _noPopUps = true;
     private bool _wasInGame;
 
     //Events
-    public static event Action<bool> IsInTheMenu; // Subscribe To track if in game
+    private static CustomEvent<IInMenu, bool> IsInMenu { get; } = new CustomEvent<IInMenu, bool>();
 
     //Properties
     private bool InTheMenu { get; set; } = true;
@@ -26,9 +23,6 @@ public class MenuAndGameSwitching : IEventUser
 
     private void OnAwake()
     {
-        _uiDataEvents = new UIDataEvents();
-        _uiPopUpEvents = new UIPopUpEvents();
-        OnEnable();
         ObserveEvents();
     }
     
@@ -36,19 +30,16 @@ public class MenuAndGameSwitching : IEventUser
     {
         EventLocator.SubscribeToEvent<IMenuGameSwitchingPressed>(CheckForActivation, this);
         EventLocator.SubscribeToEvent<IGameIsPaused, bool>(WhenTheGameIsPaused, this);
+        EventLocator.SubscribeToEvent<IOnStart>(StartUp, this);
+        EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoPopUps, this);
     }
 
     public void RemoveFromEvents()
     {
         EventLocator.UnsubscribeFromEvent<IMenuGameSwitchingPressed>(CheckForActivation);
         EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(WhenTheGameIsPaused);
-    }
-
-
-    private void OnEnable()
-    {
-        _uiDataEvents.SubscribeToOnStart(StartUp);
-        _uiPopUpEvents.SubscribeNoPopUps(SaveNoPopUps);
+        EventLocator.UnsubscribeFromEvent<IOnStart>(StartUp);
+        EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoPopUps);
     }
     
     private void CheckForActivation()
@@ -84,7 +75,7 @@ public class MenuAndGameSwitching : IEventUser
         }
     }
 
-    public void SwitchBetweenGameAndMenu()
+    private void SwitchBetweenGameAndMenu()
     {
         if (InTheMenu)
         {
@@ -109,12 +100,21 @@ public class MenuAndGameSwitching : IEventUser
         BroadcastState();
     }
 
-    private void BroadcastState() => IsInTheMenu?.Invoke(InTheMenu);
+    private void BroadcastState() => IsInMenu?.RaiseEvent(InTheMenu);
 
     private void WhenTheGameIsPaused(bool isPaused)
     {
-        if (InTheMenu && isPaused) return;
-        if(!_noPopUps || InTheMenu) return;
-        SwitchBetweenGameAndMenu();
+        if (isPaused && !InTheMenu)
+        {
+            SwitchBetweenGameAndMenu();
+            _wasInGame = true;
+            return;
+        }
+
+        if (!isPaused && _wasInGame)
+        {
+            SwitchBetweenGameAndMenu();
+            _wasInGame = false;
+        }
     }
 }

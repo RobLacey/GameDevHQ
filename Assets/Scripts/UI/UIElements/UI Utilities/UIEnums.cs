@@ -106,7 +106,7 @@ public enum OutTweenType { Cancel, MoveToChild }
 public enum UseSide { ToTheRightOf, ToTheLeftOf, GameObjectAsPosition  }
 public enum InGameSystem { On, Off }
 
-public enum HotKey {  HotKey1, HotKey2, HotKey3, HotKey4 }
+public enum HotKey {  HotKey1, HotKey2, HotKey3, HotKey4, HotKey5, HotKey6, HotKey7, HotKey8, HotKey9, HotKey0 }
 
 
 

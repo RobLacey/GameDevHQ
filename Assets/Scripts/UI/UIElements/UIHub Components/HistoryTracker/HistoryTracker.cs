@@ -1,57 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public interface IReturnToHome { }
-
-public class HistoryTracker : MonoBehaviour, IHistoryTrack, IReturnToHome, IEventUser
+public class HistoryTracker : IHistoryTrack, IEventUser
 {
-    [SerializeField] private List<UINode> _history;
-    [SerializeField] private UINode _lastHighlighted;
-    [SerializeField] private UINode _lastSelected;
-    [SerializeField] private UIBranch _activeBranch;
-    [SerializeField] private UINode _hotKeyParent;
+    public HistoryTracker() => OnEnable();
 
-    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
+    //Variables
+    private readonly List<UINode> _history = new List<UINode>();
+    private UINode _lastSelected;
+    private UINode _hotKeyParent;
     private bool _canStart;
-    private CustomEvent<IReturnToHome> ReturnedToHome { get; set; }
-
-    private void Awake()
-    {
-        ServiceLocator.AddService<IHistoryTrack>(this);
-        ObserveEvents();
-    }
     
-    public void ObserveEvents()
-    {
-        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(listener: SetLastHighlighted, caller: this);
-    }
+    //Events
+    private static CustomEvent<IReturnToHome> ReturnedToHome { get; } = new CustomEvent<IReturnToHome>();
 
-    public void RemoveFromEvents()
-    {
-        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SetLastHighlighted);
-    }
+    public void ObserveEvents() => EventLocator.SubscribeToEvent<IOnStart>(SetCanStart, this);
 
-    
-    private void OnEnable()
-    {
-        _uiDataEvents.SubscribeToActiveBranch(SetActiveBranch);
-        _uiDataEvents.SubscribeToOnStart(SetCanStart);
-    }
+    public void RemoveFromEvents() => EventLocator.UnsubscribeFromEvent<IOnStart>(SetCanStart);
 
-    private void OnDisable()
-    {
-        RemoveFromEvents();
-    }
+    public void OnEnable() => ObserveEvents();
 
-    private void Start()
-    {
-         ReturnedToHome = new CustomEvent<IReturnToHome>();
-    }
+    public void OnDisable() => RemoveFromEvents();
 
-    private void SetLastHighlighted(INode node) => _lastHighlighted = node.ReturnNode;
-    private void SetActiveBranch(UIBranch branch) => _activeBranch = branch;
     private void SetCanStart() => _canStart = true;
 
     //Main
@@ -64,6 +35,7 @@ public class HistoryTracker : MonoBehaviour, IHistoryTrack, IReturnToHome, IEven
         
         if (_history.Contains(node.ReturnNode))
         {
+            Debug.Log(node);
             CloseAllChildNodesAfterPoint(node);
             SetLastSelectedWhenNoHistory(node);
         }
@@ -91,12 +63,19 @@ public class HistoryTracker : MonoBehaviour, IHistoryTrack, IReturnToHome, IEven
     {
         if (!_history.Contains(newNode.ReturnNode)) return;
 
-        foreach (var uiNode in _history.SkipWhile(node => node != node.ReturnNode).ToArray())
+        for (int i = _history.Count -1; i > 0; i--)
         {
-            uiNode.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
-            uiNode.DeactivateNode();
-            _history.Remove(uiNode);
+            if (_history[i] == newNode.ReturnNode) break;
+            CloseThisLevel(_history[i]);
         }
+        CloseThisLevel(newNode);
+    }
+
+    private void CloseThisLevel(INode node)
+    {
+        node.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
+        node.DeactivateNode();
+        _history.Remove(node.ReturnNode);
     }
 
     private void SetLastSelectedWhenNoHistory(INode node) 

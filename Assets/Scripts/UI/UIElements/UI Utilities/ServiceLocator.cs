@@ -49,9 +49,21 @@ public static class ServiceLocator
     
     public static void UnlockService() => locked = false;
     
-    //
-    //  *****TODO Add Remove Service *******
-    //
+    /// <summary> Makes sure na new scene has no active services </summary>
+    public static void RemoveService<T>()
+    {
+        if (services.ContainsKey(typeof(T)))
+        {
+            var monoBehaviourSub = services[typeof(T)] as IMonoBehaviourSub;
+            if(!(monoBehaviourSub is null))
+            {
+                Debug.Log(typeof(T));
+                monoBehaviourSub.OnDisable();
+            }            
+            services.Remove(typeof(T));
+        }
+    }
+    
     private static void CheckForWaitingServiceUser(Type type)
     {
         if(waitingForServicesStore.Count == 0 || !waitingForServicesStore.ContainsKey(type)) return;

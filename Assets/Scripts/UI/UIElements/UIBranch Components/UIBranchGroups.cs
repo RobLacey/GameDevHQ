@@ -25,7 +25,7 @@ public static class UIBranchGroups
     public static int SwitchBranchGroup(List<GroupList> groupsList, int passedIndex, SwitchType switchType)
     {
         int newIndex;
-        // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
+        
         if (switchType == SwitchType.Positive)
         {
             newIndex = passedIndex.PositiveIterate(groupsList.Count);

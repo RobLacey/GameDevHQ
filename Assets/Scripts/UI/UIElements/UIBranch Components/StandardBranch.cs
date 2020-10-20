@@ -30,5 +30,4 @@ public class StandardBranchBase : BranchBase
         if(newParentController is null) return;
         _myBranch.MyParentBranch = newParentController;
     }
-
 }

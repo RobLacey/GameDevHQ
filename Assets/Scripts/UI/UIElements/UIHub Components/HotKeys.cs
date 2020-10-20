@@ -11,8 +11,6 @@ public class HotKeys : IServiceUser, IEventUser
     private UIBranch _myBranch;
     
     //Variables
-    private UIPopUpEvents _uiPopUpEvents = new UIPopUpEvents();
-    private UIDataEvents _uiDataEvents = new UIDataEvents();
     private bool _hasParentNode;
     private bool _gameIsPaused;
     private bool _noActivePopUps = true;
@@ -30,19 +28,23 @@ public class HotKeys : IServiceUser, IEventUser
     {
         _inputScheme = inputScheme;
         IsAllowedType();
-        OnEnable();
+        SubscribeToService();
+        ObserveEvents();
     }
     
     public void ObserveEvents()
     {
         EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveIsPaused, this);
+        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
+        EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoActivePopUps, this);
     }
 
     public void RemoveFromEvents()
     {
         EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveIsPaused);
+        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
+        EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoActivePopUps);
     }
-
     
     public void SubscribeToService()
     {
@@ -58,12 +60,6 @@ public class HotKeys : IServiceUser, IEventUser
             throw new Exception("Can't have Pause as a Hot Key");
         if (_myBranch.IsInternalBranch())
             throw new Exception("Can't have an Internal Branch as a Hot Key");
-    }
-
-    public void OnEnable()
-    {
-        _uiDataEvents.SubscribeToActiveBranch(SaveActiveBranch);
-        _uiPopUpEvents.SubscribeNoPopUps(SaveNoActivePopUps);
     }
 
     public bool CheckHotKeys()

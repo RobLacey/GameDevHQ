@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class UIToggles
+public class UIToggles : IEventUser
 {
     private readonly UINode _myNode;
     private readonly List<UINode> _toggleGroupMembers = new List<UINode>();
     private readonly ToggleGroup _groupID;
     private readonly UIBranch _tabBranch;
     private readonly bool _hasATabBranch;
-    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private bool _isSelected;
 
     //Events
@@ -16,13 +15,24 @@ public class UIToggles
     
     public UIToggles(UINode node, ToggleGroup groupID, UIBranch tabBranch)
     {
-        _uiDataEvents.SubscribeToActiveBranch(Activate);
+        ObserveEvents();
         _myNode = node;
         _groupID = groupID;
         _tabBranch = tabBranch;
         _hasATabBranch = tabBranch != null;
         SelectedToggle += SaveSelectedNode;
     }
+    
+    public void ObserveEvents()
+    {
+        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(Activate, this);
+    }
+
+    public void RemoveFromEvents()
+    {
+        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(Activate);
+    }
+
 
     private void Activate(UIBranch newBranch)
     {

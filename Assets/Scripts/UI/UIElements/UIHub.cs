@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using System;
 using NaughtyAttributes;
 
 /// <summary>
@@ -19,18 +18,15 @@ public class UIHub : MonoBehaviour, IEventUser
     private List<UIBranch> _homeBranches;
 
     //Events
-    public static event Action OnStart;
-    public static event Action<UIBranch> SetUpBranchesAtStart;
+    private static CustomEvent<IOnStart> OnStart { get; } = new CustomEvent<IOnStart>();
+    private static CustomEvent<ISetUpStartBranches, UIBranch> SetUpBranchesAtStart { get; } 
+        = new CustomEvent<ISetUpStartBranches, UIBranch>();
 
     //Variables
-    private readonly UIDataEvents _uiDataEvents = new UIDataEvents();
     private INode _lastHighlighted;
     private bool _inMenu, _startingInGame;
     private InputScheme _inputScheme;
-    private UICancel _cancel;
-    private UIHomeGroup _homeGroup;
-    private PopUpController _popUpController;
-    
+
     //Properties
     private void SaveInMenu(bool isInMenu)
     {
@@ -42,63 +38,56 @@ public class UIHub : MonoBehaviour, IEventUser
     {
         _inputScheme = GetComponent<UIInput>().ReturnScheme;
         _startingInGame = GetComponent<UIInput>().StartInGame();
-        CreateSubClasses();
         ObserveEvents();
-    }
-
-    private void CreateSubClasses()
-    {
-        _popUpController = new PopUpController();
-        _homeGroup = new UIHomeGroup(_homeBranches.ToArray());
-        _cancel = new UICancel(_inputScheme.GlobalCancelAction);
     }
     
     public void ObserveEvents()
     {
         EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SetLastHighlighted, this);
+        EventLocator.SubscribeToEvent<IInMenu, bool>(SaveInMenu, this);
     }
 
     public void RemoveFromEvents()
     {
         EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SetLastHighlighted);
+        EventLocator.UnsubscribeFromEvent<IInMenu, bool>(SaveInMenu);
     }
-
 
     private void OnEnable()
     {
-        _uiDataEvents.SubscribeToInMenu(SaveInMenu);
+        ServiceLocator.AddService<IAudioService>(new UIAudioManager(GetComponent<AudioSource>()));
+        ServiceLocator.AddService<IBucketCreator>(new BucketCreator(transform, "Tooltip Holder"));
+        ServiceLocator.AddService<IHistoryTrack>(new HistoryTracker());
+        ServiceLocator.AddService<IHomeGroup>(new UIHomeGroup(_homeBranches.ToArray()));
+        ServiceLocator.AddService<IPopUpController>(new PopUpController());
+        ServiceLocator.AddService<ICancel>(new UICancel(_inputScheme.GlobalCancelAction));
     }
 
     private void OnDisable()
     {
         RemoveFromEvents();
-        _homeGroup.OnDisable();
-        _cancel.OnDisable();
-        _popUpController.RemoveFromEvents();
+        ServiceLocator.RemoveService<IAudioService>();
+        ServiceLocator.RemoveService<IBucketCreator>();
+        ServiceLocator.RemoveService<IHistoryTrack>();
+        ServiceLocator.RemoveService<IHomeGroup>();
+        ServiceLocator.RemoveService<IPopUpController>();
+        ServiceLocator.RemoveService<ICancel>();
     }
-    
+
     private void Start()
     {
-        ServiceLocator.AddService<IAudioService>(new UIAudioManager(GetComponent<AudioSource>()));
-        ServiceLocator.AddService<IBucketCreator>(new BucketCreator(transform, "Tooltip Holder"));
         SetStartPositionsAndSettings();
         CheckIfStartingInGame();
         StartCoroutine(EnableStartControls());
     }
 
-    private void SetStartPositionsAndSettings()
-    {
-        _lastHighlighted = _homeBranches[0].DefaultStartOnThisNode;
-        _homeBranches[0].DefaultStartOnThisNode.ThisNodeIsSelected();
-        _homeBranches[0].DefaultStartOnThisNode.ThisNodeIsHighLighted();
-        SetUpBranchesAtStart?.Invoke(_homeBranches[0]);
-    }
+    private void SetStartPositionsAndSettings() => SetUpBranchesAtStart?.RaiseEvent(_homeBranches[0]);
 
     private void CheckIfStartingInGame()
     {
         if (_startingInGame)
         {
-            OnStart?.Invoke();
+            OnStart?.RaiseEvent();
             _inMenu = false;
         }
         else
@@ -112,7 +101,7 @@ public class UIHub : MonoBehaviour, IEventUser
     {
         yield return new WaitForSeconds(_inputScheme.StartDelay);
         if(!_startingInGame)
-            OnStart?.Invoke();
+            OnStart?.RaiseEvent();
     }
     
     private void SetLastHighlighted(INode newNode)
