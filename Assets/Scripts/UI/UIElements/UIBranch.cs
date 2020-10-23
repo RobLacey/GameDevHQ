@@ -264,6 +264,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         if(_stayOn == IsActive.No || outTweenType == OutTweenType.Cancel)
             MyCanvas.enabled = false;
         
+        if(!IsPauseMenuBranch()) Branch.ActivateStoredPosition();
         OnFinishTweenCallBack?.Invoke();
     }
 

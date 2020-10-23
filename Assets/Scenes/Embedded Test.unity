@@ -11117,9 +11117,9 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTime: 1
-  _globalInTime: 1
-  _globalOutTime: 1
+  _useGlobalTime: 0
+  _globalInTime: 0.1
+  _globalOutTime: 0.1
   _positionTween: 2
   _rotationTween: 0
   _canvasGroupFade: 1
@@ -11134,8 +11134,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _posTween:
-    _inTime: 1
-    _outTime: 1
+    _inTime: 0.1
+    _outTime: 0.1
     _easeIn: 1
     _easeOut: 1
     _pixelSnapping: 0
@@ -12888,6 +12888,7 @@ MonoBehaviour:
   _lastHighlighted: {fileID: 0}
   _lastSelected: {fileID: 0}
   _activeBranch: {fileID: 0}
+  _history: []
   _onHomeScreen: 0
   _eventsForTest:
     _event1:
@@ -33379,9 +33380,9 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTime: 1
-  _globalInTime: 1
-  _globalOutTime: 1
+  _useGlobalTime: 0
+  _globalInTime: 0.1
+  _globalOutTime: 0.1
   _positionTween: 2
   _rotationTween: 0
   _canvasGroupFade: 1
@@ -33396,8 +33397,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _posTween:
-    _inTime: 1
-    _outTime: 1
+    _inTime: 0.1
+    _outTime: 0.1
     _easeIn: 1
     _easeOut: 1
     _pixelSnapping: 0
@@ -33407,7 +33408,7 @@ MonoBehaviour:
     _easeIn: 1
     _easeOut: 1
   _scaleTween:
-    _inTime: 0.5
+    _inTime: 0.1
     _outTime: 0.5
     _easeIn: 1
     _easeOut: 1

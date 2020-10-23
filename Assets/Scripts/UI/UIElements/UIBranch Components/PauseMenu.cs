@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-/// <summary>
+﻿/// <summary>
 /// Need To Make this a singleton or check thee is only one of these
 /// </summary>
 public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused
@@ -102,7 +99,7 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused
     {
         if (WasInGame()) return;
         ActivateStoredPosition();
-        _screenData._activeBranch.MoveToBranchWithoutTween();
+        _historyTrack.MoveToLastBranchInHistory();
     }
     
     public override void MoveBackToThisBranch(UIBranch lastBranch)

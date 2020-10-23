@@ -16,10 +16,10 @@ public class MenuAndGameSwitching : IEventUser, IInMenu
     public bool InTheMenu { get; set; } = true;
     public StartInMenu StartWhere { get; set; }
 
-    private void SaveNoPopUps(bool noActivePopUps)
+    private void SaveNoPopUps(INoPopUps args)
     {
-        _noPopUps = noActivePopUps;
-        if (!InTheMenu && !noActivePopUps) _wasInGame = true;
+        _noPopUps = args.IsThereAnyPopUps;
+        if (!InTheMenu && !_noPopUps) _wasInGame = true;
          PopUpEventHandler();
     }
 
@@ -33,7 +33,7 @@ public class MenuAndGameSwitching : IEventUser, IInMenu
         EventLocator.Subscribe<IMenuGameSwitchingPressed>(CheckForActivation, this);
         EventLocator.Subscribe<IGameIsPaused>(WhenTheGameIsPaused, this);
         EventLocator.Subscribe<IOnStart>(StartUp, this);
-        EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoPopUps, this);
+        EventLocator.Subscribe<INoPopUps>(SaveNoPopUps, this);
     }
 
     public void RemoveFromEvents()
@@ -41,7 +41,7 @@ public class MenuAndGameSwitching : IEventUser, IInMenu
         EventLocator.Unsubscribe<IMenuGameSwitchingPressed>(CheckForActivation);
         EventLocator.Unsubscribe<IGameIsPaused>(WhenTheGameIsPaused);
         EventLocator.Unsubscribe<IOnStart>(StartUp);
-        EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoPopUps);
+        EventLocator.Unsubscribe<INoPopUps>(SaveNoPopUps);
     }
     
     private void CheckForActivation(IMenuGameSwitchingPressed arg)

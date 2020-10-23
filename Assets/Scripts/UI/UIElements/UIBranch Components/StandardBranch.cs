@@ -1,5 +1,4 @@
-﻿
-public class StandardBranchBase : BranchBase
+﻿public class StandardBranchBase : BranchBase
 {
     public StandardBranchBase(UIBranch branch) : base(branch) { }
     
@@ -29,5 +28,11 @@ public class StandardBranchBase : BranchBase
     {
         if(newParentController is null) return;
         _myBranch.MyParentBranch = newParentController;
+    }
+
+    public override void ActivateBlockRaycast()
+    {
+        if(_resolvePopUps) return;
+        base.ActivateBlockRaycast();
     }
 }

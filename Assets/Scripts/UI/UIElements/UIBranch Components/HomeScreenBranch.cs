@@ -1,5 +1,4 @@
-﻿
-public class HomeScreenBranchBase: BranchBase
+﻿public class HomeScreenBranchBase: BranchBase
 {
     public HomeScreenBranchBase(UIBranch branch) : base(branch) { }
     
@@ -52,6 +51,12 @@ public class HomeScreenBranchBase: BranchBase
             _myBranch.DontSetBranchAsActive();
         _myBranch.MoveToThisBranch();
         InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
+    }
+
+    public override void ActivateBlockRaycast()
+    {
+        if(_resolvePopUps) return;
+        base.ActivateBlockRaycast();
     }
 }
 

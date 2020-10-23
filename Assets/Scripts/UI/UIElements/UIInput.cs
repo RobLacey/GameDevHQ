@@ -57,13 +57,14 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
         _inMenu = args.InTheMenu;
         _returnToGameControl?.Invoke(_inMenu);
     }
-    private void SaveNoActivePopUps(bool noActivePopUps) => _noActivePopUps = noActivePopUps;
+    private void SaveNoActivePopUps(INoPopUps args) => _noActivePopUps = args.IsThereAnyPopUps;
     private void SaveOnStart(IOnStart onStart) => _canStart = true;
     private void SaveGameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveOnHomeScreen (IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     public SwitchType SwitchType { get; set; }
     public InputScheme ReturnScheme => _inputScheme;
+    public EscapeKey EscapeKeySettings => _activeBranch.EscapeKeySetting;
     
     //Main
     private void Awake()
@@ -93,7 +94,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
         EventLocator.Subscribe<IOnStart>(SaveOnStart, this);
         EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
         EventLocator.Subscribe<IInMenu>(SaveInMenu, this);
-        EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoActivePopUps, this);
+        EventLocator.Subscribe<INoPopUps>(SaveNoActivePopUps, this);
     }
 
     public void RemoveFromEvents()
@@ -103,7 +104,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
         EventLocator.Unsubscribe<IOnStart>(SaveOnStart);
         EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
         EventLocator.Unsubscribe<IInMenu>(SaveInMenu);
-        EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoActivePopUps);
+        EventLocator.Unsubscribe<INoPopUps>(SaveNoActivePopUps);
     }
     
     private void OnDisable()
@@ -162,6 +163,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
 
     private bool CheckIfHotKeyAllowed()
     {
+        if (_gameIsPaused || !_noActivePopUps) return false;
         if (!_hotKeySettings.Any(hotKey => hotKey.CheckHotKeys())) return false;
         if(!_inMenu)
             OnMenuAndGameSwitch?.RaiseEvent(this);

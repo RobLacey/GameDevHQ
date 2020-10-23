@@ -17,7 +17,7 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
     //Variables
     private readonly UIBranch[] _homeGroup;
     private bool _onHomeScreen = true;
-    private bool _gameIsPaused = false;
+    private bool _gameIsPaused;
     private int _index;
     private UIBranch _lastActiveHomeBranch;
     private IHistoryTrack _uiHistoryTrack;
@@ -38,7 +38,7 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
     {
         EventLocator.Subscribe<IReturnToHome>(SetHomeGroup, this);
         EventLocator.Subscribe<ISwitchGroupPressed>(SwitchHomeGroups, this);
-        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
+        EventLocator.Subscribe<IActiveBranch>(SetActiveHomeBranch, this);
         EventLocator.Subscribe<IGameIsPaused>(GameIsPaused, this);
         EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
     }
@@ -46,7 +46,7 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
     {
         EventLocator.Unsubscribe<IReturnToHome>(SetHomeGroup);
         EventLocator.Unsubscribe<ISwitchGroupPressed>(SwitchHomeGroups);
-        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
+        EventLocator.Unsubscribe<IActiveBranch>(SetActiveHomeBranch);
         EventLocator.Unsubscribe<IGameIsPaused>(GameIsPaused);
         EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
     }
@@ -80,7 +80,7 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
         _uiHistoryTrack.ReverseAndClearHistory();
     }
 
-    private void SaveActiveBranch(IActiveBranch args)
+    private void SetActiveHomeBranch(IActiveBranch args)
     {
         if(args.ActiveBranch.IsAPopUpBranch() || args.ActiveBranch.IsPauseMenuBranch() || _gameIsPaused) return;
         if(_lastActiveHomeBranch == args.ActiveBranch) return;
@@ -109,7 +109,14 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
 
     private void SetHomeGroup(IReturnToHome args)
     {
-        _homeGroup[_index].DontSetBranchAsActive();
-        _homeGroup[_index].Branch.MoveBackToThisBranch(_homeGroup[_index]);
+        if (args.ActivateBranchOnReturnHome)
+        {
+            _homeGroup[_index].MoveToBranchWithoutTween();
+        }
+        else
+        {
+            _homeGroup[_index].DontSetBranchAsActive();
+            _homeGroup[_index].Branch.MoveBackToThisBranch(_homeGroup[_index]);
+        }
     }
 }

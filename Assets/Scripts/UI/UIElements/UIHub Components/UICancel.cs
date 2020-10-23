@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 interface ICancel : IMonoBehaviourSub { }
 
@@ -16,22 +15,11 @@ public class UICancel : ICancel, IServiceUser, IEventUser
 
     //Variables
     private readonly EscapeKey _globalEscapeSetting;
-    private INode _lastHighlighted;
-    private UIBranch _activeBranch;
-    private bool _gameIsPaused;
-    private bool _noResolvePopUps = true;
-    private bool _noPopUps = true;
+    private bool _gameIsPaused, _resolvePopUps;
     private IHistoryTrack _uiHistoryTrack;
 
-    //Events
-    private static CustomEvent<IBackToNextPopUp, UIBranch> OnBackToAPopUp { get; } 
-        = new CustomEvent<IBackToNextPopUp, UIBranch>();
-
     //Properties
-    private void SaveLastHighlighted(IHighlightedNode args) => _lastHighlighted = args.Highlighted;
-    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
-    private void SaveNoResolvePopUps(INoResolvePopUp args) => _noResolvePopUps = args.NoActiveResolvePopUps;
-    private void SaveNoPopUps(bool noPopUps) => _noPopUps = noPopUps;
+    private void SaveResolvePopUps(INoResolvePopUp args) => _resolvePopUps = args.ActiveResolvePopUps;
     private void SaveGameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
 
     public void OnEnable()
@@ -45,23 +33,17 @@ public class UICancel : ICancel, IServiceUser, IEventUser
     public void ObserveEvents()
     {
         EventLocator.Subscribe<ICancelPressed>(CancelPressed, this);
-        EventLocator.Subscribe<ICancelButtonActivated>(EventPassedCancelType, this);
+        EventLocator.Subscribe<ICancelButtonActivated>(CancelOrBackButtonPressed, this);
         EventLocator.Subscribe<IGameIsPaused>(SaveGameIsPaused, this);
-        EventLocator.Subscribe<IHighlightedNode>(SaveLastHighlighted, this);
-        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
-        EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoPopUps, this);
-        EventLocator.Subscribe<INoResolvePopUp>(SaveNoResolvePopUps, this);
+        EventLocator.Subscribe<INoResolvePopUp>(SaveResolvePopUps, this);
     }
 
     public void RemoveFromEvents()
     {
         EventLocator.Unsubscribe<ICancelPressed>(CancelPressed);
-        EventLocator.Unsubscribe<ICancelButtonActivated>(EventPassedCancelType);
+        EventLocator.Unsubscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
         EventLocator.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
-        EventLocator.Unsubscribe<IHighlightedNode>(SaveLastHighlighted);
-        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
-        EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoPopUps);
-        EventLocator.Unsubscribe<INoResolvePopUp>(SaveNoResolvePopUps);
+        EventLocator.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
     }
 
     public void SubscribeToService()
@@ -71,11 +53,11 @@ public class UICancel : ICancel, IServiceUser, IEventUser
 
     private void CancelPressed(ICancelPressed args)
     {
-        if(!_noResolvePopUps && !_gameIsPaused) return;
-        ProcessCancelType(_activeBranch.EscapeKeySetting);
+        if(_resolvePopUps && !_gameIsPaused) return;
+        ProcessCancelType(args.EscapeKeySettings);
     }
 
-    private void EventPassedCancelType(ICancelButtonActivated args)
+    private void CancelOrBackButtonPressed(ICancelButtonActivated args)
     {
         ProcessCancelType(args.EscapeKeyType);
     }
@@ -95,23 +77,7 @@ public class UICancel : ICancel, IServiceUser, IEventUser
         }
     }
 
-    private void StartCancelProcess(Action endOfCancelAction) 
-    {
-        if (HasActivePopUps() && !_gameIsPaused)
-        {
-            _lastHighlighted.PlayCancelAudio();
-            _lastHighlighted.MyBranch.StartBranchExitProcess(OutTweenType.Cancel);
-            ToNextPopUp();
-        }
-        else
-        {
-            _activeBranch.MyParentBranch.LastSelected.PlayCancelAudio();
-            _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, endOfCancelAction);
-        }
-    }
-
-    private bool HasActivePopUps() => !_noPopUps && _lastHighlighted.MyBranch.IsAPopUpBranch();
+    private void StartCancelProcess(Action endOfCancelAction) => _uiHistoryTrack.CancelMove(endOfCancelAction);
     private void BackOneLevel() => _uiHistoryTrack.BackOneLevel();
     private void BackToHome() => _uiHistoryTrack.BackToHome();
-    private void ToNextPopUp() => OnBackToAPopUp?.RaiseEvent(_lastHighlighted.MyBranch);
 }

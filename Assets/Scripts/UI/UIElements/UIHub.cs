@@ -63,7 +63,6 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
         ServiceLocator.AddService<IBucketCreator>(new BucketCreator(transform, "Tooltip Holder"));
         ServiceLocator.AddService<IHistoryTrack>(new HistoryTracker());
         ServiceLocator.AddService<IHomeGroup>(new UIHomeGroup(_homeBranches.ToArray()));
-        ServiceLocator.AddService<IPopUpController>(new PopUpController());
         ServiceLocator.AddService<ICancel>(new UICancel(_inputScheme.GlobalCancelAction));
     }
 
@@ -74,7 +73,6 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
         ServiceLocator.RemoveService<IBucketCreator>();
         ServiceLocator.RemoveService<IHistoryTrack>();
         ServiceLocator.RemoveService<IHomeGroup>();
-        ServiceLocator.RemoveService<IPopUpController>();
         ServiceLocator.RemoveService<ICancel>();
     }
 

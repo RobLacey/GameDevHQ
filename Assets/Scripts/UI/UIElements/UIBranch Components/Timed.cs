@@ -14,7 +14,7 @@ public class Timed : BranchBase, IStartPopUp
 
     public void StartPopUp()
     {
-        if (_gameIsPaused || !_canStart || !_noResolvePopUps) return;
+        if (_gameIsPaused || !_canStart || _resolvePopUps) return;
         
         SetIfRunningOrNot();
         _myBranch.DontSetBranchAsActive();

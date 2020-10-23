@@ -1,5 +1,8 @@
 ﻿
-public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen
+
+using UnityEngine;
+
+public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IServiceUser
 {
     protected BranchBase(UIBranch branch)
     {
@@ -9,8 +12,8 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen
     
     protected readonly UIBranch _myBranch;
     protected readonly ScreenData _screenData = new ScreenData();
-    protected bool _noResolvePopUps = true;
-    protected bool _inMenu, _canStart, _gameIsPaused;
+    protected bool _inMenu, _canStart, _gameIsPaused, _resolvePopUps;
+    protected IHistoryTrack _historyTrack;
 
     //Events
     private static CustomEvent<IOnHomeScreen> SetIsOnHomeScreen { get; } = new CustomEvent<IOnHomeScreen>();
@@ -23,7 +26,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen
         SetIsOnHomeScreen?.RaiseEvent(this);
     }
     protected void InvokeDoClearScreen() => DoClearScreen?.RaiseEvent(this);
-    private void SaveNoResolvePopUps(INoResolvePopUp args) => _noResolvePopUps = args.NoActiveResolvePopUps;
+    private void SaveResolvePopUps(INoResolvePopUp args) => _resolvePopUps = args.ActiveResolvePopUps;
     private void SaveIfGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     protected virtual void SaveInMenu(IInMenu args) => _inMenu = args.InTheMenu;
 
@@ -41,7 +44,11 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen
     public UIBranch IgnoreThisBranch => _myBranch;
 
     //Main
-    private void OnEnable() => ObserveEvents();
+    private void OnEnable()
+    {
+        ObserveEvents();
+        SubscribeToService();
+    }
 
     public virtual void OnDisable()
     {
@@ -56,10 +63,8 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen
         EventLocator.Subscribe<IOnStart>(SaveOnStart, this);
         EventLocator.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen, this);
         EventLocator.Subscribe<IInMenu>(SaveInMenu, this);
-        EventLocator.Subscribe<INoResolvePopUp>(SaveNoResolvePopUps, this);
+        EventLocator.Subscribe<INoResolvePopUp>(SaveResolvePopUps, this);
         EventLocator.Subscribe<IClearScreen>(ClearBranchForFullscreen, this);
-        EventLocator.SubscribeToEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)>
-            (RestoreLastPosition, this);
     }
 
     public virtual void RemoveFromEvents()
@@ -69,11 +74,15 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen
         EventLocator.Unsubscribe<IOnStart>(SaveOnStart);
         EventLocator.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
         EventLocator.Unsubscribe<IInMenu>(SaveInMenu);
-        EventLocator.Unsubscribe<INoResolvePopUp>(SaveNoResolvePopUps);
+        EventLocator.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
         EventLocator.Unsubscribe<IClearScreen>(ClearBranchForFullscreen);
-        EventLocator.UnsubscribeFromEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)>
-            (RestoreLastPosition);
     }
+    
+    public void SubscribeToService()
+    {
+        _historyTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+    }
+
 
     protected virtual void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
@@ -113,7 +122,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen
         InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
     }
     
-    protected void ActivateStoredPosition()
+    public void ActivateStoredPosition()
     {
         _screenData.RestoreScreen();
         
@@ -122,12 +131,4 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen
         
         _screenData._locked = false;
     }
-
-    protected virtual void RestoreLastPosition((UIBranch nextPopUp, UIBranch currentPopUp) uiData)
-    {
-        if (uiData.nextPopUp != _myBranch) return;
-        GoToNextPopUp(uiData.nextPopUp);
-    }
-
-    private static void GoToNextPopUp(UIBranch nextPopUp) => nextPopUp.MoveToBranchWithoutTween();
 }

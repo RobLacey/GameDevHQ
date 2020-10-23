@@ -1,4 +1,4 @@
-﻿public class ResolvePopUp : BranchBase, IStartPopUp
+﻿public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp
 {
     public ResolvePopUp(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
@@ -9,9 +9,11 @@
     //Variables
     private readonly UIBranch[] _allBranches;
 
+    //Properties
+    public UIBranch ThisPopUp => _myBranch;
+
     //Events
-    private static CustomEvent<IAddResolvePopUp, UIBranch> AddResolvePopUp { get; } 
-        = new CustomEvent<IAddResolvePopUp, UIBranch>();
+    private static CustomEvent<IAddResolvePopUp> AddResolvePopUp { get; } = new CustomEvent<IAddResolvePopUp>();
     
     //Main
     public void StartPopUp()
@@ -26,11 +28,10 @@
     public override void SetUpBranch(UIBranch newParentController = null)
     {
         if(_myBranch.CanvasIsEnabled) return;
-        
         _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRayCast.Yes);
         ActivateBranchCanvas();
         CanGoToFullscreen();
-        AddResolvePopUp?.RaiseEvent(_myBranch);
+        AddResolvePopUp?.RaiseEvent(this);
     }
 
     public override void MoveBackToThisBranch(UIBranch lastBranch)
@@ -39,11 +40,5 @@
         
         base.MoveBackToThisBranch(lastBranch);
         _myBranch.MoveToThisBranch();
-    }
-
-    protected override void RestoreLastPosition((UIBranch nextPopUp, UIBranch currentPopUp) data)
-    {
-        base.RestoreLastPosition(data);
-        ActivateStoredPosition();
     }
 }

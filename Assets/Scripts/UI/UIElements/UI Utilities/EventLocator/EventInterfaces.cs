@@ -1,6 +1,13 @@
-﻿public interface IReturnToHome { } //**
+﻿public interface IReturnToHome
+{
+    bool ActivateBranchOnReturnHome { get; }
+} //**
 public interface IPausePressed { } //**
-public interface ICancelPressed { } //**
+
+public interface ICancelPressed //**
+{
+    EscapeKey EscapeKeySettings { get; }
+}
 
 public interface ISwitchGroupPressed //**
 {
@@ -50,22 +57,35 @@ public interface IOnHomeScreen//**
     bool OnHomeScreen { get; }
 }
 
-public interface IInMenu
+public interface IInMenu //**
 {
     bool InTheMenu { get; set; }
 }
 
-public interface INoResolvePopUp
+public interface INoResolvePopUp //**
 {
-    bool NoActiveResolvePopUps { get; }
+    bool ActiveResolvePopUps { get; }
 }
-public interface INoPopUps { }
-public interface IMoveToNextFromPopUp { }
-public interface IRemoveOptionalPopUp { }
-public interface IAddOptionalPopUp { }
-public interface IAddResolvePopUp { }
-public interface IBackToNextPopUp { }
-public interface IReturnNextPopUp { }
+
+public interface INoPopUps //**
+{
+    bool IsThereAnyPopUps { get; }
+}
+
+public interface IRemoveOptionalPopUp //**
+{
+    UIBranch ThisPopUp { get; }
+}
+
+public interface IAddOptionalPopUp //**
+{
+    UIBranch ThisPopUp { get; }
+}
+
+public interface IAddResolvePopUp //**
+{
+    UIBranch ThisPopUp { get; }
+}
 
 public interface IClearScreen //**
 {

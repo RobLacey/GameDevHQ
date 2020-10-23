@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using NaughtyAttributes;
@@ -9,6 +10,7 @@ public class TestRunner : MonoBehaviour, IEventUser
     [SerializeField] private UINode _lastHighlighted;
     [SerializeField] private UINode _lastSelected;
     [SerializeField] private UIBranch _activeBranch;
+    [SerializeField] private List<UINode> _history;
     [SerializeField] [ReadOnly] private bool _onHomeScreen = true;
     [SerializeField] private EventsForTest _eventsForTest;
     [SerializeField] private string _test1Test;
@@ -46,6 +48,7 @@ public class TestRunner : MonoBehaviour, IEventUser
         EventLocator.Subscribe<ISelectedNode>(SaveLastSelected, this);
         EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
         EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
+        EventLocator.Subscribe<ITestList>(ManageHistory, this);
     }
 
     public void RemoveFromEvents()
@@ -54,6 +57,24 @@ public class TestRunner : MonoBehaviour, IEventUser
         EventLocator.Unsubscribe<ISelectedNode>(SaveLastSelected);
         EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
         EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        EventLocator.Unsubscribe<ITestList>(ManageHistory);
+    }
+
+    private void ManageHistory(ITestList args)
+    {
+        if (args.AddNode is null)
+        {
+            _history.Clear();
+            return;
+        }
+        if (_history.Contains(args.AddNode))
+        {
+            _history.Remove(args.AddNode);
+        }
+        else
+        {
+            _history.Add(args.AddNode);
+        }
     }
     
     private void OnDisable() => RemoveFromEvents();

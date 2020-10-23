@@ -1,4 +1,6 @@
-﻿public interface IHistoryTrack : IMonoBehaviourSub
+﻿using System;
+
+public interface IHistoryTrack : IMonoBehaviourSub
 {
     void SetSelected(INode node);
     void BackToHome();
@@ -6,4 +8,6 @@
     void CloseAllChildNodesAfterPoint(INode newNode);
     void SetFromHotkey(UIBranch branch, INode parentNode);
     void ReverseAndClearHistory();
+    void MoveToLastBranchInHistory();
+    void CancelMove(Action endOfCancelAction);
 }

@@ -1,51 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
-public interface IPopUpController: IMonoBehaviourSub { }
+public interface IPopUpController : IMonoBehaviourSub
+{
+    UIBranch NextPopUp();
+    void RemoveNextPopUp(UIBranch popUpToRemove);
+}
 
 /// <summary>
 /// This Class Looks after managing switching between PopUps
 /// </summary>
 ///
-public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp
+public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, INoPopUps
 {
     public PopUpController() => OnEnable();
 
     //Variables
     private readonly List<UIBranch> _activeResolvePopUps = new List<UIBranch>();
     private readonly List<UIBranch> _activeOptionalPopUps = new List<UIBranch>();
-    private UIBranch _lastBranchBeforePopUp;
     private bool _noPopUps = true;
     private bool _gameIsPaused;
 
     //Properties
-    private void SaveNoPopUps(bool activePopUps) => _noPopUps = activePopUps;
     private void SaveGameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
-    public bool NoActiveResolvePopUps => _activeResolvePopUps.Count == 0;
-    private bool NoActiveOptionalPopUps => _activeOptionalPopUps.Count == 0;
+    public bool ActiveResolvePopUps => _activeResolvePopUps.Count > 0;
+    private bool ActiveOptionalPopUps => _activeOptionalPopUps.Count > 0;
+    public bool IsThereAnyPopUps => _noPopUps;
 
     private void SaveActiveBranch(IActiveBranch args)
     {
         if(_gameIsPaused) return;
         if (args.ActiveBranch.IsAPopUpBranch() || args.ActiveBranch.IsPauseMenuBranch()) return;
-        _lastBranchBeforePopUp = args.ActiveBranch;
     }
 
-    private void AddActivePopUps_Resolve(UIBranch newResolvePopUp)
+    private void AddActivePopUps_Resolve(IAddResolvePopUp args)
     {
-        AddToPopUpList(newResolvePopUp, _activeResolvePopUps, NoResolvePopUps);
+        AddToPopUpList(args.ThisPopUp, _activeResolvePopUps, NoResolvePopUps);
     }    
-    private void AddToActivePopUps_Optional(UIBranch newOptionalPopUp) 
-        => AddToPopUpList(newOptionalPopUp, _activeOptionalPopUps);
+    private void AddToActivePopUps_Optional(IAddOptionalPopUp args) 
+        => AddToPopUpList(args.ThisPopUp, _activeOptionalPopUps);
 
     //Events
     private static CustomEvent<INoResolvePopUp> NoResolvePopUps { get; } 
         = new CustomEvent<INoResolvePopUp>();
-    private  static  CustomEvent<INoPopUps, bool> NoPopUps { get; } = new CustomEvent<INoPopUps, bool>();
-    private static CustomEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)> 
-        MoveToNextFromPopUp { get; }  
-        = new CustomEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp, UIBranch currentPopUp)>();
+    private  static  CustomEvent<INoPopUps> NoPopUps { get; } = new CustomEvent<INoPopUps>();
     
     public void OnEnable() => ObserveEvents();
     public void OnDisable() => RemoveFromEvents();
@@ -54,34 +53,28 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp
     {
         EventLocator.Subscribe<IGameIsPaused>(SaveGameIsPaused, this);
         EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
-        EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoPopUps, this);
-        EventLocator.SubscribeToEvent<IAddOptionalPopUp, UIBranch>(AddToActivePopUps_Optional, this);
-        EventLocator.SubscribeToEvent<IRemoveOptionalPopUp, UIBranch>(OnLeavingHomeScreen, this);
-        EventLocator.SubscribeToEvent<IAddResolvePopUp, UIBranch>(AddActivePopUps_Resolve, this);
-        EventLocator.SubscribeToEvent<IBackToNextPopUp, UIBranch>(RemoveNextPopUp, this);
-        EventLocator.SubscribeToEvent<IReturnNextPopUp, UIBranch>(NextPopUp, this);
+        EventLocator.Subscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional, this);
+        EventLocator.Subscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen, this);
+        EventLocator.Subscribe<IAddResolvePopUp>(AddActivePopUps_Resolve, this);
     }
 
     public void RemoveFromEvents()
     {
         EventLocator.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
         EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
-        EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoPopUps);
-        EventLocator.UnsubscribeFromEvent<IAddOptionalPopUp, UIBranch>(AddToActivePopUps_Optional);
-        EventLocator.UnsubscribeFromEvent<IRemoveOptionalPopUp, UIBranch>(OnLeavingHomeScreen);
-        EventLocator.UnsubscribeFromEvent<IAddResolvePopUp, UIBranch>(AddActivePopUps_Resolve);
-        EventLocator.UnsubscribeFromEvent<IBackToNextPopUp, UIBranch>(RemoveNextPopUp);
-        EventLocator.UnsubscribeFromEvent<IReturnNextPopUp, UIBranch>(NextPopUp);
+        EventLocator.Unsubscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional);
+        EventLocator.Unsubscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen);
+        EventLocator.Unsubscribe<IAddResolvePopUp>(AddActivePopUps_Resolve);
     }
 
-    private UIBranch NextPopUp()
+    public UIBranch NextPopUp()
     {
-        if (!NoActiveResolvePopUps)
+        if (ActiveResolvePopUps)
         {
             return GetNextPopUp(_activeResolvePopUps);
         }
 
-        if (!NoActiveOptionalPopUps)
+        if (ActiveOptionalPopUps)
         {
             return GetNextPopUp(_activeOptionalPopUps);
         }
@@ -95,7 +88,7 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp
         return popUpList[index];
     }
     
-    private void RemoveNextPopUp(UIBranch popUpToRemove)
+    public void RemoveNextPopUp(UIBranch popUpToRemove)
     {
         if(_noPopUps) return;
         
@@ -110,27 +103,25 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp
     }
 
     private bool HasAResolvePopUpToRemove(UIBranch popUpToRemove) 
-        => !NoActiveResolvePopUps && _activeResolvePopUps.Contains(popUpToRemove);
+        => ActiveResolvePopUps && _activeResolvePopUps.Contains(popUpToRemove);
 
     private bool HasAOptionalPopUpToRemove(UIBranch popUpToRemove) 
-        => !NoActiveOptionalPopUps && _activeOptionalPopUps.Contains(popUpToRemove);
+        => ActiveOptionalPopUps && _activeOptionalPopUps.Contains(popUpToRemove);
 
-    private void OnLeavingHomeScreen(UIBranch popup)
+    private void OnLeavingHomeScreen(IRemoveOptionalPopUp args)
     {
-        RemoveOptionalPopUp(popup);
-        if (!NoActiveOptionalPopUps) return;
+        RemoveOptionalPopUp(args.ThisPopUp);
+        if (ActiveOptionalPopUps) return;
         
         _noPopUps = true;
-        NoPopUps?.RaiseEvent(_noPopUps);
+        NoPopUps?.RaiseEvent(this);
     }
 
     private void RemoveOptionalPopUp(UIBranch popup)
     {
-        foreach (UIBranch activeOptionalPopUp in _activeOptionalPopUps)
+        if (_activeOptionalPopUps.Any(activeOptionalPopUp => activeOptionalPopUp == popup))
         {
-            if (activeOptionalPopUp != popup) continue;
             _activeOptionalPopUps.Remove(popup);
-            break;
         }
     }
 
@@ -140,7 +131,8 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp
     {
         popUpList.Add(newPopUp);
         noActivePopUpsEvent?.RaiseEvent(this);
-        NoPopUps?.RaiseEvent((false));
+        _noPopUps = false;
+        NoPopUps?.RaiseEvent(this);
     }
 
     private static void RemoveFromActivePopUpList(IList<UIBranch> popUpList, 
@@ -154,29 +146,15 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp
 
     private void WhatToDoNext_Resolve(UIBranch currentPopUpBranch)
     {
-        if (NoActiveResolvePopUps)
-        {
-            NoResolvePopUps?.RaiseEvent(this);
-            WhatToDoNext_Optional(currentPopUpBranch);
-        }
-        else
-        {
-            MoveToNextFromPopUp?.RaiseEvent((GetNextPopUp(_activeResolvePopUps), currentPopUpBranch));
-        }
+        if (ActiveResolvePopUps) return;
+        NoResolvePopUps?.RaiseEvent(this);
+        WhatToDoNext_Optional(currentPopUpBranch);
     }
 
     private void WhatToDoNext_Optional(UIBranch currentPopUpBranch)
     {
-        if (NoActiveOptionalPopUps)
-        {
-            _noPopUps = true;
-            NoPopUps?.RaiseEvent(_noPopUps);
-            Debug.Log(_lastBranchBeforePopUp);
-            MoveToNextFromPopUp?.RaiseEvent((_lastBranchBeforePopUp, currentPopUpBranch));
-        }
-        else
-        {
-            MoveToNextFromPopUp?.RaiseEvent((GetNextPopUp(_activeOptionalPopUps), currentPopUpBranch));
-        }
+        if (ActiveOptionalPopUps) return;
+        _noPopUps = true;
+        NoPopUps?.RaiseEvent(this);
     }
 }
