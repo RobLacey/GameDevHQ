@@ -4,7 +4,7 @@
 /// Class that handles switching control from the mouse to a keyboard or controller
 /// </summary>
 ///
-public class ChangeControl : IEventUser
+public class ChangeControl : IEventUser, IAllowKeys
 {
     public ChangeControl(InputScheme inputScheme, bool startInGame)
     {
@@ -18,7 +18,6 @@ public class ChangeControl : IEventUser
     private readonly ControlMethod _controlMethod;
     private readonly bool _startInGame;
     private bool _usingMouse;
-    private bool _usingKeysOrCtrl;
     private bool _noPopUps = true;
     private INode _lastHighlighted;
     private UIBranch _activeBranch;
@@ -30,34 +29,36 @@ public class ChangeControl : IEventUser
         = new CustomEvent<IReturnNextPopUp, UIBranch>();
 
     //Properties
-    private void SaveHighlighted(INode newNode) => _lastHighlighted = newNode;
-    private void SaveActiveBranch(UIBranch newNode) => _activeBranch = newNode;
+    private void SaveHighlighted(IHighlightedNode args) => _lastHighlighted = args.Highlighted;
+    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveNoPopUps(bool noPopUps) => _noPopUps = noPopUps;
-    private void SaveGameIsPaused(bool isPaused) => _gameIsPaused = isPaused;
-    private static CustomEvent<IAllowKeys, bool> AllowKeysEvent { get; } 
-        = new CustomEvent<IAllowKeys, bool>();
+    private void SaveGameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
+    public bool CanAllowKeys { get; private set; }
 
+    //Events
+    private static CustomEvent<IAllowKeys> AllowKeysEvent { get; } = new CustomEvent<IAllowKeys>();
+    
     public void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<IChangeControlsPressed>(ChangeControlType, this);
-        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveGameIsPaused, this);
-        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SaveHighlighted, this);
-        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
+        EventLocator.Subscribe<IChangeControlsPressed>(ChangeControlType, this);
+        EventLocator.Subscribe<IGameIsPaused>(SaveGameIsPaused, this);
+        EventLocator.Subscribe<IHighlightedNode>(SaveHighlighted, this);
+        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
         EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoPopUps, this);
-        EventLocator.SubscribeToEvent<IOnStart>(StartGame, this);
+        EventLocator.Subscribe<IOnStart>(StartGame, this);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<IChangeControlsPressed>(ChangeControlType);
-        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveGameIsPaused);
-        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SaveHighlighted);
-        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
+        EventLocator.Unsubscribe<IChangeControlsPressed>(ChangeControlType);
+        EventLocator.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
+        EventLocator.Unsubscribe<IHighlightedNode>(SaveHighlighted);
+        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
         EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoPopUps);
-        EventLocator.UnsubscribeFromEvent<IOnStart>(StartGame);
+        EventLocator.Unsubscribe<IOnStart>(StartGame);
     }
 
-    private void StartGame()
+    private void StartGame(IOnStart onStart)
     {
         _inputScheme.SetMousePosition();
         if (MousePreferredControlMethod())
@@ -94,12 +95,12 @@ public class ChangeControl : IEventUser
         }
         else
         {
-            _usingKeysOrCtrl = true;
+            CanAllowKeys = true;
             SetAllowKeys();
         }
     }
 
-    private void ChangeControlType()
+    private void ChangeControlType(IChangeControlsPressed args)
     {
         if (_inputScheme.CanSwitchToMouse)
         {
@@ -118,16 +119,16 @@ public class ChangeControl : IEventUser
         Cursor.visible = true;
         if (_usingMouse) return;
         _usingMouse = true;
-        _usingKeysOrCtrl = false;
+        CanAllowKeys = false;
         SetAllowKeys();
     }
 
     private void ActivateKeysOrControl()
     {
         Cursor.visible = false;
-        if (_usingKeysOrCtrl) return;
+        if (CanAllowKeys) return;
         _usingMouse = false;
-        _usingKeysOrCtrl = true;
+        CanAllowKeys = true;
         SetAllowKeys();
         SetNextHighlightedForKeys();
         UIHub.SetEventSystem(_lastHighlighted.ReturnNode.gameObject);
@@ -136,7 +137,7 @@ public class ChangeControl : IEventUser
     private void SetAllowKeys()
     {
         if (_controlMethod == ControlMethod.MouseOnly) return;
-        AllowKeysEvent?.RaiseEvent(_usingKeysOrCtrl);
+        AllowKeysEvent?.RaiseEvent(this);
    }
 
     //Must track active branch in case user closes branches while PopUps are open

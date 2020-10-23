@@ -8,7 +8,7 @@ public interface IPopUpController: IMonoBehaviourSub { }
 /// This Class Looks after managing switching between PopUps
 /// </summary>
 ///
-public class PopUpController : IPopUpController, IEventUser
+public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp
 {
     public PopUpController() => OnEnable();
 
@@ -21,26 +21,27 @@ public class PopUpController : IPopUpController, IEventUser
 
     //Properties
     private void SaveNoPopUps(bool activePopUps) => _noPopUps = activePopUps;
-    private void SaveGameIsPaused(bool isPaused) => _gameIsPaused = isPaused;
-    private bool NoActiveResolvePopUps => _activeResolvePopUps.Count == 0;
+    private void SaveGameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
+    public bool NoActiveResolvePopUps => _activeResolvePopUps.Count == 0;
     private bool NoActiveOptionalPopUps => _activeOptionalPopUps.Count == 0;
 
-    private void SaveActiveBranch(UIBranch newBranch)
+    private void SaveActiveBranch(IActiveBranch args)
     {
         if(_gameIsPaused) return;
-        if (newBranch.IsAPopUpBranch() || newBranch.IsPauseMenuBranch()) return;
-        _lastBranchBeforePopUp = newBranch;
+        if (args.ActiveBranch.IsAPopUpBranch() || args.ActiveBranch.IsPauseMenuBranch()) return;
+        _lastBranchBeforePopUp = args.ActiveBranch;
     }
 
     private void AddActivePopUps_Resolve(UIBranch newResolvePopUp)
-        => AddToPopUpList(newResolvePopUp, _activeResolvePopUps, NoResolvePopUps);
-    
+    {
+        AddToPopUpList(newResolvePopUp, _activeResolvePopUps, NoResolvePopUps);
+    }    
     private void AddToActivePopUps_Optional(UIBranch newOptionalPopUp) 
         => AddToPopUpList(newOptionalPopUp, _activeOptionalPopUps);
 
     //Events
-    private static CustomEvent<INoResolvePopUp, bool> NoResolvePopUps { get; } 
-        = new CustomEvent<INoResolvePopUp, bool>();
+    private static CustomEvent<INoResolvePopUp> NoResolvePopUps { get; } 
+        = new CustomEvent<INoResolvePopUp>();
     private  static  CustomEvent<INoPopUps, bool> NoPopUps { get; } = new CustomEvent<INoPopUps, bool>();
     private static CustomEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)> 
         MoveToNextFromPopUp { get; }  
@@ -51,8 +52,8 @@ public class PopUpController : IPopUpController, IEventUser
 
     public void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveGameIsPaused, this);
-        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
+        EventLocator.Subscribe<IGameIsPaused>(SaveGameIsPaused, this);
+        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
         EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoPopUps, this);
         EventLocator.SubscribeToEvent<IAddOptionalPopUp, UIBranch>(AddToActivePopUps_Optional, this);
         EventLocator.SubscribeToEvent<IRemoveOptionalPopUp, UIBranch>(OnLeavingHomeScreen, this);
@@ -63,8 +64,8 @@ public class PopUpController : IPopUpController, IEventUser
 
     public void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveGameIsPaused);
-        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
+        EventLocator.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
+        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
         EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoPopUps);
         EventLocator.UnsubscribeFromEvent<IAddOptionalPopUp, UIBranch>(AddToActivePopUps_Optional);
         EventLocator.UnsubscribeFromEvent<IRemoveOptionalPopUp, UIBranch>(OnLeavingHomeScreen);
@@ -133,12 +134,12 @@ public class PopUpController : IPopUpController, IEventUser
         }
     }
 
-    private static void AddToPopUpList(UIBranch newPopUp, 
-                                       ICollection<UIBranch> popUpList,
-                                       CustomEvent<INoResolvePopUp, bool> noActivePopUpsEvent = null)
+    private void AddToPopUpList(UIBranch newPopUp, 
+                                ICollection<UIBranch> popUpList,
+                                CustomEvent<INoResolvePopUp> noActivePopUpsEvent = null)
     {
         popUpList.Add(newPopUp);
-        noActivePopUpsEvent?.RaiseEvent(false);
+        noActivePopUpsEvent?.RaiseEvent(this);
         NoPopUps?.RaiseEvent((false));
     }
 
@@ -155,13 +156,11 @@ public class PopUpController : IPopUpController, IEventUser
     {
         if (NoActiveResolvePopUps)
         {
-            NoResolvePopUps?.RaiseEvent(true);
+            NoResolvePopUps?.RaiseEvent(this);
             WhatToDoNext_Optional(currentPopUpBranch);
         }
         else
         {
-            Debug.Log(NoActiveResolvePopUps);
-
             MoveToNextFromPopUp?.RaiseEvent((GetNextPopUp(_activeResolvePopUps), currentPopUpBranch));
         }
     }
@@ -172,6 +171,7 @@ public class PopUpController : IPopUpController, IEventUser
         {
             _noPopUps = true;
             NoPopUps?.RaiseEvent(_noPopUps);
+            Debug.Log(_lastBranchBeforePopUp);
             MoveToNextFromPopUp?.RaiseEvent((_lastBranchBeforePopUp, currentPopUpBranch));
         }
         else

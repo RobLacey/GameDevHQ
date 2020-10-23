@@ -12,7 +12,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
-public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
+public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch
 {
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
@@ -59,16 +59,18 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
     private enum StoreAndRestorePopUps { StoreAndRestore, Reset }
     
     //Properties
-    private void SaveIfOnHomeScreen(bool onHomeScreen) => _onHomeScreen = onHomeScreen;
-    private void SaveHighlighted(INode newNode)
-        => LastHighlighted = SearchThisBranchesNodes
-            (newNode.ReturnNode, defaultNode: LastHighlighted.ReturnNode);
-    private void SaveSelected(INode newNode) 
+    private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
+    private void SaveHighlighted(IHighlightedNode args) =>
+        LastHighlighted = SearchThisBranchesNodes
+            (args.Highlighted.ReturnNode, defaultNode: LastHighlighted.ReturnNode);
+
+    private void SaveSelected(ISelectedNode args) 
         => LastSelected = SearchThisBranchesNodes
-            (newNode.ReturnNode, defaultNode: LastSelected.ReturnNode);
+            (args.Selected.ReturnNode, defaultNode: LastSelected.ReturnNode);
     public void SetNoTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
     public void IsTabBranch() => _branchType = BranchType.Standard;
+    public UIBranch ActiveBranch => this;
 
     /// <summary>
     /// Call To to start any PopUps through I StartPopUp
@@ -80,8 +82,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
     public Action OnStartPopUp; 
     private Action OnFinishTweenCallBack;
     
-    private static ICustomEvent<IActiveBranch, UIBranch> SetActiveBranch { get; } 
-        = new CustomEvent<IActiveBranch, UIBranch>();
+    private static CustomEvent<IActiveBranch> SetActiveBranch { get; } 
+        = new CustomEvent<IActiveBranch>();
 
     //InternalClasses
     [Serializable]
@@ -105,20 +107,20 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
     
     public void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<ISwitchGroupPressed, SwitchType>(SwitchBranchGroup, this);
-        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SaveHighlighted, this);
-        EventLocator.SubscribeToEvent<ISelectedNode, INode>(SaveSelected, this);
-        EventLocator.SubscribeToEvent<IOnHomeScreen, bool>(SaveIfOnHomeScreen, this);
+        EventLocator.Subscribe<ISwitchGroupPressed>(SwitchBranchGroup, this);
+        EventLocator.Subscribe<IHighlightedNode>(SaveHighlighted, this);
+        EventLocator.Subscribe<ISelectedNode>(SaveSelected, this);
+        EventLocator.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen, this);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<ISwitchGroupPressed, SwitchType>(SwitchBranchGroup);
-        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SaveHighlighted);
-        EventLocator.UnsubscribeFromEvent<ISelectedNode, INode>(SaveSelected);
-        EventLocator.UnsubscribeFromEvent<IOnHomeScreen, bool>(SaveIfOnHomeScreen);
+        EventLocator.Unsubscribe<ISwitchGroupPressed>(SwitchBranchGroup);
+        EventLocator.Unsubscribe<IHighlightedNode>(SaveHighlighted);
+        EventLocator.Unsubscribe<ISelectedNode>(SaveSelected);
+        EventLocator.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
     }
-    
+
     private void OnDisable()
     {
         Branch.OnDisable();
@@ -126,7 +128,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
     }
 
     private void Start() => SetNodesChildrenToThisBranch();
-    
+
     private void SetNodesChildrenToThisBranch()
     {
         foreach (var node in ThisGroupsUiNodes)
@@ -150,7 +152,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
         if (_startOnThisNode) return;
         if (_groupsList.Count > 0)
         {
-            _startOnThisNode = _groupsList[0]._startNode;
+            _startOnThisNode = _groupsList.First()._startNode;
         }
         else
         {
@@ -186,10 +188,10 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser
     
     private void SetAsActiveBranch() => SetActiveBranch?.RaiseEvent(this);
 
-    private void SwitchBranchGroup(SwitchType switchType)
+    private void SwitchBranchGroup(ISwitchGroupPressed args)
     {
         if (_onHomeScreen || !CanvasIsEnabled || _groupsList.Count <= 1) return;
-        _groupIndex = UIBranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, switchType);
+        _groupIndex = UIBranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, args.SwitchType);
     }
 
     public void ResetBranchesStartPosition()

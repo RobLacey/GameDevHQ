@@ -5,7 +5,8 @@ using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class UIInput : MonoBehaviour, IEventUser
+public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPressed, 
+                       ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed
 {
     [SerializeField] 
     private InputScheme _inputScheme;
@@ -30,8 +31,8 @@ public class UIInput : MonoBehaviour, IEventUser
     private static CustomEvent<ICancelPressed> OnCancelPressed { get; } = new CustomEvent<ICancelPressed>();
     private static CustomEvent<IChangeControlsPressed> OnChangeControlPressed { get; } 
         = new CustomEvent<IChangeControlsPressed>();
-    private static CustomEvent<ISwitchGroupPressed, SwitchType> OnSwitchGroupPressed { get; } 
-        = new CustomEvent<ISwitchGroupPressed, SwitchType>();
+    private static CustomEvent<ISwitchGroupPressed> OnSwitchGroupPressed { get; } 
+        = new CustomEvent<ISwitchGroupPressed>();
     
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
@@ -51,17 +52,17 @@ public class UIInput : MonoBehaviour, IEventUser
         }
         return false;
     }
-    private void SaveInMenu(bool isInMenu)
+    private void SaveInMenu(IInMenu args)
     {
-        _returnToGameControl?.Invoke(isInMenu);
-        _inMenu = isInMenu;
+        _inMenu = args.InTheMenu;
+        _returnToGameControl?.Invoke(_inMenu);
     }
     private void SaveNoActivePopUps(bool noActivePopUps) => _noActivePopUps = noActivePopUps;
-    private void SaveOnStart() => _canStart = true;
-    private void SaveGameIsPaused(bool gameIsPaused) => _gameIsPaused = gameIsPaused;
-    private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
-    private void SaveOnHomeScreen (bool onHomeScreen) => _onHomeScreen = onHomeScreen;
-
+    private void SaveOnStart(IOnStart onStart) => _canStart = true;
+    private void SaveGameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
+    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
+    private void SaveOnHomeScreen (IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
+    public SwitchType SwitchType { get; set; }
     public InputScheme ReturnScheme => _inputScheme;
     
     //Main
@@ -87,21 +88,21 @@ public class UIInput : MonoBehaviour, IEventUser
     
     public void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveGameIsPaused, this);
-        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
-        EventLocator.SubscribeToEvent<IOnStart>(SaveOnStart, this);
-        EventLocator.SubscribeToEvent<IOnHomeScreen, bool>(SaveOnHomeScreen, this);
-        EventLocator.SubscribeToEvent<IInMenu, bool>(SaveInMenu, this);
+        EventLocator.Subscribe<IGameIsPaused>(SaveGameIsPaused, this);
+        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
+        EventLocator.Subscribe<IOnStart>(SaveOnStart, this);
+        EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
+        EventLocator.Subscribe<IInMenu>(SaveInMenu, this);
         EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoActivePopUps, this);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveGameIsPaused);
-        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
-        EventLocator.UnsubscribeFromEvent<IOnStart>(SaveOnStart);
-        EventLocator.UnsubscribeFromEvent<IOnHomeScreen, bool>(SaveOnHomeScreen);
-        EventLocator.UnsubscribeFromEvent<IInMenu, bool>(SaveInMenu);
+        EventLocator.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
+        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
+        EventLocator.Unsubscribe<IOnStart>(SaveOnStart);
+        EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        EventLocator.Unsubscribe<IInMenu>(SaveInMenu);
         EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoActivePopUps);
     }
     
@@ -127,7 +128,6 @@ public class UIInput : MonoBehaviour, IEventUser
          }
         
         if (CanSwitchBetweenInGameAndMenu() && _onHomeScreen) return;
-        
         if (CheckIfHotKeyAllowed()) return;
 
         if (_inMenu) InMenuControls();
@@ -143,20 +143,20 @@ public class UIInput : MonoBehaviour, IEventUser
         
         if (CanSwitchBranches() && SwitchGroupProcess()) return;
 
-        OnChangeControlPressed?.RaiseEvent();
+        OnChangeControlPressed?.RaiseEvent(this);
     }
 
     private bool CanPauseGame() => _inputScheme.PressPause();
 
     private void PausedPressedActions()
     {
-        OnPausePressed?.RaiseEvent();
+        OnPausePressed?.RaiseEvent(this);
     }
 
     private bool CanSwitchBetweenInGameAndMenu()
     {
         if (!_inputScheme.PressedMenuToGameSwitch()) return false;
-        OnMenuAndGameSwitch?.RaiseEvent();
+        OnMenuAndGameSwitch?.RaiseEvent(this);
         return true;
     }
 
@@ -164,7 +164,7 @@ public class UIInput : MonoBehaviour, IEventUser
     {
         if (!_hotKeySettings.Any(hotKey => hotKey.CheckHotKeys())) return false;
         if(!_inMenu)
-            OnMenuAndGameSwitch?.RaiseEvent();
+            OnMenuAndGameSwitch?.RaiseEvent(this);
         return true;
     }
 
@@ -178,7 +178,7 @@ public class UIInput : MonoBehaviour, IEventUser
          }
          else
          {
-             OnCancelPressed?.RaiseEvent();
+             OnCancelPressed?.RaiseEvent(this);
          }
     }
 
@@ -194,13 +194,15 @@ public class UIInput : MonoBehaviour, IEventUser
     {
         if (_inputScheme.PressedPositiveSwitch())
         {
-            OnSwitchGroupPressed?.RaiseEvent(SwitchType.Positive);
+            SwitchType = SwitchType.Positive;
+            OnSwitchGroupPressed?.RaiseEvent(this);
             return true;
         }
 
         if (_inputScheme.PressedNegativeSwitch())
         {
-            OnSwitchGroupPressed?.RaiseEvent(SwitchType.Negative);
+            SwitchType = SwitchType.Negative;
+            OnSwitchGroupPressed?.RaiseEvent(this);
             return true;
         }
         return false;

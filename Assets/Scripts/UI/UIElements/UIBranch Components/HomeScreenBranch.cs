@@ -5,29 +5,30 @@ public class HomeScreenBranchBase: BranchBase
     
     //Properties
     private bool CannotTweenOnHome => _myBranch.TweenOnHome == IsActive.No;
-
-    protected override void SaveInMenu(bool inMenu)
+    
+    //Main
+    protected override void SaveInMenu(IInMenu args)
     {
-        _inMenu = inMenu;
+        base.SaveInMenu(args);
         ActivateBlockRaycast();
     }
 
-    protected override void SaveOnStart() 
+    protected override void SaveOnStart(IOnStart args) 
     {
-        base.SaveOnStart();
+        base.SaveOnStart(args);
         ActivateBranchCanvas();
         ActivateBlockRaycast();
     }
     
     //Main
-    protected override void SetUpBranchesOnStart(UIBranch startBranch)
+    protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
         _myBranch.MyCanvas.enabled = true;
         _myBranch.MyCanvasGroup.blocksRaycasts = false;
         _myBranch.DefaultStartOnThisNode.ThisNodeIsSelected();        
         _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
 
-        if (startBranch != _myBranch)
+        if (args.StartBranch != _myBranch)
         {
             _myBranch.DontSetBranchAsActive();
         }

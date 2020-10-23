@@ -20,8 +20,8 @@ public class HotKeys : IServiceUser, IEventUser
     private IHistoryTrack _uiHistoryTrack;
     
     //Properties
-    private void SaveIsPaused(bool isPaused) => _gameIsPaused = isPaused;
-    private void SaveActiveBranch(UIBranch branch) => _activeBranch = branch;
+    private void SaveIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
+    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveNoActivePopUps(bool noaActivePopUps) => _noActivePopUps = noaActivePopUps;
     
     public void OnAwake(InputScheme inputScheme)
@@ -34,15 +34,15 @@ public class HotKeys : IServiceUser, IEventUser
     
     public void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveIsPaused, this);
-        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
+        EventLocator.Subscribe<IGameIsPaused>(SaveIsPaused, this);
+        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
         EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoActivePopUps, this);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveIsPaused);
-        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
+        EventLocator.Unsubscribe<IGameIsPaused>(SaveIsPaused);
+        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
         EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoActivePopUps);
     }
     
@@ -76,7 +76,15 @@ public class HotKeys : IServiceUser, IEventUser
         {
             GetParentNode();
         }
-        _activeBranch.StartBranchExitProcess(OutTweenType.Cancel,StartThisHotKeyBranch);
+
+        if (_activeBranch.IsHomeScreenBranch())
+        {
+            StartThisHotKeyBranch();
+        }
+        else
+        {
+            _activeBranch.StartBranchExitProcess(OutTweenType.Cancel,StartThisHotKeyBranch);
+        }
     }
 
     private void GetParentNode()
@@ -89,14 +97,15 @@ public class HotKeys : IServiceUser, IEventUser
     private void StartThisHotKeyBranch()
     {
         SetHotKeyAsSelectedActions();
-        _myBranch.MoveToThisBranch();
         _uiHistoryTrack.SetFromHotkey(_myBranch, _parentNode);
+        _myBranch.MoveToThisBranch();
     }
 
     private void SetHotKeyAsSelectedActions()
     { 
         _parentNode.ThisNodeIsSelected();
         _parentNode.ThisNodeIsHighLighted();
-        _parentNode.SetNodeAsSelected_NoEffects();
+        if(_myBranch.ScreenType != ScreenType.FullScreen)
+            _parentNode.SetNodeAsSelected_NoEffects();
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public interface IEventUser
 {
@@ -16,7 +18,17 @@ public static class EventLocator
         = new Dictionary<Type, List<IEventUser>>();
     private static bool locked;
 
-    public static void AddEvent<TType>(ICustomEvent<TType> newEvent)
+    public static void AddEvent<TType>(ICustomEventOld<TType> newEventOld)
+    {
+        var eventType = typeof(ICustomEventOld<TType>);
+        if(EventExistsAndLocked(eventType)) return;
+        
+        events.Add(eventType, newEventOld);
+        locked = true;
+        CheckForWaitingServiceUser(eventType);
+    }
+    
+    public static void AddEventTest<TType>(ICustomEvent<TType> newEvent)
     {
         var eventType = typeof(ICustomEvent<TType>);
         if(EventExistsAndLocked(eventType)) return;
@@ -25,6 +37,24 @@ public static class EventLocator
         locked = true;
         CheckForWaitingServiceUser(eventType);
     }
+    
+    public static void Subscribe<TType>(Action<TType> listener, IEventUser caller)
+    {
+        var eventType = typeof(ICustomEvent<TType>);
+        if (EventDoesNotExistYet(caller, eventType)) return;
+
+        var t = (ICustomEvent<TType>) events[eventType];
+        t.AddListener(listener);
+    }
+
+    public static void Unsubscribe<TType>(Action<TType> listener)
+    {
+        var eventType = typeof(ICustomEvent<TType>);
+        if (!events.ContainsKey(eventType)) return;
+        var t = (ICustomEvent<TType>) events[eventType];
+        t.RemoveListener(listener);
+    }
+
 
     public static void AddEvent<TType, TParameter>(ICustomEvent<TType, TParameter> newEvent)
     {
@@ -51,10 +81,10 @@ public static class EventLocator
     /// <summary> Need to supply the EVENT TYPE (as an Interface) </summary>
     public static void SubscribeToEvent<TType>(Action listener, IEventUser caller)
     {
-        var eventType = typeof(ICustomEvent<TType>);
+        var eventType = typeof(ICustomEventOld<TType>);
         if (EventDoesNotExistYet(caller, eventType)) return;
         
-        var t = (ICustomEvent<TType>) events[eventType];
+        var t = (ICustomEventOld<TType>) events[eventType];
         t.AddListener(listener);
     }
     
@@ -69,6 +99,7 @@ public static class EventLocator
         t.AddListener(listener);
     }
     
+
     /// <summary> Need to supply the EVENT TYPE (as an Interface)
     /// and the returned PARAMETER that matches the delegate type </summary>
     public static void SubscribeToEvent<TType, TParameter>(Func<TParameter> listener, IEventUser caller)
@@ -94,9 +125,9 @@ public static class EventLocator
 
     public static void UnsubscribeFromEvent<TType>(Action listener)
     {
-        var eventType = typeof(ICustomEvent<TType>);
+        var eventType = typeof(ICustomEventOld<TType>);
         if (!events.ContainsKey(eventType)) return;
-        var t = (ICustomEvent<TType>) events[eventType];
+        var t = (ICustomEventOld<TType>) events[eventType];
         t.RemoveListener(listener);
     }
     
@@ -133,7 +164,7 @@ public static class EventLocator
 
     /// <summary> Removes the Event from the static events list. Do this when changing scene if you want to
     /// clear event totally for fresh scene </summary>
-    public static void FlushEventsList<TType>() => DoFlush(typeof(ICustomEvent<TType>));
+    public static void FlushEventsList<TType>() => DoFlush(typeof(ICustomEventOld<TType>));
 
     /// <summary> Removes the Event from the static events list. Do this when changing scene if you want to
     /// clear event totally for fresh scene </summary>

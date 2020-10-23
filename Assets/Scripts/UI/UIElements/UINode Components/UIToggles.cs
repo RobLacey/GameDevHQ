@@ -25,18 +25,18 @@ public class UIToggles : IEventUser
     
     public void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(Activate, this);
+        EventLocator.Subscribe<IActiveBranch>(Activate, this);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(Activate);
+        EventLocator.Unsubscribe<IActiveBranch>(Activate);
     }
 
 
-    private void Activate(UIBranch newBranch)
+    private void Activate(IActiveBranch args)
     {
-        if (newBranch == _myNode.MyBranch && _isSelected)
+        if (args.ActiveBranch == _myNode.MyBranch && _isSelected)
             TurnOnTab();
     }
 

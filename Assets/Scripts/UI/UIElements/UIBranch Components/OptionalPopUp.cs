@@ -19,25 +19,11 @@ public class OptionalPopUp : BranchBase, IStartPopUp
     private static CustomEvent<IRemoveOptionalPopUp, UIBranch> RemoveOptionalPopUp { get; } 
         = new CustomEvent<IRemoveOptionalPopUp, UIBranch>();
 
-    public override void ObserveEvents()
+    protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
     {
-        base.ObserveEvents();
-        EventLocator.SubscribeToEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)>
-            (RestoreLastPosition, this);
-    }
+        base.SaveIfOnHomeScreen(args);
 
-    public override void RemoveFromEvents()
-    {
-        base.RemoveFromEvents();
-        EventLocator.UnsubscribeFromEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)>
-            (RestoreLastPosition);
-    }
-
-    protected override void SaveIfOnHomeScreen(bool currentlyOnHomeScreen)
-    {
-        base.SaveIfOnHomeScreen(currentlyOnHomeScreen);
-
-        if (!_restoreOnHome || !_onHomeScreen) return;
+        if (!_restoreOnHome || !OnHomeScreen) return;
         
         if (_myBranch.TweenOnHome == IsActive.Yes)
         {
@@ -56,7 +42,7 @@ public class OptionalPopUp : BranchBase, IStartPopUp
 
     public void StartPopUp() //TODO add to buffer goes here for when paused. trigger from SaveOnHome?
     {
-        if (_gameIsPaused || !_onHomeScreen || !_canStart || _myBranch.CanvasIsEnabled) return; 
+        if (_gameIsPaused || !OnHomeScreen || !_canStart || _myBranch.CanvasIsEnabled) return; 
         
         IfActiveResolvePopUps();        
         _myBranch.MoveToThisBranch();
@@ -88,10 +74,10 @@ public class OptionalPopUp : BranchBase, IStartPopUp
         _myBranch.MoveToThisBranch();
     }
 
-    protected override void ClearBranchForFullscreen(UIBranch ignoreThisBranch = null)
+    protected override void ClearBranchForFullscreen(IClearScreen args)
     {
         if(!_myBranch.CanvasIsEnabled) return;
-        base.ClearBranchForFullscreen(ignoreThisBranch);
+        base.ClearBranchForFullscreen(args);
         RemoveOrStorePopUp();
     }
 
@@ -113,12 +99,9 @@ public class OptionalPopUp : BranchBase, IStartPopUp
         }
     }
 
-    private void RestoreLastPosition((UIBranch nextPopUp, UIBranch currentPopUp) uiData)
+    protected override void RestoreLastPosition((UIBranch nextPopUp, UIBranch currentPopUp) uiData)
     {
-        if (uiData.currentPopUp != _myBranch) return;
-        
+        base.RestoreLastPosition(uiData);
         if (_restoreOnHome) InvokeOnHomeScreen(true);
-        
-        GoToNextPopUp(uiData);
     }
 }

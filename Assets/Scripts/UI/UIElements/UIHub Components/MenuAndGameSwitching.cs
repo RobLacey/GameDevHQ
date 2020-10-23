@@ -1,5 +1,7 @@
 ﻿
-public class MenuAndGameSwitching : IEventUser
+using UnityEngine;
+
+public class MenuAndGameSwitching : IEventUser, IInMenu
 {
     public MenuAndGameSwitching() => OnAwake();
 
@@ -8,10 +10,10 @@ public class MenuAndGameSwitching : IEventUser
     private bool _wasInGame;
 
     //Events
-    private static CustomEvent<IInMenu, bool> IsInMenu { get; } = new CustomEvent<IInMenu, bool>();
+    private static CustomEvent<IInMenu> IsInMenu { get; } = new CustomEvent<IInMenu>();
 
     //Properties
-    private bool InTheMenu { get; set; } = true;
+    public bool InTheMenu { get; set; } = true;
     public StartInMenu StartWhere { get; set; }
 
     private void SaveNoPopUps(bool noActivePopUps)
@@ -28,21 +30,21 @@ public class MenuAndGameSwitching : IEventUser
     
     public void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<IMenuGameSwitchingPressed>(CheckForActivation, this);
-        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(WhenTheGameIsPaused, this);
-        EventLocator.SubscribeToEvent<IOnStart>(StartUp, this);
+        EventLocator.Subscribe<IMenuGameSwitchingPressed>(CheckForActivation, this);
+        EventLocator.Subscribe<IGameIsPaused>(WhenTheGameIsPaused, this);
+        EventLocator.Subscribe<IOnStart>(StartUp, this);
         EventLocator.SubscribeToEvent<INoPopUps, bool>(SaveNoPopUps, this);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<IMenuGameSwitchingPressed>(CheckForActivation);
-        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(WhenTheGameIsPaused);
-        EventLocator.UnsubscribeFromEvent<IOnStart>(StartUp);
+        EventLocator.Unsubscribe<IMenuGameSwitchingPressed>(CheckForActivation);
+        EventLocator.Unsubscribe<IGameIsPaused>(WhenTheGameIsPaused);
+        EventLocator.Unsubscribe<IOnStart>(StartUp);
         EventLocator.UnsubscribeFromEvent<INoPopUps, bool>(SaveNoPopUps);
     }
     
-    private void CheckForActivation()
+    private void CheckForActivation(IMenuGameSwitchingPressed arg)
     {
         if (!_noPopUps) return;
         SwitchBetweenGameAndMenu();
@@ -62,7 +64,7 @@ public class MenuAndGameSwitching : IEventUser
         }
     }
 
-    private void StartUp()
+    private void StartUp(IOnStart onStart)
     {
         InTheMenu = true;
         if (StartWhere == StartInMenu.InGameControl)
@@ -100,18 +102,18 @@ public class MenuAndGameSwitching : IEventUser
         BroadcastState();
     }
 
-    private void BroadcastState() => IsInMenu?.RaiseEvent(InTheMenu);
+    private void BroadcastState() => IsInMenu?.RaiseEvent(this);
 
-    private void WhenTheGameIsPaused(bool isPaused)
+    private void WhenTheGameIsPaused(IGameIsPaused args)
     {
-        if (isPaused && !InTheMenu)
+        if (args.GameIsPaused && !InTheMenu)
         {
             SwitchBetweenGameAndMenu();
             _wasInGame = true;
             return;
         }
 
-        if (!isPaused && _wasInGame)
+        if (!args.GameIsPaused && _wasInGame)
         {
             SwitchBetweenGameAndMenu();
             _wasInGame = false;

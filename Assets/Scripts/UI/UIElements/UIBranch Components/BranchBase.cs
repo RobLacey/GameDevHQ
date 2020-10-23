@@ -1,7 +1,5 @@
 ﻿
-using UnityEngine;
-
-public abstract class BranchBase : IEventUser
+public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen
 {
     protected BranchBase(UIBranch branch)
     {
@@ -11,32 +9,38 @@ public abstract class BranchBase : IEventUser
     
     protected readonly UIBranch _myBranch;
     protected readonly ScreenData _screenData = new ScreenData();
-    protected bool _onHomeScreen = true, _noResolvePopUps = true;
+    protected bool _noResolvePopUps = true;
     protected bool _inMenu, _canStart, _gameIsPaused;
 
     //Events
-    private static CustomEvent<IOnHomeScreen, bool> SetIsOnHomeScreen { get; }
-        = new CustomEvent<IOnHomeScreen, bool>();
-    private static CustomEvent<IClearScreen, UIBranch> DoClearScreen { get; }
-        = new CustomEvent<IClearScreen, UIBranch>();
+    private static CustomEvent<IOnHomeScreen> SetIsOnHomeScreen { get; } = new CustomEvent<IOnHomeScreen>();
+    private static CustomEvent<IClearScreen> DoClearScreen { get; } = new CustomEvent<IClearScreen>();
 
     //Properties
-    protected static void InvokeOnHomeScreen(bool onHome) => SetIsOnHomeScreen?.RaiseEvent(onHome);
-    protected static void InvokeDoClearScreen(UIBranch ignoreThisBranch) => DoClearScreen?.RaiseEvent(ignoreThisBranch);
-    private void SaveNoResolvePopUps(bool activeResolvePopUps) => _noResolvePopUps = activeResolvePopUps;
-    private void SaveIfGamePaused(bool paused) => _gameIsPaused = paused;
-    protected virtual void SaveInMenu(bool isInMenu) => _inMenu = isInMenu;
-    protected virtual void SaveIfOnHomeScreen(bool currentlyOnHomeScreen)
+    protected void InvokeOnHomeScreen(bool onHome)
     {
-        _onHomeScreen = currentlyOnHomeScreen;
-        if (_myBranch.IsHomeScreenBranch() && _onHomeScreen && !_myBranch.CanvasIsEnabled)
+        OnHomeScreen = onHome;
+        SetIsOnHomeScreen?.RaiseEvent(this);
+    }
+    protected void InvokeDoClearScreen() => DoClearScreen?.RaiseEvent(this);
+    private void SaveNoResolvePopUps(INoResolvePopUp args) => _noResolvePopUps = args.NoActiveResolvePopUps;
+    private void SaveIfGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
+    protected virtual void SaveInMenu(IInMenu args) => _inMenu = args.InTheMenu;
+
+    protected virtual void SaveIfOnHomeScreen(IOnHomeScreen args)
+    {
+        OnHomeScreen = args.OnHomeScreen;
+        if (_myBranch.IsHomeScreenBranch() && OnHomeScreen && !_myBranch.CanvasIsEnabled)
         {
             ActivateBranchCanvas();
             ActivateBlockRaycast();
         }
     }
-    protected virtual void SaveOnStart() => _canStart = true;
-    
+    protected virtual void SaveOnStart(IOnStart args) => _canStart = true;
+    public bool OnHomeScreen { get; private set; } = true;
+    public UIBranch IgnoreThisBranch => _myBranch;
+
+    //Main
     private void OnEnable() => ObserveEvents();
 
     public virtual void OnDisable()
@@ -47,36 +51,38 @@ public abstract class BranchBase : IEventUser
     
     public virtual void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<IGameIsPaused, bool>(SaveIfGamePaused, this);
-        EventLocator.SubscribeToEvent<ISetUpStartBranches, UIBranch>(SetUpBranchesOnStart, this);
-        EventLocator.SubscribeToEvent<IOnStart>(SaveOnStart, this);
-        EventLocator.SubscribeToEvent<IBackOrCancel, UIBranch>(MoveBackToThisBranch, this);
-        EventLocator.SubscribeToEvent<IOnHomeScreen, bool>(SaveIfOnHomeScreen, this);
-        EventLocator.SubscribeToEvent<IInMenu, bool>(SaveInMenu, this);
-        EventLocator.SubscribeToEvent<INoResolvePopUp, bool>(SaveNoResolvePopUps, this);
-        EventLocator.SubscribeToEvent<IClearScreen, UIBranch>(ClearBranchForFullscreen, this);
+        EventLocator.Subscribe<IGameIsPaused>(SaveIfGamePaused, this);
+        EventLocator.Subscribe<ISetUpStartBranches>(SetUpBranchesOnStart, this);
+        EventLocator.Subscribe<IOnStart>(SaveOnStart, this);
+        EventLocator.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen, this);
+        EventLocator.Subscribe<IInMenu>(SaveInMenu, this);
+        EventLocator.Subscribe<INoResolvePopUp>(SaveNoResolvePopUps, this);
+        EventLocator.Subscribe<IClearScreen>(ClearBranchForFullscreen, this);
+        EventLocator.SubscribeToEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)>
+            (RestoreLastPosition, this);
     }
 
     public virtual void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<IGameIsPaused, bool>(SaveIfGamePaused);
-        EventLocator.UnsubscribeFromEvent<ISetUpStartBranches, UIBranch>(SetUpBranchesOnStart);
-        EventLocator.UnsubscribeFromEvent<IOnStart>(SaveOnStart);
-        EventLocator.UnsubscribeFromEvent<IBackOrCancel, UIBranch>(MoveBackToThisBranch);
-        EventLocator.UnsubscribeFromEvent<IOnHomeScreen, bool>(SaveIfOnHomeScreen);
-        EventLocator.UnsubscribeFromEvent<IInMenu, bool>(SaveInMenu);
-        EventLocator.UnsubscribeFromEvent<INoResolvePopUp, bool>(SaveNoResolvePopUps);
-        EventLocator.UnsubscribeFromEvent<IClearScreen, UIBranch>(ClearBranchForFullscreen);
+        EventLocator.Unsubscribe<IGameIsPaused>(SaveIfGamePaused);
+        EventLocator.Unsubscribe<ISetUpStartBranches>(SetUpBranchesOnStart);
+        EventLocator.Unsubscribe<IOnStart>(SaveOnStart);
+        EventLocator.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
+        EventLocator.Unsubscribe<IInMenu>(SaveInMenu);
+        EventLocator.Unsubscribe<INoResolvePopUp>(SaveNoResolvePopUps);
+        EventLocator.Unsubscribe<IClearScreen>(ClearBranchForFullscreen);
+        EventLocator.UnsubscribeFromEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)>
+            (RestoreLastPosition);
     }
 
-    protected virtual void SetUpBranchesOnStart(UIBranch startBranch)
+    protected virtual void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
         _myBranch.MyCanvasGroup.blocksRaycasts = false;
         _myBranch.MyCanvas.enabled = false;
     }
 
     public abstract void SetUpBranch(UIBranch newParentController = null);
-
+    
     public virtual void MoveBackToThisBranch(UIBranch lastBranch)
     {
         if(lastBranch == _myBranch)
@@ -85,10 +91,7 @@ public abstract class BranchBase : IEventUser
         }    
     }
     
-    public void ActivateBranchCanvas()
-    {
-        _myBranch.MyCanvas.enabled = true;
-    }
+    public void ActivateBranchCanvas() => _myBranch.MyCanvas.enabled = true;
 
     public virtual void ActivateBlockRaycast()
     {
@@ -96,9 +99,9 @@ public abstract class BranchBase : IEventUser
         _myBranch.MyCanvasGroup.blocksRaycasts = _inMenu;
     }
 
-    protected virtual void ClearBranchForFullscreen(UIBranch ignoreThisBranch = null)
+    protected virtual void ClearBranchForFullscreen(IClearScreen args)
     {
-        if (ignoreThisBranch == _myBranch || !_myBranch.CanvasIsEnabled) return;
+        if (args.IgnoreThisBranch == _myBranch || !_myBranch.CanvasIsEnabled) return;
         _myBranch.MyCanvas.enabled = false;
         _myBranch.MyCanvasGroup.blocksRaycasts = false;
     }
@@ -106,14 +109,13 @@ public abstract class BranchBase : IEventUser
     protected virtual void CanGoToFullscreen()
     {
         if (_myBranch.ScreenType != ScreenType.FullScreen) return;
-        InvokeDoClearScreen(_myBranch);
+        InvokeDoClearScreen();
         InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
     }
     
     protected void ActivateStoredPosition()
     {
         _screenData.RestoreScreen();
-        _screenData._activeBranch.MoveToBranchWithoutTween();
         
         if (_screenData._wasOnHomeScreen)
             InvokeOnHomeScreen(true);
@@ -121,7 +123,11 @@ public abstract class BranchBase : IEventUser
         _screenData._locked = false;
     }
 
-    protected static void GoToNextPopUp((UIBranch nextPopUp, UIBranch currentPopUp) data) 
-        => data.nextPopUp.MoveToBranchWithoutTween();
+    protected virtual void RestoreLastPosition((UIBranch nextPopUp, UIBranch currentPopUp) uiData)
+    {
+        if (uiData.nextPopUp != _myBranch) return;
+        GoToNextPopUp(uiData.nextPopUp);
+    }
 
+    private static void GoToNextPopUp(UIBranch nextPopUp) => nextPopUp.MoveToBranchWithoutTween();
 }

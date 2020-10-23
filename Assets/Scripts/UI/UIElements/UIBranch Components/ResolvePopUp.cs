@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-public class ResolvePopUp : BranchBase, IStartPopUp
+﻿public class ResolvePopUp : BranchBase, IStartPopUp
 {
     public ResolvePopUp(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
@@ -16,20 +13,7 @@ public class ResolvePopUp : BranchBase, IStartPopUp
     private static CustomEvent<IAddResolvePopUp, UIBranch> AddResolvePopUp { get; } 
         = new CustomEvent<IAddResolvePopUp, UIBranch>();
     
-    public override void ObserveEvents()
-    {
-        base.ObserveEvents();
-        EventLocator.SubscribeToEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)>
-            (RestoreLastPosition, this);
-    }
-
-    public override void RemoveFromEvents()
-    {
-        base.RemoveFromEvents();
-        EventLocator.UnsubscribeFromEvent<IMoveToNextFromPopUp, (UIBranch nextPopUp,UIBranch currentPopUp)>
-            (RestoreLastPosition);
-    }
-
+    //Main
     public void StartPopUp()
     {
         if(!_canStart) return;
@@ -56,12 +40,10 @@ public class ResolvePopUp : BranchBase, IStartPopUp
         base.MoveBackToThisBranch(lastBranch);
         _myBranch.MoveToThisBranch();
     }
-    
-    private void RestoreLastPosition((UIBranch nextPopUp, UIBranch currentPopUp) data)
+
+    protected override void RestoreLastPosition((UIBranch nextPopUp, UIBranch currentPopUp) data)
     {
-        if (data.currentPopUp != _myBranch) return;
-        
+        base.RestoreLastPosition(data);
         ActivateStoredPosition();
-        GoToNextPopUp(data);
     }
 }

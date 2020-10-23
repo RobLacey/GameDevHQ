@@ -12,7 +12,7 @@ public class UIAudio : NodeFunctionBase, IServiceUser
 
     //Properties
     private bool UsingScheme() => _audioScheme;
-    private void OnStart() => _canStart = true;
+    private void OnStart(IOnStart onStart) => _canStart = true;
     private void SetPlayCancelAudio() => PlayCancelAudio();
 
     //Main
@@ -27,13 +27,13 @@ public class UIAudio : NodeFunctionBase, IServiceUser
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EventLocator.SubscribeToEvent<IOnStart>(OnStart, this);
+        EventLocator.Subscribe<IOnStart>(OnStart, this);
     }
 
     public override void RemoveFromEvents()
     {
         base.RemoveFromEvents();
-        EventLocator.UnsubscribeFromEvent<IOnStart>(OnStart);
+        EventLocator.Unsubscribe<IOnStart>(OnStart);
     }
 
     private void Play(AudioClip clip, float volume)

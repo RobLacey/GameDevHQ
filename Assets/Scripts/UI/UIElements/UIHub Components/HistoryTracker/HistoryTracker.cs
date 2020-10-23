@@ -2,28 +2,38 @@
 using System.Linq;
 using UnityEngine;
 
-public class HistoryTracker : IHistoryTrack, IEventUser
+public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome
 {
     public HistoryTracker() => OnEnable();
 
     //Variables
     private readonly List<UINode> _history = new List<UINode>();
     private UINode _lastSelected;
-    private UINode _hotKeyParent;
     private bool _canStart;
+    private bool _onHomScreen = true;
+
+    private void SaveOnHomScreen(IOnHomeScreen args) => _onHomScreen = args.OnHomeScreen;
     
     //Events
     private static CustomEvent<IReturnToHome> ReturnedToHome { get; } = new CustomEvent<IReturnToHome>();
+    
+    public void ObserveEvents()
+    {
+        EventLocator.Subscribe<IOnStart>(SetCanStart, this);
+        EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomScreen, this);
+    }
 
-    public void ObserveEvents() => EventLocator.SubscribeToEvent<IOnStart>(SetCanStart, this);
-
-    public void RemoveFromEvents() => EventLocator.UnsubscribeFromEvent<IOnStart>(SetCanStart);
+    public void RemoveFromEvents()
+    {
+        EventLocator.Unsubscribe<IOnStart>(SetCanStart);
+        EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomScreen);
+    }
 
     public void OnEnable() => ObserveEvents();
 
     public void OnDisable() => RemoveFromEvents();
 
-    private void SetCanStart() => _canStart = true;
+    private void SetCanStart(IOnStart onStart) => _canStart = true;
 
     //Main
     public void SetSelected(INode node)
@@ -31,11 +41,9 @@ public class HistoryTracker : IHistoryTrack, IEventUser
         if(!_canStart) return;
         if(node.ReturnNode.DontStoreTheseNodeTypesInHistory) return;
         SetNullLastSelected(node);
-        _hotKeyParent = null;
         
         if (_history.Contains(node.ReturnNode))
         {
-            Debug.Log(node);
             CloseAllChildNodesAfterPoint(node);
             SetLastSelectedWhenNoHistory(node);
         }
@@ -83,21 +91,17 @@ public class HistoryTracker : IHistoryTrack, IEventUser
 
     public void BackOneLevel()
     {
-        var lastNode = _history.Last();
-        DoMoveBackOneLevel(lastNode);
-        IfLastSelectedIsOnHomeScreen(lastNode);
+        DoMoveBackOneLevel(_history.Last());
+        IfLastSelectedIsOnHomeScreen(_history.Last());
         if(_history.Count > 0) 
             _lastSelected = _history.Last();
     }
 
-    private void DoMoveBackOneLevel(UINode lastNode)
+    private static void DoMoveBackOneLevel(INode lastNode)
     {
+        lastNode.SetNodeAsNotSelected_NoEffects();
         lastNode.MyBranch.Branch.MoveBackToThisBranch(lastNode.MyBranch);
-        lastNode.DeactivateNode();
-        if(_hotKeyParent) _hotKeyParent.DeactivateNode();
-        _hotKeyParent = null;
     }
-
 
     private void IfLastSelectedIsOnHomeScreen(UINode lastNode)
     {
@@ -114,31 +118,31 @@ public class HistoryTracker : IHistoryTrack, IEventUser
     public void BackToHome()
     {
         if (_history.Count <= 0) return;
+        var lastHomeNode = _history.First();
         ReverseAndClearHistory();
-        ReturnedToHome.RaiseEvent();
+        lastHomeNode.MyBranch.MoveToBranchWithoutTween();
+        ReturnedToHome.RaiseEvent(this);
     }
 
-    public void ReverseAndClearHistory()
+    public void ReverseAndClearHistory() => HistoryProcessed(stopWhenInternalBranchReacted: true);
+
+    private void HistoryProcessed(bool stopWhenInternalBranchReacted)
     {
+        if (_history.Count == 0) return;
         _history.Reverse();
-        if (HistoryProcessed()) return;
-        _history.Clear();
-    }
-
-    private bool HistoryProcessed()
-    {
+        
         foreach (var uiNode in _history)
         {
             uiNode.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
             uiNode.DeactivateNode();
-            if (IfNodeIsInternalBranch(uiNode)) return true;
+            if (IfNodeIsInternalBranch(uiNode, stopWhenInternalBranchReacted)) return;
         }
-        return false;
+        _history.Clear();
     }
-
-    private bool IfNodeIsInternalBranch(UINode uiNode)
+    
+    private bool IfNodeIsInternalBranch(UINode uiNode, bool saveInternals)
     {
-        if (!uiNode.HasChildBranch.IsInternalBranch()) return false;
+        if (!uiNode.HasChildBranch.IsInternalBranch() || !saveInternals) return false;
         _history.Remove(uiNode);
         _history.Reverse();
         return true;
@@ -146,34 +150,26 @@ public class HistoryTracker : IHistoryTrack, IEventUser
 
     public void SetFromHotkey(UIBranch branch, INode parentNode)
     {
-        HotKeyOnHomeScreen(branch);
-        IfLastKeyPressedWasHotkey(parentNode);
-        FindHomeScreenRoot(branch);
-        _history.Clear();
-        _history.Add(_lastSelected);
+        HomeScreenHotKey(branch);
+        HistoryProcessed(stopWhenInternalBranchReacted: false);
+        _history.Add(FindHomeScreenRoot(branch));
     }
 
-    private void HotKeyOnHomeScreen(UIBranch branch)
+    private void HomeScreenHotKey(UIBranch branch)
     {
-        if (branch.ScreenType == ScreenType.FullScreen) return;
-        ReturnedToHome.RaiseEvent();
+        if(branch.ScreenType != ScreenType.FullScreen && !_onHomScreen)
+        {
+            ReturnedToHome.RaiseEvent(this);
+        }    
     }
 
-    private void IfLastKeyPressedWasHotkey(INode parentNode)
-    {
-        if(_lastSelected)
-            _lastSelected.DeactivateNode();
-        if (_hotKeyParent)
-            _hotKeyParent.DeactivateNode();
-        _hotKeyParent = parentNode.ReturnNode;
-    }
-
-    private void FindHomeScreenRoot(UIBranch branch)
+    private UINode FindHomeScreenRoot(UIBranch branch)
     {
         while (!branch.IsHomeScreenBranch())
         {
             branch = branch.MyParentBranch;
         }
         _lastSelected = branch.LastSelected.ReturnNode;
+        return _lastSelected;
     }
 }

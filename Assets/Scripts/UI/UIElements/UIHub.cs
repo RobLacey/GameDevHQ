@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using NaughtyAttributes;
@@ -11,7 +13,7 @@ using NaughtyAttributes;
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(UIInput))]
 
-public class UIHub : MonoBehaviour, IEventUser
+public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
 {
     [SerializeField]
     [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")]
@@ -19,21 +21,23 @@ public class UIHub : MonoBehaviour, IEventUser
 
     //Events
     private static CustomEvent<IOnStart> OnStart { get; } = new CustomEvent<IOnStart>();
-    private static CustomEvent<ISetUpStartBranches, UIBranch> SetUpBranchesAtStart { get; } 
-        = new CustomEvent<ISetUpStartBranches, UIBranch>();
-
+    private static CustomEvent<ISetUpStartBranches> SetUpBranchesAtStart { get; } 
+        = new CustomEvent<ISetUpStartBranches>();
+    
     //Variables
     private INode _lastHighlighted;
     private bool _inMenu, _startingInGame;
     private InputScheme _inputScheme;
-
+    
     //Properties
-    private void SaveInMenu(bool isInMenu)
+    private void SaveInMenu(IInMenu args)
     {
-        _inMenu = isInMenu;
+        _inMenu = args.InTheMenu;
         if(!_inMenu) SetEventSystem(null);
     }
+    public UIBranch StartBranch => _homeBranches.First();
 
+    //Main
     private void Awake()
     {
         _inputScheme = GetComponent<UIInput>().ReturnScheme;
@@ -43,14 +47,14 @@ public class UIHub : MonoBehaviour, IEventUser
     
     public void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SetLastHighlighted, this);
-        EventLocator.SubscribeToEvent<IInMenu, bool>(SaveInMenu, this);
+        EventLocator.Subscribe<IHighlightedNode>(SetLastHighlighted, this);
+        EventLocator.Subscribe<IInMenu>(SaveInMenu, this);
     }
-
+    
     public void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SetLastHighlighted);
-        EventLocator.UnsubscribeFromEvent<IInMenu, bool>(SaveInMenu);
+        EventLocator.Unsubscribe<IHighlightedNode>(SetLastHighlighted);
+        EventLocator.Unsubscribe<IInMenu>(SaveInMenu);
     }
 
     private void OnEnable()
@@ -81,18 +85,19 @@ public class UIHub : MonoBehaviour, IEventUser
         StartCoroutine(EnableStartControls());
     }
 
-    private void SetStartPositionsAndSettings() => SetUpBranchesAtStart?.RaiseEvent(_homeBranches[0]);
+    private void SetStartPositionsAndSettings() 
+        => SetUpBranchesAtStart?.RaiseEvent(this);
 
     private void CheckIfStartingInGame()
     {
         if (_startingInGame)
         {
-            OnStart?.RaiseEvent();
+            OnStart?.RaiseEvent(this);
             _inMenu = false;
         }
         else
         {
-            EventSystem.current.SetSelectedGameObject(_homeBranches[0].DefaultStartOnThisNode.gameObject);
+            EventSystem.current.SetSelectedGameObject(_homeBranches.First().DefaultStartOnThisNode.gameObject);
             _inMenu = true;
         }
     }
@@ -101,12 +106,12 @@ public class UIHub : MonoBehaviour, IEventUser
     {
         yield return new WaitForSeconds(_inputScheme.StartDelay);
         if(!_startingInGame)
-            OnStart?.RaiseEvent();
+            OnStart?.RaiseEvent(this);
     }
     
-    private void SetLastHighlighted(INode newNode)
+    private void SetLastHighlighted(IHighlightedNode args)
     {
-        _lastHighlighted = newNode;
+        _lastHighlighted = args.Highlighted;
         if(_inMenu) SetEventSystem(_lastHighlighted.ReturnNode.gameObject);
     }
 

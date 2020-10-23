@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class ScreenData : IEventUser
 {
@@ -12,42 +13,42 @@ public class ScreenData : IEventUser
 
     public void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<ISelectedNode, INode>(SaveSelected, this);
-        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
-        EventLocator.SubscribeToEvent<IOnHomeScreen,bool>(SaveOnHomeScreen, this);
-        EventLocator.SubscribeToEvent<IInMenu, bool>(SaveInMenu, this);
+        EventLocator.Subscribe<ISelectedNode>(SaveSelected, this);
+        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
+        EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
+        EventLocator.Subscribe<IInMenu>(SaveInMenu, this);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<ISelectedNode, INode>(SaveSelected);
-        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
-        EventLocator.UnsubscribeFromEvent<IOnHomeScreen, bool>(SaveOnHomeScreen);
-        EventLocator.UnsubscribeFromEvent<IInMenu, bool>(SaveInMenu);
+        EventLocator.Unsubscribe<ISelectedNode>(SaveSelected);
+        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
+        EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        EventLocator.Unsubscribe<IInMenu>(SaveInMenu);
     }
 
-    private void SaveSelected(INode newNode)
+    private void SaveSelected(ISelectedNode args)
     {
         if (_locked) return;
-        _lastSelected = newNode;
+        _lastSelected = args.Selected;
     }
 
-    protected virtual void SaveInMenu(bool isInMenu)
+    protected virtual void SaveInMenu(IInMenu args)
     {
         if (_locked) return;
-        _wasInTheMenu = isInMenu;
+        _wasInTheMenu = args.InTheMenu;
     }
 
-    private void SaveActiveBranch(UIBranch newBranch)
+    private void SaveActiveBranch(IActiveBranch args)
     {
         if (_locked) return;
-        _activeBranch = newBranch;
+        _activeBranch = args.ActiveBranch;
     }
     
-    private void SaveOnHomeScreen(bool onHomeScreen)
+    private void SaveOnHomeScreen(IOnHomeScreen args)
     {
         if (_locked) return;
-        _wasOnHomeScreen = onHomeScreen;
+        _wasOnHomeScreen = args.OnHomeScreen;
     }
 
     public void StoreClearScreenData(UIBranch[] allBranches, UIBranch thisBranch, BlockRayCast blockRaycast)
@@ -79,5 +80,4 @@ public class ScreenData : IEventUser
             branch.Branch.ActivateBlockRaycast();
         }
     }
-
 }

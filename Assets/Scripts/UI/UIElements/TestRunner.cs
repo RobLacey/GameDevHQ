@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using NaughtyAttributes;
+using UnityEditor;
 
 public class TestRunner : MonoBehaviour, IEventUser
 {
@@ -28,10 +29,10 @@ public class TestRunner : MonoBehaviour, IEventUser
         [SerializeField] public UnityEvent _event6;
     }
 
-    private void SaveLastHighlighted(INode newNode) => _lastHighlighted = newNode.ReturnNode;
-    private void SaveLastSelected(INode newNode) => _lastSelected = newNode.ReturnNode;
-    private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
-    private void SaveOnHomeScreen(bool onHome) => _onHomeScreen = onHome;
+    private void SaveLastHighlighted(IHighlightedNode args) => _lastHighlighted = args.Highlighted.ReturnNode;
+    private void SaveLastSelected(ISelectedNode args) => _lastSelected = args.Selected.ReturnNode;
+    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
+    private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
 
     private void Awake()
     {
@@ -41,20 +42,20 @@ public class TestRunner : MonoBehaviour, IEventUser
 
     public void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<IHighlightedNode, INode>(SaveLastHighlighted, this);
-        EventLocator.SubscribeToEvent<ISelectedNode, INode>(SaveLastSelected, this);
-        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
-        EventLocator.SubscribeToEvent<IOnHomeScreen, bool>(SaveOnHomeScreen, this);
+        EventLocator.Subscribe<IHighlightedNode>(SaveLastHighlighted, this);
+        EventLocator.Subscribe<ISelectedNode>(SaveLastSelected, this);
+        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
+        EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<IHighlightedNode, INode>(SaveLastHighlighted);
-        EventLocator.UnsubscribeFromEvent<ISelectedNode, INode>(SaveLastSelected);
-        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
-        EventLocator.UnsubscribeFromEvent<IOnHomeScreen, bool>(SaveOnHomeScreen);
+        EventLocator.Unsubscribe<IHighlightedNode>(SaveLastHighlighted);
+        EventLocator.Unsubscribe<ISelectedNode>(SaveLastSelected);
+        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
+        EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
     }
-
+    
     private void OnDisable() => RemoveFromEvents();
 
     [Button ()]

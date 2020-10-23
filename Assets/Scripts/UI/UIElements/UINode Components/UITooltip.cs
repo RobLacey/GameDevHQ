@@ -43,7 +43,7 @@ public class UITooltip : NodeFunctionBase,  IServiceUser
         if(FunctionNotActive()) return;
         HideToolTip();
     }
-    private void SaveAllowKeys(bool allow) => _allowKeys = allow;
+    private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
 
     //Editor Scripts
     private bool IsNull(ToolTipScheme scheme) => scheme;
@@ -60,12 +60,12 @@ public class UITooltip : NodeFunctionBase,  IServiceUser
 
     public override void ObserveEvents()
     {
-        EventLocator.SubscribeToEvent<IAllowKeys, bool>(SaveAllowKeys, this);
+        EventLocator.Subscribe<IAllowKeys>(SaveAllowKeys, this);
     }
 
     public override void RemoveFromEvents()
     {
-        EventLocator.UnsubscribeFromEvent<IAllowKeys, bool>(SaveAllowKeys);
+        EventLocator.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
 
     private void SetUp(RectTransform rectTransform)

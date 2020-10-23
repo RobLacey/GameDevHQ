@@ -25,6 +25,7 @@ public partial class UIBranch
     public CanvasGroup MyCanvasGroup { get; private set; }
     public BranchBase Branch { get; private set; }
     public UIBranch MyParentBranch { get; set; }
+
     public EscapeKey EscapeKeySetting
     {
         get => _escapeKeyFunction;

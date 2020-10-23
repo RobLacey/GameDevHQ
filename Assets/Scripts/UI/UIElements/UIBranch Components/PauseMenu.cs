@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// Need To Make this a singleton or check thee is only one of these
 /// </summary>
-public class PauseMenu : BranchBase, IStartPopUp
+public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused
 {
     public PauseMenu(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
@@ -16,24 +16,25 @@ public class PauseMenu : BranchBase, IStartPopUp
     private UIBranch _activeBranch;
     
     //Properties
-    private void SaveActiveBranch(UIBranch newBranch) => _activeBranch = newBranch;
+    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private bool WasInGame() => !_screenData._wasInTheMenu;
+    public bool GameIsPaused => _gameIsPaused;
     
     //Events
-    private static CustomEvent<IGameIsPaused, bool> OnGamePaused { get; } = new CustomEvent<IGameIsPaused, bool>();
+    private static CustomEvent<IGameIsPaused> OnGamePaused { get; } = new CustomEvent<IGameIsPaused>();
     
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EventLocator.SubscribeToEvent<IPausePressed>(StartPopUp, this);
-        EventLocator.SubscribeToEvent<IActiveBranch, UIBranch>(SaveActiveBranch, this);
+        EventLocator.Subscribe<IPausePressed>(StartPopUp, this);
+        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
     }
     
     public override void RemoveFromEvents()
     {
         base.RemoveFromEvents();
-        EventLocator.UnsubscribeFromEvent<IPausePressed>(StartPopUp);
-        EventLocator.UnsubscribeFromEvent<IActiveBranch, UIBranch>(SaveActiveBranch);
+        EventLocator.Unsubscribe<IPausePressed>(StartPopUp);
+        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
     }
 
     //Main
@@ -42,6 +43,8 @@ public class PauseMenu : BranchBase, IStartPopUp
         base.OnDisable();
         RemoveFromEvents();
     }
+
+    private void StartPopUp(IPausePressed e) => StartPopUp();
 
     public void StartPopUp()
     {
@@ -60,14 +63,14 @@ public class PauseMenu : BranchBase, IStartPopUp
     private void PauseGame()
     {
         _gameIsPaused = true;
-        OnGamePaused?.RaiseEvent(_gameIsPaused);
+        OnGamePaused?.RaiseEvent(this);
         EnterPause();
     }
 
     private void UnPauseGame()
     {
         _gameIsPaused = false;
-        OnGamePaused?.RaiseEvent(_gameIsPaused);
+        OnGamePaused?.RaiseEvent(this);
         ExitPause();
     }
 
@@ -86,11 +89,11 @@ public class PauseMenu : BranchBase, IStartPopUp
 
     protected override void CanGoToFullscreen()
     {
-        if (_onHomeScreen)
+        if (OnHomeScreen)
         {
             InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
         }
-        InvokeDoClearScreen(_myBranch);
+        InvokeDoClearScreen();
     }
 
     private void ExitPause() => _myBranch.StartBranchExitProcess(OutTweenType.Cancel, RestoreLastStoredState);
@@ -99,6 +102,7 @@ public class PauseMenu : BranchBase, IStartPopUp
     {
         if (WasInGame()) return;
         ActivateStoredPosition();
+        _screenData._activeBranch.MoveToBranchWithoutTween();
     }
     
     public override void MoveBackToThisBranch(UIBranch lastBranch)
