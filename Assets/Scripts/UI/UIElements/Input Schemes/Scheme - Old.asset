@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Scheme - Old
   m_EditorClassIdentifier: 
   _mainControlType: 3
-  _inGameMenuSystem: 1
+  _inGameMenuSystem: 0
   _startGameWhere: 0
   _pauseOptionsOnEscape: 0
   _globalEscapeFunction: 2

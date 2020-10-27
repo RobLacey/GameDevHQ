@@ -1,7 +1,7 @@
 ﻿using NaughtyAttributes;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Colour Scheme", menuName = "New Colour Scheme")]
+[CreateAssetMenu(fileName = "Colour Scheme", menuName = "UIElements Schemes / New Colour Scheme")]
 public class ColourScheme : ScriptableObject
 {
     [SerializeField] private Color _disabled = new Color(0.5f, 0.5f, 0.5f, 0.5f);

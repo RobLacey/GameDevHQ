@@ -92,6 +92,8 @@ public class HotKeys : IServiceUser, IEventUser
         _parentNode.ThisNodeIsSelected();
         _parentNode.ThisNodeIsHighLighted();
         if(_myBranch.ScreenType != ScreenType.FullScreen)
+        {
             _parentNode.SetNodeAsSelected_NoEffects();
+        }    
     }
 }

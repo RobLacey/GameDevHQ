@@ -12,6 +12,7 @@ public class TestRunner : MonoBehaviour, IEventUser
     [SerializeField] private UIBranch _activeBranch;
     [SerializeField] private List<UINode> _history;
     [SerializeField] [ReadOnly] private bool _onHomeScreen = true;
+    [SerializeField] [ReadOnly] private bool _allowKeys;
     [SerializeField] private EventsForTest _eventsForTest;
     [SerializeField] private string _test1Test;
     [SerializeField] private string _test2Test;
@@ -35,6 +36,7 @@ public class TestRunner : MonoBehaviour, IEventUser
     private void SaveLastSelected(ISelectedNode args) => _lastSelected = args.Selected.ReturnNode;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
+    private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
 
     private void Awake()
     {
@@ -49,6 +51,7 @@ public class TestRunner : MonoBehaviour, IEventUser
         EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
         EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
         EventLocator.Subscribe<ITestList>(ManageHistory, this);
+        EventLocator.Subscribe<IAllowKeys>(SaveAllowKeys, this);
     }
 
     public void RemoveFromEvents()
@@ -58,6 +61,7 @@ public class TestRunner : MonoBehaviour, IEventUser
         EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
         EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
         EventLocator.Unsubscribe<ITestList>(ManageHistory);
+        EventLocator.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
 
     private void ManageHistory(ITestList args)

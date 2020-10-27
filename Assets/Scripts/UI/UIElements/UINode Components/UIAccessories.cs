@@ -46,9 +46,15 @@ public class UIAccessories : NodeFunctionBase
         StartActivation(pointerOver);
     }
 
+    protected override void SaveIsSelected(bool isSelected)
+    {
+        base.SaveIsSelected(isSelected);
+        ProcessPress();
+    }
+
     private protected override void ProcessPress()
     {
-        if(FunctionNotActive() || CanBeHighlighted() || !CanBePressed()) return;
+        if(FunctionNotActive() || !CanBePressed()) return;
         StartActivation(_isSelected);
     }
 

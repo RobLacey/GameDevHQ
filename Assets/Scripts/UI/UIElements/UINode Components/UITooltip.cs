@@ -87,16 +87,18 @@ public class UITooltip : NodeFunctionBase,  IServiceUser
     protected override void SavePointerStatus(bool pointerOver)
     {
         if(FunctionNotActive()) return;
-        _pointerOver = pointerOver;
         
         if(pointerOver)
         {
+            if(_pointerOver) return;
             _coroutineStart = StaticCoroutine.StartCoroutine(StartToolTip());
         }
         else 
         {
+            if(!_pointerOver) return;
             HideToolTip();
         }
+        _pointerOver = pointerOver;
     }
 
     private void CheckSetUpForError()

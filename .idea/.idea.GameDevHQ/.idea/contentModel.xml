@@ -262,6 +262,7 @@
                 <e p="InputScheme.cs" t="Include" />
                 <e p="NewSystem.cs" t="Include" />
                 <e p="OldSystem.cs" t="Include" />
+                <e p="SizeAndPositionScheme.cs" t="Include" />
                 <e p="ToolTipScheme.cs" t="Include" />
               </e>
               <e p="UI Utilities" t="Include">
@@ -317,6 +318,17 @@
               <e p="UIInput.cs" t="Include" />
               <e p="UINode Components" t="Include">
                 <e p="NodeFunctionBase.cs" t="Include" />
+                <e p="NodeTypes" t="Include">
+                  <e p="CancelOrBackButton.cs" t="Include" />
+                  <e p="Disable.cs" t="Include" />
+                  <e p="HoverToActivate.cs" t="Include" />
+                  <e p="IDisable.cs" t="Include" />
+                  <e p="INodeBase.cs" t="Include" />
+                  <e p="NodeFactory.cs" t="Include" />
+                  <e p="Standard.cs" t="Include" />
+                  <e p="ToggleNotLinked.cs" t="Include" />
+                  <e p="UIToggles.cs" t="Include" />
+                </e>
                 <e p="Size And Position Components" t="Include">
                   <e p="BasePositionAndScale.cs" t="Include" />
                   <e p="BaseShakePunch.cs" t="Include" />
@@ -345,7 +357,6 @@
                   <e p="UINode.InputInterfaces.cs" t="Include" />
                 </e>
                 <e p="UISizeAndPosition.cs" t="Include" />
-                <e p="UIToggles.cs" t="Include" />
                 <e p="UITooltip.cs" t="Include" />
               </e>
               <e p="UINode.cs" t="Include" />

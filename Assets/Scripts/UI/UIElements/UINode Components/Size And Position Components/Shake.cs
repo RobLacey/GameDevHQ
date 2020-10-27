@@ -7,8 +7,8 @@ public class Shake : BaseShakePunch, INodeTween
     private protected override void RunTween()
     {
         base.RunTween();
-        _tweenData.MyTransform.DOShakeScale(_tweenData.Time, _tweenData.ChangeBy, 
-                                            _tweenData.Vibrato, _tweenData.Randomness, _tweenData.FadeOut)
+        _tweenData.MyTransform.DOShakeScale(_scheme.Time, _scheme.ChangeBy, 
+                                            _scheme.Vibrato, _scheme.Randomness, _scheme.FadeOut)
                   .SetId(_id)
                   .SetLoops(_loopTime, LoopType.Restart)
                   .SetAutoKill(true)

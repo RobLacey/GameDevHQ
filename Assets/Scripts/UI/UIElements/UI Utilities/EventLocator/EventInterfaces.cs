@@ -69,7 +69,7 @@ public interface INoResolvePopUp //**
 
 public interface INoPopUps //**
 {
-    bool IsThereAnyPopUps { get; }
+    bool NoActivePopUps { get; }
 }
 
 public interface IRemoveOptionalPopUp //**

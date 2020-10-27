@@ -2,7 +2,7 @@
 using NaughtyAttributes;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "New Input Scheme - Old", fileName = "Scheme - Old")]
+[CreateAssetMenu(menuName = "UIElements Schemes / New Input Scheme - Old", fileName = "Scheme - Old")]
 public class OldSystem : InputScheme
 {
     [Header("Input Settings")] [HorizontalLine(1, color: EColor.Blue, order = 1)]

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e0988cae1f7438d9df2e80fdaea1821, type: 3}
+  m_Name: SizeAndPosScheme
+  m_EditorClassIdentifier: 
+  _changeSizeOn: 2
+  _tweenEffect: 0
+  _pixelsToMoveBy: {x: 25, y: 0, z: 0}
+  _changeBy: {x: 0, y: 0, z: 0}
+  _time: 0.5
+  _loop: 1
+  _vibrato: 6
+  _elasticity: 0.5
+  _shakeRandomness: 45
+  _fadeOut: 1
+  _snapping: 0
+  _ease: 7

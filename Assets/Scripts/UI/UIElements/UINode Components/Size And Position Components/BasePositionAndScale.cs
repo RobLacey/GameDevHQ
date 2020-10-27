@@ -4,11 +4,13 @@ using UnityEngine;
 public abstract class BasePositionAndScale
 {
     private protected readonly IPositionScaleTween _tweenData;
+    private protected readonly SizeAndPositionScheme _scheme;
     private protected readonly string _id;
 
     private protected BasePositionAndScale(IPositionScaleTween data, string id)
     {
         _tweenData = data;
+        _scheme = data.Scheme;
         _id = $"PositionOrScale{id}";
     }
 
@@ -31,14 +33,14 @@ public abstract class BasePositionAndScale
     private void DoNotPressedTween(IsActive activate)
     {
         DOTween.Kill(_id);
-
+        
         if (activate == IsActive.Yes)
         {
             SetUpLoopOrStandardTween();
         }
         else
         {
-            TweenToStartPosition(_tweenData.Time);
+            TweenToStartPosition(_scheme.Time);
         }
     }
 
@@ -46,14 +48,14 @@ public abstract class BasePositionAndScale
     {
         if (ResetToStartBeforeLoop())
         {
-            TweenToStartPosition(_tweenData.Time * 0.3f, TweenToEndPosition);
+            TweenToStartPosition(_scheme.Time * 0.5f, TweenToEndPosition);
         }
         else
         {
             TweenToEndPosition();
         }
     }
-
+    
     private protected abstract bool ResetToStartBeforeLoop();
     private protected abstract void TweenToStartPosition(float time, TweenCallback callback = null);
     private protected abstract void TweenToEndPosition();

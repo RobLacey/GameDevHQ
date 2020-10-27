@@ -3,12 +3,14 @@
 public abstract class BaseShakePunch
 {
     protected readonly IPunchShakeTween _tweenData;
+    protected readonly SizeAndPositionScheme _scheme;
     protected readonly string _id;
     protected int _loopTime;
 
     protected BaseShakePunch(IPunchShakeTween node, string iD)
     {
         _tweenData = node;
+        _scheme = node.Scheme;
         _id = $"ShakeOrPunch{iD}";
     }
     
@@ -27,7 +29,7 @@ public abstract class BaseShakePunch
     
     private protected virtual void RunTween()
     {
-        _loopTime = _tweenData.CanLoop ? -1 : 0;
+        _loopTime = _scheme.CanLoop ? -1 : 0;
         DOTween.Kill(_id);
         _tweenData.MyTransform.localScale = _tweenData.StartSize;
     }

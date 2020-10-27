@@ -1,11 +1,4 @@
 ﻿
-public interface IDisabled
-{
-    bool IsDisabled { get; }
-    void DisableObject();
-    void EnableObject();
-}
-
 public interface INode
 {
     UIBranch MyBranch { get; }

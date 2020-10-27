@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 
-public partial class UINode
+public partial class UINode : IPointerEnterHandler, IPointerDownHandler,
+                              IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
 {
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -11,13 +11,16 @@ public partial class UINode
 
     public void HandleOnEnter()
     {
-        if(IsDisabled) return;
-        if (_buttonFunction == ButtonFunction.HoverToActivate & !IsSelected)
+        if(_disable.IsDisabled) return;
+
+        if (IsHoverToActivate & !IsSelected)
         {
-            PressedActions();
+            _pointerOver = false;
+            _nodeBase.TurnNodeOnOff();
         }
         else
         {
+            _pointerOver = true;
             SetAsHighlighted();
         }
     }
@@ -25,6 +28,11 @@ public partial class UINode
     public void OnPointerExit(PointerEventData eventData)
     {
         if (DontAllowPointerEvent(eventData)) return;
+        if (IsHoverToActivate && _closeHoverOnExit)
+        {
+            _nodeBase.TurnNodeOnOff();
+        }
+        _pointerOver = false;
         SetNotHighlighted();
     }
 
@@ -42,15 +50,17 @@ public partial class UINode
         //TurnNodeOnOff();
     }
 
-    public void OnMove(AxisEventData eventData) => DoMove(eventData.moveDir);
+    public void OnMove(AxisEventData eventData)
+    {
+        DoMove(eventData.moveDir);
+    }
 
     public void CheckIfMoveAllowed(MoveDirection moveDirection)
     {
         if(!_allowKeys) return;
-        
         if(!MyBranch.CanvasIsEnabled)return;
         
-        if (IsDisabled)
+        if (_disable.IsDisabled)
         {
             DoMove(moveDirection);
         }
@@ -71,6 +81,7 @@ public partial class UINode
         }
         else
         {
+            _pointerOver = false;
             _navigation.ProcessMoves();
         }
     }
@@ -78,17 +89,12 @@ public partial class UINode
     public void OnSubmit(BaseEventData eventData)
     {
         if(!_allowKeys) return;
-        if (IsDisabled || _buttonFunction == ButtonFunction.HoverToActivate) return;
+        _pointerOver = false;
+        if (_disable.IsDisabled || _buttonFunction == ButtonFunction.HoverToActivate) return;
         SetSliderUpForInteraction();
         PressedActions();
     }
-
-    public void OnSelect(BaseEventData eventData)
-    {
-        if(!_allowKeys) return;
-        _uiActions._whenPointerOver?.Invoke(true);
-    }
-
+    
     private void SetSliderUpForInteraction()
     {
         if (AmSlider) //TODO Need to check this still works properly

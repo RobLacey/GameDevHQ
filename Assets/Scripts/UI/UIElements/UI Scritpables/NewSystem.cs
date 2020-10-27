@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(menuName = "New Input Scheme - New", fileName = "Scheme - New")]
+[CreateAssetMenu(menuName = "UIElements Schemes / New Input Scheme - New", fileName = "Scheme - New")]
 public class NewSystem : InputScheme
 {
     protected override string PauseButton { get; } = " ";

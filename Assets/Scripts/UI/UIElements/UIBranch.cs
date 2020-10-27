@@ -35,7 +35,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [SerializeField] 
     [Label("Move To Next Branch...")] private WhenToMove _moveType = WhenToMove.Immediately;
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "IsAPopUpBranch", "IsHomeScreenBranch", "IsPauseMenuBranch")]
+    [HideIf(EConditionOperator.Or, "IsAPopUpBranch", "IsHomeScreenBranch", "IsPauseMenuBranch", "IsInternalBranch")]
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField]
     [ValidateInput("IsEmpty", "If left Blank it will auto-assign the first UINode in hierarchy/Group")]
@@ -64,10 +64,11 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         LastHighlighted = SearchThisBranchesNodes
             (args.Highlighted.ReturnNode, defaultNode: LastHighlighted.ReturnNode);
 
-    private void SaveSelected(ISelectedNode args) 
-        => LastSelected = SearchThisBranchesNodes
+    private void SaveSelected(ISelectedNode args)
+    {
+        LastSelected = SearchThisBranchesNodes
             (args.Selected.ReturnNode, defaultNode: LastSelected.ReturnNode);
-    public void SetNoTween() => _tweenOnChange = false;
+    }    public void SetNoTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
     public void IsTabBranch() => _branchType = BranchType.Standard;
     public UIBranch ActiveBranch => this;
@@ -203,7 +204,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
 
     private UINode SearchThisBranchesNodes(UINode newNode, UINode defaultNode)
     {
-        if(!CanvasIsEnabled) return defaultNode; 
         for (var i = ThisGroupsUiNodes.Length - 1; i >= 0; i--)
         {
             if (ThisGroupsUiNodes[i] != newNode) continue;

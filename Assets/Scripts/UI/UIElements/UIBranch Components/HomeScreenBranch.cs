@@ -44,13 +44,18 @@
     public override void MoveBackToThisBranch(UIBranch lastBranch)
     {
         base.MoveBackToThisBranch(lastBranch);
-        if (CannotTweenOnHome)
-            _myBranch.SetNoTween();
-        
-        if(lastBranch != _myBranch)
-            _myBranch.DontSetBranchAsActive();
+        SetUpBranchReadyForMoveTo(lastBranch);
         _myBranch.MoveToThisBranch();
         InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
+    }
+
+    private void SetUpBranchReadyForMoveTo(UIBranch lastBranch)
+    {
+        if (CannotTweenOnHome)
+            _myBranch.SetNoTween();
+
+        if (lastBranch != _myBranch)
+            _myBranch.DontSetBranchAsActive();
     }
 
     public override void ActivateBlockRaycast()

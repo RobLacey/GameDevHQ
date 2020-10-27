@@ -26,7 +26,7 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
     private void SaveGameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     public bool ActiveResolvePopUps => _activeResolvePopUps.Count > 0;
     private bool ActiveOptionalPopUps => _activeOptionalPopUps.Count > 0;
-    public bool IsThereAnyPopUps => _noPopUps;
+    public bool NoActivePopUps => _noPopUps;
 
     private void SaveActiveBranch(IActiveBranch args)
     {

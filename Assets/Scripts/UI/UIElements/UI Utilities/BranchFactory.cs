@@ -25,7 +25,7 @@ public static class BranchFactory
                 CreatePauseMenu(branch);
                 return new PauseMenu(branch, allBranches);
             case BranchType.Internal:
-                CreateStandardBranch(branch);
+                CreateInternal(branch);
                 return new StandardBranchBase(branch);
         }
 
@@ -69,5 +69,11 @@ public static class BranchFactory
     {
         branch.EscapeKeySetting = EscapeKey.BackOneLevel;
         branch.TweenOnHome = IsActive.No;
+    }
+    
+    private static void CreateInternal(UIBranch branch)
+    {
+        branch.TweenOnHome = IsActive.No;
+        branch.EscapeKeySetting = EscapeKey.BackOneLevel;
     }
 }

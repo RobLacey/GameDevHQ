@@ -47,6 +47,8 @@ public class UINavigation : NodeFunctionBase, IServiceUser
     public void OnAwake(UiActions uiActions, Setting activeFunctions, UINode myNode)
     {
         base.OnAwake(uiActions, activeFunctions);
+        if (myNode.IsToggleGroup || myNode.IsToggleNotLinked) 
+            Child = null;
         CanActivate = (_enabledFunctions & Setting.NavigationAndOnClick) != 0;
         _myNode = myNode;
         _myBranch = _myNode.MyBranch;

@@ -36,7 +36,7 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
 
     public void ObserveEvents()
     {
-        EventLocator.Subscribe<IReturnToHome>(SetHomeGroup, this);
+        EventLocator.Subscribe<IReturnToHome>(ActivateHomeGroupBranch, this);
         EventLocator.Subscribe<ISwitchGroupPressed>(SwitchHomeGroups, this);
         EventLocator.Subscribe<IActiveBranch>(SetActiveHomeBranch, this);
         EventLocator.Subscribe<IGameIsPaused>(GameIsPaused, this);
@@ -44,7 +44,7 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
     }
     public void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<IReturnToHome>(SetHomeGroup);
+        EventLocator.Unsubscribe<IReturnToHome>(ActivateHomeGroupBranch);
         EventLocator.Unsubscribe<ISwitchGroupPressed>(SwitchHomeGroups);
         EventLocator.Unsubscribe<IActiveBranch>(SetActiveHomeBranch);
         EventLocator.Unsubscribe<IGameIsPaused>(GameIsPaused);
@@ -107,16 +107,10 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
         }
     }
 
-    private void SetHomeGroup(IReturnToHome args)
+    private void ActivateHomeGroupBranch(IReturnToHome args)
     {
-        if (args.ActivateBranchOnReturnHome)
-        {
-            _homeGroup[_index].MoveToBranchWithoutTween();
-        }
-        else
-        {
+        if (!args.ActivateBranchOnReturnHome)
             _homeGroup[_index].DontSetBranchAsActive();
-            _homeGroup[_index].Branch.MoveBackToThisBranch(_homeGroup[_index]);
-        }
+        _homeGroup[_index].Branch.MoveBackToThisBranch(_homeGroup[_index]);
     }
 }

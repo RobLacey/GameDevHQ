@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Sound Scheme", menuName = "New Audio Scheme")]
+[CreateAssetMenu(fileName = "Sound Scheme", menuName = "UIElements Schemes / New Audio Scheme")]
 public class AudioScheme : ScriptableObject
 {
     [SerializeField] private AudioClip _highlighted;

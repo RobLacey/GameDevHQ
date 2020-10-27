@@ -2,7 +2,7 @@
 using NaughtyAttributes;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "New ToolTip Scheme ", fileName = "ToolTipScheme")]
+[CreateAssetMenu(menuName = "UIElements Schemes / New ToolTip Scheme ", fileName = "ToolTipScheme")]
 public class ToolTipScheme : ScriptableObject
 {
     [SerializeField] private TooltipType _tooltipType = TooltipType.Follow;

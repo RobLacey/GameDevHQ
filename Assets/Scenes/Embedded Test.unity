@@ -1689,6 +1689,7 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _toggleGroupId: 1
   _tabBranch: {fileID: 246213780}
+  _closeHoverOnExit: 0
   _startAsSelected: 1
   _enabledFunctions: 67
   _navigation:
@@ -1715,18 +1716,7 @@ MonoBehaviour:
     _textToSwap: {fileID: 0}
     _changeTextToo: 
   _sizeAndPos:
-    _changeSizeOn: 0
-    _tweenEffect: 1
-    _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _changeBy: {x: 0, y: 0, z: 0}
-    _time: 0
-    _loop: 0
-    _vibrato: 6
-    _elasticity: 0.5
-    _shakeRandomness: 45
-    _fadeOut: 1
-    _snapping: 0
-    _ease: 0
+    _scheme: {fileID: 0}
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
@@ -1755,6 +1745,7 @@ MonoBehaviour:
     _onToggleEvent:
       m_PersistentCalls:
         m_Calls: []
+  _pointerOver: 0
 --- !u!1001 &149157171
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1937,8 +1928,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 984987783}
-  m_Father: {fileID: 684676814}
-  m_RootOrder: 2
+  m_Father: {fileID: 819564431}
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1973,8 +1964,9 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _toggleGroupId: 1
   _tabBranch: {fileID: 0}
+  _closeHoverOnExit: 0
   _startAsSelected: 1
-  _enabledFunctions: 3
+  _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 2
@@ -1999,25 +1991,14 @@ MonoBehaviour:
     _textToSwap: {fileID: 0}
     _changeTextToo: 
   _sizeAndPos:
-    _changeSizeOn: 0
-    _tweenEffect: 1
-    _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _changeBy: {x: 0, y: 0, z: 0}
-    _time: 0
-    _loop: 0
-    _vibrato: 6
-    _elasticity: 0.5
-    _shakeRandomness: 45
-    _fadeOut: 1
-    _snapping: 0
-    _ease: 0
+    _scheme: {fileID: 0}
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
     _outlinesToUse: []
     _dropShadowsToUse: []
   _audio:
-    _audioScheme: {fileID: 0}
+    _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
     _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
@@ -2039,6 +2020,7 @@ MonoBehaviour:
     _onToggleEvent:
       m_PersistentCalls:
         m_Calls: []
+  _pointerOver: 0
 --- !u!1001 &178147818
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2628,8 +2610,9 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _toggleGroupId: 1
   _tabBranch: {fileID: 0}
+  _closeHoverOnExit: 0
   _startAsSelected: 0
-  _enabledFunctions: 3
+  _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 2
@@ -2654,25 +2637,14 @@ MonoBehaviour:
     _textToSwap: {fileID: 0}
     _changeTextToo: 
   _sizeAndPos:
-    _changeSizeOn: 0
-    _tweenEffect: 1
-    _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _changeBy: {x: 0, y: 0, z: 0}
-    _time: 0
-    _loop: 0
-    _vibrato: 6
-    _elasticity: 0.5
-    _shakeRandomness: 45
-    _fadeOut: 1
-    _snapping: 0
-    _ease: 0
+    _scheme: {fileID: 0}
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
     _outlinesToUse: []
     _dropShadowsToUse: []
   _audio:
-    _audioScheme: {fileID: 0}
+    _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
     _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
@@ -2694,6 +2666,7 @@ MonoBehaviour:
     _onToggleEvent:
       m_PersistentCalls:
         m_Calls: []
+  _pointerOver: 0
 --- !u!114 &192332924 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7713156617771751286, guid: 883e6b769f6167a4794fc142b77d057b,
@@ -3990,7 +3963,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 819564431}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -5145,6 +5118,12 @@ PrefabInstance:
       propertyPath: _tooltips._scheme
       value: 
       objectReference: {fileID: 11400000, guid: 1d75a1f59e9599344bd34614897019fd,
+        type: 2}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._scheme
+      value: 
+      objectReference: {fileID: 11400000, guid: 95445a3136365244b9b89fa129934925,
         type: 2}
     - target: {fileID: 6790820044368940565, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -8347,7 +8326,7 @@ PrefabInstance:
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: _buttonFunction
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
@@ -8391,6 +8370,11 @@ PrefabInstance:
       propertyPath: _navigation._left
       value: 
       objectReference: {fileID: 1332049459}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _closeHoverOnExit
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10098,7 +10082,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _enabledFunctions
-      value: 227
+      value: 231
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -10159,6 +10143,17 @@ PrefabInstance:
       propertyPath: _tooltips._scheme
       value: 
       objectReference: {fileID: 11400000, guid: 1d75a1f59e9599344bd34614897019fd,
+        type: 2}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _startAsSelected
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._scheme
+      value: 
+      objectReference: {fileID: 11400000, guid: 95445a3136365244b9b89fa129934925,
         type: 2}
     - target: {fileID: 6790820044368940565, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -11614,7 +11609,7 @@ PrefabInstance:
     - target: {fileID: 997165033627275256, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: _escapeKeyFunction
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 997165033627275256, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
@@ -12176,6 +12171,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _branchEvents.OnBranchDisabled.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _escapeKeyFunction
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -12739,7 +12739,7 @@ PrefabInstance:
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: _escapeKeyFunction
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
@@ -12890,13 +12890,14 @@ MonoBehaviour:
   _activeBranch: {fileID: 0}
   _history: []
   _onHomeScreen: 0
+  _allowKeys: 1
   _eventsForTest:
     _event1:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 987943930}
           m_TargetAssemblyTypeName: UINode, Assembly-CSharp
-          m_MethodName: DisableObject
+          m_MethodName: DisableNode
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -12911,7 +12912,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 987943930}
           m_TargetAssemblyTypeName: UINode, Assembly-CSharp
-          m_MethodName: EnableObject
+          m_MethodName: EnableNode
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -13185,7 +13186,6 @@ RectTransform:
   m_Children:
   - {fileID: 272096976}
   - {fileID: 669941711}
-  - {fileID: 156366395}
   m_Father: {fileID: 819564431}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -14968,7 +14968,7 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _escapeKeyFunction
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -15705,6 +15705,7 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _toggleGroupId: 0
   _tabBranch: {fileID: 0}
+  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -15731,18 +15732,7 @@ MonoBehaviour:
     _textToSwap: {fileID: 0}
     _changeTextToo: 
   _sizeAndPos:
-    _changeSizeOn: 0
-    _tweenEffect: 1
-    _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _changeBy: {x: 0, y: 0, z: 0}
-    _time: 0
-    _loop: 0
-    _vibrato: 6
-    _elasticity: 0.5
-    _shakeRandomness: 45
-    _fadeOut: 1
-    _snapping: 0
-    _ease: 0
+    _scheme: {fileID: 0}
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
@@ -15771,6 +15761,7 @@ MonoBehaviour:
     _onToggleEvent:
       m_PersistentCalls:
         m_Calls: []
+  _pointerOver: 0
 --- !u!1001 &801630272
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17561,7 +17552,7 @@ PrefabInstance:
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: _buttonFunction
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
@@ -17605,6 +17596,11 @@ PrefabInstance:
       propertyPath: _navigation._up
       value: 
       objectReference: {fileID: 176592437}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _closeHoverOnExit
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -19141,7 +19137,7 @@ RectTransform:
   m_Children:
   - {fileID: 2018220710}
   m_Father: {fileID: 819564431}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -19617,7 +19613,7 @@ RectTransform:
   - {fileID: 1743252782}
   - {fileID: 791398384}
   m_Father: {fileID: 819564431}
-  m_RootOrder: 5
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -21162,6 +21158,7 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _toggleGroupId: 0
   _tabBranch: {fileID: 0}
+  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -21188,18 +21185,7 @@ MonoBehaviour:
     _textToSwap: {fileID: 0}
     _changeTextToo: 
   _sizeAndPos:
-    _changeSizeOn: 0
-    _tweenEffect: 1
-    _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _changeBy: {x: 0, y: 0, z: 0}
-    _time: 0
-    _loop: 0
-    _vibrato: 6
-    _elasticity: 0.5
-    _shakeRandomness: 45
-    _fadeOut: 1
-    _snapping: 0
-    _ease: 0
+    _scheme: {fileID: 0}
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
@@ -21228,6 +21214,7 @@ MonoBehaviour:
     _onToggleEvent:
       m_PersistentCalls:
         m_Calls: []
+  _pointerOver: 0
 --- !u!1 &1173239051
 GameObject:
   m_ObjectHideFlags: 0
@@ -21282,6 +21269,7 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _toggleGroupId: 1
   _tabBranch: {fileID: 1064311445}
+  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -21308,18 +21296,7 @@ MonoBehaviour:
     _textToSwap: {fileID: 0}
     _changeTextToo: 
   _sizeAndPos:
-    _changeSizeOn: 0
-    _tweenEffect: 1
-    _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _changeBy: {x: 0, y: 0, z: 0}
-    _time: 0
-    _loop: 0
-    _vibrato: 6
-    _elasticity: 0.5
-    _shakeRandomness: 45
-    _fadeOut: 1
-    _snapping: 0
-    _ease: 0
+    _scheme: {fileID: 0}
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
@@ -21348,6 +21325,7 @@ MonoBehaviour:
     _onToggleEvent:
       m_PersistentCalls:
         m_Calls: []
+  _pointerOver: 0
 --- !u!114 &1177297846 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7713156617771751286, guid: 883e6b769f6167a4794fc142b77d057b,
@@ -30138,8 +30116,9 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _toggleGroupId: 1
   _tabBranch: {fileID: 0}
+  _closeHoverOnExit: 0
   _startAsSelected: 0
-  _enabledFunctions: 3
+  _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
     _setNavigation: 2
@@ -30164,25 +30143,14 @@ MonoBehaviour:
     _textToSwap: {fileID: 0}
     _changeTextToo: 
   _sizeAndPos:
-    _changeSizeOn: 0
-    _tweenEffect: 1
-    _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _changeBy: {x: 0, y: 0, z: 0}
-    _time: 0
-    _loop: 0
-    _vibrato: 6
-    _elasticity: 0.5
-    _shakeRandomness: 45
-    _fadeOut: 1
-    _snapping: 0
-    _ease: 0
+    _scheme: {fileID: 0}
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
     _outlinesToUse: []
     _dropShadowsToUse: []
   _audio:
-    _audioScheme: {fileID: 0}
+    _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
     _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
@@ -30204,6 +30172,7 @@ MonoBehaviour:
     _onToggleEvent:
       m_PersistentCalls:
         m_Calls: []
+  _pointerOver: 0
 --- !u!114 &1757803014 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8968508911172220329, guid: 74a615c871e3f7f49b9e659c416cdb84,
@@ -33211,6 +33180,7 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _toggleGroupId: 1
   _tabBranch: {fileID: 1248739661}
+  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -33237,18 +33207,7 @@ MonoBehaviour:
     _textToSwap: {fileID: 0}
     _changeTextToo: 
   _sizeAndPos:
-    _changeSizeOn: 0
-    _tweenEffect: 1
-    _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _changeBy: {x: 0, y: 0, z: 0}
-    _time: 0
-    _loop: 0
-    _vibrato: 6
-    _elasticity: 0.5
-    _shakeRandomness: 45
-    _fadeOut: 1
-    _snapping: 0
-    _ease: 0
+    _scheme: {fileID: 0}
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
@@ -33277,6 +33236,7 @@ MonoBehaviour:
     _onToggleEvent:
       m_PersistentCalls:
         m_Calls: []
+  _pointerOver: 0
 --- !u!1 &2018220709
 GameObject:
   m_ObjectHideFlags: 0
@@ -33501,6 +33461,7 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _toggleGroupId: 0
   _tabBranch: {fileID: 0}
+  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 195
   _navigation:
@@ -33527,18 +33488,7 @@ MonoBehaviour:
     _textToSwap: {fileID: 0}
     _changeTextToo: 
   _sizeAndPos:
-    _changeSizeOn: 0
-    _tweenEffect: 1
-    _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _changeBy: {x: 0, y: 0, z: 0}
-    _time: 0
-    _loop: 0
-    _vibrato: 6
-    _elasticity: 0.5
-    _shakeRandomness: 45
-    _fadeOut: 1
-    _snapping: 0
-    _ease: 0
+    _scheme: {fileID: 0}
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
@@ -33568,6 +33518,7 @@ MonoBehaviour:
     _onToggleEvent:
       m_PersistentCalls:
         m_Calls: []
+  _pointerOver: 0
 --- !u!114 &2024425559 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
@@ -36051,6 +36002,22 @@ PrefabInstance:
       propertyPath: _invertColourCorrection._activateWhen
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _closeHoverOnExit
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _startAsSelected
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _sizeAndPos._scheme
+      value: 
+      objectReference: {fileID: 11400000, guid: fbc5c68a16615164ea654f85e6637892,
+        type: 2}
     - target: {fileID: 6790820044368940565, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: m_Text
@@ -36805,7 +36772,7 @@ RectTransform:
   - {fileID: 1396258918}
   - {fileID: 1712214353}
   m_Father: {fileID: 819564431}
-  m_RootOrder: 8
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -37010,6 +36977,7 @@ MonoBehaviour:
   _escapeKeyFunction: 2
   _toggleGroupId: 0
   _tabBranch: {fileID: 0}
+  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -37036,18 +37004,7 @@ MonoBehaviour:
     _textToSwap: {fileID: 0}
     _changeTextToo: 
   _sizeAndPos:
-    _changeSizeOn: 0
-    _tweenEffect: 1
-    _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _changeBy: {x: 0, y: 0, z: 0}
-    _time: 0
-    _loop: 0
-    _vibrato: 6
-    _elasticity: 0.5
-    _shakeRandomness: 45
-    _fadeOut: 1
-    _snapping: 0
-    _ease: 0
+    _scheme: {fileID: 0}
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
@@ -37076,6 +37033,7 @@ MonoBehaviour:
     _onToggleEvent:
       m_PersistentCalls:
         m_Calls: []
+  _pointerOver: 0
 --- !u!222 &1675654969517473265
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -38552,6 +38510,7 @@ MonoBehaviour:
   _escapeKeyFunction: 2
   _toggleGroupId: 0
   _tabBranch: {fileID: 0}
+  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -38577,18 +38536,7 @@ MonoBehaviour:
     _textToSwap: {fileID: 0}
     _changeTextToo: 
   _sizeAndPos:
-    _changeSizeOn: 0
-    _tweenEffect: 1
-    _pixelsToMoveBy: {x: 0, y: 0, z: 0}
-    _changeBy: {x: 0, y: 0, z: 0}
-    _time: 0
-    _loop: 0
-    _vibrato: 6
-    _elasticity: 0.5
-    _shakeRandomness: 45
-    _fadeOut: 1
-    _snapping: 0
-    _ease: 0
+    _scheme: {fileID: 0}
   _accessories:
     _activateWhen: 0
     _accessoriesList: []
@@ -38617,6 +38565,7 @@ MonoBehaviour:
     _onToggleEvent:
       m_PersistentCalls:
         m_Calls: []
+  _pointerOver: 0
 --- !u!222 &6446246268481184042
 CanvasRenderer:
   m_ObjectHideFlags: 0

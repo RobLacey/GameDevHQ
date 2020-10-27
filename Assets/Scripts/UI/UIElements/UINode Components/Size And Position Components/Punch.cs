@@ -7,8 +7,8 @@ public class Punch : BaseShakePunch, INodeTween
     private protected override void RunTween()
     {
         base.RunTween();
-        _tweenData.MyTransform.DOPunchScale(_tweenData.ChangeBy, _tweenData.Time, 
-                                            _tweenData.Vibrato, _tweenData.Elasticity)
+        _tweenData.MyTransform.DOPunchScale(_scheme.ChangeBy, _scheme.Time, 
+                                            _scheme.Vibrato, _scheme.Elasticity)
                     .SetId(_id)
                     .SetLoops(_loopTime, LoopType.Restart)
                     .SetAutoKill(true)

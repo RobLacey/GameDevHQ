@@ -57,7 +57,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
         _inMenu = args.InTheMenu;
         _returnToGameControl?.Invoke(_inMenu);
     }
-    private void SaveNoActivePopUps(INoPopUps args) => _noActivePopUps = args.IsThereAnyPopUps;
+    private void SaveNoActivePopUps(INoPopUps args) => _noActivePopUps = args.NoActivePopUps;
     private void SaveOnStart(IOnStart onStart) => _canStart = true;
     private void SaveGameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;

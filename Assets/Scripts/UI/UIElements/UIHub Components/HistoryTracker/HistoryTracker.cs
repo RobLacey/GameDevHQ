@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public interface ITestList
 {
@@ -20,13 +21,13 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
     private IPopUpController _popUpController;
 
     public UINode AddNode { get; private set; }
-    public UIBranch PopUpToRemove { get; private set; }
-    public bool ActivateBranchOnReturnHome { get; private set; } = false;
+    private UIBranch PopUpToRemove { get; set; }
+    public bool ActivateBranchOnReturnHome { get; private set; }
 
     private void SaveOnHomScreen(IOnHomeScreen args) => _onHomScreen = args.OnHomeScreen;
     private void SaveIsGamePaused(IGameIsPaused args) => _isPaused = args.GameIsPaused;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
-    private void NoPopUps(INoPopUps args) => _noPopUps = args.IsThereAnyPopUps;
+    private void NoPopUps(INoPopUps args) => _noPopUps = args.NoActivePopUps;
     
     //Events
     private static CustomEvent<IReturnToHome> ReturnedToHome { get; } = new CustomEvent<IReturnToHome>();
