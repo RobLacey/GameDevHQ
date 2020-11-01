@@ -91,3 +91,5 @@ public interface IClearScreen //**
 {
     UIBranch IgnoreThisBranch { get; }
 }
+
+public interface IHotKeyPressed { }

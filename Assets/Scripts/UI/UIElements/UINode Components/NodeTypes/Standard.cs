@@ -1,4 +1,6 @@
 ﻿
+using UnityEngine;
+
 public class Standard : INodeBase, IServiceUser
 {
     private readonly UINode _uiNode;

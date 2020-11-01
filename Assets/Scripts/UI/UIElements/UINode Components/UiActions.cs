@@ -4,10 +4,12 @@ using UnityEngine.EventSystems;
 
 public class UiActions
 {
-    public readonly int _instanceId;
-        public UiActions(int instanceId)
+    public int InstanceId { get; }
+    public UINode Node { get; }
+        public UiActions(int instanceId, UINode node)
         {
-            _instanceId = instanceId;
+            InstanceId = instanceId;
+            Node = node;
         }
         public Action<bool> _whenPointerOver;
         public Action<bool> _isSelected;

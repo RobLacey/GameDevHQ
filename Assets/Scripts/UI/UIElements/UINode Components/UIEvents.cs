@@ -1,40 +1,37 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 using NaughtyAttributes;
 
-[Serializable]
 public class UIEvents : NodeFunctionBase
 {
     [Header("Highlight Events")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
     
-    [SerializeField] private UnityEvent _onEnterEvent;
-    [SerializeField] private UnityEvent _onExitEvent;
+    private readonly UnityEvent _onEnterEvent;
+    private readonly UnityEvent _onExitEvent;
     
     [Header("Click/Selected Events")]
     [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    [SerializeField] private UnityEvent _onButtonClickEvent;
-    [SerializeField] private OnDisabledEvent _onDisable;
-    [SerializeField] private OnToggleEvent _onToggleEvent;
+    private readonly UnityEvent _onButtonClickEvent;
+    private readonly OnDisabledEvent _onDisable;
+    private readonly OnToggleEvent _onToggleEvent;
 
-    //Custom Unity Events
-    [Serializable]
-    public class OnToggleEvent : UnityEvent<bool> { }
-    [Serializable]
-    public class OnDisabledEvent : UnityEvent<bool> { }
+    public UIEvents(IEventSetttings settings, UiActions uiActions)
+    {
+        _onEnterEvent = settings.OnEnterEvent;
+        _onExitEvent = settings.OnExitEvent;
+        _onButtonClickEvent = settings.OnButtonClickEvent;
+        _onDisable = settings.DisableEvent;
+        _onToggleEvent = settings.ToggleEvent;
+        CanActivate = true;
+        OnAwake(uiActions);
+    }
     
     //Properties
     protected override bool CanBeHighlighted() => true;
     protected override bool CanBePressed() => true;
     protected override bool FunctionNotActive() => !CanActivate;
     
-    public override void OnAwake(UiActions uiActions, Setting activeFunctions)
-    {
-        base.OnAwake(uiActions, activeFunctions);
-        CanActivate = (_enabledFunctions & Setting.Events) != 0;
-    }
-
     protected override void SavePointerStatus(bool pointerOver)
     {
         if (FunctionNotActive()) return;

@@ -3,8 +3,8 @@
 public abstract class NodeFunctionBase : IEventUser
 {
     protected bool _pointerOver, _isSelected, _isDisabled;
-    protected Setting _enabledFunctions;
     protected MoveDirection _moveDirection;
+    private UiActions _uiActions;
 
     //Properties
     protected bool CanActivate { get; set; }
@@ -13,14 +13,14 @@ public abstract class NodeFunctionBase : IEventUser
     protected abstract bool CanBePressed();
     protected abstract bool FunctionNotActive();
     
-    public virtual void OnAwake(UiActions uiActions, Setting activeFunctions)
+    protected virtual void OnAwake(UiActions uiActions)
     {
-        uiActions._whenPointerOver += SavePointerStatus;
-        uiActions._isSelected += SaveIsSelected;
-        uiActions._isPressed += ProcessPress;
-        uiActions._isDisabled += IsDisabled;
-        uiActions._onMove += AxisMoveDirection;
-        _enabledFunctions = activeFunctions;
+        _uiActions = uiActions;
+        _uiActions._whenPointerOver += SavePointerStatus;
+        _uiActions._isSelected += SaveIsSelected;
+        _uiActions._isPressed += ProcessPress;
+        _uiActions._isDisabled += IsDisabled;
+        _uiActions._onMove += AxisMoveDirection;
         ObserveEvents();
     }
     
@@ -29,13 +29,14 @@ public abstract class NodeFunctionBase : IEventUser
     public virtual void RemoveFromEvents() { }
 
 
-    public void OnDisable(UiActions uiActions)
+    public virtual void OnDisable()
     {
-        uiActions._whenPointerOver -= SavePointerStatus;
-        uiActions._isSelected -= SaveIsSelected;
-        uiActions._isPressed -= ProcessPress;
-        uiActions._isDisabled -= IsDisabled;
-        uiActions._onMove -= AxisMoveDirection;
+        if(_uiActions is null) return;
+        _uiActions._whenPointerOver -= SavePointerStatus;
+        _uiActions._isSelected -= SaveIsSelected;
+        _uiActions._isPressed -= ProcessPress;
+        _uiActions._isDisabled -= IsDisabled;
+        _uiActions._onMove -= AxisMoveDirection;
     }
     protected abstract void SavePointerStatus(bool pointerOver);
 

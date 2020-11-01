@@ -77,12 +77,12 @@ public partial class UINode : IPointerEnterHandler, IPointerDownHandler,
         
         if (AmSlider && IsSelected)
         {
-            _navigation.HandleAsSlider();
+            _navigation.Instance.HandleAsSlider();
         }
         else
         {
             _pointerOver = false;
-            _navigation.ProcessMoves();
+            _navigation.Instance.ProcessMoves();
         }
     }
 

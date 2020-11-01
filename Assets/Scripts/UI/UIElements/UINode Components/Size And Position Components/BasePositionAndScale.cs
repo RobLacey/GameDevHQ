@@ -24,13 +24,13 @@ public abstract class BasePositionAndScale
         }
         else
         {
-            DoNotPressedTween(activate);
+            DoNonePressedTween(activate);
         }
     }
 
     private protected abstract void DoPressedTween();
 
-    private void DoNotPressedTween(IsActive activate)
+    private void DoNonePressedTween(IsActive activate)
     {
         DOTween.Kill(_id);
         

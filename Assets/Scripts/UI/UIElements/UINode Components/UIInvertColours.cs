@@ -1,49 +1,36 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using NaughtyAttributes;
 
-[Serializable]
 public class UIInvertColours : NodeFunctionBase
 {
-    [InfoBox("ONLY set to objects not effected by the Colour effects", EInfoBoxType.Warning)]
-    
-    [SerializeField]
-    private ActivateWhen _activateWhen;
-    [SerializeField] 
-    [AllowNesting] [DisableIf("ImageSet")] private Text _text;
-    [SerializeField] 
-    [AllowNesting] [DisableIf("TextSet")] private Image _image;
-    [SerializeField] 
-    private Color _invertedColour = Color.white;
+    public UIInvertColours(IInvertSettings settings, UiActions uiActions)
+    {
+        _activateWhen = settings.ActivateWhen;
+        _text = settings.Text;
+        _image = settings.Image;
+        _invertedColour = settings.Colour;
+        CanActivate = true;
+        OnAwake(uiActions);
+    }
 
     //Variables
+    private readonly ActivateWhen _activateWhen;
+    private readonly Text _text;
+    private readonly Image _image;
+    private readonly Color _invertedColour;
     private Color _checkMarkStartColour = Color.white;
     private Color _textStartColour = Color.white;
     private bool _hasText;
     private bool _hasImage;
-
-    [Flags]
-    private enum ActivateWhen
-    {
-        None = 0,
-        OnHighlighted = 1 << 0,
-        OnSelected = 2 <<1
-    }
     
     //Properties
     protected override bool FunctionNotActive() => !_text && !_image && !CanActivate;
     protected override bool CanBeHighlighted() => (_activateWhen & ActivateWhen.OnHighlighted) != 0;
     protected override bool CanBePressed() => (_activateWhen & ActivateWhen.OnSelected) != 0;
 
-    // Editor Scripts
-    private bool TextSet() => _text != null;
-    private bool ImageSet() => _image != null;
-
-    public override void OnAwake(UiActions uiActions, Setting activeFunctions)
+    protected sealed override void OnAwake(UiActions uiActions)
     {
-        base.OnAwake(uiActions, activeFunctions);
-        CanActivate = (_enabledFunctions & Setting.InvertColourCorrection) != 0;
+        base.OnAwake(uiActions);
         SetInverseColourSettings();
     }
 

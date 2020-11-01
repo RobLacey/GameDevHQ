@@ -1,36 +1,29 @@
-﻿using NaughtyAttributes;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using System;
 
-[Serializable]
 public class UINavigation : NodeFunctionBase, IServiceUser
 {
-    [SerializeField] 
-    [AllowNesting] [Label("Move To When Clicked")] [HideIf("CantNavigate")] private UIBranch _childBranch;
-    [SerializeField] 
-    private NavigationType _setNavigation = NavigationType.UpAndDown;
-    [SerializeField] 
-    [AllowNesting] [ShowIf("UpDownNav")] private UINode _up;
-    [SerializeField] 
-    [AllowNesting] [ShowIf("UpDownNav")] private UINode _down;
-    [SerializeField] 
-    [AllowNesting] [ShowIf("RightLeftNav")] private UINode _left;
-    [SerializeField] 
-    [AllowNesting] [ShowIf("RightLeftNav")] private UINode _right;
-
-    //Editor Scripts
-    public bool CantNavigate { get; set; }
-
-    public bool UpDownNav() 
-        => _setNavigation == NavigationType.UpAndDown || _setNavigation == NavigationType.AllDirections;
-
-    public bool RightLeftNav() 
-        => _setNavigation == NavigationType.RightAndLeft || _setNavigation == NavigationType.AllDirections;
+    public UINavigation(InavigationSettings settings, UiActions uiActions)
+    {
+        _childBranch = settings.ChildBranch;
+        _setNavigation = settings.NavType;
+        _up = settings.Up;
+        _down = settings.Down;
+        _left = settings.Left;
+        _right = settings.Right;
+        CanActivate = true;
+        OnAwake(uiActions);
+    }
 
     //Variables
+    private UIBranch _childBranch;
+    private readonly NavigationType _setNavigation;
+    private readonly UINode _up;
+    private readonly UINode _down;
+    private readonly UINode _left;
+    private readonly UINode _right;
     private UIBranch _myBranch;
-    private INode _myNode;
+    private UINode _myNode;
     private IHistoryTrack _uiHistoryTrack;
 
     //Properties
@@ -38,19 +31,13 @@ public class UINavigation : NodeFunctionBase, IServiceUser
     protected override bool CanBePressed() => !(_childBranch is null);
     protected override bool FunctionNotActive() => !CanActivate;
     protected override void SavePointerStatus(bool pointerOver) { }
-    public UIBranch Child
-    {
-        get => _childBranch;
-        set => _childBranch = value;
-    }
 
-    public void OnAwake(UiActions uiActions, Setting activeFunctions, UINode myNode)
+    protected sealed override void OnAwake(UiActions uiActions)
     {
-        base.OnAwake(uiActions, activeFunctions);
-        if (myNode.IsToggleGroup || myNode.IsToggleNotLinked) 
-            Child = null;
-        CanActivate = (_enabledFunctions & Setting.NavigationAndOnClick) != 0;
-        _myNode = myNode;
+        base.OnAwake(uiActions);
+        _myNode = uiActions.Node;
+        if (_myNode.IsToggleGroup || _myNode.IsToggleNotLinked) 
+            _childBranch = null;
         _myBranch = _myNode.MyBranch;
         SubscribeToService();
     }

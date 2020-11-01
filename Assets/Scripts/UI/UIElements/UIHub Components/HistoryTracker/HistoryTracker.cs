@@ -202,7 +202,6 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
         HistoryProcessed(stopWhenInternalBranchReacted: false);
         AddNode = FindHomeScreenRoot(branch);
         AddANode?.RaiseEvent(this);
-
         _history.Add(FindHomeScreenRoot(branch));
     }
 

@@ -1,12 +1,16 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-[Serializable]
 public class UIAudio : NodeFunctionBase, IServiceUser
 {
-    [SerializeField] private AudioScheme _audioScheme;
+    public UIAudio(IAudioSettings settings, UiActions uiActions)
+    {
+        _audioScheme = settings.AudioScheme;
+        CanActivate = true;
+        OnAwake(uiActions);
+    }
 
     //Variables 
+    private readonly AudioScheme _audioScheme;
     private IAudioService _audioService;
     private bool _canStart;
 
@@ -16,11 +20,10 @@ public class UIAudio : NodeFunctionBase, IServiceUser
     private void SetPlayCancelAudio() => PlayCancelAudio();
 
     //Main
-    public override void OnAwake(UiActions uiActions, Setting activeFunctions)
+    protected sealed override void OnAwake(UiActions uiActions)
     {
-        base.OnAwake(uiActions, activeFunctions);
+        base.OnAwake(uiActions);
         uiActions._canPlayCancelAudio += SetPlayCancelAudio;
-        CanActivate = (_enabledFunctions & Setting.Audio) != 0;
         SubscribeToService();
     }
 

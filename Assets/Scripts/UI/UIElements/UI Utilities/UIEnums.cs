@@ -108,6 +108,16 @@ public enum InGameSystem { On, Off }
 
 public enum HotKey {  HotKey1, HotKey2, HotKey3, HotKey4, HotKey5, HotKey6, HotKey7, HotKey8, HotKey9, HotKey0 }
 
+[Flags]
+public enum ActivateWhen
+{
+    None = 0,
+    OnHighlighted = 1 << 0,
+    OnSelected = 2 <<1
+}
+public enum ChangeWhen { OnHighlight, OnPressed, OnControlChanged }
+
+
 
 
 

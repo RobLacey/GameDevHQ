@@ -1,20 +1,25 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-[RequireComponent(typeof(Transform))]
-[Serializable]
 public class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, IPunchShakeTween
 {
-    [SerializeField] private SizeAndPositionScheme _scheme;
+    public UISizeAndPosition(ISizeAndPositionSettings settings, UiActions uiActions)
+    {
+        _scheme = settings.Scheme;
+        CanActivate = true;
+        if(settings.RectTransform != null)
+            MyRect = settings.RectTransform;
+        OnAwake(uiActions);
+    }
 
     //Variables
+    private readonly SizeAndPositionScheme _scheme;
     private INodeTween _tween;
     private string _gameObjectID;
-    
+
     //Properties
     public SizeAndPositionScheme Scheme => _scheme;
     public bool IsPressed { get; private set; }
-    public RectTransform MyRect { get; private set; }
+    public RectTransform MyRect { get; }
     public Transform MyTransform { get; private set; }
     public Vector3 StartPosition { get; private set; }
     public Vector3 StartSize { get; private set; }
@@ -22,19 +27,18 @@ public class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, IPunchSh
     protected override bool CanBePressed()  => !_scheme.NotSet && !_scheme.CanBeSelectedAndHighlight;
     protected override bool FunctionNotActive() => !CanActivate && !_scheme.NotSet;
 
-    public void OnAwake(UiActions uiActions, Setting activeFunctions, RectTransform rectTransform)
+    //Main
+    protected sealed override void OnAwake(UiActions uiActions)
     {
-        if(_scheme is null) return;
-        base.OnAwake(uiActions, activeFunctions);
-        CanActivate = (_enabledFunctions & Setting.SizeAndPosition) != 0;
-        if(_scheme) _scheme.OnAwake();
-        _gameObjectID = uiActions._instanceId.ToString();
-        SetVariables(rectTransform);
+        if(!_scheme || MyRect is null) return;
+        base.OnAwake(uiActions);
+        _scheme.OnAwake();
+        _gameObjectID = uiActions.InstanceId.ToString();
+        SetVariables();
     }
 
-    private void SetVariables(RectTransform rectTransform)
+    private void SetVariables()
     {
-        MyRect = rectTransform;
         MyTransform = MyRect.transform;
         StartSize = MyRect.localScale;
         StartPosition = MyRect.anchoredPosition3D;

@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-
+﻿
 public class MenuAndGameSwitching : IEventUser, IInMenu, IServiceUser
 {
     public MenuAndGameSwitching() => OnAwake();

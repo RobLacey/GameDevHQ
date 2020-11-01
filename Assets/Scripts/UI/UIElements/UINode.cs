@@ -32,47 +32,47 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     [SerializeField] 
     [Space(15f)] [Label("UI Functions To Use")]  
     private Setting _enabledFunctions;
+    [HorizontalLine(1, color: EColor.Blue, order = 1)]
     [SerializeField] 
-    [Space(15f)] [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")]  
-    private UINavigation _navigation;
+    /*[Space(15f)] */[Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")]  
+    private NavigationSettings _navigation;
     [SerializeField] 
     [Space(5f)] [Label("Colour Settings")] [ShowIf("NeedColour")]  
-    private UIColour _colours;
+    private ColourSettings _coloursTest;
     [SerializeField] 
     [Space(5f)] [Label("Invert Colour when Highlighted or Selected")] 
     [ShowIf("NeedInvert")]  
-    private UIInvertColours _invertColourCorrection;
+    private InvertColoursSettings _invertColourCorrection;
     [SerializeField] 
     [Space(5f)] [Label("Swap Images or Text on Select or Highlight")] 
     [ShowIf("NeedSwap")] 
-    private UIImageTextToggle _swapImageOrText;
+    private SwapImageOrTextSettings _swapImageOrText;
     [SerializeField] 
     [Space(5f)] [Label("Size And Position Effect Settings")] 
     [ShowIf("NeedSize")]  
-    private UISizeAndPosition _sizeAndPos;
+    private SizeAndPositionSettings _sizeAndPos;
     [SerializeField] 
     [Space(5f)] [Label("Accessories, Outline Or Shadow Settings")] 
     [ShowIf("NeedAccessories")]  
-    private UIAccessories _accessories;
+    private AccessoriesSettings _accessories;
     [SerializeField] 
     [Space(5f)] [Label("Audio Settings")] [ShowIf("NeedAudio")]  
-    private UIAudio _audio;
+    private AudioSettings _audio;
     [SerializeField] 
     [Space(5f)] [Label("Tooltip Settings")] [ShowIf("NeedTooltip")]  
-    private UITooltip _tooltips;
+    private ToolTipSettings _tooltips;
     [SerializeField] 
     [Space(5f)] [Label("Event Settings")] [ShowIf("NeedEvents")]  
-    private UIEvents _events;
+    private EventSettings _events;
 
-    [SerializeField] private bool _pointerOver;
     //Variables
     private bool _inMenu, _allowKeys;
     private INode _lastHighlighted;
     private UiActions _uiActions;
     private IDisable _disable;
-    private readonly List<IDisposable> _disposable = new List<IDisposable>();
     private INodeBase _nodeBase;
-    private List<NodeFunctionBase> _list;
+    private readonly List<NodeFunctionBase> _activeFunctions = new List<NodeFunctionBase>();
+    private bool _pointerOver;
 
     //Events
     private static CustomEvent<IHighlightedNode> DoHighlighted { get; } 
@@ -90,7 +90,7 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     private Slider AmSlider { get; set; }
     public ToggleGroup ToggleGroupId => _toggleGroupId;
     public UIBranch MyBranch { get; private set; }
-    public UIBranch HasChildBranch => _navigation.Child;
+    public UIBranch HasChildBranch => _navigation.ChildBranch;
     public UINode ReturnNode => this;
     public EscapeKey EscapeKeyType => _escapeKeyFunction;
     public INode Highlighted => this;
@@ -98,7 +98,7 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     public ToggleGroup ToggleGroupID => _toggleGroupId;
     public UIBranch ToggleBranch => _tabBranch;
     public bool StartAsSelected => _startAsSelected;
-    public UINavigation Navigation => _navigation;
+    public UINavigation Navigation => _navigation.Instance;
 
     private void SaveInMenuOrInGame(IInMenu args)
     {
@@ -131,9 +131,9 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
 
     private void UnHighlightThisNode(IHighlightedNode args)
     {
-        if(_pointerOver) return;
         if (_lastHighlighted.ReturnNode == this && args.Highlighted.ReturnNode != this)
         {
+            Debug.Log(this);
             SetNotHighlighted();
         }
     }
@@ -156,33 +156,31 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     //Main
     private void Awake()
     {
-        NodeFactory();
-
-        _uiActions = new UiActions(gameObject.GetInstanceID());
+        StartNodeFactory();
+        _uiActions = new UiActions(gameObject.GetInstanceID(), this);
         AmSlider = GetComponent<Slider>();
         MyBranch = GetComponentInParent<UIBranch>();
         SetUpUiFunctions();
         ObserveEvents();
     }
 
-    private void NodeFactory()
+    private void StartNodeFactory()
     {
         _disable = new Disable(this);
-        _nodeBase = global::NodeFactory.Factory(_buttonFunction, this);
+        _nodeBase = NodeFactory.Factory(_buttonFunction, this);
     }
 
     private void SetUpUiFunctions()
     {
-        var rectTransform = GetComponent<RectTransform>();
-        _colours.OnAwake(_uiActions, _enabledFunctions);
-        _events.OnAwake(_uiActions, _enabledFunctions);
-        _accessories.OnAwake(_uiActions, _enabledFunctions);
-        _invertColourCorrection.OnAwake(_uiActions, _enabledFunctions);
-        _swapImageOrText.OnAwake(_uiActions, _enabledFunctions);
-        _sizeAndPos.OnAwake(_uiActions, _enabledFunctions, rectTransform);
-        _tooltips.OnAwake(_uiActions, _enabledFunctions, rectTransform);
-        _navigation.OnAwake(_uiActions, _enabledFunctions, this);
-        _audio.OnAwake(_uiActions, _enabledFunctions);
+        _activeFunctions.Add(_coloursTest.SetUp(_uiActions, _enabledFunctions));
+        _activeFunctions.Add(_events.SetUp(_uiActions, _enabledFunctions));
+        _activeFunctions.Add(_accessories.SetUp(_uiActions, _enabledFunctions));
+        _activeFunctions.Add(_invertColourCorrection.SetUp(_uiActions, _enabledFunctions));
+        _activeFunctions.Add(_swapImageOrText.SetUp(_uiActions, _enabledFunctions));
+        _activeFunctions.Add(_sizeAndPos.SetUp(_uiActions, _enabledFunctions));
+        _activeFunctions.Add(_tooltips.SetUp(_uiActions, _enabledFunctions));
+        _activeFunctions.Add(_navigation.SetUp(_uiActions, _enabledFunctions));
+        _activeFunctions.Add(_audio.SetUp(_uiActions, _enabledFunctions));
     }
 
     public void ObserveEvents()
@@ -203,18 +201,9 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     
     private void OnDisable()
     {
-        _colours.OnDisable(_uiActions);
-        _events.OnDisable(_uiActions);
-        _accessories.OnDisable(_uiActions);
-        _invertColourCorrection.OnDisable(_uiActions);
-        _swapImageOrText.OnDisable(_uiActions);
-        _sizeAndPos.OnDisable(_uiActions);
-        _tooltips.OnDisable(_uiActions);
-        _navigation.OnDisable(_uiActions);
-        _audio.OnDisable(_uiActions);
-        foreach (var disposable in _disposable)
+        foreach (var nodeFunctionBase in _activeFunctions)
         {
-            disposable.Dispose();
+            nodeFunctionBase.OnDisable();
         }
     }
 
@@ -226,9 +215,9 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     
     public void SetNodeAsActive()
     {
-        if (_disable.NodeIsDisabled()) return;
+        if (_disable.NodeIsDisabled() || _pointerOver) return;
         
-        if (_allowKeys && _inMenu || _pointerOver)
+        if (_allowKeys && _inMenu)
         {
             SetAsHighlighted();
         }

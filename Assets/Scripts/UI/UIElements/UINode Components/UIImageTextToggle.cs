@@ -1,49 +1,41 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
-[Serializable]
 public class UIImageTextToggle : NodeFunctionBase
 {
-    [Header("Toggle Ui Image Settings")]
-    [SerializeField] private ChangeWhen _changeWhen = ChangeWhen.OnPressed;
-    [SerializeField] private Image _toggleIsOff;
-    [SerializeField] private Image _toggleIsOn;
-    
-    [Header("Swapping UI Text Settings")]
-    [SerializeField] private Text _textToSwap;
-    [SerializeField] private string _changeTextToo;
+    public UIImageTextToggle(SwapImageOrTextSettings settings, UiActions uiActions)
+    {
+        _changeWhen = settings.ChangeWhen;
+        _toggleIsOff = settings.ToggleOff;
+        _toggleIsOn = settings.ToggleOn;
+        _textToSwap = settings.TextToSwap;
+        _changeTextToo = settings.ChangeTextToo;
+        CanActivate = CacheAndCheckForStartingUIElements();
+        OnAwake(uiActions);
+    }
 
     //variables
     private string _startingText;
+    private readonly ChangeWhen _changeWhen;
+    private readonly Image _toggleIsOff;
+    private readonly Image _toggleIsOn;
+    private readonly Text _textToSwap;
+    private readonly string _changeTextToo;
     
     //Properties
     protected override bool CanBeHighlighted() => _changeWhen == ChangeWhen.OnHighlight;
     protected override bool CanBePressed() => _changeWhen == ChangeWhen.OnPressed;
     protected override bool FunctionNotActive() => !CanActivate;
-    public bool ToggleOnNewControls => _changeWhen == ChangeWhen.OnControlChanged;
+    private bool ToggleOnNewControls => _changeWhen == ChangeWhen.OnControlChanged;
 
-    //Enum
-    private enum ChangeWhen { OnHighlight, OnPressed, OnControlChanged }
-
-    public override void OnAwake(UiActions uiActions, Setting activeFunctions)
+    protected sealed override void OnAwake(UiActions uiActions)
     {
-        base.OnAwake(uiActions, activeFunctions);
-        CanActivate = ((_enabledFunctions & Setting.SwapImageOrText) != 0) 
-                      && CacheAndCheckForStartingUIElements();
-        
+        base.OnAwake(uiActions);
         CycleToggle(_isSelected);
     }
 
-    public override void ObserveEvents()
-    {
-        EventLocator.Subscribe<IAllowKeys>(OnControlsChanged, this);
-    }
+    public override void ObserveEvents() => EventLocator.Subscribe<IAllowKeys>(OnControlsChanged, this);
 
-    public override void RemoveFromEvents()
-    {
-        EventLocator.Unsubscribe<IAllowKeys>(OnControlsChanged);
-    }
+    public override void RemoveFromEvents() => EventLocator.Unsubscribe<IAllowKeys>(OnControlsChanged);
 
     private bool CacheAndCheckForStartingUIElements()
     {

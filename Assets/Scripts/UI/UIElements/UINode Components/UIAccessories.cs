@@ -1,25 +1,33 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-using NaughtyAttributes;
 
-[Serializable]
 public class UIAccessories : NodeFunctionBase
 {
-    [SerializeField] [EnumFlags] private AccessoryEventType _activateWhen = AccessoryEventType.None;
-    [SerializeField] private Image[] _accessoriesList;
-    [SerializeField] private Outline[] _outlinesToUse;
-    [SerializeField] private Shadow[] _dropShadowsToUse;
+    public UIAccessories(IAccessoriesSettings settings, UiActions uiActions)
+    {
+        _activateWhen = settings.ActivateWhen;
+        _accessoriesList = settings.AccessoriesList;
+        _outlinesToUse = settings.OutLineList;
+        _dropShadowsToUse = settings.ShadowList;
+        CanActivate = true;
+        OnAwake(uiActions);
+    }
 
     //Variables
+    private readonly AccessoryEventType _activateWhen;
+    private readonly Image[] _accessoriesList;
+    private readonly Outline[] _outlinesToUse;
+    private readonly Shadow[] _dropShadowsToUse;
+
+    //Properties
     protected override bool CanBeHighlighted() => (_activateWhen & AccessoryEventType.Highlighted) != 0;
     protected override bool CanBePressed() => (_activateWhen & AccessoryEventType.Selected) != 0;
     protected override bool FunctionNotActive() => !CanActivate || _activateWhen == AccessoryEventType.None;
 
-    public override void OnAwake(UiActions uiActions, Setting activeFunctions)
+    protected sealed override void OnAwake(UiActions uiActions)
     {
-        base.OnAwake(uiActions, activeFunctions);
-        CanActivate = (_enabledFunctions & Setting.Accessories) != 0;
+        base.OnAwake(uiActions);
         StartActivation(false);
     }
 

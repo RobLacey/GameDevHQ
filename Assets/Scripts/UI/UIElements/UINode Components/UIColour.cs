@@ -1,18 +1,24 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-using NaughtyAttributes;
 using DG.Tweening;
 
-[Serializable]
 public class UIColour : NodeFunctionBase
 {
-    [SerializeField] 
-    [AllowNesting] [Label("Colour Scheme")] private ColourScheme _scheme;
-    [SerializeField] private Text _textElements;
-    [SerializeField] private Image[] _imageElements;
+    public UIColour(IColourSettings settings, UiActions uiActions)
+    {
+        _scheme = settings.ColourScheme;
+        _textElements = settings.TextElement;
+        _imageElements = settings.ImageElement;
+        CanActivate = true;
+        OnAwake(uiActions);
+    }
 
     //Variables
+
+    private readonly ColourScheme _scheme;
+    private readonly Text _textElements;
+    private Image[] _imageElements;
     private Color _textNormalColour = Color.white;
     private Color _imageNormalColour = Color.white;
     private Color _tweenImageToColour;
@@ -24,16 +30,13 @@ public class UIColour : NodeFunctionBase
     //Properties
     protected override bool FunctionNotActive() => !CanActivate || _scheme is null || _isDisabled;
     protected override bool CanBePressed() => (_scheme.ColourSettings & EventType.Pressed) != 0;
-    protected override bool CanBeHighlighted() => (_scheme.ColourSettings & EventType.Highlighted) !=0; 
-    protected bool CanBeSelected() => (_scheme.ColourSettings & EventType.Selected) != 0;
+    protected override bool CanBeHighlighted() => (_scheme.ColourSettings & EventType.Highlighted) !=0;
+    private bool CanBeSelected() => (_scheme.ColourSettings & EventType.Selected) != 0;
 
-    private bool NoText(Text text) => text && _imageElements.Length == 0;
-
-    public override void OnAwake(UiActions uiActions, Setting activeFunctions)
+    protected sealed override void OnAwake(UiActions uiActions)
     {
-        base.OnAwake(uiActions, activeFunctions);
-        CanActivate = (_enabledFunctions & Setting.Colours) != 0;
-        _id = uiActions._instanceId;
+        base.OnAwake(uiActions);
+        _id = uiActions.InstanceId;
         CheckForSetUpError();
         SetUpCachedColours();
     }
@@ -77,7 +80,7 @@ public class UIColour : NodeFunctionBase
 
     private void PointerOverSetUp()
     {
-        if (CanBePressed() && _isSelected)
+        if (CanBePressed() || CanBeSelected() && _isSelected)
         {
             if (CanBeHighlighted())
             {
@@ -240,9 +243,11 @@ public class UIColour : NodeFunctionBase
         float r = ColourCalc(_scheme.SelectedColour.r);
         float g = ColourCalc(_scheme.SelectedColour.g);
         float b = ColourCalc(_scheme.SelectedColour.b);
+        float a = ColourCalc(_scheme.SelectedColour.a);
         _selectHighlightColour = new Color(Mathf.Clamp(r * _scheme.SelectedPerc, 0, 1),
                                            Mathf.Clamp(g * _scheme.SelectedPerc, 0, 1),
-                                           Mathf.Clamp(b * _scheme.SelectedPerc, 0, 1));
+                                           Mathf.Clamp(b * _scheme.SelectedPerc, 0, 1),
+                                           Mathf.Clamp(a * _scheme.SelectedPerc, 0, 1));
         return _selectHighlightColour;
     }
 

@@ -2,28 +2,30 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using NaughtyAttributes;
 
-[Serializable]
 public class UITooltip : NodeFunctionBase,  IServiceUser
 {
-    [Header("General Settings")]
-    [SerializeField] 
-    private RectTransform _mainCanvas;
-    [SerializeField] 
-    private Camera _uiCamera;
-    [SerializeField] 
-    [AllowNesting] [ValidateInput("IsNull", "Add a Tooltip Scheme")] private ToolTipScheme _scheme;
-    [SerializeField] 
-    private LayoutGroup[] _listOfTooltips = new LayoutGroup[0];
+    public UITooltip(ToolTipSettings settings, UiActions uiActions)
+    {
+        _mainCanvas = settings.MainCanvas;
+        _uiCamera = settings.UiCamera;
+        _scheme = settings.Scheme;
+        _listOfTooltips = settings.ToolTips;
+        CanActivate = true;
+        OnAwake(uiActions);
+    }
 
     //Variables
+    private readonly RectTransform _mainCanvas;
+    private readonly Camera _uiCamera;
+    private readonly ToolTipScheme _scheme;
+    private readonly LayoutGroup[] _listOfTooltips;
     private Vector2 _tooltipPos;
     private RectTransform[] _tooltipsRects;
     private RectTransform _parentRectTransform;
     private Transform _bucketPosition;
     private Canvas[] _cachedCanvas;
-    private Vector3[] _myCorners = new Vector3[4];
+    private readonly Vector3[] _myCorners = new Vector3[4];
     private Coroutine _coroutineStart, _coroutineActivate, _coroutineBuild;
     private bool _allowKeys, _setCorners;
     private ToolTipsCalcs _calculation;
@@ -44,17 +46,13 @@ public class UITooltip : NodeFunctionBase,  IServiceUser
         HideToolTip();
     }
     private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
-
-    //Editor Scripts
-    private bool IsNull(ToolTipScheme scheme) => scheme;
     
     //TODO Change size calculations to work from camera size rather than canvas so still works when aspect changes
 
-    public void OnAwake(UiActions uiActions, Setting activeFunctions, RectTransform rectTransform) 
+    protected sealed override void OnAwake(UiActions uiActions) 
     {
-        base.OnAwake(uiActions, activeFunctions);
-        CanActivate = (_enabledFunctions & Setting.TooplTip) != 0;
-        SetUp(rectTransform);
+        base.OnAwake(uiActions);
+        SetUp(uiActions.Node.GetComponent<RectTransform>());
         SubscribeToService();
     }
 

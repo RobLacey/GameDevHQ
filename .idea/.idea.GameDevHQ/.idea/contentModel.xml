@@ -317,6 +317,18 @@
               <e p="UIHub.cs" t="Include" />
               <e p="UIInput.cs" t="Include" />
               <e p="UINode Components" t="Include">
+                <e p="Compnoent Settings Files" t="Include">
+                  <e p="AccessoriesSettings.cs" t="Include" />
+                  <e p="AudioSettings.cs" t="Include" />
+                  <e p="ColourSettings.cs" t="Include" />
+                  <e p="EventSettings.cs" t="Include" />
+                  <e p="InvertColoursSettings.cs" t="Include" />
+                  <e p="NavigationSettings.cs" t="Include" />
+                  <e p="NullFunction.cs" t="Include" />
+                  <e p="SizeAndPositionSettings.cs" t="Include" />
+                  <e p="SwapImageOrTextSettings.cs" t="Include" />
+                  <e p="ToolTipSettings.cs" t="Include" />
+                </e>
                 <e p="NodeFunctionBase.cs" t="Include" />
                 <e p="NodeTypes" t="Include">
                   <e p="CancelOrBackButton.cs" t="Include" />

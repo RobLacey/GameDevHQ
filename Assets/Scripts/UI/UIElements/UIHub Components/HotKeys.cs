@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [Serializable]
-public class HotKeys : IServiceUser, IEventUser
+public class HotKeys : IServiceUser, IEventUser, IHotKeyPressed
 {
     [SerializeField] 
     private HotKey _hotKeyInput;
