@@ -25,7 +25,7 @@ public class Timed : BranchBase, IStartPopUp
     {
         if (!_running)
         {
-            ActivateBranchCanvas();
+            SetCanvas(ActiveCanvas.Yes);
             _running = true;
         }
         else
@@ -45,15 +45,7 @@ public class Timed : BranchBase, IStartPopUp
         yield return new WaitForSeconds(_myBranch.Timer);
         ExitTimedPopUp();
     }
-
-    public override void MoveBackToThisBranch(UIBranch lastBranch)
-    {
-        if (lastBranch != _myBranch) return;
-
-        StaticCoroutine.StopCoroutines(_coroutine);
-        ExitTimedPopUp();
-    }
-
+    
     private void ExitTimedPopUp()
     {
         _running = false;

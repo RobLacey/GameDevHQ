@@ -8,8 +8,7 @@ public partial class UIBranch
     public bool IsAPopUpBranch()
     {
         return _branchType == BranchType.OptionalPopUp
-               || _branchType == BranchType.ResolvePopUp
-               || _branchType == BranchType.TimedPopUp;
+               || _branchType == BranchType.ResolvePopUp;
     }
     public bool IsPauseMenuBranch() => _branchType == BranchType.PauseMenu;
     public bool IsInternalBranch() => _branchType == BranchType.Internal;
@@ -21,7 +20,7 @@ public partial class UIBranch
     private INode LastHighlighted { get; set; }
     public INode LastSelected { get; private set; }
     public UINode[] ThisGroupsUiNodes { get; private set; }
-    public Canvas MyCanvas { get; private set; }
+    public Canvas MyCanvas { get; private set; } 
     public CanvasGroup MyCanvasGroup { get; private set; }
     public BranchBase Branch { get; private set; }
     public UIBranch MyParentBranch { get; set; }
@@ -49,7 +48,7 @@ public partial class UIBranch
         get => _tweenOnHome;
         set => _tweenOnHome = value;
     }
-
+    
     public void SetStayOn(IsActive setting) => _stayOn = setting;
 
     public float Timer => _timer;

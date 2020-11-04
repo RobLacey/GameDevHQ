@@ -10,7 +10,11 @@ public interface ITestList
 
 public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestList
 {
-    public HistoryTracker() => OnEnable();
+    public HistoryTracker(EscapeKey globalCancelAction)
+    {
+        ServiceLocator.AddService<ICancel>(new UICancel(globalCancelAction));
+        OnEnable();
+    }
 
     //Variables
     private readonly List<UINode> _history = new List<UINode>();
@@ -21,14 +25,14 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
     private IPopUpController _popUpController;
 
     public UINode AddNode { get; private set; }
-    private UIBranch PopUpToRemove { get; set; }
     public bool ActivateBranchOnReturnHome { get; private set; }
 
     private void SaveOnHomScreen(IOnHomeScreen args) => _onHomScreen = args.OnHomeScreen;
     private void SaveIsGamePaused(IGameIsPaused args) => _isPaused = args.GameIsPaused;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void NoPopUps(INoPopUps args) => _noPopUps = args.NoActivePopUps;
-    
+    public bool NoHistory => _history.Count == 0;
+
     //Events
     private static CustomEvent<IReturnToHome> ReturnedToHome { get; } = new CustomEvent<IReturnToHome>();
     private static CustomEvent<ITestList> AddANode { get; } = new CustomEvent<ITestList>();
@@ -40,6 +44,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
         EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomScreen, this);
         EventLocator.Subscribe<IGameIsPaused>(SaveIsGamePaused, this);
         EventLocator.Subscribe<INoPopUps>(NoPopUps, this);
+        EventLocator.Subscribe<ICancelPopUp>(CancelPopUpFromButton, this);
     }
 
     public void RemoveFromEvents()
@@ -49,6 +54,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
         EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomScreen);
         EventLocator.Unsubscribe<IGameIsPaused>(SaveIsGamePaused);
         EventLocator.Unsubscribe<INoPopUps>(NoPopUps);
+        EventLocator.Unsubscribe<ICancelPopUp>(CancelPopUpFromButton);
     }
 
     public void OnEnable()
@@ -60,6 +66,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
     public void OnDisable()
     {
         ServiceLocator.RemoveService<IPopUpController>();
+        ServiceLocator.RemoveService<ICancel>();
         RemoveFromEvents();
     }
     
@@ -105,29 +112,34 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
     public void CloseAllChildNodesAfterPoint(INode newNode)
     {
         if (!_history.Contains(newNode.ReturnNode)) return;
-
         for (int i = _history.Count -1; i > 0; i--)
         {
             if (_history[i] == newNode.ReturnNode) break;
             CloseThisLevel(_history[i]);
         }
         CloseThisLevel(newNode);
+
     }
 
     private void CloseThisLevel(INode node)
     {
-        node.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
-        node.DeactivateNode();
+        node.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel, EndOfTweenActions);
         
         AddNode = node.ReturnNode;
         AddANode?.RaiseEvent(this);
 
         _history.Remove(node.ReturnNode);
-    }
 
+        void EndOfTweenActions()
+        {
+            node.HasChildBranch.LastSelected.DeactivateNode();
+            node.MyBranch.MoveToBranchWithoutTween();
+        }
+    }
+    
     private void SetLastSelectedWhenNoHistory(INode node) 
         => _lastSelected = _history.Count > 0 ? _history.Last() : node.ReturnNode;
-
+    
     public void BackOneLevel()
     {
         DoMoveBackOneLevel(_history.Last());
@@ -138,8 +150,17 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
 
     private static void DoMoveBackOneLevel(INode lastNode)
     {
-        lastNode.SetNodeAsNotSelected_NoEffects();
-        lastNode.MyBranch.Branch.MoveBackToThisBranch(lastNode.MyBranch);
+        lastNode.DeactivateNode();
+        
+        if (lastNode.MyBranch.CanvasIsEnabled)
+        {
+            lastNode.MyBranch.MoveToBranchWithoutTween();
+        }
+        else
+        {
+            
+            lastNode.MyBranch.MoveToThisBranch();
+        }
     }
 
     private void IfLastSelectedIsOnHomeScreen(UINode lastNode)
@@ -254,20 +275,26 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
 
     public void CancelMove(Action endOfCancelAction)
     {
-        if (_noPopUps || _isPaused)
+        if (!_noPopUps && !_isPaused)
         {
-            _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, endOfCancelAction);
-            _lastSelected.PlayCancelAudio();
-            return;
+            HandlePopUps(_popUpController.NextPopUp());
         }
-        
-        if(!_noPopUps && !_isPaused)
+        else
         {
-            PopUpToRemove = _popUpController.NextPopUp();
-            PopUpToRemove.LastSelected.PlayCancelAudio();
-            _popUpController.RemoveNextPopUp(PopUpToRemove);
-            PopUpToRemove.StartBranchExitProcess(OutTweenType.Cancel, EndOfTweenCallback);
+            _activeBranch.LastSelected.PlayCancelAudio();
+            Debug.Log(_activeBranch);
+            endOfCancelAction?.Invoke();
         }
+    }
+
+    private void CancelPopUpFromButton(ICancelPopUp popUpToCancel) => HandlePopUps(popUpToCancel.MyBranch);
+
+    private void HandlePopUps(UIBranch popUpToCancel)
+    {
+        if(popUpToCancel.EscapeKeySetting == EscapeKey.None) return;
+        popUpToCancel.LastSelected.PlayCancelAudio();
+        _popUpController.RemoveNextPopUp(popUpToCancel);
+        popUpToCancel.StartBranchExitProcess(OutTweenType.Cancel, EndOfTweenCallback);
     }
 
     private void EndOfTweenCallback()

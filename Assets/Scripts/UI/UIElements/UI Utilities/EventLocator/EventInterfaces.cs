@@ -20,10 +20,15 @@ public interface IAllowKeys //**
     bool CanAllowKeys { get; }
 } 
 
-public interface ICancelButtonActivated //**
+public interface ICancelButtonActivated: ICancelPopUp //**
 {
     EscapeKey EscapeKeyType { get; }
 } 
+public interface ICancelPopUp
+{
+    UIBranch MyBranch { get; }
+}
+
 public interface IMenuGameSwitchingPressed { } //**
 
 public interface IGameIsPaused//**
@@ -93,3 +98,4 @@ public interface IClearScreen //**
 }
 
 public interface IHotKeyPressed { }
+

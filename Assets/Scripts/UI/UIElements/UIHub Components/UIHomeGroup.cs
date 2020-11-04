@@ -51,11 +51,7 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
         EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
     }
 
-    public void SubscribeToService()
-    {
-        _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
-        //return _uiHistoryTrack is null;
-    }
+    public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
 
     private void SwitchHomeGroups(ISwitchGroupPressed args)
     {
@@ -111,6 +107,6 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
     {
         if (!args.ActivateBranchOnReturnHome)
             _homeGroup[_index].DontSetBranchAsActive();
-        _homeGroup[_index].Branch.MoveBackToThisBranch(_homeGroup[_index]);
+        _homeGroup[_index].MoveToBranchWithoutTween();
     }
 }

@@ -4,6 +4,7 @@ public class UIAudio : NodeFunctionBase, IServiceUser
 {
     public UIAudio(IAudioSettings settings, UiActions uiActions)
     {
+        _uiActions = uiActions;
         _audioScheme = settings.AudioScheme;
         CanActivate = true;
         OnAwake(uiActions);
@@ -13,6 +14,7 @@ public class UIAudio : NodeFunctionBase, IServiceUser
     private readonly AudioScheme _audioScheme;
     private IAudioService _audioService;
     private bool _canStart;
+    private UiActions _uiActions;
 
     //Properties
     private bool UsingScheme() => _audioScheme;

@@ -1,24 +1,65 @@
-﻿public class HoverToActivate : INodeBase, IServiceUser
+﻿using UnityEngine;
+
+public class HoverToActivate : NodeBase
 {
-    private readonly UINode _uiNode;
-    private IHistoryTrack _uiHistoryTrack;
+    private bool _allowKeys;
+    public HoverToActivate(UINode node) : base(node) => _uiNode = node;
 
-    public HoverToActivate(UINode node) => _uiNode = node;
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EventLocator.Subscribe<IAllowKeys>(SaveAllowKeys, this);
+    }
 
-    public void Start() => SubscribeToService();
-    
-    public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+    public override void RemoveFromEvents()
+    {
+        base.RemoveFromEvents();
+        EventLocator.Unsubscribe<IAllowKeys>(SaveAllowKeys);
+    }
 
-    public void TurnNodeOnOff()
+    private void SaveAllowKeys(IAllowKeys newNode)
+    {
+        _allowKeys = newNode.CanAllowKeys;
+    }
+
+    public override void OnEnter(bool isDragEvent)
+    {
+        Debug.Log(_uiNode);
+        _uiNode.SetAsHighlighted();
+        if(!_allowKeys && _uiNode.IsSelected) return;
+       // if(_uiNode.IsSelected) return;
+        // PointerOverNode = false;
+        TurnNodeOnOff();
+    }
+
+    public override void OnExit(bool isDragEvent)
+    {
+        if (_uiNode.CloseHooverOnExit)
+        {
+           TurnNodeOnOff();
+        }
+        else
+        {
+            _uiNode.SetNotHighlighted();
+        }
+    }
+
+    public override void OnSelected(bool isDragEvent)
+    {
+        _uiNode.PlayCancelAudio();
+        TurnNodeOnOff();
+    }
+
+    protected override void TurnNodeOnOff()
     {
         if (_uiNode.IsSelected)
         {
             Deactivate();
-            _uiNode.MyBranch.Branch.MoveBackToThisBranch(_uiNode.MyBranch);
         }
         else
         {
             Activate();
+            PointerOverNode = false;
         }
         _uiHistoryTrack.SetSelected(_uiNode);
     }
@@ -29,10 +70,10 @@
         _uiNode.SetSelectedStatus(true, _uiNode.DoPress);
         _uiNode.ThisNodeIsSelected();
     }
-    
+
     private void Deactivate() => _uiNode.SetSelectedStatus(false, _uiNode.DoPress);
     
-    public void DeactivateNode()
+    public override void DeactivateNode()
     {
         if (!_uiNode.IsSelected) return;
         Deactivate();

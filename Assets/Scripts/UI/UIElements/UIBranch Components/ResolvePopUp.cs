@@ -28,17 +28,9 @@
     public override void SetUpBranch(UIBranch newParentController = null)
     {
         if(_myBranch.CanvasIsEnabled) return;
-        _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRayCast.Yes);
-        ActivateBranchCanvas();
+        _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.Yes);
+        SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
         AddResolvePopUp?.RaiseEvent(this);
-    }
-
-    public override void MoveBackToThisBranch(UIBranch lastBranch)
-    {
-        if (lastBranch != _myBranch) return;
-        
-        base.MoveBackToThisBranch(lastBranch);
-        _myBranch.MoveToThisBranch();
     }
 }

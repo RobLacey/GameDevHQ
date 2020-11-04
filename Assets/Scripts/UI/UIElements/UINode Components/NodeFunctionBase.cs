@@ -3,12 +3,11 @@
 public abstract class NodeFunctionBase : IEventUser
 {
     protected bool _pointerOver, _isSelected, _isDisabled;
-    protected MoveDirection _moveDirection;
     private UiActions _uiActions;
 
     //Properties
     protected bool CanActivate { get; set; }
-    private void AxisMoveDirection(MoveDirection moveDirection) => _moveDirection = moveDirection;
+    protected virtual void AxisMoveDirection(MoveDirection moveDirection) { }
     protected abstract bool CanBeHighlighted();
     protected abstract bool CanBePressed();
     protected abstract bool FunctionNotActive();

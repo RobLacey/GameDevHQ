@@ -2,6 +2,7 @@
 
 public interface IHistoryTrack : IMonoBehaviourSub
 {
+    bool NoHistory { get; }
     void SetSelected(INode node);
     void BackToHome();
     void BackOneLevel();

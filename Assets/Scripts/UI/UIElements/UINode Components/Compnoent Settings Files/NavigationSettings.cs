@@ -2,7 +2,7 @@
 using NaughtyAttributes;
 using UnityEngine;
 
-public interface InavigationSettings : IComponentSettings
+public interface INavigationSettings : IComponentSettings
 {
     UIBranch ChildBranch { get; }
     NavigationType NavType { get; }
@@ -13,7 +13,7 @@ public interface InavigationSettings : IComponentSettings
 }
 
 [Serializable]
-public class NavigationSettings :InavigationSettings
+public class NavigationSettings :INavigationSettings
 {
     [SerializeField] 
     [AllowNesting] [Label("Move To When Clicked")] [HideIf("CantNavigate")] private UIBranch _childBranch;
@@ -47,6 +47,9 @@ public class NavigationSettings :InavigationSettings
 
     public NodeFunctionBase SetUp(UiActions uiActions, Setting functions)
     {
+        if (uiActions.Node.IsToggleGroup || uiActions.Node.IsToggleNotLinked)
+            _childBranch = null;
+        
         if ((functions & Setting.NavigationAndOnClick) != 0)
         {
             Instance = new UINavigation(this, uiActions);

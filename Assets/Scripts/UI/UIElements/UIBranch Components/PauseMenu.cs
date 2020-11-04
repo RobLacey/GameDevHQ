@@ -73,24 +73,15 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused
 
     private void EnterPause()
     {
-        _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRayCast.Yes);
+        _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.Yes);
         _myBranch.MoveToThisBranch();
     }
 
     public override void SetUpBranch(UIBranch newParentController = null)
     {
-        ActivateBranchCanvas();
+        SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
         _myBranch.ResetBranchesStartPosition();
-    }
-
-    protected override void CanGoToFullscreen()
-    {
-        if (OnHomeScreen)
-        {
-            InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
-        }
-        InvokeDoClearScreen();
     }
 
     private void ExitPause() => _myBranch.StartBranchExitProcess(OutTweenType.Cancel, RestoreLastStoredState);
@@ -100,17 +91,6 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused
         if (WasInGame()) return;
         ActivateStoredPosition();
         _historyTrack.MoveToLastBranchInHistory();
-    }
-    
-    public override void MoveBackToThisBranch(UIBranch lastBranch)
-    {
-        if (lastBranch != _myBranch) return;
-        
-        base.MoveBackToThisBranch(lastBranch);
-        if (_myBranch.CanvasIsEnabled)
-            _myBranch.SetNoTween();
-
-        _myBranch.MoveToThisBranch();
     }
 }
 

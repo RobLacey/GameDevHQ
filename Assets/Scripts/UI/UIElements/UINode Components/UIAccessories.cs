@@ -51,6 +51,7 @@ public class UIAccessories : NodeFunctionBase
     protected override void SavePointerStatus(bool pointerOver)
     {
         if(FunctionNotActive() || !CanBeHighlighted() || CanBePressed() && _isSelected) return;
+        _pointerOver = pointerOver;
         StartActivation(pointerOver);
     }
 
@@ -63,6 +64,7 @@ public class UIAccessories : NodeFunctionBase
     private protected override void ProcessPress()
     {
         if(FunctionNotActive() || !CanBePressed()) return;
+        if(CanBeHighlighted() && _pointerOver) return;
         StartActivation(_isSelected);
     }
 

@@ -34,7 +34,7 @@ public static class UIBranchGroups
         {
            newIndex = passedIndex.NegativeIterate(groupsList.Count);
         }
-        groupsList[newIndex]._startNode.HandleOnEnter();
+        groupsList[newIndex]._startNode.SetNodeAsActive();
         return newIndex;
     }
 }

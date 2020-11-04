@@ -1,98 +1,98 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class UIToggles : INodeBase, IEventUser, IServiceUser, IDisposable
+public class UIToggles : NodeBase
 {
-    private readonly UINode _myNode;
     private readonly List<UINode> _toggleGroupMembers = new List<UINode>();
     private readonly ToggleGroup _groupID;
     private readonly UIBranch _tabBranch;
     private readonly bool _hasATabBranch;
     private bool _isSelected;
-    private IHistoryTrack _uiHistoryTrack;
 
     //Events
-    private static event Action<UINode> SelectedToggle;
+    private static event Action<UINode, Action> SelectedToggle;
     
-    public UIToggles(UINode node)
+    public UIToggles(UINode node) : base(node)
     {
-        ObserveEvents();
-        SubscribeToService();
-        _myNode = node;
-        _groupID = _myNode.ToggleGroupID;
-        _tabBranch = _myNode.ToggleBranch;
+        _groupID = _uiNode.ToggleGroupID;
+        _tabBranch = _uiNode.ToggleBranch;
         _hasATabBranch = _tabBranch != null;
         SelectedToggle += SaveSelectedNode;
         if (_tabBranch)
             _tabBranch.IsTabBranch();
     }
 
-    public void Dispose()
+    public override void ObserveEvents()
     {
-        Debug.Log(_myNode);
-        RemoveFromEvents();
+        base.ObserveEvents();
+        EventLocator.Subscribe<IActiveBranch>(Activate, this);
     }
 
-    public void ObserveEvents() => EventLocator.Subscribe<IActiveBranch>(Activate, this);
-
-    public void RemoveFromEvents() => EventLocator.Unsubscribe<IActiveBranch>(Activate);
-
-    public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+    public override void RemoveFromEvents()
+    {
+        base.RemoveFromEvents();
+        EventLocator.Unsubscribe<IActiveBranch>(Activate);
+    }
 
     private void Activate(IActiveBranch args)
     {
-        if (args.ActiveBranch == _myNode.MyBranch && _isSelected)
+        if (args.ActiveBranch == _uiNode.MyBranch && _isSelected)
             TurnOnTab();
     }
     
     //Main
-    public void Start()
+    public override void Start()
     {
-        SetUpToggleGroup(_myNode.MyBranch.ThisGroupsUiNodes);
-        if (!_myNode.StartAsSelected) return;
+        base.Start();
+        SetUpToggleGroup(_uiNode.MyBranch.ThisGroupsUiNodes);
+        if (!_uiNode.StartAsSelected) return;
         TurnOffOtherTogglesInGroup();
-        _myNode.SetNodeAsSelected_NoEffects();
+        _uiNode.SetNodeAsSelected_NoEffects();
+        TurnOnTab();
     }
 
-    public void DeactivateNode() { }
+    public override void DeactivateNode() { }
 
     private void SetUpToggleGroup(UINode[] thisGroupsUINodes)
     {
         foreach (var node in thisGroupsUINodes)
         {
-            if (!node.IsToggleGroup || node == _myNode) continue;
+            if (!node.IsToggleGroup || node == _uiNode) continue;
             if (_groupID != node.ToggleGroupId) continue;
             _toggleGroupMembers.Add(node);
         }
     }
     
-    private void SaveSelectedNode(UINode newNode)
+    private void SaveSelectedNode(UINode newNode, Action callback)
     {
         if (!_toggleGroupMembers.Contains(newNode)) return;
-        _myNode.SetNodeAsNotSelected_NoEffects();
+        Deactivate(callback);
+    }
 
+    private void Deactivate(Action callback)
+    {
+        _uiNode.SetNodeAsNotSelected_NoEffects();
+        
         if (!_hasATabBranch || !_isSelected) return;
-        _tabBranch.StartBranchExitProcess(OutTweenType.Cancel);
+        _tabBranch.StartBranchExitProcess(OutTweenType.Cancel, callback);
         _isSelected = false;
     }
-    
-    public void TurnNodeOnOff()
+
+    protected override void TurnNodeOnOff()
     {
-        if (_myNode.IsSelected) return;        
+        if (_uiNode.IsSelected) return;        
 
         TurnOffOtherTogglesInGroup();
-        ActivateNode();
-        _uiHistoryTrack.SetSelected(_myNode);
+        Activate();
+        _uiHistoryTrack.SetSelected(_uiNode);
     }
 
-    private void ActivateNode() => _myNode.SetSelectedStatus(true, _myNode.DoPress);
+    private void Activate() => _uiNode.SetSelectedStatus(true, _uiNode.DoPress);
 
     private void TurnOffOtherTogglesInGroup()
     {
-        SelectedToggle?.Invoke(_myNode);
+        SelectedToggle?.Invoke(_uiNode, TurnOnTab);
         _isSelected = true;
-        TurnOnTab();
     }
 
     private void TurnOnTab()

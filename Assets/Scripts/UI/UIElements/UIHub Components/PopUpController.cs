@@ -82,7 +82,7 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
         return null;
     }
 
-    private UIBranch GetNextPopUp(IReadOnlyList<UIBranch> popUpList)
+    private static UIBranch GetNextPopUp(IReadOnlyList<UIBranch> popUpList)
     {
         int index = popUpList.Count - 1;
         return popUpList[index];
@@ -129,6 +129,8 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
                                 ICollection<UIBranch> popUpList,
                                 CustomEvent<INoResolvePopUp> noActivePopUpsEvent = null)
     {
+
+        if(popUpList.Contains(newPopUp)) return;
         popUpList.Add(newPopUp);
         noActivePopUpsEvent?.RaiseEvent(this);
         _noPopUps = false;

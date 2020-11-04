@@ -68,7 +68,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     {
         LastSelected = SearchThisBranchesNodes
             (args.Selected.ReturnNode, defaultNode: LastSelected.ReturnNode);
-    }    public void SetNoTween() => _tweenOnChange = false;
+    }    
+    public void SetNoTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
     public void IsTabBranch() => _branchType = BranchType.Standard;
     public UIBranch ActiveBranch => this;
@@ -94,18 +95,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         public UnityEvent OnBranchExit;
     }
 
-    private void Awake()
-    {
-        ThisGroupsUiNodes = gameObject.GetComponentsInChildren<UINode>();
-        MyCanvasGroup = GetComponent<CanvasGroup>();
-        _uiTweener = GetComponent<UITweener>();
-        MyCanvas = GetComponent<Canvas>();
-        Branch = BranchFactory.AssignType(this, _branchType, FindObjectsOfType<UIBranch>());
-        MyParentBranch = this;
-        SetStartPositions();
-        ObserveEvents();
-    }
-    
     public void ObserveEvents()
     {
         EventLocator.Subscribe<ISwitchGroupPressed>(SwitchBranchGroup, this);
@@ -120,6 +109,18 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         EventLocator.Unsubscribe<IHighlightedNode>(SaveHighlighted);
         EventLocator.Unsubscribe<ISelectedNode>(SaveSelected);
         EventLocator.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
+    }
+
+    private void Awake()
+    {
+        ThisGroupsUiNodes = gameObject.GetComponentsInChildren<UINode>();
+        MyCanvasGroup = GetComponent<CanvasGroup>();
+        _uiTweener = GetComponent<UITweener>();
+        MyCanvas = GetComponent<Canvas>();
+        Branch = BranchFactory.AssignType(this, _branchType, FindObjectsOfType<UIBranch>());
+        MyParentBranch = this;
+        SetStartPositions();
+        ObserveEvents();
     }
 
     private void OnDisable()
@@ -166,7 +167,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
 
     public void MoveToBranchWithoutTween()
     {
-        MyCanvasGroup.blocksRaycasts = true;
+        Branch.SetBlockRaycast(BlockRaycast.Yes);
         _tweenOnChange = false;
         MoveToThisBranch();
     }
@@ -175,16 +176,17 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     {
         Branch.SetUpBranch(newParentBranch);
         if (_canActivateBranch) SetAsActiveBranch();
-        
-         if (_tweenOnChange)
-         {
-             ActivateInTweens();
-         }
-         else
-         {
-             InTweenCallback();
-         }
-         _tweenOnChange = true;
+
+        if (_tweenOnChange)
+        {
+            ActivateInTweens();
+        }
+        else
+        {
+            InTweenCallback();
+        }
+
+        _tweenOnChange = true;
     }
     
     private void SetAsActiveBranch() => SetActiveBranch?.RaiseEvent(this);
@@ -212,7 +214,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         return defaultNode;
     }
 
-    public void MoveToAChildBranch(UIBranch moveToo)
+    public void NavigateToChildBranch(UIBranch moveToo)
     {
         if (moveToo.IsInternalBranch())
         {
@@ -222,12 +224,13 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         {
             StartBranchExitProcess(OutTweenType.MoveToChild, ToChildBranchProcess);
         }
-        void ToChildBranchProcess() => moveToo.MoveToThisBranch(newParentBranch:this);
+        void ToChildBranchProcess() => moveToo.MoveToThisBranch(newParentBranch: this);
     }
-
+    
     public void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null)
     {
         if(!CanvasIsEnabled) return;
+        
         if (WhenToMove == WhenToMove.AfterEndOfTween)
         {
             StartOutTween(outTweenType, endOfTweenCallback);
@@ -250,20 +253,19 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     {
         _branchEvents?.OnBranchExit.Invoke();
         if (_stayOn == IsActive.No || outTweenType == OutTweenType.Cancel)
-            MyCanvasGroup.blocksRaycasts = false;
+            Branch.SetBlockRaycast(BlockRaycast.No);
     }
 
     private void ProcessTween(OutTweenType outTweenType)
     {
         _uiTweener.StopAllCoroutines();
-        _uiTweener.DeactivateTweens(callBack:()=> OutTweenCallback(outTweenType));
+        _uiTweener.DeactivateTweens(callBack:() => OutTweenCallback(outTweenType));
     }
 
     private void OutTweenCallback(OutTweenType outTweenType)
     {
         if(_stayOn == IsActive.No || outTweenType == OutTweenType.Cancel)
-            MyCanvas.enabled = false;
-        
+            Branch.SetCanvas(ActiveCanvas.No);
         if(!IsPauseMenuBranch()) Branch.ActivateStoredPosition();
         OnFinishTweenCallBack?.Invoke();
     }
@@ -276,7 +278,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         {
            LastHighlighted.SetNodeAsActive();
         }
-        Branch.ActivateBlockRaycast();
+        Branch.SetBlockRaycast(BlockRaycast.Yes);
         _branchEvents?.OnBranchEnter.Invoke();
         _canActivateBranch = true;
     }

@@ -2,9 +2,9 @@
 
 public static class NodeFactory
 {
-    public static INodeBase Factory(ButtonFunction funcs, UINode node)
+    public static NodeBase Factory(ButtonFunction functions, UINode node)
     {
-        switch (funcs)
+        switch (functions)
         {
             case ButtonFunction.Standard:
                 return new Standard(node);

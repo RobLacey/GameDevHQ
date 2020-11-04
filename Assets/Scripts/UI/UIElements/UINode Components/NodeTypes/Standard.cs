@@ -1,30 +1,21 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Standard : INodeBase, IServiceUser
+public class Standard : NodeBase
 {
-    private readonly UINode _uiNode;
-    private IHistoryTrack _historyTracker;
+    public Standard(UINode uiNode) : base(uiNode) => _uiNode = uiNode;
 
-    public Standard(UINode uiNode) => _uiNode = uiNode;
-
-    public void Start() => SubscribeToService();
-
-    public void SubscribeToService() => _historyTracker = ServiceLocator.GetNewService<IHistoryTrack>(this);
-
-    public void TurnNodeOnOff()
+    protected override void TurnNodeOnOff()
     {
         if (_uiNode.IsSelected)
         {
             Deactivate();
-            _uiNode.MyBranch.Branch.MoveBackToThisBranch(_uiNode.MyBranch);
             _uiNode.PlayCancelAudio();
         }
         else
         {
             Activate();
         }
-        _historyTracker.SetSelected(_uiNode);
+        _uiHistoryTrack.SetSelected(_uiNode);
     }
 
     private void Deactivate() => _uiNode.SetSelectedStatus(false, _uiNode.DoPress);
@@ -35,7 +26,7 @@ public class Standard : INodeBase, IServiceUser
         _uiNode.ThisNodeIsSelected();
     }
 
-    public void DeactivateNode()
+    public override void DeactivateNode()
     {
         if (!_uiNode.IsSelected) return;
         Deactivate();

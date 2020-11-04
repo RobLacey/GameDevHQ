@@ -9,21 +9,21 @@
     protected override void SaveInMenu(IInMenu args)
     {
         base.SaveInMenu(args);
-        ActivateBlockRaycast();
+        SetBlockRaycast(BlockRaycast.Yes);
     }
 
     protected override void SaveOnStart(IOnStart args) 
     {
         base.SaveOnStart(args);
-        ActivateBranchCanvas();
-        ActivateBlockRaycast();
+        SetCanvas(ActiveCanvas.Yes);
+        SetBlockRaycast(BlockRaycast.Yes);
     }
     
     //Main
     protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
-        _myBranch.MyCanvas.enabled = true;
-        _myBranch.MyCanvasGroup.blocksRaycasts = false;
+        SetCanvas(ActiveCanvas.Yes);
+        SetBlockRaycast(BlockRaycast.No);
         _myBranch.DefaultStartOnThisNode.ThisNodeIsSelected();        
         _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
 
@@ -38,30 +38,16 @@
     {
         _myBranch.ResetBranchesStartPosition();
         if(!_canStart || !_inMenu) return;
-        ActivateBranchCanvas();
-    }
-
-    public override void MoveBackToThisBranch(UIBranch lastBranch)
-    {
-        base.MoveBackToThisBranch(lastBranch);
-        SetUpBranchReadyForMoveTo(lastBranch);
-        _myBranch.MoveToThisBranch();
+        SetCanvas(ActiveCanvas.Yes);
+        if (CannotTweenOnHome)
+            _myBranch.SetNoTween();
         InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
     }
 
-    private void SetUpBranchReadyForMoveTo(UIBranch lastBranch)
-    {
-        if (CannotTweenOnHome)
-            _myBranch.SetNoTween();
-
-        if (lastBranch != _myBranch)
-            _myBranch.DontSetBranchAsActive();
-    }
-
-    public override void ActivateBlockRaycast()
+    public override void SetBlockRaycast(BlockRaycast active)
     {
         if(_resolvePopUps) return;
-        base.ActivateBlockRaycast();
+        base.SetBlockRaycast(active);
     }
 }
 

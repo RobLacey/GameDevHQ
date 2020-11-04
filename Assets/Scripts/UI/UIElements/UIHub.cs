@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -61,9 +60,8 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
     {
         ServiceLocator.AddService<IAudioService>(new UIAudioManager(GetComponent<AudioSource>()));
         ServiceLocator.AddService<IBucketCreator>(new BucketCreator(transform, "Tooltip Holder"));
-        ServiceLocator.AddService<IHistoryTrack>(new HistoryTracker());
+        ServiceLocator.AddService<IHistoryTrack>(new HistoryTracker(_inputScheme.GlobalCancelAction));
         ServiceLocator.AddService<IHomeGroup>(new UIHomeGroup(_homeBranches.ToArray()));
-        ServiceLocator.AddService<ICancel>(new UICancel(_inputScheme.GlobalCancelAction));
     }
 
     private void OnDisable()
@@ -73,7 +71,6 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
         ServiceLocator.RemoveService<IBucketCreator>();
         ServiceLocator.RemoveService<IHistoryTrack>();
         ServiceLocator.RemoveService<IHomeGroup>();
-        ServiceLocator.RemoveService<ICancel>();
     }
 
     private void Start()

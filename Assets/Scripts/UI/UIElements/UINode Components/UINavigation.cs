@@ -1,9 +1,8 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 
 public class UINavigation : NodeFunctionBase, IServiceUser
 {
-    public UINavigation(InavigationSettings settings, UiActions uiActions)
+    public UINavigation(INavigationSettings settings, UiActions uiActions)
     {
         _childBranch = settings.ChildBranch;
         _setNavigation = settings.NavType;
@@ -36,73 +35,58 @@ public class UINavigation : NodeFunctionBase, IServiceUser
     {
         base.OnAwake(uiActions);
         _myNode = uiActions.Node;
-        if (_myNode.IsToggleGroup || _myNode.IsToggleNotLinked) 
-            _childBranch = null;
         _myBranch = _myNode.MyBranch;
         SubscribeToService();
     }
     
-    public void SubscribeToService()
+    public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+
+    protected override void AxisMoveDirection(MoveDirection moveDirection)
     {
-        _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
-        //return _uiHistoryTrack is null;
+        base.AxisMoveDirection(moveDirection);
+        ProcessMoves(moveDirection);
     }
 
-    public void HandleAsSlider()
-    {
-        if (_moveDirection == MoveDirection.Left || _moveDirection == MoveDirection.Right)
-        {
-            Debug.Log("Add Audio");
-            //_myNode.Audio.Play(UIEventTypes.Selected);
-        }
-    }
-
-    public void ProcessMoves()
+    private void ProcessMoves(MoveDirection moveDirection)
     {
         if (FunctionNotActive() || _setNavigation == NavigationType.None) return;
 
-        switch (_moveDirection)
+        switch (moveDirection)
         {
             case MoveDirection.Down when _down:
             {
-                HandleMove(_down);
+                HandleMove(_down, moveDirection);
                 break;
             }
             case MoveDirection.Up when _up:
             {
-                HandleMove(_up);
+                HandleMove(_up, moveDirection);
                 break;
             }
             case MoveDirection.Left when _left:
             {
-                HandleMove(_left);
+                HandleMove(_left, moveDirection);
                 break;
             }
             case MoveDirection.Right when _right:
             {
-                HandleMove(_right);
+                HandleMove(_right, moveDirection);
                 break;
             }
         }
     }
 
-    private void HandleMove(UINode moveTo) => moveTo.CheckIfMoveAllowed(_moveDirection);
+    private static void HandleMove(UINode moveTo, MoveDirection moveDirection) 
+        => moveTo.CheckIfMoveAllowed(moveDirection);
 
     private protected override void ProcessPress()
     {
         if(FunctionNotActive() || !CanBePressed() || _childBranch is null) return;
 
         if (!_isSelected) return;
-        StopReturnFlashFromFullScreen();
-        _myBranch.MoveToAChildBranch(_childBranch);
+        _myBranch.NavigateToChildBranch(_childBranch);
     }
     
-    private void StopReturnFlashFromFullScreen()
-    {
-        if (_childBranch.ScreenType == ScreenType.FullScreen)
-            _myNode.SetNodeAsNotSelected_NoEffects();
-    }
-
     private protected override void ProcessDisabled()
     {
         if(FunctionNotActive()) return;

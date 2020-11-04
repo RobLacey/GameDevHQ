@@ -32,17 +32,17 @@ public class OptionalPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp, IAdd
         }
         else
         {
-            ActivateBranchCanvas();
+            SetCanvas(ActiveCanvas.Yes);
             if(!_resolvePopUps)
             {
-                ActivateBlockRaycast();
+                SetBlockRaycast(BlockRaycast.Yes);
             }        
         }
     }
 
     public void StartPopUp() //TODO add to buffer goes here for when paused. trigger from SaveOnHome?
     {
-        if (_gameIsPaused || !OnHomeScreen || !_canStart || _myBranch.CanvasIsEnabled) return; 
+        if (_gameIsPaused || !OnHomeScreen || !_canStart || _myBranch.CanvasIsEnabled || _resolvePopUps) return; 
         
         IfActiveResolvePopUps();        
         _myBranch.MoveToThisBranch();
@@ -54,8 +54,8 @@ public class OptionalPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp, IAdd
             AddOptionalPopUp?.RaiseEvent(this);
         
         IfActiveResolvePopUps();
-        ActivateBranchCanvas();
-        _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRayCast.No);
+        SetCanvas(ActiveCanvas.Yes);
+        _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.No);
         _restoreOnHome = false;
     }
 
@@ -63,15 +63,7 @@ public class OptionalPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp, IAdd
     {
         if (!_resolvePopUps) return;
         _myBranch.DontSetBranchAsActive();
-        _myBranch.MyCanvasGroup.blocksRaycasts = false;
-    }
-
-    public override void MoveBackToThisBranch(UIBranch lastBranch)
-    {
-        if (lastBranch != _myBranch) return;
-        
-        base.MoveBackToThisBranch(lastBranch);
-        _myBranch.MoveToThisBranch();
+        SetBlockRaycast(BlockRaycast.No);
     }
 
     protected override void ClearBranchForFullscreen(IClearScreen args)
@@ -81,10 +73,10 @@ public class OptionalPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp, IAdd
         RemoveOrStorePopUp();
     }
 
-    public override void ActivateBlockRaycast()
+    public override void SetBlockRaycast(BlockRaycast active)
     {
         if(_resolvePopUps) return;
-        base.ActivateBlockRaycast();
+        base.SetBlockRaycast(active);
     }
 
     private void RemoveOrStorePopUp()

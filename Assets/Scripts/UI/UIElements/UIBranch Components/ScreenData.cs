@@ -1,13 +1,18 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public class ScreenData : IEventUser
 {
-    public ScreenData() => ObserveEvents();
+    public ScreenData(ScreenType screenType)
+    {
+        if (screenType == ScreenType.FullScreen)
+            _isFullscreen = true;
+        ObserveEvents();
+    }
 
     private readonly List<UIBranch> _clearedBranches = new List<UIBranch>();
     public bool  _wasInTheMenu, _locked;
     public bool _wasOnHomeScreen = true;
+    private readonly bool _isFullscreen;
 
     public void ObserveEvents()
     {
@@ -33,10 +38,10 @@ public class ScreenData : IEventUser
         _wasOnHomeScreen = args.OnHomeScreen;
     }
 
-    public void StoreClearScreenData(UIBranch[] allBranches, UIBranch thisBranch, BlockRayCast blockRaycast)
+    public void StoreClearScreenData(UIBranch[] allBranches, UIBranch thisBranch, BlockRaycast blockRaycast)
     {
         _locked = true;
-        StoreActiveBranches(allBranches, thisBranch, blockRaycast == BlockRayCast.Yes);
+        StoreActiveBranches(allBranches, thisBranch, blockRaycast == BlockRaycast.Yes);
     }
     
     private void StoreActiveBranches(UIBranch[] allBranches, UIBranch thisBranch, bool blockRaycast)
@@ -45,12 +50,14 @@ public class ScreenData : IEventUser
         {
             if(branchToClear == thisBranch) continue;
             
-            if (branchToClear.CanvasIsEnabled)
+            if (branchToClear.CanvasIsEnabled && !IsAPopUp(branchToClear))
                 _clearedBranches.Add(branchToClear);
             
             if (blockRaycast) 
-                branchToClear.MyCanvasGroup.blocksRaycasts = false;
+                branchToClear.Branch.SetBlockRaycast(BlockRaycast.No);
         }
+
+        bool IsAPopUp(UIBranch branchToClear) => branchToClear.IsAPopUpBranch() || branchToClear.IsTimedPopUp;
     }
 
     public void RestoreScreen()
@@ -59,8 +66,9 @@ public class ScreenData : IEventUser
         
         foreach (var branch in _clearedBranches)
         {
-            branch.Branch.ActivateBranchCanvas();
-            branch.Branch.ActivateBlockRaycast();
+            if(_isFullscreen)
+                branch.Branch.SetCanvas(ActiveCanvas.Yes);
+            branch.Branch.SetBlockRaycast(BlockRaycast.Yes);
         }
         _clearedBranches.Clear();
     }

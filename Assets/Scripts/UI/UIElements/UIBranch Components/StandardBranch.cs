@@ -1,27 +1,16 @@
 ﻿public class StandardBranchBase : BranchBase
 {
     public StandardBranchBase(UIBranch branch) : base(branch) { }
-    
+
     public override void SetUpBranch(UIBranch newParentController = null)
     {
         if (_myBranch.CanvasIsEnabled) 
             _myBranch.SetNoTween();
         
-        ActivateBranchCanvas();
+        SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
         _myBranch.ResetBranchesStartPosition();
         SetNewParentBranch(newParentController);
-    }
-
-    public override void MoveBackToThisBranch(UIBranch lastBranch)
-    {
-        if (lastBranch != _myBranch) return;
-        base.MoveBackToThisBranch(lastBranch);
-        
-        if (_myBranch.CanvasIsEnabled)
-             _myBranch.SetNoTween();
-        
-        _myBranch.MoveToThisBranch();
     }
 
     private void SetNewParentBranch(UIBranch newParentController) 
@@ -30,9 +19,9 @@
         _myBranch.MyParentBranch = newParentController;
     }
 
-    public override void ActivateBlockRaycast()
+    public override void SetBlockRaycast(BlockRaycast active)
     {
         if(_resolvePopUps) return;
-        base.ActivateBlockRaycast();
+        base.SetBlockRaycast(active);
     }
 }

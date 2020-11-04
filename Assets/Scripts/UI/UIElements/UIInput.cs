@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPressed, 
-                       ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed
+                       ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, IServiceUser
 {
     [SerializeField] 
     private InputScheme _inputScheme;
@@ -23,6 +23,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
     private UIBranch _activeBranch;
     private MenuAndGameSwitching _menuToGameSwitching;
     private ChangeControl _changeControl;
+    private IHistoryTrack _historyTrack;
 
     //Events
     private static CustomEvent<IMenuGameSwitchingPressed> OnMenuAndGameSwitch { get; } 
@@ -65,6 +66,8 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
     public SwitchType SwitchType { get; set; }
     public InputScheme ReturnScheme => _inputScheme;
     public EscapeKey EscapeKeySettings => _activeBranch.EscapeKeySetting;
+    private bool NothingSelectedAction => _inputScheme.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
+
     
     //Main
     private void Awake()
@@ -76,8 +79,12 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
             _menuToGameSwitching.StartWhere = _inputScheme.WhereToStartGame;
         SetUpHotKeys();
         ObserveEvents();
+        SubscribeToService();
     }
     
+    public void SubscribeToService() => _historyTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+
+
     private void SetUpHotKeys()
     {
         if (_hotKeySettings.Count == 0) return;
@@ -180,16 +187,17 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
          }
          else
          {
-             OnCancelPressed?.RaiseEvent(this);
+             CancelPressed();
          }
     }
 
     private bool CanUnpauseGame() => _gameIsPaused && _activeBranch.IsPauseMenuBranch();
-
+    
+    private void CancelPressed() => OnCancelPressed?.RaiseEvent(this);
+    
     private bool CanEnterPauseWithNothingSelected() =>
-        (_noActivePopUps && _activeBranch == _activeBranch.MyParentBranch)
-        && _inputScheme.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
-
+        (_noActivePopUps && !_gameIsPaused && _historyTrack.NoHistory) && NothingSelectedAction;
+    
     private bool CanSwitchBranches() => _noActivePopUps && !MouseOnly();
 
     private bool SwitchGroupProcess()
@@ -209,4 +217,5 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
         }
         return false;
     }
+
 }

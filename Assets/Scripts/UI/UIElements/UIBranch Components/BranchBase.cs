@@ -1,20 +1,23 @@
-﻿
-
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IServiceUser
 {
     protected BranchBase(UIBranch branch)
     {
         _myBranch = branch;
+        _myCanvas = _myBranch.MyCanvas;
+        _myCanvasGroup = _myBranch.MyCanvasGroup;
+        _screenData = new ScreenData(_myBranch.ScreenType);
         OnEnable();
     }
     
     protected readonly UIBranch _myBranch;
-    protected readonly ScreenData _screenData = new ScreenData();
+    protected readonly ScreenData _screenData;
     protected bool _inMenu, _canStart, _gameIsPaused, _resolvePopUps;
     protected IHistoryTrack _historyTrack;
-
+    private readonly Canvas _myCanvas;
+    private readonly CanvasGroup _myCanvasGroup;
+    
     //Events
     private static CustomEvent<IOnHomeScreen> SetIsOnHomeScreen { get; } = new CustomEvent<IOnHomeScreen>();
     private static CustomEvent<IClearScreen> DoClearScreen { get; } = new CustomEvent<IClearScreen>();
@@ -25,7 +28,8 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
         OnHomeScreen = onHome;
         SetIsOnHomeScreen?.RaiseEvent(this);
     }
-    protected void InvokeDoClearScreen() => DoClearScreen?.RaiseEvent(this);
+
+    private void InvokeDoClearScreen() => DoClearScreen?.RaiseEvent(this);
     private void SaveResolvePopUps(INoResolvePopUp args) => _resolvePopUps = args.ActiveResolvePopUps;
     private void SaveIfGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     protected virtual void SaveInMenu(IInMenu args) => _inMenu = args.InTheMenu;
@@ -35,8 +39,8 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
         OnHomeScreen = args.OnHomeScreen;
         if (_myBranch.IsHomeScreenBranch() && OnHomeScreen && !_myBranch.CanvasIsEnabled)
         {
-            ActivateBranchCanvas();
-            ActivateBlockRaycast();
+            SetCanvas(ActiveCanvas.Yes);
+            SetBlockRaycast(BlockRaycast.Yes);
         }
     }
     protected virtual void SaveOnStart(IOnStart args) => _canStart = true;
@@ -78,44 +82,39 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
         EventLocator.Unsubscribe<IClearScreen>(ClearBranchForFullscreen);
     }
     
-    public void SubscribeToService()
-    {
-        _historyTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
-    }
-
-
+    public void SubscribeToService() => _historyTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+    
     protected virtual void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
-        _myBranch.MyCanvasGroup.blocksRaycasts = false;
-        _myBranch.MyCanvas.enabled = false;
+        SetBlockRaycast(BlockRaycast.No);
+        SetCanvas(ActiveCanvas.No);
     }
 
     public abstract void SetUpBranch(UIBranch newParentController = null);
     
-    public virtual void MoveBackToThisBranch(UIBranch lastBranch)
-    {
-        if(lastBranch == _myBranch)
-        {
-            _myBranch.MyParentBranch.LastSelected.ThisNodeIsSelected();
-        }    
-    }
-    
-    public void ActivateBranchCanvas() => _myBranch.MyCanvas.enabled = true;
+    public void SetCanvas(ActiveCanvas active) => _myCanvas.enabled = active == ActiveCanvas.Yes;
 
-    public virtual void ActivateBlockRaycast()
+    public virtual void SetBlockRaycast(BlockRaycast active)
     {
         if(!_canStart) return;
-        _myBranch.MyCanvasGroup.blocksRaycasts = _inMenu;
+        if (active == BlockRaycast.Yes)
+        {
+            _myCanvasGroup.blocksRaycasts = _inMenu;
+        }
+        else
+        {
+            _myCanvasGroup.blocksRaycasts = false;
+        }
     }
 
     protected virtual void ClearBranchForFullscreen(IClearScreen args)
     {
         if (args.IgnoreThisBranch == _myBranch || !_myBranch.CanvasIsEnabled) return;
-        _myBranch.MyCanvas.enabled = false;
-        _myBranch.MyCanvasGroup.blocksRaycasts = false;
+        SetCanvas(ActiveCanvas.No);
+        SetBlockRaycast(BlockRaycast.No);
     }
 
-    protected virtual void CanGoToFullscreen()
+    protected void CanGoToFullscreen()
     {
         if (_myBranch.ScreenType != ScreenType.FullScreen) return;
         InvokeDoClearScreen();

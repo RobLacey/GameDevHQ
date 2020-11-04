@@ -1,15 +1,8 @@
-﻿public class ToggleNotLinked : INodeBase, IServiceUser
+﻿public class ToggleNotLinked : NodeBase
 {
-    private readonly UINode _uiNode;
-    private IHistoryTrack _uiHistoryTrack;
+    public ToggleNotLinked(UINode node) : base(node) => _uiNode = node;
 
-    public ToggleNotLinked(UINode node) => _uiNode = node;
-
-    public void Start() => SubscribeToService();
-
-    public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
-
-    public void TurnNodeOnOff()
+    protected override void TurnNodeOnOff()
     {
         if (_uiNode.IsSelected)
         {
@@ -23,7 +16,7 @@
         _uiHistoryTrack.SetSelected(_uiNode);
     }
 
-    public void DeactivateNode() { }
+    public override void DeactivateNode() { }
 
     private void Activate() => _uiNode.SetSelectedStatus(true, _uiNode.DoPress);
 

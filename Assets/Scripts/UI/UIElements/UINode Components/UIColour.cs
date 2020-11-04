@@ -80,29 +80,39 @@ public class UIColour : NodeFunctionBase
 
     private void PointerOverSetUp()
     {
-        if (CanBePressed() || CanBeSelected() && _isSelected)
+        if ((CanBePressed() || CanBeSelected()) && _isSelected)
         {
-            if (CanBeHighlighted())
-            {
-                _tweenImageToColour = SelectedHighlightColour();
-                _tweenTextToColour = SelectedHighlightColour();
-                DoColourChange(_scheme.TweenTime);
-            }
-            else
-            {
-                DoSelected();
-            }
+            SelectedHighlight();
         }
         else
         {
-            if (CanBeHighlighted())
-            {
-                DoHighlighted();
-            }
-            else
-            {
-                DoNormal();
-            }
+            NotSelectedHighlight();
+        }
+    }
+
+    private void SelectedHighlight()
+    {
+        if (CanBeHighlighted())
+        {
+            _tweenImageToColour = SelectedHighlightColour();
+            _tweenTextToColour = SelectedHighlightColour();
+            DoColourChange(_scheme.TweenTime);
+        }
+        else
+        {
+            DoSelected();
+        }
+    }
+
+    private void NotSelectedHighlight()
+    {
+        if (CanBeHighlighted())
+        {
+            DoHighlighted();
+        }
+        else
+        {
+            DoNormal();
         }
     }
 
