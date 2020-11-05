@@ -78,7 +78,7 @@ public class UIToggles : NodeBase
         _isSelected = false;
     }
 
-    protected override void TurnNodeOnOff()
+    public override void TurnNodeOnOff()
     {
         if (_uiNode.IsSelected) return;        
 

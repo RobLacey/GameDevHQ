@@ -4,7 +4,7 @@ public class Standard : NodeBase
 {
     public Standard(UINode uiNode) : base(uiNode) => _uiNode = uiNode;
 
-    protected override void TurnNodeOnOff()
+    public override void TurnNodeOnOff()
     {
         if (_uiNode.IsSelected)
         {

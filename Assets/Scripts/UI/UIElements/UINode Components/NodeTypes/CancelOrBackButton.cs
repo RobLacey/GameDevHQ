@@ -9,6 +9,8 @@
         = new CustomEvent<ICancelButtonActivated>();
     private static CustomEvent<ICancelPopUp> CancelPopUp { get; } 
         = new CustomEvent<ICancelPopUp>();
+    private static CustomEvent<ICancelHoverOver> CancelHoverOver { get; } 
+        = new CustomEvent<ICancelHoverOver>();
 
     public CancelOrBackButton(ICancelButtonActivated node) : base((UINode)node)
     {
@@ -17,11 +19,13 @@
         EscapeKeyType = node.EscapeKeyType;
     }
 
-    //public override void Start() { }
-    
-    protected override void TurnNodeOnOff()
+    public override void TurnNodeOnOff()
     {
-        if (_isPopUp)
+        if (EscapeKeyType == EscapeKey.HoverClose)
+        {
+            CancelHoverOver?.RaiseEvent(this);
+        }
+        else if (_isPopUp)
         {
             CancelPopUp?.RaiseEvent(this);
         }
@@ -29,6 +33,7 @@
         {
             CancelButtonActive?.RaiseEvent(this);
         }
+        _uiNode.DoPress();
     }
 
     public override void DeactivateNode() { }

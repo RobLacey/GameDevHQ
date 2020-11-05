@@ -209,10 +209,11 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
         
         if (_allowKeys && _inMenu)
         {
-            SetAsHighlighted();
+            _nodeBase.OnEnter(false);
         }
         else
         {
+            SetNotHighlighted();
             ThisNodeIsHighLighted();
         }
     }

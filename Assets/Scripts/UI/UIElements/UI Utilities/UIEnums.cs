@@ -41,7 +41,7 @@ public enum EffectType { In, Out, Both }
 
 public enum ToggleGroup { None, TG1, TG2, TG3, TG4, TG5 }
 
-public enum EscapeKey { None, BackOneLevel, BackToHome, GlobalSetting }
+public enum EscapeKey { None, BackOneLevel, BackToHome, GlobalSetting, HoverClose }
 
 public enum ButtonFunction { Standard, ToggleGroup, ToggleNotLinked, HoverToActivate, CancelOrBack }
 

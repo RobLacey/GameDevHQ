@@ -2,6 +2,7 @@
 
 public interface IHistoryTrack : IMonoBehaviourSub
 {
+    UINode ReturnLastSelected { get; }
     bool NoHistory { get; }
     void SetSelected(INode node);
     void BackToHome();

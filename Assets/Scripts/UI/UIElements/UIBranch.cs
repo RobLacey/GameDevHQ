@@ -113,14 +113,40 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
 
     private void Awake()
     {
-        ThisGroupsUiNodes = gameObject.GetComponentsInChildren<UINode>();
+        GetChildNodes();
         MyCanvasGroup = GetComponent<CanvasGroup>();
+        MyCanvasGroup.blocksRaycasts = false;
         _uiTweener = GetComponent<UITweener>();
         MyCanvas = GetComponent<Canvas>();
         Branch = BranchFactory.AssignType(this, _branchType, FindObjectsOfType<UIBranch>());
         MyParentBranch = this;
         SetStartPositions();
         ObserveEvents();
+    }
+
+    private void GetChildNodes()
+    {
+         var listOfChildren = new List<UINode>();
+
+        foreach (var child in gameObject.GetComponentsInChildren<Transform>())
+        {
+            if (CheckIfNestedUIBranch(child)) break;
+            CheckIfChildUINode(listOfChildren, child);
+        }
+        ThisGroupsUiNodes = listOfChildren.ToArray();
+    }
+
+    private bool CheckIfNestedUIBranch(Transform child)
+    {
+        var isBranch = child.gameObject.GetComponent<UIBranch>();
+        return isBranch != null && isBranch != this;
+    }
+
+    private static void CheckIfChildUINode(List<UINode> listOfChildren, Transform child)
+    {
+        var isNode = child.GetComponent<UINode>();
+        if (isNode)
+            listOfChildren.Add(isNode);
     }
 
     private void OnDisable()

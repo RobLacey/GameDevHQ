@@ -2,7 +2,7 @@
 {
     public ToggleNotLinked(UINode node) : base(node) => _uiNode = node;
 
-    protected override void TurnNodeOnOff()
+    public override void TurnNodeOnOff()
     {
         if (_uiNode.IsSelected)
         {

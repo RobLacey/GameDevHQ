@@ -42,7 +42,7 @@ public abstract class NodeBase : IServiceUser, IEventUser
         _uiNode.SetNotHighlighted();
     }
 
-    protected abstract void TurnNodeOnOff();
+    public abstract void TurnNodeOnOff();
 
     public virtual void OnSelected(bool isDragEvent)
     {

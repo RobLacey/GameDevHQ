@@ -20,7 +20,7 @@ public interface IAllowKeys //**
     bool CanAllowKeys { get; }
 } 
 
-public interface ICancelButtonActivated: ICancelPopUp //**
+public interface ICancelButtonActivated: ICancelPopUp, ICancelHoverOver //**
 {
     EscapeKey EscapeKeyType { get; }
 } 
@@ -28,6 +28,7 @@ public interface ICancelPopUp
 {
     UIBranch MyBranch { get; }
 }
+public interface ICancelHoverOver { }
 
 public interface IMenuGameSwitchingPressed { } //**
 

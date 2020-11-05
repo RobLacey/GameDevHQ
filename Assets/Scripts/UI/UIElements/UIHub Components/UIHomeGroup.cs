@@ -72,8 +72,8 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
                 break;
         }
         _lastActiveHomeBranch = _homeGroup[_index];
-        _homeGroup[_index].MoveToBranchWithoutTween();
         _uiHistoryTrack.ReverseAndClearHistory();
+        _homeGroup[_index].MoveToBranchWithoutTween();
     }
 
     private void SetActiveHomeBranch(IActiveBranch args)

@@ -16,7 +16,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
     [ReorderableList] private List<HotKeys> _hotKeySettings;
 
     //Variables
-    private bool _canStart, _inMenu, _gameIsPaused;
+    private bool _canStart, _inMenu, _gameIsPaused, _allowKeys;
     private bool _noActivePopUps = true;
     private bool _onHomeScreen = true;
     private UINode _lastHomeScreenNode;
@@ -63,6 +63,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
     private void SaveGameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveOnHomeScreen (IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
+    private void SaveAllowKeys (IAllowKeys args) => _allowKeys = args.CanAllowKeys;
     public SwitchType SwitchType { get; set; }
     public InputScheme ReturnScheme => _inputScheme;
     public EscapeKey EscapeKeySettings => _activeBranch.EscapeKeySetting;
@@ -102,6 +103,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
         EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
         EventLocator.Subscribe<IInMenu>(SaveInMenu, this);
         EventLocator.Subscribe<INoPopUps>(SaveNoActivePopUps, this);
+        EventLocator.Subscribe<IAllowKeys>(SaveAllowKeys, this);
     }
 
     public void RemoveFromEvents()
@@ -112,6 +114,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
         EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
         EventLocator.Unsubscribe<IInMenu>(SaveInMenu);
         EventLocator.Unsubscribe<INoPopUps>(SaveNoActivePopUps);
+        EventLocator.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
     
     private void OnDisable()
@@ -198,7 +201,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
     private bool CanEnterPauseWithNothingSelected() =>
         (_noActivePopUps && !_gameIsPaused && _historyTrack.NoHistory) && NothingSelectedAction;
     
-    private bool CanSwitchBranches() => _noActivePopUps && !MouseOnly();
+    private bool CanSwitchBranches() => _noActivePopUps && !MouseOnly() && _allowKeys;
 
     private bool SwitchGroupProcess()
     {

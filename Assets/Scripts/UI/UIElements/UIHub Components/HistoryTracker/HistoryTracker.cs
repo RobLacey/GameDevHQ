@@ -31,6 +31,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
     private void SaveIsGamePaused(IGameIsPaused args) => _isPaused = args.GameIsPaused;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void NoPopUps(INoPopUps args) => _noPopUps = args.NoActivePopUps;
+    public UINode ReturnLastSelected => _lastSelected;
     public bool NoHistory => _history.Count == 0;
 
     //Events
@@ -91,7 +92,6 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
             
             AddNode = node.ReturnNode;
             AddANode?.RaiseEvent(this);
-            
             _history.Add(node.ReturnNode);
             _lastSelected = node.ReturnNode;
         }
@@ -142,32 +142,39 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
     
     public void BackOneLevel()
     {
-        DoMoveBackOneLevel(_history.Last());
-        IfLastSelectedIsOnHomeScreen(_history.Last());
-        if(_history.Count > 0) 
+        var lastNode = _history.Last();
+        if(IfLastSelectedIsOnHomeScreen(lastNode)) return;
+        
+        DoMoveBackOneLevel(lastNode);
+        if (_history.Count > 0)
             _lastSelected = _history.Last();
     }
 
-    private static void DoMoveBackOneLevel(INode lastNode)
+    private void DoMoveBackOneLevel(INode lastNode)
     {
         lastNode.DeactivateNode();
         
         if (lastNode.MyBranch.CanvasIsEnabled)
         {
-            lastNode.MyBranch.MoveToBranchWithoutTween();
+            _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, lastNode.MyBranch.MoveToBranchWithoutTween);
         }
         else
         {
-            
+            _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, Temp );
+        }
+
+        void Temp()
+        {
             lastNode.MyBranch.MoveToThisBranch();
         }
     }
 
-    private void IfLastSelectedIsOnHomeScreen(UINode lastNode)
+    private bool IfLastSelectedIsOnHomeScreen(UINode lastNode)
     {
         if (lastNode.MyBranch.IsHomeScreenBranch())
         {
             BackToHome();
+            return true;
         }
         else
         {
@@ -175,15 +182,21 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
             AddANode?.RaiseEvent(this);
 
             _history.Remove(lastNode);
+            return false;
         }
     }
 
     public void BackToHome()
     {
-        if (_history.Count <= 0) return;
-        ReverseAndClearHistory();
-        ActivateBranchOnReturnHome = true;
-        ReturnedToHome.RaiseEvent(this);
+        _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, BackHomeCallBack);
+        
+        void BackHomeCallBack()
+        {
+            if (_history.Count <= 0) return;
+            ReverseAndClearHistory();
+            ActivateBranchOnReturnHome = true;
+            ReturnedToHome.RaiseEvent(this);
+        }
     }
 
     public void ReverseAndClearHistory() => HistoryProcessed(stopWhenInternalBranchReacted: true);
@@ -201,7 +214,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
         }
         AddNode = null;
         AddANode?.RaiseEvent(this);
-
+        
         _history.Clear();
     }
     
@@ -219,14 +232,16 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
 
     public void SetFromHotkey(UIBranch branch, INode parentNode)
     {
-        HomeScreenHotKey(branch);
+        BackToHomeScreenFromHotKey(branch);
         HistoryProcessed(stopWhenInternalBranchReacted: false);
+        
         AddNode = FindHomeScreenRoot(branch);
         AddANode?.RaiseEvent(this);
+        
         _history.Add(FindHomeScreenRoot(branch));
     }
 
-    private void HomeScreenHotKey(UIBranch branch)
+    private void BackToHomeScreenFromHotKey(UIBranch branch)
     {
         if (branch.ScreenType == ScreenType.FullScreen || _onHomScreen) return;
         ActivateBranchOnReturnHome = false;
@@ -256,7 +271,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
         }
         else
         {
-            _history.Last().HasChildBranch.MoveToBranchWithoutTween();
+            _activeBranch.MoveToBranchWithoutTween();
         }
     }
 
@@ -282,7 +297,6 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
         else
         {
             _activeBranch.LastSelected.PlayCancelAudio();
-            Debug.Log(_activeBranch);
             endOfCancelAction?.Invoke();
         }
     }
