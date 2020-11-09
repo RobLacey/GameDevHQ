@@ -7,7 +7,6 @@ public interface INode
     void SetNodeAsActive();
     void DeactivateNode();
     void SetNodeAsSelected_NoEffects();
-    void SetNodeAsNotSelected_NoEffects();
     void ThisNodeIsSelected();
     void ThisNodeIsHighLighted();
     void PlayCancelAudio();

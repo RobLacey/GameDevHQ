@@ -2,13 +2,13 @@
 
 public class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, IPunchShakeTween
 {
-    public UISizeAndPosition(ISizeAndPositionSettings settings, UiActions uiActions)
+    public UISizeAndPosition(ISizeAndPositionSettings settings, IUiEvents uiEvents)
     {
         _scheme = settings.Scheme;
         CanActivate = true;
         if(settings.RectTransform != null)
             MyRect = settings.RectTransform;
-        OnAwake(uiActions);
+        OnAwake(uiEvents);
     }
 
     //Variables
@@ -28,12 +28,12 @@ public class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, IPunchSh
     protected override bool FunctionNotActive() => !CanActivate && !_scheme.NotSet;
 
     //Main
-    protected sealed override void OnAwake(UiActions uiActions)
+    protected sealed override void OnAwake(IUiEvents events)
     {
         if(!_scheme || MyRect is null) return;
-        base.OnAwake(uiActions);
+        base.OnAwake(events);
         _scheme.OnAwake();
-        _gameObjectID = uiActions.InstanceId.ToString();
+        _gameObjectID = events.MasterNodeID.ToString();
         SetVariables();
     }
 

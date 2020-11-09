@@ -17,11 +17,11 @@ public class SizeAndPositionSettings : ISizeAndPositionSettings
     public SizeAndPositionScheme Scheme => _scheme;
     public RectTransform RectTransform => _rectTransforms;
 
-    public NodeFunctionBase SetUp(UiActions uiActions, Setting functions)
+    public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
         if ((functions & Setting.SizeAndPosition) != 0 && Scheme != null)
         {
-            return new UISizeAndPosition(this, uiActions);
+            return new UISizeAndPosition(this, uiNodeEvents);
         }
         return new NullFunction();
     }

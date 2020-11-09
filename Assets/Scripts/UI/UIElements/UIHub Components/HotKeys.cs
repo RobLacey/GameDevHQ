@@ -17,9 +17,15 @@ public class HotKeys : IServiceUser, IEventUser, IHotKeyPressed
     private InputScheme _inputScheme;
     private IHistoryTrack _uiHistoryTrack;
     
+    //Events
+    private static CustomEvent<IHotKeyPressed> HotKeyPressed { get; } = new CustomEvent<IHotKeyPressed>();
+    
     //Properties
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
+    public UINode ParentNode => _parentNode.ReturnNode;
+    public UIBranch MyBranch => _myBranch;
     
+    //Main
     public void OnAwake(InputScheme inputScheme)
     {
         _inputScheme = inputScheme;
@@ -32,11 +38,7 @@ public class HotKeys : IServiceUser, IEventUser, IHotKeyPressed
 
     public void RemoveFromEvents() => EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
 
-    public void SubscribeToService()
-    {
-        _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
-       // return _uiHistoryTrack is null;
-    }
+    public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
 
     private void IsAllowedType()
     {
@@ -83,8 +85,8 @@ public class HotKeys : IServiceUser, IEventUser, IHotKeyPressed
     private void StartThisHotKeyBranch()
     {
         SetHotKeyAsSelectedActions();
-        _uiHistoryTrack.SetFromHotkey(_myBranch, _parentNode);
-        _myBranch.MoveToThisBranch();
+        _uiHistoryTrack.SetFromHotkey(_myBranch);
+        HotKeyPressed?.RaiseEvent(this);
     }
 
     private void SetHotKeyAsSelectedActions()

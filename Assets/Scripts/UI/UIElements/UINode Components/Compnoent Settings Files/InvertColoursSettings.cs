@@ -34,11 +34,11 @@ public class InvertColoursSettings : IInvertSettings
     public Image Image => _image;
     public Color Colour => _invertedColour;
 
-    public NodeFunctionBase SetUp(UiActions uiActions, Setting functions)
+    public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
         if ((functions & Setting.InvertColourCorrection) != 0)
         {
-            return new UIInvertColours(this, uiActions);
+            return new UIInvertColours(this, uiNodeEvents);
         }
         return new NullFunction();
     }

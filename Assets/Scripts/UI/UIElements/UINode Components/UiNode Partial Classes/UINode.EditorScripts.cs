@@ -7,7 +7,8 @@ public partial class UINode
     private bool SetIfCanNavigate() => IsAToggle() || IsCancelOrBack;
     private bool IsAToggle() => _buttonFunction == ButtonFunction.ToggleGroup
                                 || _buttonFunction == ButtonFunction.ToggleNotLinked;
-    public bool IsHoverToActivate => _buttonFunction == ButtonFunction.HoverToActivate;
+    private bool IsHoverToActivate => _buttonFunction == ButtonFunction.HoverToActivate;
+
     private bool UseNavigation()
     {
         _navigation.CantNavigate = SetIfCanNavigate();

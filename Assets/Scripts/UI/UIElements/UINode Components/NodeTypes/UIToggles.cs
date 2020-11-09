@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class UIToggles : NodeBase
 {
@@ -53,13 +54,13 @@ public class UIToggles : NodeBase
 
     public override void DeactivateNode() { }
 
-    private void SetUpToggleGroup(UINode[] thisGroupsUINodes)
+    private void SetUpToggleGroup(INode[] thisGroupsUINodes)
     {
         foreach (var node in thisGroupsUINodes)
         {
-            if (!node.IsToggleGroup || node == _uiNode) continue;
-            if (_groupID != node.ToggleGroupId) continue;
-            _toggleGroupMembers.Add(node);
+            if (!node.ReturnNode.IsToggleGroup || node.ReturnNode == _uiNode) continue;
+            if (_groupID != node.ReturnNode.ToggleGroupId) continue;
+            _toggleGroupMembers.Add(node.ReturnNode);
         }
     }
     
@@ -78,12 +79,13 @@ public class UIToggles : NodeBase
         _isSelected = false;
     }
 
-    public override void TurnNodeOnOff()
+    protected override void TurnNodeOnOff()
     {
         if (_uiNode.IsSelected) return;        
 
         TurnOffOtherTogglesInGroup();
         Activate();
+        _uiNodeEvents.DoPlaySelectedAudio();
         _uiHistoryTrack.SetSelected(_uiNode);
     }
 

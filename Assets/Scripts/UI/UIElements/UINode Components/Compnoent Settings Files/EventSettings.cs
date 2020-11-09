@@ -42,11 +42,11 @@ public class EventSettings : IEventSetttings
     public OnToggleEvent ToggleEvent => _selectClickEvents._onToggleEvent;
     public OnDisabledEvent DisableEvent => _selectClickEvents._onDisable;
     
-    public NodeFunctionBase SetUp(UiActions uiActions, Setting functions)
+    public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
         if ((functions & Setting.Events) != 0)
         {
-            return new UIEvents(this, uiActions);
+            return new UIEvents(this, uiNodeEvents);
         }
         return new NullFunction();
     }

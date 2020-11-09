@@ -12,11 +12,11 @@ public class AudioSettings : IAudioSettings
     [SerializeField] private AudioScheme _audioScheme;
 
     public AudioScheme AudioScheme => _audioScheme;
-    public NodeFunctionBase SetUp(UiActions uiActions, Setting functions)
+    public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
         if ((functions & Setting.Audio) != 0)
         {
-            return new UIAudio(this, uiActions);
+            return new UIAudio(this, uiNodeEvents);
         }
         return new NullFunction();
     }

@@ -5,13 +5,13 @@ using DG.Tweening;
 
 public class UIColour : NodeFunctionBase
 {
-    public UIColour(IColourSettings settings, UiActions uiActions)
+    public UIColour(IColourSettings settings, IUiEvents uiEvents)
     {
         _scheme = settings.ColourScheme;
         _textElements = settings.TextElement;
         _imageElements = settings.ImageElement;
         CanActivate = true;
-        OnAwake(uiActions);
+        OnAwake(uiEvents);
     }
 
     //Variables
@@ -33,10 +33,10 @@ public class UIColour : NodeFunctionBase
     protected override bool CanBeHighlighted() => (_scheme.ColourSettings & EventType.Highlighted) !=0;
     private bool CanBeSelected() => (_scheme.ColourSettings & EventType.Selected) != 0;
 
-    protected sealed override void OnAwake(UiActions uiActions)
+    protected sealed override void OnAwake(IUiEvents uiEvents)
     {
-        base.OnAwake(uiActions);
-        _id = uiActions.InstanceId;
+        base.OnAwake(uiEvents);
+        _id = uiEvents.MasterNodeID;
         CheckForSetUpError();
         SetUpCachedColours();
     }

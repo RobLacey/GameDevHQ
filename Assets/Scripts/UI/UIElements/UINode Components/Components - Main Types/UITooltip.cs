@@ -5,14 +5,14 @@ using UnityEngine.UI;
 
 public class UITooltip : NodeFunctionBase,  IServiceUser
 {
-    public UITooltip(ToolTipSettings settings, UiActions uiActions)
+    public UITooltip(ToolTipSettings settings, IUiEvents uiEvents)
     {
         _mainCanvas = settings.MainCanvas;
         _uiCamera = settings.UiCamera;
         _scheme = settings.Scheme;
         _listOfTooltips = settings.ToolTips;
         CanActivate = true;
-        OnAwake(uiActions);
+        OnAwake(uiEvents);
     }
 
     //Variables
@@ -49,10 +49,10 @@ public class UITooltip : NodeFunctionBase,  IServiceUser
     
     //TODO Change size calculations to work from camera size rather than canvas so still works when aspect changes
 
-    protected sealed override void OnAwake(UiActions uiActions) 
+    protected sealed override void OnAwake(IUiEvents uiEvents) 
     {
-        base.OnAwake(uiActions);
-        SetUp(uiActions.Node.GetComponent<RectTransform>());
+        base.OnAwake(uiEvents);
+        SetUp(uiEvents.ReturnMasterNode.GetComponent<RectTransform>());
         SubscribeToService();
     }
 

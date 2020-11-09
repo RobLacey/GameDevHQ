@@ -3,8 +3,7 @@
     private readonly bool _isPopUp;
     
     public EscapeKey EscapeKeyType { get; }
-    public UIBranch MyBranch { get; }
-
+    
     private static CustomEvent<ICancelButtonActivated> CancelButtonActive { get; } 
         = new CustomEvent<ICancelButtonActivated>();
     private static CustomEvent<ICancelPopUp> CancelPopUp { get; } 
@@ -19,7 +18,7 @@
         EscapeKeyType = node.EscapeKeyType;
     }
 
-    public override void TurnNodeOnOff()
+    protected override void TurnNodeOnOff()
     {
         if (EscapeKeyType == EscapeKey.HoverClose)
         {
@@ -33,6 +32,7 @@
         {
             CancelButtonActive?.RaiseEvent(this);
         }
+        //_uiActions._playCancelAudio?.Invoke();
         _uiNode.DoPress();
     }
 

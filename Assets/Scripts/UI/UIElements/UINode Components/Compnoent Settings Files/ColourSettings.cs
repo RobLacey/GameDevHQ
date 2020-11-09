@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public interface IComponentSettings
 {
-    NodeFunctionBase SetUp(UiActions uiActions, Setting functions);
+    NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions);
 }
 
 public interface IColourSettings : IComponentSettings
@@ -27,11 +27,11 @@ public class ColourSettings: IColourSettings
     public Text TextElement => _textElements;
     public Image[] ImageElement => _imageElements;
 
-    public NodeFunctionBase SetUp(UiActions uiActions, Setting functions)
+    public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
         if ((functions & Setting.Colours) != 0 && _scheme != null)
         {
-            return new UIColour(this, uiActions);
+            return new UIColour(this, uiNodeEvents);
         }
         return new NullFunction();
     }

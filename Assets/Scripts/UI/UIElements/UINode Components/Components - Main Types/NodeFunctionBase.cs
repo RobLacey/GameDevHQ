@@ -3,7 +3,7 @@
 public abstract class NodeFunctionBase : IEventUser
 {
     protected bool _pointerOver, _isSelected, _isDisabled;
-    private UiActions _uiActions;
+    private IUiEvents _uiEvents;
 
     //Properties
     protected bool CanActivate { get; set; }
@@ -12,14 +12,14 @@ public abstract class NodeFunctionBase : IEventUser
     protected abstract bool CanBePressed();
     protected abstract bool FunctionNotActive();
     
-    protected virtual void OnAwake(UiActions uiActions)
+    protected virtual void OnAwake(IUiEvents events)
     {
-        _uiActions = uiActions;
-        _uiActions._whenPointerOver += SavePointerStatus;
-        _uiActions._isSelected += SaveIsSelected;
-        _uiActions._isPressed += ProcessPress;
-        _uiActions._isDisabled += IsDisabled;
-        _uiActions._onMove += AxisMoveDirection;
+        _uiEvents = events;
+        _uiEvents.WhenPointerOver += SavePointerStatus;
+        _uiEvents.IsSelected += SaveIsSelected;
+        _uiEvents.IsPressed += ProcessPress;
+        _uiEvents.IsDisabled += IsDisabled;
+        _uiEvents.OnMove += AxisMoveDirection;
         ObserveEvents();
     }
     
@@ -30,12 +30,12 @@ public abstract class NodeFunctionBase : IEventUser
 
     public virtual void OnDisable()
     {
-        if(_uiActions is null) return;
-        _uiActions._whenPointerOver -= SavePointerStatus;
-        _uiActions._isSelected -= SaveIsSelected;
-        _uiActions._isPressed -= ProcessPress;
-        _uiActions._isDisabled -= IsDisabled;
-        _uiActions._onMove -= AxisMoveDirection;
+        if(_uiEvents is null) return;
+        _uiEvents.WhenPointerOver -= SavePointerStatus;
+        _uiEvents.IsSelected -= SaveIsSelected;
+        _uiEvents.IsPressed -= ProcessPress;
+        _uiEvents.IsDisabled -= IsDisabled;
+        _uiEvents.OnMove -= AxisMoveDirection;
     }
     protected abstract void SavePointerStatus(bool pointerOver);
 

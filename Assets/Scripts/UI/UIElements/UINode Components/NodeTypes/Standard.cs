@@ -1,19 +1,22 @@
-﻿using UnityEngine;
-
-public class Standard : NodeBase
+﻿public class Standard : NodeBase
 {
     public Standard(UINode uiNode) : base(uiNode) => _uiNode = uiNode;
 
-    public override void TurnNodeOnOff()
+    protected override void TurnNodeOnOff()
     {
         if (_uiNode.IsSelected)
         {
             Deactivate();
-            _uiNode.PlayCancelAudio();
+            NodeActivated = false;
+            ChildIsActive?.RaiseEvent(this);
+            _uiNodeEvents.DoPlayCancelAudio();
         }
         else
         {
             Activate();
+            NodeActivated = true;
+            ChildIsActive?.RaiseEvent(this);
+            _uiNodeEvents.DoPlaySelectedAudio();
         }
         _uiHistoryTrack.SetSelected(_uiNode);
     }

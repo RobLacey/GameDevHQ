@@ -1,32 +1,47 @@
-﻿
-public static class BranchFactory
+﻿public class BranchFactory
 {
+    private UIBranch _uiBranch;
+    private UIBranch[] _allBranches;
 
-    public static BranchBase AssignType(UIBranch branch, BranchType branchType, UIBranch[] allBranches)
+    public static BranchFactory Factory { get; } = new BranchFactory();
+
+    public BranchFactory PassThisBranch(UIBranch branch)
+    {
+        _uiBranch = branch;
+        return this;
+    }
+
+    public BranchFactory PassAllBranches(UIBranch[] allBranches)
+    {
+        _allBranches = allBranches;
+        return this;
+    }
+
+    public BranchBase CreateType(BranchType branchType)
     {
         switch (branchType)
         {
             case BranchType.HomeScreen:
-                CreateHomeScreenBranch(branch);
-                return new HomeScreenBranchBase(branch);
+                CreateHomeScreenBranch(_uiBranch);
+                return new HomeScreenBranchBase(_uiBranch);
             case BranchType.Standard:
-                CreateStandardBranch(branch);
-                return new StandardBranchBase(branch);
+                CreateStandardBranch(_uiBranch);
+                return new StandardBranchBase(_uiBranch);
             case BranchType.ResolvePopUp:
-                CreateResolvePopUp(branch);
-                return new ResolvePopUp(branch, allBranches);
+                CreateResolvePopUp(_uiBranch);
+                return new ResolvePopUp(_uiBranch, _allBranches);
             case BranchType.OptionalPopUp:
-                CreateOptionalPopUp(branch);
-                return new OptionalPopUp(branch, allBranches);
+                CreateOptionalPopUp(_uiBranch);
+                return new OptionalPopUp(_uiBranch, _allBranches);
              case BranchType.TimedPopUp:
-                 CreateTimedPopUp(branch);
-                 return new Timed(branch);
+                 CreateTimedPopUp(_uiBranch);
+                 return new Timed(_uiBranch);
             case BranchType.PauseMenu:
-                CreatePauseMenu(branch);
-                return new PauseMenu(branch, allBranches);
+                CreatePauseMenu(_uiBranch);
+                return new PauseMenu(_uiBranch, _allBranches);
             case BranchType.Internal:
-                CreateInternal(branch);
-                return new StandardBranchBase(branch);
+                CreateInternal(_uiBranch);
+                return new StandardBranchBase(_uiBranch);
         }
 
         return null;

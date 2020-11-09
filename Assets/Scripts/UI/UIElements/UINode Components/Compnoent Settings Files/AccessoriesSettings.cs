@@ -24,11 +24,11 @@ public class AccessoriesSettings : IAccessoriesSettings
     public Outline[] OutLineList => _outlinesToUse;
     public Shadow[] ShadowList => _dropShadowsToUse;
     
-    public NodeFunctionBase SetUp(UiActions uiActions, Setting functions)
+    public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
         if ((functions & Setting.Accessories) != 0)
         {
-            return new UIAccessories(this, uiActions);
+            return new UIAccessories(this, uiNodeEvents);
         }
         return new NullFunction();
     }

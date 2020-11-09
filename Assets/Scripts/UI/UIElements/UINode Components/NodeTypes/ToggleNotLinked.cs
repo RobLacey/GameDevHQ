@@ -2,16 +2,17 @@
 {
     public ToggleNotLinked(UINode node) : base(node) => _uiNode = node;
 
-    public override void TurnNodeOnOff()
+    protected override void TurnNodeOnOff()
     {
         if (_uiNode.IsSelected)
         {
             Deactivate();
-            _uiNode.PlayCancelAudio();
+            _uiNodeEvents.DoPlayCancelAudio();
         }
         else
         {
             Activate();
+            _uiNodeEvents.DoPlaySelectedAudio();
         }
         _uiHistoryTrack.SetSelected(_uiNode);
     }

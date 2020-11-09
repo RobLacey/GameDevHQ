@@ -29,6 +29,7 @@ public interface ICancelPopUp
     UIBranch MyBranch { get; }
 }
 public interface ICancelHoverOver { }
+public interface ICancelHoverOverButton { }
 
 public interface IMenuGameSwitchingPressed { } //**
 
@@ -98,5 +99,16 @@ public interface IClearScreen //**
     UIBranch IgnoreThisBranch { get; }
 }
 
-public interface IHotKeyPressed { }
+public interface IHotKeyPressed
+{
+    UINode ParentNode { get; }
+    UIBranch MyBranch { get; }
+}
+
+public interface IChildIsActive
+{
+    UIBranch MyBranch { get; }
+    bool NodeActivated { get; }
+}
+
 

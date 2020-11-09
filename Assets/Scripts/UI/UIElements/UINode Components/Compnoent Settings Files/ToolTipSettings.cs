@@ -32,11 +32,11 @@ public class ToolTipSettings : ITooltipSettings
     public ToolTipScheme Scheme => _scheme;
     public LayoutGroup[] ToolTips => _listOfTooltips;
 
-    public NodeFunctionBase SetUp(UiActions uiActions, Setting functions)
+    public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
         if ((functions & Setting.TooplTip) != 0)
         {
-            return new UITooltip(this, uiActions);
+            return new UITooltip(this, uiNodeEvents);
         }
         return new NullFunction();
     }

@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public interface ITestList
 {
     UINode AddNode { get; }
 }
 
-public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestList
+public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestList, ICancelHoverOverButton
 {
     public HistoryTracker(EscapeKey globalCancelAction)
     {
@@ -31,11 +30,12 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
     private void SaveIsGamePaused(IGameIsPaused args) => _isPaused = args.GameIsPaused;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void NoPopUps(INoPopUps args) => _noPopUps = args.NoActivePopUps;
-    public UINode ReturnLastSelected => _lastSelected;
     public bool NoHistory => _history.Count == 0;
 
     //Events
     private static CustomEvent<IReturnToHome> ReturnedToHome { get; } = new CustomEvent<IReturnToHome>();
+    private static CustomEvent<ICancelHoverOverButton> CancelHoverToActivate { get; } 
+        = new CustomEvent<ICancelHoverOverButton>();
     private static CustomEvent<ITestList> AddANode { get; } = new CustomEvent<ITestList>();
     
     public void ObserveEvents()
@@ -171,7 +171,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
 
     private bool IfLastSelectedIsOnHomeScreen(UINode lastNode)
     {
-        if (lastNode.MyBranch.IsHomeScreenBranch())
+        if (lastNode.MyBranch.IsHomeScreenBranch() && !_onHomScreen)
         {
             BackToHome();
             return true;
@@ -198,6 +198,8 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
             ReturnedToHome.RaiseEvent(this);
         }
     }
+    
+    public void DoCancelHoverToActivate() => CancelHoverToActivate?.RaiseEvent(this);
 
     public void ReverseAndClearHistory() => HistoryProcessed(stopWhenInternalBranchReacted: true);
 
@@ -230,7 +232,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
         return true;
     }
 
-    public void SetFromHotkey(UIBranch branch, INode parentNode)
+    public void SetFromHotkey(UIBranch branch)
     {
         BackToHomeScreenFromHotKey(branch);
         HistoryProcessed(stopWhenInternalBranchReacted: false);
@@ -296,7 +298,6 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
         }
         else
         {
-            _activeBranch.LastSelected.PlayCancelAudio();
             endOfCancelAction?.Invoke();
         }
     }
@@ -306,7 +307,6 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IReturnToHome, ITestLis
     private void HandlePopUps(UIBranch popUpToCancel)
     {
         if(popUpToCancel.EscapeKeySetting == EscapeKey.None) return;
-        popUpToCancel.LastSelected.PlayCancelAudio();
         _popUpController.RemoveNextPopUp(popUpToCancel);
         popUpToCancel.StartBranchExitProcess(OutTweenType.Cancel, EndOfTweenCallback);
     }

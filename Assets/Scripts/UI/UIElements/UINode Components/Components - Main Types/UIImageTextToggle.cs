@@ -2,7 +2,7 @@
 
 public class UIImageTextToggle : NodeFunctionBase
 {
-    public UIImageTextToggle(SwapImageOrTextSettings settings, UiActions uiActions)
+    public UIImageTextToggle(SwapImageOrTextSettings settings, IUiEvents uiEvents)
     {
         _changeWhen = settings.ChangeWhen;
         _toggleIsOff = settings.ToggleOff;
@@ -10,7 +10,7 @@ public class UIImageTextToggle : NodeFunctionBase
         _textToSwap = settings.TextToSwap;
         _changeTextToo = settings.ChangeTextToo;
         CanActivate = CacheAndCheckForStartingUIElements();
-        OnAwake(uiActions);
+        OnAwake(uiEvents);
     }
 
     //variables
@@ -27,9 +27,9 @@ public class UIImageTextToggle : NodeFunctionBase
     protected override bool FunctionNotActive() => !CanActivate;
     private bool ToggleOnNewControls => _changeWhen == ChangeWhen.OnControlChanged;
 
-    protected sealed override void OnAwake(UiActions uiActions)
+    protected sealed override void OnAwake(IUiEvents uiEvents)
     {
-        base.OnAwake(uiActions);
+        base.OnAwake(uiEvents);
         CycleToggle(_isSelected);
     }
 

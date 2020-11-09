@@ -29,11 +29,11 @@ public class SwapImageOrTextSettings : ISwapImageOrTextSettings
     public Text TextToSwap => _textToSwap;
     public string ChangeTextToo => _changeTextToo;
 
-    public NodeFunctionBase SetUp(UiActions uiActions, Setting functions)
+    public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
         if ((functions & Setting.SwapImageOrText) != 0)
         {
-            return new UIImageTextToggle(this, uiActions);
+            return new UIImageTextToggle(this, uiNodeEvents);
         }
         return new NullFunction();
     }

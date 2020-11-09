@@ -66,9 +66,9 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     private EventSettings _events;
 
     //Variables
-    private bool _inMenu, _allowKeys;
+    private bool _inMenu, _allowKeys, _childIsMoving;
     private INode _lastHighlighted;
-    private UiActions _uiActions;
+    private IUiEvents _uiNodeEvents;
     private IDisable _disable;
     private NodeBase _nodeBase;
     private readonly List<NodeFunctionBase> _activeFunctions = new List<NodeFunctionBase>();
@@ -97,6 +97,7 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     public bool StartAsSelected => _startAsSelected;
     public UINavigation Navigation => _navigation.Instance;
     public bool CloseHooverOnExit => _closeHoverOnExit;
+    public IUiEvents ReturnUINodeEvents => _uiNodeEvents;
 
     private void SaveInMenuOrInGame(IInMenu args)
     {
@@ -140,20 +141,20 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     public void DisableNode()
     {
         _disable.IsDisabled = true;
-        _uiActions._isDisabled?.Invoke(_disable.IsDisabled);
+        _uiNodeEvents.DoIsDisabled(_disable.IsDisabled);
     }
     // ReSharper disable once UnusedMember.Global - Assigned in editor to Enable Object
     public void EnableNode()
     {
         _disable.IsDisabled = false;
-        _uiActions._isDisabled?.Invoke(_disable.IsDisabled);
+        _uiNodeEvents.DoIsDisabled(_disable.IsDisabled);
     }
 
     //Main
     private void Awake()
     {
         MyBranch = GetComponentInParent<UIBranch>();
-        _uiActions = new UiActions(gameObject.GetInstanceID(), this);
+        _uiNodeEvents = new UiEvents(gameObject.GetInstanceID(), this);
         StartNodeFactory();
         SetUpUiFunctions();
         ObserveEvents();
@@ -167,15 +168,15 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
 
     private void SetUpUiFunctions()
     {
-        _activeFunctions.Add(_coloursTest.SetUp(_uiActions, _enabledFunctions));
-        _activeFunctions.Add(_events.SetUp(_uiActions, _enabledFunctions));
-        _activeFunctions.Add(_accessories.SetUp(_uiActions, _enabledFunctions));
-        _activeFunctions.Add(_invertColourCorrection.SetUp(_uiActions, _enabledFunctions));
-        _activeFunctions.Add(_swapImageOrText.SetUp(_uiActions, _enabledFunctions));
-        _activeFunctions.Add(_sizeAndPos.SetUp(_uiActions, _enabledFunctions));
-        _activeFunctions.Add(_tooltips.SetUp(_uiActions, _enabledFunctions));
-        _activeFunctions.Add(_navigation.SetUp(_uiActions, _enabledFunctions));
-        _activeFunctions.Add(_audio.SetUp(_uiActions, _enabledFunctions));
+        _activeFunctions.Add(_coloursTest.SetUp(_uiNodeEvents, _enabledFunctions));
+        _activeFunctions.Add(_events.SetUp(_uiNodeEvents, _enabledFunctions));
+        _activeFunctions.Add(_accessories.SetUp(_uiNodeEvents, _enabledFunctions));
+        _activeFunctions.Add(_invertColourCorrection.SetUp(_uiNodeEvents, _enabledFunctions));
+        _activeFunctions.Add(_swapImageOrText.SetUp(_uiNodeEvents, _enabledFunctions));
+        _activeFunctions.Add(_sizeAndPos.SetUp(_uiNodeEvents, _enabledFunctions));
+        _activeFunctions.Add(_tooltips.SetUp(_uiNodeEvents, _enabledFunctions));
+        _activeFunctions.Add(_navigation.SetUp(_uiNodeEvents, _enabledFunctions));
+        _activeFunctions.Add(_audio.SetUp(_uiNodeEvents, _enabledFunctions));
     }
 
     public void ObserveEvents()
@@ -217,10 +218,10 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
             ThisNodeIsHighLighted();
         }
     }
-    
-    public void DoPress() => _uiActions._isPressed?.Invoke();
 
-    public void PlayCancelAudio() => _uiActions._canPlayCancelAudio?.Invoke();
+    public void DoPress() => _uiNodeEvents.DoIsPressed();
+
+    public void PlayCancelAudio() => _uiNodeEvents.DoPlayCancelAudio();
 
     public void DeactivateNode() => _nodeBase.DeactivateNode();
 
@@ -228,14 +229,14 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     {
         if (_disable.IsDisabled) return;
         _nodeBase.PointerOverNode = true;
-        _uiActions._whenPointerOver?.Invoke(_nodeBase.PointerOverNode);
+        _uiNodeEvents.DoWhenPointerOver(_nodeBase.PointerOverNode);
         ThisNodeIsHighLighted();
     }
 
     public void SetNotHighlighted()
     {
         _nodeBase.PointerOverNode = false;
-        _uiActions._whenPointerOver?.Invoke(_nodeBase.PointerOverNode);
+        _uiNodeEvents.DoWhenPointerOver(_nodeBase.PointerOverNode);
     } 
 
     public void SetNodeAsSelected_NoEffects() => SetSelectedStatus(true, SetNotHighlighted);
@@ -245,7 +246,7 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     public void SetSelectedStatus(bool isSelected, Action endAction)
     {
         IsSelected = isSelected;
-        _uiActions._isSelected?.Invoke(IsSelected);
+        _uiNodeEvents.DoIsSelected(IsSelected);
         endAction.Invoke();
     }
     
@@ -276,7 +277,7 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
 
     public void OnMove(AxisEventData eventData) => DoMoveToNextNode(eventData.moveDir);
 
-    private void DoMoveToNextNode(MoveDirection moveDirection) => _uiActions._onMove?.Invoke(moveDirection);
+    private void DoMoveToNextNode(MoveDirection moveDirection) => _uiNodeEvents.DoOnMove(moveDirection);
 
     public void CheckIfMoveAllowed(MoveDirection moveDirection)
     {

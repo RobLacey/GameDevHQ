@@ -3,14 +3,14 @@ using UnityEngine.UI;
 
 public class UIInvertColours : NodeFunctionBase
 {
-    public UIInvertColours(IInvertSettings settings, UiActions uiActions)
+    public UIInvertColours(IInvertSettings settings, IUiEvents uiEvents)
     {
         _activateWhen = settings.ActivateWhen;
         _text = settings.Text;
         _image = settings.Image;
         _invertedColour = settings.Colour;
         CanActivate = true;
-        OnAwake(uiActions);
+        OnAwake(uiEvents);
     }
 
     //Variables
@@ -28,9 +28,9 @@ public class UIInvertColours : NodeFunctionBase
     protected override bool CanBeHighlighted() => (_activateWhen & ActivateWhen.OnHighlighted) != 0;
     protected override bool CanBePressed() => (_activateWhen & ActivateWhen.OnSelected) != 0;
 
-    protected sealed override void OnAwake(UiActions uiActions)
+    protected sealed override void OnAwake(IUiEvents events)
     {
-        base.OnAwake(uiActions);
+        base.OnAwake(events);
         SetInverseColourSettings();
     }
 

@@ -2,13 +2,13 @@
 
 public interface IHistoryTrack : IMonoBehaviourSub
 {
-    UINode ReturnLastSelected { get; }
+    void DoCancelHoverToActivate();
     bool NoHistory { get; }
     void SetSelected(INode node);
     void BackToHome();
     void BackOneLevel();
     void CloseAllChildNodesAfterPoint(INode newNode);
-    void SetFromHotkey(UIBranch branch, INode parentNode);
+    void SetFromHotkey(UIBranch branch);
     void ReverseAndClearHistory();
     void MoveToLastBranchInHistory();
     void CancelMove(Action endOfCancelAction);

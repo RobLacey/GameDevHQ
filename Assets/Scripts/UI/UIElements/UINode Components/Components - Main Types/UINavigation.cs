@@ -2,7 +2,7 @@
 
 public class UINavigation : NodeFunctionBase, IServiceUser
 {
-    public UINavigation(INavigationSettings settings, UiActions uiActions)
+    public UINavigation(INavigationSettings settings, IUiEvents uiEvents)
     {
         _childBranch = settings.ChildBranch;
         _setNavigation = settings.NavType;
@@ -11,11 +11,11 @@ public class UINavigation : NodeFunctionBase, IServiceUser
         _left = settings.Left;
         _right = settings.Right;
         CanActivate = true;
-        OnAwake(uiActions);
+        OnAwake(uiEvents);
     }
 
     //Variables
-    private UIBranch _childBranch;
+    private readonly UIBranch _childBranch;
     private readonly NavigationType _setNavigation;
     private readonly UINode _up;
     private readonly UINode _down;
@@ -31,10 +31,10 @@ public class UINavigation : NodeFunctionBase, IServiceUser
     protected override bool FunctionNotActive() => !CanActivate;
     protected override void SavePointerStatus(bool pointerOver) { }
 
-    protected sealed override void OnAwake(UiActions uiActions)
+    protected sealed override void OnAwake(IUiEvents events)
     {
-        base.OnAwake(uiActions);
-        _myNode = uiActions.Node;
+        base.OnAwake(events);
+        _myNode = events.ReturnMasterNode;
         _myBranch = _myNode.MyBranch;
         SubscribeToService();
     }

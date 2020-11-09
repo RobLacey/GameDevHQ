@@ -1,6 +1,6 @@
 ﻿public class NullFunction : NodeFunctionBase
 {
-    protected override void OnAwake(UiActions uiActions) { }
+    protected override void OnAwake(IUiEvents events) { }
     public override void OnDisable() { }
     protected override bool CanBeHighlighted() { return false; }
     protected override bool CanBePressed() { return false; }

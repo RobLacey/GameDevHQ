@@ -1,18 +1,26 @@
 ﻿
-public abstract class NodeBase : IServiceUser, IEventUser
+public abstract class NodeBase : IServiceUser, IEventUser, IChildIsActive
 {
     protected NodeBase(UINode node)
     {
         _uiNode = node;
+        _uiNodeEvents = _uiNode.ReturnUINodeEvents;
+        MyBranch = _uiNode.MyBranch;
         SubscribeToService();
     }
     
     //Variables
     protected UINode _uiNode;
+    protected readonly IUiEvents _uiNodeEvents;
     protected IHistoryTrack _uiHistoryTrack;
-    
+    public UIBranch MyBranch { get; protected set; }
+
+    public bool NodeActivated { get; protected set; }
+
     //Properties
     public bool PointerOverNode { get; set; }
+
+    protected static CustomEvent<IChildIsActive> ChildIsActive { get; } = new CustomEvent<IChildIsActive>();
     
     public virtual void ObserveEvents() => EventLocator.Subscribe<ISwitchGroupPressed>(HomeGroupChanged, this);
 
@@ -33,6 +41,7 @@ public abstract class NodeBase : IServiceUser, IEventUser
         if(isDragEvent) return;
         PointerOverNode = true;
         _uiNode.SetAsHighlighted();
+        _uiNodeEvents.DoPlayHighlightedAudio();
     }
 
     public virtual void OnExit(bool isDragEvent)
@@ -42,7 +51,7 @@ public abstract class NodeBase : IServiceUser, IEventUser
         _uiNode.SetNotHighlighted();
     }
 
-    public abstract void TurnNodeOnOff();
+    protected abstract void TurnNodeOnOff();
 
     public virtual void OnSelected(bool isDragEvent)
     {

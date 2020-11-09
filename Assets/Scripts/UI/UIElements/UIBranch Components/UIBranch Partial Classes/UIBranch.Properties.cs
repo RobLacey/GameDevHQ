@@ -19,7 +19,7 @@ public partial class UIBranch
     public UINode DefaultStartOnThisNode => _startOnThisNode;
     private INode LastHighlighted { get; set; }
     public INode LastSelected { get; private set; }
-    public UINode[] ThisGroupsUiNodes { get; private set; }
+    public INode[] ThisGroupsUiNodes { get; private set; }
     public Canvas MyCanvas { get; private set; } 
     public CanvasGroup MyCanvasGroup { get; private set; }
     public BranchBase Branch { get; private set; }

@@ -12,7 +12,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
-public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch
+public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch, IServiceUser
 {
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
@@ -54,20 +54,24 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private int _groupIndex;
     private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
     private bool _activePopUp;
+    private IBranchSearch _uiBranchSearch;
 
     //Enum
     private enum StoreAndRestorePopUps { StoreAndRestore, Reset }
     
     //Properties
     private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
-    private void SaveHighlighted(IHighlightedNode args) =>
-        LastHighlighted = SearchThisBranchesNodes
-            (args.Highlighted.ReturnNode, defaultNode: LastHighlighted.ReturnNode);
-
+    private void SaveHighlighted(IHighlightedNode args)
+    {
+        LastHighlighted = _uiBranchSearch.Find(args.Highlighted)
+                                         .DefaultReturn(LastSelected)
+                                         .SearchThisBranchesNodes(ThisGroupsUiNodes);
+    }
     private void SaveSelected(ISelectedNode args)
     {
-        LastSelected = SearchThisBranchesNodes
-            (args.Selected.ReturnNode, defaultNode: LastSelected.ReturnNode);
+        LastSelected = _uiBranchSearch.Find(args.Selected)
+                                      .DefaultReturn(LastSelected)
+                                      .SearchThisBranchesNodes(ThisGroupsUiNodes);
     }    
     public void SetNoTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
@@ -83,7 +87,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     //Delegates
     public Action OnStartPopUp; 
     private Action OnFinishTweenCallBack;
-    
+
     private static CustomEvent<IActiveBranch> SetActiveBranch { get; } 
         = new CustomEvent<IActiveBranch>();
 
@@ -101,6 +105,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         EventLocator.Subscribe<IHighlightedNode>(SaveHighlighted, this);
         EventLocator.Subscribe<ISelectedNode>(SaveSelected, this);
         EventLocator.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen, this);
+        EventLocator.Subscribe<IHotKeyPressed>(FromHotKey, this);
     }
 
     public void RemoveFromEvents()
@@ -109,44 +114,26 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         EventLocator.Unsubscribe<IHighlightedNode>(SaveHighlighted);
         EventLocator.Unsubscribe<ISelectedNode>(SaveSelected);
         EventLocator.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
+        EventLocator.Unsubscribe<IHotKeyPressed>(FromHotKey);
     }
+    
+    public void SubscribeToService() => _uiBranchSearch = ServiceLocator.GetNewService<IBranchSearch>(this);
 
     private void Awake()
     {
-        GetChildNodes();
+        ThisGroupsUiNodes = SetBranchesChildNodes.GetChildNodes(this);
         MyCanvasGroup = GetComponent<CanvasGroup>();
         MyCanvasGroup.blocksRaycasts = false;
         _uiTweener = GetComponent<UITweener>();
         MyCanvas = GetComponent<Canvas>();
-        Branch = BranchFactory.AssignType(this, _branchType, FindObjectsOfType<UIBranch>());
+        Branch = BranchFactory.Factory
+                              .PassThisBranch(this) 
+                              .PassAllBranches(FindObjectsOfType<UIBranch>()) 
+                              .CreateType(_branchType);
         MyParentBranch = this;
         SetStartPositions();
         ObserveEvents();
-    }
-
-    private void GetChildNodes()
-    {
-         var listOfChildren = new List<UINode>();
-
-        foreach (var child in gameObject.GetComponentsInChildren<Transform>())
-        {
-            if (CheckIfNestedUIBranch(child)) break;
-            CheckIfChildUINode(listOfChildren, child);
-        }
-        ThisGroupsUiNodes = listOfChildren.ToArray();
-    }
-
-    private bool CheckIfNestedUIBranch(Transform child)
-    {
-        var isBranch = child.gameObject.GetComponent<UIBranch>();
-        return isBranch != null && isBranch != this;
-    }
-
-    private static void CheckIfChildUINode(List<UINode> listOfChildren, Transform child)
-    {
-        var isNode = child.GetComponent<UINode>();
-        if (isNode)
-            listOfChildren.Add(isNode);
+        SubscribeToService();
     }
 
     private void OnDisable()
@@ -191,6 +178,13 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private void FindStartPosition() 
         => _startOnThisNode = transform.GetComponentsInChildren<UINode>().First();
 
+    private void FromHotKey(IHotKeyPressed args)
+    {
+        if (args.MyBranch == this)
+        {
+            MoveToThisBranch();
+        }
+    }
     public void MoveToBranchWithoutTween()
     {
         Branch.SetBlockRaycast(BlockRaycast.Yes);
@@ -228,16 +222,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         if (_saveExitSelection == IsActive.Yes) return;
         _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
         LastHighlighted = DefaultStartOnThisNode;
-    }
-
-    private UINode SearchThisBranchesNodes(UINode newNode, UINode defaultNode)
-    {
-        for (var i = ThisGroupsUiNodes.Length - 1; i >= 0; i--)
-        {
-            if (ThisGroupsUiNodes[i] != newNode) continue;
-            return newNode;
-        }
-        return defaultNode;
     }
 
     public void NavigateToChildBranch(UIBranch moveToo)
@@ -292,7 +276,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     {
         if(_stayOn == IsActive.No || outTweenType == OutTweenType.Cancel)
             Branch.SetCanvas(ActiveCanvas.No);
-        if(!IsPauseMenuBranch()) Branch.ActivateStoredPosition();
+        if(!IsPauseMenuBranch()) 
+            Branch.ActivateStoredPosition();
         OnFinishTweenCallBack?.Invoke();
     }
 

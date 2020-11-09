@@ -45,14 +45,14 @@ public class NavigationSettings :INavigationSettings
     public UINode Right => _right;
     public UINavigation Instance { get; set; }
 
-    public NodeFunctionBase SetUp(UiActions uiActions, Setting functions)
+    public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
-        if (uiActions.Node.IsToggleGroup || uiActions.Node.IsToggleNotLinked)
+        if (uiNodeEvents.ReturnMasterNode.IsToggleGroup || uiNodeEvents.ReturnMasterNode.IsToggleNotLinked)
             _childBranch = null;
         
         if ((functions & Setting.NavigationAndOnClick) != 0)
         {
-            Instance = new UINavigation(this, uiActions);
+            Instance = new UINavigation(this, uiNodeEvents);
             return Instance;
         }
         return  new NullFunction();

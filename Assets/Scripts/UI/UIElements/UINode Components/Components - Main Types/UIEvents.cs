@@ -16,7 +16,7 @@ public class UIEvents : NodeFunctionBase
     private readonly OnDisabledEvent _onDisable;
     private readonly OnToggleEvent _onToggleEvent;
 
-    public UIEvents(IEventSetttings settings, UiActions uiActions)
+    public UIEvents(IEventSetttings settings, IUiEvents uiEvents)
     {
         _onEnterEvent = settings.OnEnterEvent;
         _onExitEvent = settings.OnExitEvent;
@@ -24,7 +24,7 @@ public class UIEvents : NodeFunctionBase
         _onDisable = settings.DisableEvent;
         _onToggleEvent = settings.ToggleEvent;
         CanActivate = true;
-        OnAwake(uiActions);
+        OnAwake(uiEvents);
     }
     
     //Properties

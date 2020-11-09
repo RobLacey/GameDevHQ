@@ -75,10 +75,20 @@ public class UICancel : ICancel, IServiceUser, IEventUser
             case EscapeKey.BackToHome:
                 StartCancelProcess(BackToHome);
                 break;
+            case EscapeKey.None:
+                break;
+            case EscapeKey.GlobalSetting:
+                break;
+            case EscapeKey.HoverClose:
+                StartCancelProcess(DoHover);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(escapeKey), escapeKey, null);
         }
     }
 
     private void StartCancelProcess(Action endOfCancelAction) => _uiHistoryTrack.CancelMove(endOfCancelAction);
     private void BackOneLevel() => _uiHistoryTrack.BackOneLevel();
     private void BackToHome() => _uiHistoryTrack.BackToHome();
+    private void DoHover() => _uiHistoryTrack.DoCancelHoverToActivate();
 }
