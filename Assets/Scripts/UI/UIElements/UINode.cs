@@ -21,6 +21,15 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")] 
     private ToggleGroup _toggleGroupId = ToggleGroup.None;
+
+    [SerializeField] 
+    [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")]
+    [ReorderableList] private List<UINode> _group;
+
+    [SerializeField] 
+    [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")]
+    private ToggleData _toggleData;
+    
     [SerializeField]
     [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")] 
     private UIBranch _tabBranch;
@@ -69,9 +78,12 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     private bool _inMenu, _allowKeys, _childIsMoving;
     private INode _lastHighlighted;
     private IUiEvents _uiNodeEvents;
-    private IDisable _disable;
+    private IDisabledNode _disabledNode;
     private NodeBase _nodeBase;
     private readonly List<NodeFunctionBase> _activeFunctions = new List<NodeFunctionBase>();
+
+    private bool _canStart;
+    private bool _setUpFinished;
 
     //Events
     private static CustomEvent<IHighlightedNode> DoHighlighted { get; } 
@@ -97,21 +109,31 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     public bool StartAsSelected => _startAsSelected;
     public UINavigation Navigation => _navigation.Instance;
     public bool CloseHooverOnExit => _closeHoverOnExit;
-    public IUiEvents ReturnUINodeEvents => _uiNodeEvents;
+    private void CanStart(IOnStart args) => _canStart = true;
+    public bool ReturnStartAsSelected => _startAsSelected;
 
     private void SaveInMenuOrInGame(IInMenu args)
     {
         _inMenu = args.InTheMenu;
+        if (SetUpFinished()) return;
+        
         if (!_inMenu)
         {
             SetNotHighlighted();
         }
         else if (_lastHighlighted.ReturnNode == this && _allowKeys)
         {
-            SetAsHighlighted();
+            SetNodeAsActive();
         }
     }
-    
+
+    private bool SetUpFinished()
+    {
+        if (_setUpFinished) return false;
+        _setUpFinished = true;
+        return true;
+    }
+
     private void SaveAllowKeys(IAllowKeys args)
     {
         _allowKeys = args.CanAllowKeys;
@@ -140,14 +162,14 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     // ReSharper disable once UnusedMember.Global - Assigned in editor to Disable Object
     public void DisableNode()
     {
-        _disable.IsDisabled = true;
-        _uiNodeEvents.DoIsDisabled(_disable.IsDisabled);
+        _disabledNode.IsDisabled = true;
+        _uiNodeEvents.DoIsDisabled(_disabledNode.IsDisabled);
     }
     // ReSharper disable once UnusedMember.Global - Assigned in editor to Enable Object
     public void EnableNode()
     {
-        _disable.IsDisabled = false;
-        _uiNodeEvents.DoIsDisabled(_disable.IsDisabled);
+        _disabledNode.IsDisabled = false;
+        _uiNodeEvents.DoIsDisabled(_disabledNode.IsDisabled);
     }
 
     //Main
@@ -162,7 +184,7 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
 
     private void StartNodeFactory()
     {
-        _disable = new Disable(this);
+        _disabledNode = new DisabledNode(this);
         _nodeBase = NodeFactory.Factory(_buttonFunction, this);
     }
 
@@ -184,6 +206,8 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
         EventLocator.Subscribe<IAllowKeys>(SaveAllowKeys, this);
         EventLocator.Subscribe<IHighlightedNode>(SaveHighlighted, this);
         EventLocator.Subscribe<IInMenu>(SaveInMenuOrInGame, this);
+        EventLocator.Subscribe<IHotKeyPressed>(HotKeyPressed, this);
+        EventLocator.Subscribe<IOnStart>(CanStart, this);
     }
 
     public void RemoveFromEvents()
@@ -191,6 +215,8 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
         EventLocator.Unsubscribe<IAllowKeys>(SaveAllowKeys);
         EventLocator.Unsubscribe<IHighlightedNode>(SaveHighlighted);
         EventLocator.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
+        EventLocator.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
+        EventLocator.Unsubscribe<IOnStart>(CanStart);
     }
     
     private void OnDisable()
@@ -206,29 +232,26 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
 
     public void SetNodeAsActive()
     {
-        if (_disable.NodeIsDisabled() || _nodeBase.PointerOverNode) return;
+        if (_disabledNode.NodeIsDisabled() || !_canStart) return;
         
         if (_allowKeys && _inMenu)
         {
             _nodeBase.OnEnter(false);
+            SetAsHighlighted();
         }
         else
         {
             SetNotHighlighted();
-            ThisNodeIsHighLighted();
         }
     }
 
     public void DoPress() => _uiNodeEvents.DoIsPressed();
 
-    public void PlayCancelAudio() => _uiNodeEvents.DoPlayCancelAudio();
-
     public void DeactivateNode() => _nodeBase.DeactivateNode();
 
     public void SetAsHighlighted() 
     {
-        if (_disable.IsDisabled) return;
-        _nodeBase.PointerOverNode = true;
+        if (_disabledNode.IsDisabled) return;
         _uiNodeEvents.DoWhenPointerOver(_nodeBase.PointerOverNode);
         ThisNodeIsHighLighted();
     }
@@ -237,11 +260,15 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     {
         _nodeBase.PointerOverNode = false;
         _uiNodeEvents.DoWhenPointerOver(_nodeBase.PointerOverNode);
-    } 
+    }
 
     public void SetNodeAsSelected_NoEffects() => SetSelectedStatus(true, SetNotHighlighted);
 
-    public void SetNodeAsNotSelected_NoEffects() => SetSelectedStatus(false, SetNotHighlighted);
+    public void SetNodeAsNotSelected_NoEffects()
+    {
+        _uiNodeEvents.DoMuteAudio();
+        SetSelectedStatus(false, SetNotHighlighted);
+    }
 
     public void SetSelectedStatus(bool isSelected, Action endAction)
     {
@@ -254,28 +281,22 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
 
     public void ThisNodeIsHighLighted() => DoHighlighted?.RaiseEvent(this);
     
-    
     //Input Interfaces
     public void OnPointerEnter(PointerEventData eventData) => _nodeBase.OnEnter(IsDragEvent(eventData));
-
     public void OnPointerExit(PointerEventData eventData) => _nodeBase.OnExit(IsDragEvent(eventData));
-
-    private static bool IsDragEvent(PointerEventData eventData) => eventData.pointerDrag;
-
     public void OnPointerDown(PointerEventData eventData) => PressedActions(IsDragEvent(eventData));
-    
     public void OnSubmit(BaseEventData eventData) => PressedActions(false);
+    public void OnMove(AxisEventData eventData) => DoMoveToNextNode(eventData.moveDir);
+    
+    public void OnPointerUp(PointerEventData eventData) { }
+    private static bool IsDragEvent(PointerEventData eventData) => eventData.pointerDrag;
     
     private void PressedActions(bool isDragEvent)
     {
-        if (_disable.IsDisabled) return;
+        if (_disabledNode.IsDisabled) return;
         if (_allowKeys) _nodeBase.PointerOverNode = false;
         _nodeBase.OnSelected(isDragEvent);
     }
-
-    public void OnPointerUp(PointerEventData eventData) { }
-
-    public void OnMove(AxisEventData eventData) => DoMoveToNextNode(eventData.moveDir);
 
     private void DoMoveToNextNode(MoveDirection moveDirection) => _uiNodeEvents.DoOnMove(moveDirection);
 
@@ -283,7 +304,7 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     {
         if(!MyBranch.CanvasIsEnabled)return;
         
-        if (_disable.IsDisabled)
+        if (_disabledNode.IsDisabled)
         {
             DoMoveToNextNode(moveDirection);
         }
@@ -291,5 +312,13 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
         {
             _nodeBase.OnEnter(false);
         }
+    }
+
+    private void HotKeyPressed(IHotKeyPressed args)
+    {
+        if (args.ParentNode != this) return;
+        ThisNodeIsSelected();
+        ThisNodeIsHighLighted();
+        SetNodeAsSelected_NoEffects();
     }
 }

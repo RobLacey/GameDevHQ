@@ -303,21 +303,25 @@
                 <e p="BranchUtilityClasses" t="Include">
                   <e p="GroupList.cs" t="Include" />
                   <e p="ScreenData.cs" t="Include" />
+                  <e p="SetBranchesChildNodes.cs" t="Include" />
                   <e p="UIBranchGroups.cs" t="Include" />
+                  <e p="UiBranchSearch.cs" t="Include" />
                 </e>
                 <e p="UIBranch Partial Classes" t="Include">
                   <e p="BranchInterfaces.cs" t="Include" />
-                  <e p="SetBranchesChildNodes.cs" t="Include" />
                   <e p="UIBranch.Properties.cs" t="Include" />
-                  <e p="UiBranchSearch.cs" t="Include" />
                 </e>
               </e>
               <e p="UIBranch.cs" t="Include" />
               <e p="UIHub Components" t="Include">
                 <e p="ChangeControl.cs" t="Include" />
                 <e p="HistoryTracker" t="Include">
+                  <e p="HistoryListManagement.cs" t="Include" />
                   <e p="HistoryTracker.cs" t="Include" />
                   <e p="IHistoryTrack.cs" t="Include" />
+                  <e p="ManagePopUpHistory.cs" t="Include" />
+                  <e p="MoveBackInHistory.cs" t="Include" />
+                  <e p="NewSelectionProcess.cs" t="Include" />
                 </e>
                 <e p="HotKeys.cs" t="Include" />
                 <e p="MenuAndGameSwitching.cs" t="Include" />
@@ -358,11 +362,11 @@
                   <e p="CancelOrBackButton.cs" t="Include" />
                   <e p="Disable.cs" t="Include" />
                   <e p="HoverToActivate.cs" t="Include" />
-                  <e p="IDisable.cs" t="Include" />
+                  <e p="LinkedToggles.cs" t="Include" />
                   <e p="NodeBase.cs" t="Include" />
                   <e p="Standard.cs" t="Include" />
+                  <e p="ToggleData.cs" t="Include" />
                   <e p="ToggleNotLinked.cs" t="Include" />
-                  <e p="UIToggles.cs" t="Include" />
                 </e>
                 <e p="Size And Position Components" t="Include">
                   <e p="BasePositionAndScale.cs" t="Include" />

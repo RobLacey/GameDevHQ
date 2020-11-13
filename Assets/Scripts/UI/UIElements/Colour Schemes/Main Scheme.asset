@@ -16,7 +16,7 @@ MonoBehaviour:
   _selected: {r: 0.9811321, g: 0.27413985, b: 0.24528302, a: 1}
   _highlighted: {r: 0.41388392, g: 1, b: 0, a: 1}
   _pressedFlash: {r: 0, g: 0, b: 0, a: 1}
-  _coloursToUse: -1
+  _coloursToUse: 3
   _tweenTime: 0.3
   _selectedHighlightPerc: 2
   _pressedFlashTime: 0.1

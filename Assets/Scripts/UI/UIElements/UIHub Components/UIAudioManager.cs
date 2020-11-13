@@ -22,6 +22,8 @@ public class UIAudioManager : IAudioService
 
     public void PlaySelect(AudioClip audioClip, float volume)
     {
+       // Debug.Log("Selected");
+
         IsPlayingSelected = true;
         Play(audioClip, volume);
         StaticCoroutine.StartCoroutine(Timer(audioClip.length, ()=> IsPlayingSelected = false));
@@ -30,7 +32,7 @@ public class UIAudioManager : IAudioService
     public void PlayCancel(AudioClip audioClip, float volume)
     {
         if(IsPlayingSelected) return;
-        
+//        Debug.Log("Cancel");
         IsPlayingCancel = true;
         Play(audioClip, volume);
         StaticCoroutine.StartCoroutine(Timer(audioClip.length, ()=> IsPlayingCancel = false));

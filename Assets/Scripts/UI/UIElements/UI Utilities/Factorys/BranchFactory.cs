@@ -2,7 +2,6 @@
 {
     private UIBranch _uiBranch;
     private UIBranch[] _allBranches;
-
     public static BranchFactory Factory { get; } = new BranchFactory();
 
     public BranchFactory PassThisBranch(UIBranch branch)

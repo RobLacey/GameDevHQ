@@ -1,12 +1,11 @@
 ﻿
-public class MenuAndGameSwitching : IEventUser, IInMenu, IServiceUser
+public class MenuAndGameSwitching : IEventUser, IInMenu
 {
     public MenuAndGameSwitching() => OnAwake();
 
     //Variables
     private bool _noPopUps = true;
     private bool _wasInGame;
-    private IHistoryTrack _historyTracker;
 
     //Events
     private static CustomEvent<IInMenu> IsInMenu { get; } = new CustomEvent<IInMenu>();
@@ -22,12 +21,8 @@ public class MenuAndGameSwitching : IEventUser, IInMenu, IServiceUser
          PopUpEventHandler();
     }
 
-    private void OnAwake()
-    {
-        ObserveEvents();
-        SubscribeToService();
-    }
-    
+    private void OnAwake() => ObserveEvents();
+
     public void ObserveEvents()
     {
         EventLocator.Subscribe<IMenuGameSwitchingPressed>(CheckForActivation, this);
@@ -44,8 +39,6 @@ public class MenuAndGameSwitching : IEventUser, IInMenu, IServiceUser
         EventLocator.Unsubscribe<INoPopUps>(SaveNoPopUps);
     }
     
-    public void SubscribeToService() => _historyTracker =  ServiceLocator.GetNewService<IHistoryTrack>(this);
-
     private void CheckForActivation(IMenuGameSwitchingPressed arg)
     {
         if (!_noPopUps) return;
@@ -95,7 +88,6 @@ public class MenuAndGameSwitching : IEventUser, IInMenu, IServiceUser
     private void SwitchToGame()
     {
         InTheMenu = false;
-        _historyTracker.BackToHome();
         BroadcastState();
     }
 

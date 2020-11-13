@@ -4,7 +4,7 @@ public class OptionalPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp, IAdd
     public OptionalPopUp(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
         _allBranches = branchList;
-        _myBranch.OnStartPopUp = StartPopUp;
+        _myBranch.OnStartPopUp += StartPopUp;
     }
     
     //Variables
@@ -27,17 +27,25 @@ public class OptionalPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp, IAdd
         
         if (_myBranch.TweenOnHome == IsActive.Yes)
         {
-            _myBranch.DontSetBranchAsActive();
-            _myBranch.MoveToThisBranch();
+            ActivateWithTween();
         }
         else
         {
-            SetCanvas(ActiveCanvas.Yes);
-            if(!_resolvePopUps)
-            {
-                SetBlockRaycast(BlockRaycast.Yes);
-            }        
+            ActivateWithoutTween();
         }
+    }
+
+    private void ActivateWithTween()
+    {
+        _myBranch.DontSetBranchAsActive();
+        _myBranch.MoveToThisBranch();
+    }
+
+    private void ActivateWithoutTween()
+    {
+        SetCanvas(ActiveCanvas.Yes);
+        if (!_resolvePopUps)
+            SetBlockRaycast(BlockRaycast.Yes);
     }
 
     public void StartPopUp() //TODO add to buffer goes here for when paused. trigger from SaveOnHome?

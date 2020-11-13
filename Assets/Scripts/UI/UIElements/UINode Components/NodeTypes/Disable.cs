@@ -1,18 +1,24 @@
-﻿public class Disable : IDisable
+﻿public class DisabledNode : IDisabledNode
 {
     private readonly UINode _uiNode;
     private bool _isDisabled;
 
-    public Disable(UINode uiNode) => _uiNode = uiNode;
+    private static CustomEvent<IDisabledNode> ThisIsDisabled { get; } = new CustomEvent<IDisabledNode>();
 
+    public DisabledNode(UINode uiNode) => _uiNode = uiNode;
+
+    public INode ThisNodeIsDisabled => _uiNode;
+    
     public bool IsDisabled
     {
         get => _isDisabled;
         set
         {
             _isDisabled = value;
-            if (_isDisabled)
-                _uiNode.SetSelectedStatus(false, _uiNode.DoPress);
+            if (!_isDisabled) return;
+            
+            ThisIsDisabled?.RaiseEvent(this);
+            _uiNode.SetSelectedStatus(false, _uiNode.DoPress);
         }
     }
 
@@ -22,4 +28,11 @@
         _uiNode.Navigation.MoveToNextFreeNode();
         return true;
     }
+}
+
+public interface IDisabledNode
+{
+    INode ThisNodeIsDisabled { get; }
+    bool IsDisabled { get; set; }
+    bool NodeIsDisabled();
 }

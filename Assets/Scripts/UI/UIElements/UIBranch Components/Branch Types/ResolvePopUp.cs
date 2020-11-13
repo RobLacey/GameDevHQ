@@ -3,7 +3,7 @@
     public ResolvePopUp(UIBranch branch, UIBranch[] branchList) : base(branch)
     {
         _allBranches = branchList;
-        _myBranch.OnStartPopUp = StartPopUp;
+        _myBranch.OnStartPopUp += StartPopUp;
     }    
 
     //Variables

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public static class SetBranchesChildNodes
+public class SetBranchesChildNodes
 {
     public static INode[] GetChildNodes(UIBranch branch)
     {

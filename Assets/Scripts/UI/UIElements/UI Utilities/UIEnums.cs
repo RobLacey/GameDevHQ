@@ -119,6 +119,7 @@ public enum ChangeWhen { OnHighlight, OnPressed, OnControlChanged }
 public enum BlockRaycast { Yes, No }
 public enum ActiveCanvas { Yes, No }
 
+public enum ActivateNodeOnReturnHome { Yes, No }
 
 
 

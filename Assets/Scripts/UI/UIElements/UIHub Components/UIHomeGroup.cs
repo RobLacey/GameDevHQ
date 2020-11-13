@@ -6,7 +6,7 @@ public interface IHomeGroup : IMonoBehaviourSub { }
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
 /// is for keyboard or controller. Differ from internal branch groups as involve Branches not Nodes
 /// </summary>
-public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
+public class UIHomeGroup : IEventUser, IHomeGroup
 {
     public UIHomeGroup(UIBranch[] homeGroupBranches)
     {
@@ -20,17 +20,12 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
     private bool _gameIsPaused;
     private int _index;
     private UIBranch _lastActiveHomeBranch;
-    private IHistoryTrack _uiHistoryTrack;
     
     //Properties
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
 
-    public void OnEnable()
-    {
-        SubscribeToService();
-        ObserveEvents();
-    }
+    public void OnEnable() => ObserveEvents();
 
     public void OnDisable() => RemoveFromEvents();
 
@@ -51,8 +46,6 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
         EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
     }
 
-    public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
-
     private void SwitchHomeGroups(ISwitchGroupPressed args)
     {
         if (!_onHomeScreen) return;
@@ -72,17 +65,20 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
                 break;
         }
         _lastActiveHomeBranch = _homeGroup[_index];
-        _uiHistoryTrack.ReverseAndClearHistory();
         _homeGroup[_index].MoveToBranchWithoutTween();
     }
 
     private void SetActiveHomeBranch(IActiveBranch args)
     {
-        if(args.ActiveBranch.IsAPopUpBranch() || args.ActiveBranch.IsPauseMenuBranch() || _gameIsPaused) return;
+        if(ActiveBranchIsPopUpOrPaused(args)) return;
         if(_lastActiveHomeBranch == args.ActiveBranch) return;
+        
         _lastActiveHomeBranch = args.ActiveBranch;
         FindHomeScreenBranch(args.ActiveBranch);
     }
+
+    private bool ActiveBranchIsPopUpOrPaused(IActiveBranch args) 
+        => args.ActiveBranch.IsAPopUpBranch() || args.ActiveBranch.IsPauseMenuBranch() || _gameIsPaused;
 
     private void FindHomeScreenBranch(UIBranch newBranch)
     {
@@ -105,8 +101,10 @@ public class UIHomeGroup : IServiceUser, IEventUser, IHomeGroup
 
     private void ActivateHomeGroupBranch(IReturnToHome args)
     {
-        if (!args.ActivateBranchOnReturnHome)
+        if (!args.ActivateOnReturnHome)
+        {
             _homeGroup[_index].DontSetBranchAsActive();
+        }
         _homeGroup[_index].MoveToBranchWithoutTween();
     }
 }

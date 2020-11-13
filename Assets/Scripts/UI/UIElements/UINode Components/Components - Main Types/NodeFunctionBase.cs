@@ -53,5 +53,5 @@ public abstract class NodeFunctionBase : IEventUser
     
      private protected abstract void ProcessPress();
      
-     private protected abstract void ProcessDisabled();
+     private protected virtual void ProcessDisabled() { }
 }

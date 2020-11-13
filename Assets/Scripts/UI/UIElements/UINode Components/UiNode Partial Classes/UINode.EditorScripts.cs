@@ -1,7 +1,5 @@
 ﻿// ReSharper disable UnusedMember.Local
 
-using UnityEngine;
-
 public partial class UINode
 {
     private bool SetIfCanNavigate() => IsAToggle() || IsCancelOrBack;

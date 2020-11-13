@@ -1,7 +1,7 @@
 ﻿public class HoverToActivate : NodeBase
 {
     private bool _allowKeys;
-    private bool _activeChildBranch;
+    private bool _closedChildBranch;
     
     public HoverToActivate(UINode node) : base(node) => _uiNode = node;
 
@@ -10,7 +10,6 @@
         base.ObserveEvents();
         EventLocator.Subscribe<IAllowKeys>(SaveAllowKeys, this);
         EventLocator.Subscribe<ICancelHoverOver>(CancelHoverOver, this);
-        EventLocator.Subscribe<IChildIsActive>(ThisBranchesChildIsActive, this);
         EventLocator.Subscribe<ICancelHoverOverButton>(CancelHoverOverFromButton, this);
     }
 
@@ -19,25 +18,27 @@
         base.RemoveFromEvents();
         EventLocator.Unsubscribe<IAllowKeys>(SaveAllowKeys);
         EventLocator.Unsubscribe<ICancelHoverOver>(CancelHoverOver);
-        EventLocator.Unsubscribe<IChildIsActive>(ThisBranchesChildIsActive);
         EventLocator.Unsubscribe<ICancelHoverOverButton>(CancelHoverOverFromButton);
     }
 
     private void SaveAllowKeys(IAllowKeys newNode) => _allowKeys = newNode.CanAllowKeys;
-    private void ThisBranchesChildIsActive(IChildIsActive thisBranch)
-    {
-        if(thisBranch.MyBranch == _uiNode.HasChildBranch)
-        {
-            _activeChildBranch = thisBranch.NodeActivated;
-        }    
-    }
 
     public override void OnEnter(bool isDragEvent)
+    {
+        if (_closedChildBranch)
+        {
+            PointerOverNode = true;
+            _closedChildBranch = false;
+            return;
+        }
+        NodeIsActive();
+    }
+
+    private void NodeIsActive()
     {
         if (!_allowKeys && _uiNode.IsSelected)
         {
             _uiNode.SetAsHighlighted();
-            _uiNodeEvents.DoPlayHighlightedAudio();
         }
         else
         {
@@ -47,16 +48,13 @@
 
     public override void OnExit(bool isDragEvent)
     {
+        PointerOverNode = false;
+        
         if (_uiNode.CloseHooverOnExit)
         {
-            if(_activeChildBranch) return;
             TurnNodeOnOff();
-            _uiNode.SetNotHighlighted();
         }
-        else
-        {
-            _uiNode.SetNotHighlighted();
-        }
+        _uiNode.SetNotHighlighted();
     }
 
     public override void OnSelected(bool isDragEvent) => TurnNodeOnOff();
@@ -66,17 +64,13 @@
         if (_uiNode.IsSelected)
         {
             Deactivate();
-            _uiNodeEvents.DoPlayCancelAudio();
         }
         else
         {
-            Activate();
-            _uiNodeEvents.DoPlaySelectedAudio();
             PointerOverNode = false;
+            Activate();
         }
-        if(!_activeChildBranch)
-            _uiHistoryTrack.SetSelected(_uiNode);
-        _activeChildBranch = false;
+        _uiHistoryTrack.SetSelected(_uiNode);
     }
 
     private void Activate() 
@@ -91,7 +85,6 @@
     public override void DeactivateNode()
     {
         if (!_uiNode.IsSelected) return;
-        _activeChildBranch = false;
          Deactivate();
          _uiNode.SetNotHighlighted();
     }
@@ -103,7 +96,7 @@
     private void CloseHoverOverProcess()
     {
         if (!_uiNode.HasChildBranch.CanvasIsEnabled) return;
+        _closedChildBranch = true;
         TurnNodeOnOff();
-        _uiNode.SetNodeAsActive();
     }
 }

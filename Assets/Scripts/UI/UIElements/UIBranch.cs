@@ -12,7 +12,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
-public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch, IServiceUser
+public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch
 {
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
@@ -54,7 +54,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private int _groupIndex;
     private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
     private bool _activePopUp;
-    private IBranchSearch _uiBranchSearch;
 
     //Enum
     private enum StoreAndRestorePopUps { StoreAndRestore, Reset }
@@ -63,15 +62,15 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveHighlighted(IHighlightedNode args)
     {
-        LastHighlighted = _uiBranchSearch.Find(args.Highlighted)
-                                         .DefaultReturn(LastSelected)
-                                         .SearchThisBranchesNodes(ThisGroupsUiNodes);
+        LastHighlighted = NodeSearch.Search.Find(args.Highlighted)
+                                    .DefaultReturn(LastSelected)
+                                    .RunOn(ThisGroupsUiNodes);
     }
     private void SaveSelected(ISelectedNode args)
     {
-        LastSelected = _uiBranchSearch.Find(args.Selected)
-                                      .DefaultReturn(LastSelected)
-                                      .SearchThisBranchesNodes(ThisGroupsUiNodes);
+        LastSelected = NodeSearch.Search.Find(args.Selected)
+                                 .DefaultReturn(LastSelected)
+                                 .RunOn(ThisGroupsUiNodes);
     }    
     public void SetNoTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
@@ -84,12 +83,10 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     // ReSharper disable once UnusedMember.Global
     public void StartPopUp() => OnStartPopUp?.Invoke();
     
-    //Delegates
-    public Action OnStartPopUp; 
-    private Action OnFinishTweenCallBack;
-
-    private static CustomEvent<IActiveBranch> SetActiveBranch { get; } 
-        = new CustomEvent<IActiveBranch>();
+    //Delegates & Events
+    public event Action OnStartPopUp; 
+    private event Action OnFinishTweenCallBack;
+    private static CustomEvent<IActiveBranch> SetActiveBranch { get; }  = new CustomEvent<IActiveBranch>();
 
     //InternalClasses
     [Serializable]
@@ -117,8 +114,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         EventLocator.Unsubscribe<IHotKeyPressed>(FromHotKey);
     }
     
-    public void SubscribeToService() => _uiBranchSearch = ServiceLocator.GetNewService<IBranchSearch>(this);
-
     private void Awake()
     {
         ThisGroupsUiNodes = SetBranchesChildNodes.GetChildNodes(this);
@@ -133,7 +128,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         MyParentBranch = this;
         SetStartPositions();
         ObserveEvents();
-        SubscribeToService();
     }
 
     private void OnDisable()

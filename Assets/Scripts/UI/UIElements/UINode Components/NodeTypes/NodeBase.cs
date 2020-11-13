@@ -1,30 +1,23 @@
-﻿
-public abstract class NodeBase : IServiceUser, IEventUser, IChildIsActive
+﻿public abstract class NodeBase : IServiceUser, IEventUser
 {
     protected NodeBase(UINode node)
     {
         _uiNode = node;
-        _uiNodeEvents = _uiNode.ReturnUINodeEvents;
         MyBranch = _uiNode.MyBranch;
         SubscribeToService();
     }
     
     //Variables
     protected UINode _uiNode;
-    protected readonly IUiEvents _uiNodeEvents;
     protected IHistoryTrack _uiHistoryTrack;
-    public UIBranch MyBranch { get; protected set; }
-
-    public bool NodeActivated { get; protected set; }
 
     //Properties
     public bool PointerOverNode { get; set; }
-
-    protected static CustomEvent<IChildIsActive> ChildIsActive { get; } = new CustomEvent<IChildIsActive>();
+    public UIBranch MyBranch { get; protected set; }
     
-    public virtual void ObserveEvents() => EventLocator.Subscribe<ISwitchGroupPressed>(HomeGroupChanged, this);
+    public virtual void ObserveEvents() { }
 
-    public virtual void RemoveFromEvents() => EventLocator.Unsubscribe<ISwitchGroupPressed>(HomeGroupChanged);
+    public virtual void RemoveFromEvents(){ }
 
     public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
 
@@ -34,14 +27,11 @@ public abstract class NodeBase : IServiceUser, IEventUser, IChildIsActive
 
     public void OnDisable() => RemoveFromEvents();
 
-    private void HomeGroupChanged(ISwitchGroupPressed args) => PointerOverNode = false;
-
     public virtual void OnEnter(bool isDragEvent)
     {
         if(isDragEvent) return;
         PointerOverNode = true;
         _uiNode.SetAsHighlighted();
-        _uiNodeEvents.DoPlayHighlightedAudio();
     }
 
     public virtual void OnExit(bool isDragEvent)

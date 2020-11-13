@@ -13,20 +13,18 @@
     private IAudioService _audioService;
     private bool _canStart;
     private readonly IUiEvents _uiEvents;
-    private INode _lastSelected;
+    private bool _audioIsMute;
 
     //Properties
     private bool UsingScheme() => _audioScheme;
     private void OnStart(IOnStart onStart) => _canStart = true;
-    private void SaveLastSelected(ISelectedNode args) => _lastSelected = args.Selected;
+    private void AudioIsMuted() => _audioIsMute = true;
 
     //Main
     protected sealed override void OnAwake(IUiEvents uiEvents)
     {
         base.OnAwake(uiEvents);
-        uiEvents.PlayCancelAudio += PlayCancelAudio;
-        uiEvents.PlaySelectedAudio += PlaySelectedAudio;
-        uiEvents.PlayHighlightedAudio += PlayHighlightedAudio;
+        _uiEvents.MuteAudio += AudioIsMuted;
         SubscribeToService();
     }
     
@@ -36,8 +34,6 @@
     {
         base.ObserveEvents();
         EventLocator.Subscribe<IOnStart>(OnStart, this);
-        EventLocator.Subscribe<ISelectedNode>(SaveLastSelected, this);
-        EventLocator.Subscribe<ICancelPressed>(CancelPressed, this);
         EventLocator.Subscribe<IHotKeyPressed>(HotKeyPressed, this);
     }
 
@@ -45,8 +41,6 @@
     {
         base.RemoveFromEvents();
         EventLocator.Unsubscribe<IOnStart>(OnStart);
-        EventLocator.Unsubscribe<ISelectedNode>(SaveLastSelected);
-        EventLocator.Unsubscribe<ICancelPressed>(CancelPressed);
         EventLocator.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
     }
 
@@ -60,9 +54,38 @@
 
     protected override bool FunctionNotActive() => !CanActivate || !UsingScheme() || !_canStart;
 
-    protected override void SavePointerStatus(bool pointerOver) { }
+    protected override void SavePointerStatus(bool pointerOver)
+    {
+        if (IsAudioMuted()) return;
+        
+        if (pointerOver)
+            PlayHighlightedAudio();
+    }
 
-    protected override void SaveIsSelected(bool isSelected) { }
+    protected override void SaveIsSelected(bool isSelected)
+    {
+        if(!CanBePressed()) return;
+        if (IsAudioMuted()) return;
+        
+        if (!isSelected)
+        {
+            PlayCancelAudio();
+        }
+        else
+        {
+            PlaySelectedAudio();
+        }
+    }
+
+    private bool IsAudioMuted()
+    {
+        if (_audioIsMute)
+        {
+            _audioIsMute = false;
+            return true;
+        }
+        return false;
+    }
 
     private protected override void ProcessPress() { }
 
@@ -95,19 +118,9 @@
 
     private protected override void ProcessDisabled() { }
 
-    private void CancelPressed(ICancelPressed args)
-    {
-        if (_lastSelected.ReturnNode == _uiEvents.ReturnMasterNode)
-        {
-            PlayCancelAudio();
-        }
-    }
-
     private void HotKeyPressed(IHotKeyPressed args)
     {
         if (args.ParentNode == _uiEvents.ReturnMasterNode.ReturnNode)
-        {
             PlaySelectedAudio();
-        }
     }
 }

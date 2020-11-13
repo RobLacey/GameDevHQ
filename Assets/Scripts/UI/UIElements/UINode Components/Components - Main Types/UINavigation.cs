@@ -1,6 +1,6 @@
 ﻿using UnityEngine.EventSystems;
 
-public class UINavigation : NodeFunctionBase, IServiceUser
+public class UINavigation : NodeFunctionBase
 {
     public UINavigation(INavigationSettings settings, IUiEvents uiEvents)
     {
@@ -23,7 +23,6 @@ public class UINavigation : NodeFunctionBase, IServiceUser
     private readonly UINode _right;
     private UIBranch _myBranch;
     private UINode _myNode;
-    private IHistoryTrack _uiHistoryTrack;
 
     //Properties
     protected override bool CanBeHighlighted() => false;
@@ -36,11 +35,8 @@ public class UINavigation : NodeFunctionBase, IServiceUser
         base.OnAwake(events);
         _myNode = events.ReturnMasterNode;
         _myBranch = _myNode.MyBranch;
-        SubscribeToService();
     }
     
-    public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
-
     protected override void AxisMoveDirection(MoveDirection moveDirection)
     {
         base.AxisMoveDirection(moveDirection);
@@ -87,16 +83,9 @@ public class UINavigation : NodeFunctionBase, IServiceUser
         _myBranch.NavigateToChildBranch(_childBranch);
     }
     
-    private protected override void ProcessDisabled()
-    {
-        if(FunctionNotActive()) return;
-        _myBranch.MoveToBranchWithoutTween();
-        _uiHistoryTrack.CloseAllChildNodesAfterPoint(_myBranch.LastSelected.ReturnNode);
-    }
-
     public void MoveToNextFreeNode()
     {
-        UINode nextFree = ReturnNextFreeMoveTarget();
+        var nextFree = ReturnNextFreeMoveTarget();
         if(nextFree is null) return;
         EventSystem.current.SetSelectedGameObject(nextFree.gameObject);
         nextFree.SetNodeAsActive();

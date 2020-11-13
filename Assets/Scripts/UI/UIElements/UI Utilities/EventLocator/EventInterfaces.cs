@@ -1,6 +1,6 @@
 ﻿public interface IReturnToHome
 {
-    bool ActivateBranchOnReturnHome { get; }
+    bool ActivateOnReturnHome { get; }
 } //**
 public interface IPausePressed { } //**
 
@@ -105,10 +105,6 @@ public interface IHotKeyPressed
     UIBranch MyBranch { get; }
 }
 
-public interface IChildIsActive
-{
-    UIBranch MyBranch { get; }
-    bool NodeActivated { get; }
-}
+
 
 

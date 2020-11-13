@@ -7,12 +7,10 @@
         if (_uiNode.IsSelected)
         {
             Deactivate();
-            _uiNodeEvents.DoPlayCancelAudio();
         }
         else
         {
             Activate();
-            _uiNodeEvents.DoPlaySelectedAudio();
         }
         _uiHistoryTrack.SetSelected(_uiNode);
     }

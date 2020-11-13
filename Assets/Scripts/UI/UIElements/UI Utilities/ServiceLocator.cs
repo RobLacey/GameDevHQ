@@ -15,7 +15,7 @@ public static class ServiceLocator
     private static readonly Dictionary<Type, List<IServiceUser>> waitingForServicesStore 
                             = new Dictionary<Type, List<IServiceUser>>();
     private static bool locked;
-
+    
     public static void AddService<T>(T newService)
     {
         if(services.ContainsKey(typeof(T)) && !locked)
@@ -55,11 +55,8 @@ public static class ServiceLocator
         if (services.ContainsKey(typeof(T)))
         {
             var monoBehaviourSub = services[typeof(T)] as IMonoBehaviourSub;
-            if(!(monoBehaviourSub is null))
-            {
-                Debug.Log(typeof(T));
-                monoBehaviourSub.OnDisable();
-            }            
+            // Debug.Log(typeof(T));
+            monoBehaviourSub?.OnDisable();
             services.Remove(typeof(T));
         }
     }

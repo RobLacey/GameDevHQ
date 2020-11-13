@@ -10,17 +10,13 @@ public interface IUiEvents
     event Action IsPressed;
     event Action<bool> IsDisabled;
     event Action<MoveDirection> OnMove;
-    event Action PlayCancelAudio;
-    event Action PlayHighlightedAudio;
-    event Action PlaySelectedAudio;
+    event Action MuteAudio;
     void DoWhenPointerOver(bool pointer);
     void DoIsSelected(bool selected);
     void DoIsPressed();
     void DoIsDisabled(bool disabled);
     void DoOnMove(MoveDirection direction);
-    void DoPlayCancelAudio();
-    void DoPlayHighlightedAudio();
-    void DoPlaySelectedAudio();
+    void DoMuteAudio();
 }
 
 public class UiEvents : IUiEvents
@@ -40,25 +36,12 @@ public class UiEvents : IUiEvents
     public event Action IsPressed;
     public event Action<bool> IsDisabled;
     public event Action<MoveDirection> OnMove;
-    
-    public event Action PlayCancelAudio;
-    public event Action PlayHighlightedAudio;
-    public event Action PlaySelectedAudio;
-    
-    public void DoWhenPointerOver(bool pointer) 
-    { WhenPointerOver?.Invoke(pointer);}
-    public void DoIsSelected(bool selected)
-    { IsSelected?.Invoke(selected);}
-    public void DoIsPressed()
-    { IsPressed?.Invoke();}
-    public void DoIsDisabled(bool disabled)
-    { IsDisabled?.Invoke(disabled);}
-    public void DoOnMove(MoveDirection direction)
-    { OnMove?.Invoke(direction);}
-    public void DoPlayCancelAudio()
-    {PlayCancelAudio?.Invoke();}
-    public void DoPlayHighlightedAudio()
-    { PlayHighlightedAudio?.Invoke();}
-    public void DoPlaySelectedAudio()
-    { PlaySelectedAudio?.Invoke();}
+    public event Action MuteAudio;
+
+    public void DoWhenPointerOver(bool pointer) => WhenPointerOver?.Invoke(pointer);
+    public void DoIsSelected(bool selected) => IsSelected?.Invoke(selected);
+    public void DoIsPressed() => IsPressed?.Invoke();
+    public void DoIsDisabled(bool disabled) => IsDisabled?.Invoke(disabled);
+    public void DoOnMove(MoveDirection direction) => OnMove?.Invoke(direction);
+    public void DoMuteAudio() => MuteAudio?.Invoke();
 }

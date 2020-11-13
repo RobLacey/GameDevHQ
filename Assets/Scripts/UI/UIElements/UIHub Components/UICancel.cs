@@ -87,7 +87,8 @@ public class UICancel : ICancel, IServiceUser, IEventUser
         }
     }
 
-    private void StartCancelProcess(Action endOfCancelAction) => _uiHistoryTrack.CancelMove(endOfCancelAction);
+    private void StartCancelProcess(Action endOfCancelAction) 
+        => _uiHistoryTrack.CheckForPopUpsWhenCancelPressed(endOfCancelAction);
     private void BackOneLevel() => _uiHistoryTrack.BackOneLevel();
     private void BackToHome() => _uiHistoryTrack.BackToHome();
     private void DoHover() => _uiHistoryTrack.DoCancelHoverToActivate();

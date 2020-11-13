@@ -9,7 +9,7 @@ public static class NodeFactory
             case ButtonFunction.Standard:
                 return new Standard(node);
             case ButtonFunction.ToggleGroup:
-                return new UIToggles(node);
+                return new LinkedToggles(node);
             case ButtonFunction.ToggleNotLinked:
                 return new ToggleNotLinked(node);
             case ButtonFunction.HoverToActivate:

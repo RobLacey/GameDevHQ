@@ -18,18 +18,30 @@
         SetCanvas(ActiveCanvas.Yes);
         SetBlockRaycast(BlockRaycast.Yes);
     }
-    
+
+    protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
+    {
+        base.SaveIfOnHomeScreen(args);
+        if (!OnHomeScreen || _myBranch.CanvasIsEnabled) return;
+        
+        SetCanvas(ActiveCanvas.Yes);
+        SetBlockRaycast(BlockRaycast.Yes);
+    }
+
     //Main
     protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
         SetCanvas(ActiveCanvas.Yes);
         SetBlockRaycast(BlockRaycast.No);
-        _myBranch.DefaultStartOnThisNode.ThisNodeIsSelected();        
-        _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
 
         if (args.StartBranch != _myBranch)
         {
             _myBranch.DontSetBranchAsActive();
+        }
+        else
+        {
+            _myBranch.DefaultStartOnThisNode.ThisNodeIsSelected();        
+            _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
         }
         _myBranch.MoveToThisBranch();
     }

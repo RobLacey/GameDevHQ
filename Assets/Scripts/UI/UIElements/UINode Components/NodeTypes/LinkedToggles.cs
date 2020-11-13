@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIToggles : NodeBase
+public class LinkedToggles : NodeBase
 {
     private readonly List<UINode> _toggleGroupMembers = new List<UINode>();
     private readonly ToggleGroup _groupID;
@@ -13,7 +13,7 @@ public class UIToggles : NodeBase
     //Events
     private static event Action<UINode, Action> SelectedToggle;
     
-    public UIToggles(UINode node) : base(node)
+    public LinkedToggles(UINode node) : base(node)
     {
         _groupID = _uiNode.ToggleGroupID;
         _tabBranch = _uiNode.ToggleBranch;
@@ -21,24 +21,6 @@ public class UIToggles : NodeBase
         SelectedToggle += SaveSelectedNode;
         if (_tabBranch)
             _tabBranch.IsTabBranch();
-    }
-
-    public override void ObserveEvents()
-    {
-        base.ObserveEvents();
-        EventLocator.Subscribe<IActiveBranch>(Activate, this);
-    }
-
-    public override void RemoveFromEvents()
-    {
-        base.RemoveFromEvents();
-        EventLocator.Unsubscribe<IActiveBranch>(Activate);
-    }
-
-    private void Activate(IActiveBranch args)
-    {
-        if (args.ActiveBranch == _uiNode.MyBranch && _isSelected)
-            TurnOnTab();
     }
     
     //Main
@@ -73,7 +55,6 @@ public class UIToggles : NodeBase
     private void Deactivate(Action callback)
     {
         _uiNode.SetNodeAsNotSelected_NoEffects();
-        
         if (!_hasATabBranch || !_isSelected) return;
         _tabBranch.StartBranchExitProcess(OutTweenType.Cancel, callback);
         _isSelected = false;
@@ -85,7 +66,6 @@ public class UIToggles : NodeBase
 
         TurnOffOtherTogglesInGroup();
         Activate();
-        _uiNodeEvents.DoPlaySelectedAudio();
         _uiHistoryTrack.SetSelected(_uiNode);
     }
 

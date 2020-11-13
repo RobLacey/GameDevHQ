@@ -33,16 +33,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
     private void SaveResolvePopUps(INoResolvePopUp args) => _resolvePopUps = args.ActiveResolvePopUps;
     private void SaveIfGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     protected virtual void SaveInMenu(IInMenu args) => _inMenu = args.InTheMenu;
-
-    protected virtual void SaveIfOnHomeScreen(IOnHomeScreen args)
-    {
-        OnHomeScreen = args.OnHomeScreen;
-        if (_myBranch.IsHomeScreenBranch() && OnHomeScreen && !_myBranch.CanvasIsEnabled)
-        {
-            SetCanvas(ActiveCanvas.Yes);
-            SetBlockRaycast(BlockRaycast.Yes);
-        }
-    }
+    protected virtual void SaveIfOnHomeScreen(IOnHomeScreen args) => OnHomeScreen = args.OnHomeScreen;
     protected virtual void SaveOnStart(IOnStart args) => _canStart = true;
     public bool OnHomeScreen { get; private set; } = true;
     public UIBranch IgnoreThisBranch => _myBranch;

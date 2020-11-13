@@ -1,4 +1,6 @@
-﻿public class Standard : NodeBase
+﻿using UnityEngine;
+
+public class Standard : NodeBase
 {
     public Standard(UINode uiNode) : base(uiNode) => _uiNode = uiNode;
 
@@ -7,16 +9,14 @@
         if (_uiNode.IsSelected)
         {
             Deactivate();
-            NodeActivated = false;
-            ChildIsActive?.RaiseEvent(this);
-            _uiNodeEvents.DoPlayCancelAudio();
+            // NodeActivated = false;
+            // ChildIsActive?.RaiseEvent(this);
         }
         else
         {
             Activate();
-            NodeActivated = true;
-            ChildIsActive?.RaiseEvent(this);
-            _uiNodeEvents.DoPlaySelectedAudio();
+            // NodeActivated = true;
+            // ChildIsActive?.RaiseEvent(this);
         }
         _uiHistoryTrack.SetSelected(_uiNode);
     }

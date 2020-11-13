@@ -32,8 +32,6 @@
         {
             CancelButtonActive?.RaiseEvent(this);
         }
-        //_uiActions._playCancelAudio?.Invoke();
-        _uiNode.DoPress();
     }
 
     public override void DeactivateNode() { }

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [Serializable]
-public class HotKeys : IServiceUser, IEventUser, IHotKeyPressed
+public class HotKeys : IEventUser, IHotKeyPressed
 {
     [SerializeField] 
     private HotKey _hotKeyInput;
@@ -15,7 +15,6 @@ public class HotKeys : IServiceUser, IEventUser, IHotKeyPressed
     private INode _parentNode;
     private UIBranch _activeBranch;
     private InputScheme _inputScheme;
-    private IHistoryTrack _uiHistoryTrack;
     
     //Events
     private static CustomEvent<IHotKeyPressed> HotKeyPressed { get; } = new CustomEvent<IHotKeyPressed>();
@@ -30,15 +29,12 @@ public class HotKeys : IServiceUser, IEventUser, IHotKeyPressed
     {
         _inputScheme = inputScheme;
         IsAllowedType();
-        SubscribeToService();
         ObserveEvents();
     }
     
     public void ObserveEvents() => EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
 
     public void RemoveFromEvents() => EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
-
-    public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
 
     private void IsAllowedType()
     {
@@ -77,25 +73,31 @@ public class HotKeys : IServiceUser, IEventUser, IHotKeyPressed
 
     private void GetParentNode()
     {
-        var branchesNodes = _myBranch.MyParentBranch.ThisGroupsUiNodes;
-        _parentNode = branchesNodes.First(node => _myBranch == node.HasChildBranch);
+        if (_myBranch.ScreenType != ScreenType.FullScreen)
+        {
+            GetImmediateParent();
+        }
+        else
+        {
+            FindHomeScreenParent(_myBranch);
+        }
         _hasParentNode = true;
     }
-    
-    private void StartThisHotKeyBranch()
-    {
-        SetHotKeyAsSelectedActions();
-        _uiHistoryTrack.SetFromHotkey(_myBranch);
-        HotKeyPressed?.RaiseEvent(this);
-    }
 
-    private void SetHotKeyAsSelectedActions()
-    { 
-        _parentNode.ThisNodeIsSelected();
-        _parentNode.ThisNodeIsHighLighted();
-        if(_myBranch.ScreenType != ScreenType.FullScreen)
-        {
-            _parentNode.SetNodeAsSelected_NoEffects();
-        }    
+    private void GetImmediateParent()
+    {
+        var branchesNodes = _myBranch.MyParentBranch.ThisGroupsUiNodes;
+        _parentNode = branchesNodes.First(node => _myBranch == node.HasChildBranch);
     }
+    
+    private void FindHomeScreenParent(UIBranch branch)
+    {
+        while (!branch.IsHomeScreenBranch())
+        {
+            branch = branch.MyParentBranch;
+        }
+        _parentNode = branch.LastSelected;
+    }
+    
+    private void StartThisHotKeyBranch() => HotKeyPressed?.RaiseEvent(this);
 }
