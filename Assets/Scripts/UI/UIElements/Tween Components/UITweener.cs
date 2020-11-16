@@ -6,8 +6,14 @@ using DG.Tweening;
 using NaughtyAttributes;
 using UnityEngine.Events;
 
+public interface IUITweener
+{
+    void ActivateTweens(Action callBack);
+    void DeactivateTweens(Action callBack);
+}
+
 [SuppressMessage("ReSharper", "IdentifierTypo")]
-public partial class UITweener : MonoBehaviour
+public partial class UITweener : MonoBehaviour, IUITweener
 {
     [SerializeField] 
     [ReorderableList] [Label("List Of Objects To Apply Effects To")]
@@ -23,15 +29,15 @@ public partial class UITweener : MonoBehaviour
     [ShowIf("GlobalTime")]
     private float _globalOutTime = 1;
     
-    [Header("Tween Settings")] [HorizontalLine(1, EColor.Blue , order = 2)]
-    [SerializeField] 
+    [Header("Tween Settings", order = 1)] [HorizontalLine(1, EColor.Blue , order = 2)]
+    [SerializeField] [Space(15f)] /*[OnValueChanged("IsPositionSet")]*/
     private PositionTweenType _positionTween = PositionTweenType.NoTween;
-    [SerializeField] 
+    [SerializeField] /*[OnValueChanged("IsRotationSet")]*/
     private RotationTweenType _rotationTween = RotationTweenType.NoTween;
     [SerializeField] 
     [Label("Fade (Canvas Group Only)")] private FadeTween _canvasGroupFade = FadeTween.NoTween;
-    [SerializeField] 
-    [Label("Scale Tween")] private ScaleTween _scaleTransition = ScaleTween.NoTween;
+    [SerializeField] /*[OnValueChanged("IsScaleSet")]*/ [Label("Scale Tween")]
+     private ScaleTween _scaleTransition = ScaleTween.NoTween;
     [SerializeField] 
     [Label("Shake or Punch Tween")] private PunchShakeTween _punchShakeTween = PunchShakeTween.NoTween;
     [SerializeField] 
@@ -81,6 +87,18 @@ public partial class UITweener : MonoBehaviour
         SetUpFadeTween();
     }
 
+    private void OnValidate()
+    {
+        //if(Application.isPlaying) return;
+        foreach (var element in _buildObjectsList)
+        {
+            element.ReturnElement();
+        }
+        IsRotationSet();
+        IsPositionSet();
+        IsScaleSet();
+    }
+
     private void SetUpPositionTween()
     {
         if (_positionTween == PositionTweenType.NoTween) return;
@@ -117,14 +135,14 @@ public partial class UITweener : MonoBehaviour
     }
 
     private void SetUpFadeTween()
-    {
+    { 
         if (_canvasGroupFade == FadeTween.NoTween) return;
         _counter++;
         _fadeTween.SetUpTweens(_canvasGroupFade, GetComponent<CanvasGroup>());
     }
 
     public void ActivateTweens(Action callBack)
-    {        
+    {    
         _finishedTweenCallback = callBack;
         if (IfTweenCounterIsZero_In()) return;
         SetTweensUp(_globalInTime, TweenType.In, InTweenEndAction, IsActive.Yes);

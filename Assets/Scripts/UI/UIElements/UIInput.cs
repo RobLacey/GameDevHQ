@@ -9,7 +9,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
                        ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, IServiceUser
 {
     [SerializeField] 
-    private InputScheme _inputScheme;
+    [Expandable] private InputScheme _inputScheme;
     [SerializeField] 
     private InGameOrInMenu _returnToGameControl;
     [SerializeField] 

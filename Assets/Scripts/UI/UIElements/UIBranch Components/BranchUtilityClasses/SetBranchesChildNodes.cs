@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SetBranchesChildNodes
 {
-    public static INode[] GetChildNodes(UIBranch branch)
+    public static UINode[] GetChildNodes(UIBranch branch)
     {
         var listOfChildren = new List<UINode>();
 

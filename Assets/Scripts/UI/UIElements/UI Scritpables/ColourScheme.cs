@@ -13,7 +13,6 @@ public class ColourScheme : ScriptableObject
     [SerializeField] [Range(0.5f, 2f)] private float _selectedHighlightPerc = 1f;
     [SerializeField] [Range(0, 0.5f)] private float _pressedFlashTime = 0.1f;
 
-
     public Color DisableColour => _disabled;
     public Color SelectedColour => _selected;
     public Color HighlightedColour => _highlighted;

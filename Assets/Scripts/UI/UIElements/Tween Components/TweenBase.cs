@@ -88,6 +88,7 @@ public abstract class TweenBase
     {
         if (isIn == TweenType.In)
         {
+            RewindTweens();
             DoInTween();
         }
         else

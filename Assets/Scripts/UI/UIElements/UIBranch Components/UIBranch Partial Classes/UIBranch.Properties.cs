@@ -13,10 +13,11 @@ public partial class UIBranch
     public bool IsPauseMenuBranch() => _branchType == BranchType.PauseMenu;
     public bool IsInternalBranch() => _branchType == BranchType.Internal;
     public bool IsHomeScreenBranch() => _branchType == BranchType.HomeScreen;
+    public BranchType ReturnBranchType => _branchType;
     public bool IsTimedPopUp => _branchType == BranchType.TimedPopUp;
     public bool CanvasIsEnabled => MyCanvas.enabled;
     public bool CanStoreAndRestoreOptionalPoUp => _storeOrResetOptional == StoreAndRestorePopUps.StoreAndRestore;
-    public UINode DefaultStartOnThisNode => _startOnThisNode;
+    public INode DefaultStartOnThisNode => _startOnThisNode;
     private INode LastHighlighted { get; set; }
     public INode LastSelected { get; private set; }
     public INode[] ThisGroupsUiNodes { get; private set; }

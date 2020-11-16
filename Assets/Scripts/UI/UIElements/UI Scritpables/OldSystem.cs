@@ -38,7 +38,7 @@ public class OldSystem : InputScheme
     [InputAxis] private string _hotKey9;
     [SerializeField] 
     [InputAxis] private string _hotKey0;
-
+    
     //Variables
     private bool _hasPauseAxis, _hasPosSwitchAxis, _hasNegSwitchAxis, _hasCancelAxis, _hasSwitchToMenusButton
         , _hasHotKey1, _hasHotKey2, _hasHotKey3, _hasHotKey4, _hasHotKey5;

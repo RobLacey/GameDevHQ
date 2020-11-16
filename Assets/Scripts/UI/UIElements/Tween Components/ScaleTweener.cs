@@ -17,7 +17,7 @@ public class ScaleTweener : TweenBase
         
         foreach (var item in _buildList)
         {
-            item._element.transform.localScale = item._startScale;
+            item._element.transform.localScale = item.ScaleSettings.StartScale;
         }
     }
 
@@ -82,33 +82,78 @@ public class ScaleTweener : TweenBase
     {
         foreach (var item in _buildList) 
         {
-            item._element.transform.localScale = item._startScale;
+            item._element.transform.localScale = item.ScaleSettings.StartScale;
         }
     }
 
     protected override void InTweenTargetSettings()
     {
-        foreach (var item in _listToUse)
+        if (_tweenType == ScaleTween.Scale_InAndOut)
         {
-            item._scaleTo = item._targetScale;
-        }
-    }
-
-    protected override void OutTweenTargetSettings()
-    {
-        if (_tweenType == ScaleTween.Scale_OutOnly)
-        {
-            foreach (var item in _listToUse)
+            foreach (var uIObject in _listToUse)
             {
-                item._scaleTo = item._targetScale;
+                uIObject._scaleTo = uIObject.ScaleSettings.MidScale;
             }
         }
         else
         {
-            foreach (var item in _listToUse)
+            foreach (var uIObject in _listToUse)
             {
-                item._scaleTo = item._startScale;
+                uIObject._scaleTo = uIObject.ScaleSettings.EndScale;
             }
         }
+
+        // foreach (var item in _listToUse)
+        // {
+        //     item._scaleTo = item.ScaleSettings.TargetScale;
+        // }
     }
+
+    protected override void OutTweenTargetSettings()
+    {
+        foreach (var item in _listToUse)
+        {
+            item._scaleTo = item.ScaleSettings.EndScale;
+        }
+
+        // if (_tweenType == ScaleTween.Scale_OutOnly)
+        // {
+        //     foreach (var item in _listToUse)
+        //     {
+        //         item._scaleTo = item.ScaleSettings.EndScale;
+        //     }
+        // }
+        // else
+        // {
+        //     foreach (var item in _listToUse)
+        //     {
+        //         item._scaleTo = item.ScaleSettings.StartScale;
+        //     }
+        // }
+    }
+    // protected override void InTweenTargetSettings()
+    // {
+    //     foreach (var item in _listToUse)
+    //     {
+    //         item._scaleTo = item.ScaleSettings.TargetScale;
+    //     }
+    // }
+    //
+    // protected override void OutTweenTargetSettings()
+    // {
+    //     if (_tweenType == ScaleTween.Scale_OutOnly)
+    //     {
+    //         foreach (var item in _listToUse)
+    //         {
+    //             item._scaleTo = item.ScaleSettings.TargetScale;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         foreach (var item in _listToUse)
+    //         {
+    //             item._scaleTo = item.ScaleSettings.StartScale;
+    //         }
+    //     }
+    // }
 }

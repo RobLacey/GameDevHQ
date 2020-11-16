@@ -18,7 +18,7 @@ public class RotateTween : TweenBase
         
         foreach (var item in _buildList)
         {
-            item._element.localRotation = Quaternion.Euler(item._rotateFrom);
+            item._element.localRotation = Quaternion.Euler(item.RotationSettings.StartRotation);
         }
     }
 
@@ -83,33 +83,34 @@ public class RotateTween : TweenBase
     {
         foreach (var item in _buildList)
         {
-            item._element.localRotation = Quaternion.Euler(item._rotateFrom);
+            item._element.localRotation = Quaternion.Euler(item.RotationSettings.StartRotation);
         }
     }
 
     protected override void InTweenTargetSettings()
     {
-        foreach (var item in _listToUse)
-        {
-            item._targetRotation = item._rotateToo;
-        }
-    }
-
-    protected override void OutTweenTargetSettings()
-    {
-        if (_tweenType == RotationTweenType.Out)
+        if (_tweenType == RotationTweenType.InAndOut)
         {
             foreach (var item in _listToUse)
             {
-                item._targetRotation = item._rotateToo;
+                item._targetRotation = item.RotationSettings.MidPoint;
             }
         }
         else
         {
             foreach (var item in _listToUse)
             {
-                item._targetRotation = item._rotateFrom;
+                item._targetRotation = item.RotationSettings.EndRotation;
             }
         }
+    }
+
+    protected override void OutTweenTargetSettings()
+    {
+        foreach (var item in _listToUse)
+        {
+            item._targetRotation = item.RotationSettings.EndRotation;
+        }
+
     }
 }

@@ -1,5 +1,5 @@
 ﻿
-public interface INode
+public interface INode : IToggles
 {
     UIBranch MyBranch { get; }
     UIBranch HasChildBranch { get; }
@@ -9,5 +9,13 @@ public interface INode
     bool DontStoreTheseNodeTypesInHistory { get; }
 }
 
+public interface IToggles
+{
+    ToggleData ToggleData { get; }
+    bool IsToggleGroup { get; }
+    IsActive ReturnStartAsSelected { get; }
+    IsActive SetStartAsSelected { set; }
+    UINode ReturnNode { get; }
 
+}
         

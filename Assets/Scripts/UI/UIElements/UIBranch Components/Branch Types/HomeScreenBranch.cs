@@ -1,6 +1,7 @@
-﻿public class HomeScreenBranchBase: BranchBase
+﻿public class HomeScreenBranch: BranchBase
 {
-    public HomeScreenBranchBase(UIBranch branch) : base(branch) { }
+    private bool _startBranch;
+    public HomeScreenBranch(UIBranch branch) : base(branch) { }
     
     //Properties
     private bool CannotTweenOnHome => _myBranch.TweenOnHome == IsActive.No;
@@ -15,7 +16,10 @@
     protected override void SaveOnStart(IOnStart args) 
     {
         base.SaveOnStart(args);
-        SetCanvas(ActiveCanvas.Yes);
+        if (_startBranch)
+        {
+            _myBranch.MoveToBranchWithoutTween();
+        }
         SetBlockRaycast(BlockRaycast.Yes);
     }
 
@@ -40,9 +44,10 @@
         }
         else
         {
-            _myBranch.DefaultStartOnThisNode.ThisNodeIsSelected();        
-            _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
+            _startBranch = true;
+            _myBranch.DefaultStartOnThisNode.ReturnNode.ThisNodeIsHighLighted();
         }
+
         _myBranch.MoveToThisBranch();
     }
 

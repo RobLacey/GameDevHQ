@@ -3,7 +3,7 @@
 public abstract class NodeFunctionBase : IEventUser
 {
     protected bool _pointerOver, _isSelected, _isDisabled;
-    private IUiEvents _uiEvents;
+    protected IUiEvents _uiEvents;
 
     //Properties
     protected bool CanActivate { get; set; }

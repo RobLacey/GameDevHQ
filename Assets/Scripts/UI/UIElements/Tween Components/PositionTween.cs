@@ -21,7 +21,7 @@ public class PositionTween : TweenBase
         
         foreach (var uIObject in _buildList)
         {
-            uIObject._element.anchoredPosition3D = uIObject._tweenStartPosition;
+            uIObject._element.anchoredPosition3D = uIObject.PositionSettings.StartPos;
         }
     }
 
@@ -86,7 +86,7 @@ public class PositionTween : TweenBase
     {
         foreach (var item in _buildList)
         {
-            item._element.anchoredPosition3D = item._tweenStartPosition;
+            item._element.anchoredPosition3D = item.PositionSettings.StartPos;
         }
     }
 
@@ -96,14 +96,14 @@ public class PositionTween : TweenBase
         {
             foreach (var uIObject in _listToUse)
             {
-                uIObject._moveTo = uIObject._tweenMiddlePosition;
+                uIObject._moveTo = uIObject.PositionSettings.MidPos;
             }
         }
         else
         {
             foreach (var uIObject in _listToUse)
             {
-                uIObject._moveTo = uIObject._tweenTargetPosition;
+                uIObject._moveTo = uIObject.PositionSettings.EndPos;
             }
         }
     }
@@ -112,7 +112,7 @@ public class PositionTween : TweenBase
     {
         foreach (var uIObject in _listToUse)
         {
-            uIObject._moveTo = uIObject._tweenTargetPosition;
+            uIObject._moveTo = uIObject.PositionSettings.EndPos;
         }
     }
 }

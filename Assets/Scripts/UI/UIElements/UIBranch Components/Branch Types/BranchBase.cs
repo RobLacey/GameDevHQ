@@ -17,7 +17,8 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
     protected IHistoryTrack _historyTrack;
     private readonly Canvas _myCanvas;
     private readonly CanvasGroup _myCanvasGroup;
-    
+    protected bool _isTabBranch;
+
     //Events
     private static CustomEvent<IOnHomeScreen> SetIsOnHomeScreen { get; } = new CustomEvent<IOnHomeScreen>();
     private static CustomEvent<IClearScreen> DoClearScreen { get; } = new CustomEvent<IClearScreen>();
@@ -74,7 +75,9 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
     }
     
     public void SubscribeToService() => _historyTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
-    
+
+    public void SetUpAsTabBranch() => _isTabBranch = true;
+
     protected virtual void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
         SetBlockRaycast(BlockRaycast.No);

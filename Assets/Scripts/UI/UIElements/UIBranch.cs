@@ -54,6 +54,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private int _groupIndex;
     private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
     private bool _activePopUp;
+    private bool _isTabBranch;
 
     //Enum
     private enum StoreAndRestorePopUps { StoreAndRestore, Reset }
@@ -74,7 +75,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     }    
     public void SetNoTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
-    public void IsTabBranch() => _branchType = BranchType.Standard;
     public UIBranch ActiveBranch => this;
 
     /// <summary>
@@ -153,7 +153,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         LastHighlighted = DefaultStartOnThisNode;
         LastSelected = DefaultStartOnThisNode;
         if(_groupsList.Count <= 1) return;
-        _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
+        _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartOnThisNode.ReturnNode, _groupsList);
     }
 
     private void SetDefaultStartPosition()
@@ -190,7 +190,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     {
         Branch.SetUpBranch(newParentBranch);
         if (_canActivateBranch) SetAsActiveBranch();
-
+        
         if (_tweenOnChange)
         {
             ActivateInTweens();
@@ -214,7 +214,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     public void ResetBranchesStartPosition()
     {
         if (_saveExitSelection == IsActive.Yes) return;
-        _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
+        _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartOnThisNode.ReturnNode, _groupsList);
         LastHighlighted = DefaultStartOnThisNode;
     }
 

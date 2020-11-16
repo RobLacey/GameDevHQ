@@ -22,10 +22,10 @@
         {
             case BranchType.HomeScreen:
                 CreateHomeScreenBranch(_uiBranch);
-                return new HomeScreenBranchBase(_uiBranch);
+                return new HomeScreenBranch(_uiBranch);
             case BranchType.Standard:
                 CreateStandardBranch(_uiBranch);
-                return new StandardBranchBase(_uiBranch);
+                return new StandardBranch(_uiBranch);
             case BranchType.ResolvePopUp:
                 CreateResolvePopUp(_uiBranch);
                 return new ResolvePopUp(_uiBranch, _allBranches);
@@ -40,7 +40,7 @@
                 return new PauseMenu(_uiBranch, _allBranches);
             case BranchType.Internal:
                 CreateInternal(_uiBranch);
-                return new StandardBranchBase(_uiBranch);
+                return new StandardBranch(_uiBranch);
         }
 
         return null;

@@ -1,23 +1,15 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
 
 [Serializable]
 public class TweenSettings
 {
-    [SerializeField] public RectTransform _element;
-    [Header("Position Settings")]
-    [SerializeField] [AllowNesting] [ShowIf("PositionTween")] [Label("Start Position")] public Vector3 _tweenStartPosition;
-    [SerializeField] [AllowNesting] [ShowIf("MiddleTween")] [Label("Mid Position")] public Vector3 _tweenMiddlePosition;
-    [SerializeField] [AllowNesting] [ShowIf("PositionTween")] [Label("End Position")] public Vector3 _tweenTargetPosition;
-    [Header("Scale Settings")]
-    [SerializeField] [AllowNesting] [ShowIf("ScaleTween")] public Vector3 _startScale;
-    [SerializeField] [AllowNesting] [ShowIf("ScaleTween")] [Label("End/Mid Scale")] public Vector3 _targetScale;
-    [Header("Rotation Settings")] 
-    [SerializeField] [AllowNesting] [ShowIf("RotationTween")] public Vector3 _rotateFrom;
-    [SerializeField] [AllowNesting] [ShowIf("RotationTween")] public Vector3 _rotateToo;
+    [SerializeField] [AllowNesting] /*[OnValueChanged("ReturnElement")]*/ public RectTransform _element;
+
+    [SerializeField] public PositionSettings _positionSettings;
+    [SerializeField] public ScaleSettings _scaleSettings;
+    [SerializeField] public RotationSettings _rotationSettings;
     [SerializeField] public float _buildNextAfterDelay;
     [HideInInspector] public Vector3 _moveTo;
     [HideInInspector] public Vector3 _scaleTo;
@@ -25,35 +17,27 @@ public class TweenSettings
     [HideInInspector] public Vector3 _punchStartScale;
     [HideInInspector] public Vector3 _shakeStartScale;
 
-    //EditorScripts
-    private bool PositionTween { get; set; }
-    private bool MiddleTween { get; set; }
-    public bool ScaleTween { get; set; }
-    public bool RotationTween { get; set; }
+    public PositionSettings PositionSettings => _positionSettings;
+    public ScaleSettings ScaleSettings => _scaleSettings;
+    public RotationSettings RotationSettings => _rotationSettings;
 
-    /// <summary>
-    /// Helper Method to set up Property draws correctly
-    /// </summary>
-    /// <param name="positionTween"></param>
-    public void SetPositionTween(PositionTweenType positionTween)
+    public void ReturnElement()
     {
-        if (positionTween != PositionTweenType.NoTween)
+        if (_element == null)
         {
-            PositionTween = true;
+            //_positionSettings.ClearPositionTween();
+            _positionSettings.SetRectTransform(null);
+            _scaleSettings.SetRectTransform(null);
+            _rotationSettings.SetRectTransform(null);
         }
         else
         {
-            PositionTween = false;
-        }
-
-        if (positionTween == PositionTweenType.InAndOut)
-        {
-            MiddleTween = true;
-        }
-        else
-        {
-            MiddleTween = false;
+            _positionSettings.SetRectTransform(_element);
+            _scaleSettings.SetRectTransform(_element);
+            _rotationSettings.SetRectTransform(_element);
         }
     }
-}
 
+   // public bool ScaleTween { get; set; }
+    // public bool RotationTween { get; set; }
+}

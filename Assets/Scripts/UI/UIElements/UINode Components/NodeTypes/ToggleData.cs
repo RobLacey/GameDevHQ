@@ -1,15 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 
 [Serializable]
 public class ToggleData
 {
-    [SerializeField] private ToggleGroup _toggleGroup;
     [SerializeField] 
-    private bool _startAsSelected;
-    [SerializeField]
+    private ToggleGroup _toggleGroupId = ToggleGroup.TG1;
+
+    [SerializeField] [AllowNesting] [ValidateInput("CheckTabBranch", "Must be a Standard Type branch")]
     private UIBranch _tabBranch;
+
+    public ToggleGroup ReturnToggleId => _toggleGroupId;
+    public UIBranch ReturnTabBranch => _tabBranch;
+    
+    private bool CheckTabBranch()
+    {
+        if (_tabBranch is null) return true;
+        return _tabBranch.ReturnBranchType == BranchType.Standard;
+    }
 
 }

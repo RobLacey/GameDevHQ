@@ -1,16 +1,26 @@
-﻿public class StandardBranchBase : BranchBase
+﻿public class StandardBranch : BranchBase
 {
-    public StandardBranchBase(UIBranch branch) : base(branch) { }
+    public StandardBranch(UIBranch branch) : base(branch) { }
+
+    protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
+    {
+        SetBlockRaycast(BlockRaycast.No);
+        if (_isTabBranch) return;
+        SetCanvas(ActiveCanvas.No);
+    }
 
     public override void SetUpBranch(UIBranch newParentController = null)
     {
-        if (_myBranch.CanvasIsEnabled) 
-            _myBranch.SetNoTween();
-        
         SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
         _myBranch.ResetBranchesStartPosition();
         SetNewParentBranch(newParentController);
+    }
+
+    protected override void ClearBranchForFullscreen(IClearScreen args)
+    {
+        if(_isTabBranch) return;
+        base.ClearBranchForFullscreen(args);
     }
 
     private void SetNewParentBranch(UIBranch newParentController) 

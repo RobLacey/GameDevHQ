@@ -21,7 +21,8 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
     //Variables
     private readonly IHistoryTrack _historyTracker;
     private readonly IPopUpController _popUpController;
-    private bool _noPopUps, _isPaused;
+    private bool _noPopUps = true;
+    private bool _isPaused;
     private Action _noPopUpAction;
     private UIBranch _popUpToRemove;
 

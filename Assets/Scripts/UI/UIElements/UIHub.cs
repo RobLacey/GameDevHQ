@@ -92,7 +92,8 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
         }
         else
         {
-            EventSystem.current.SetSelectedGameObject(_homeBranches.First().DefaultStartOnThisNode.gameObject);
+            EventSystem.current.SetSelectedGameObject(_homeBranches.First()
+                               .DefaultStartOnThisNode.ReturnNode.gameObject);
             _inMenu = true;
         }
     }

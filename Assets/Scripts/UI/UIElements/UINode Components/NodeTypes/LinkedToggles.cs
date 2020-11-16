@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
 public class LinkedToggles : NodeBase
 {
-    private readonly List<UINode> _toggleGroupMembers = new List<UINode>();
+    private readonly List<IToggles> _toggleGroupMembers = new List<IToggles>();
     private readonly ToggleGroup _groupID;
     private readonly UIBranch _tabBranch;
     private readonly bool _hasATabBranch;
+    private int _hasAGroupStartPoint;
     private bool _isSelected;
 
     //Events
@@ -15,12 +16,11 @@ public class LinkedToggles : NodeBase
     
     public LinkedToggles(UINode node) : base(node)
     {
-        _groupID = _uiNode.ToggleGroupID;
-        _tabBranch = _uiNode.ToggleBranch;
+        var toggleData = node.ToggleData;
+        _groupID = toggleData.ReturnToggleId;
+        _tabBranch = toggleData.ReturnTabBranch;
         _hasATabBranch = _tabBranch != null;
         SelectedToggle += SaveSelectedNode;
-        if (_tabBranch)
-            _tabBranch.IsTabBranch();
     }
     
     //Main
@@ -28,24 +28,59 @@ public class LinkedToggles : NodeBase
     {
         base.Start();
         SetUpToggleGroup(_uiNode.MyBranch.ThisGroupsUiNodes);
-        if (!_uiNode.StartAsSelected) return;
+        SetUpTabBranch();
+        if (_uiNode.ReturnStartAsSelected == IsActive.No) return;
         TurnOffOtherTogglesInGroup();
         _uiNode.SetNodeAsSelected_NoEffects();
-        TurnOnTab();
+         ActivateTabBranch();    
+    }
+
+    private void SetUpToggleGroup(IEnumerable<IToggles> thisGroupsUINodes)
+    {
+        foreach (var node in thisGroupsUINodes)
+        {
+            if (!node.IsToggleGroup) continue;
+            if (_groupID != node.ToggleData.ReturnToggleId) continue;
+            
+            _toggleGroupMembers.Add(node.ReturnNode);
+            CheckIfIsStartNode(node);
+        }
+        CheckForStartPosition();
+        _toggleGroupMembers.Remove(_uiNode);
+    }
+
+    private void SetUpTabBranch()
+    {
+        if (_hasATabBranch)
+            _tabBranch.Branch.SetUpAsTabBranch();
+    }
+
+    private void ActivateTabBranch()
+    {
+        if (_hasATabBranch)
+            TurnOnTab();
     }
 
     public override void DeactivateNode() { }
 
-    private void SetUpToggleGroup(INode[] thisGroupsUINodes)
+    private void CheckIfIsStartNode(IToggles node)
     {
-        foreach (var node in thisGroupsUINodes)
+        if (node.ReturnStartAsSelected == IsActive.Yes)
+            _hasAGroupStartPoint++;
+    }
+
+    private void CheckForStartPosition()
+    {
+        if (_hasAGroupStartPoint == 0)
         {
-            if (!node.ReturnNode.IsToggleGroup || node.ReturnNode == _uiNode) continue;
-            if (_groupID != node.ReturnNode.ToggleGroupId) continue;
-            _toggleGroupMembers.Add(node.ReturnNode);
+            _toggleGroupMembers.First().SetStartAsSelected = IsActive.Yes;
+        }        
+        else if (_hasAGroupStartPoint > 1)
+        {
+            throw new Exception("To many start Point : " + _uiNode);
         }
     }
-    
+
     private void SaveSelectedNode(UINode newNode, Action callback)
     {
         if (!_toggleGroupMembers.Contains(newNode)) return;
@@ -63,13 +98,16 @@ public class LinkedToggles : NodeBase
     protected override void TurnNodeOnOff()
     {
         if (_uiNode.IsSelected) return;        
-
         TurnOffOtherTogglesInGroup();
         Activate();
-        _uiHistoryTrack.SetSelected(_uiNode);
     }
 
-    private void Activate() => _uiNode.SetSelectedStatus(true, _uiNode.DoPress);
+    private void Activate()
+    {
+        TurnOnTab();
+        _uiNode.SetSelectedStatus(true, _uiNode.DoPress);
+        _uiHistoryTrack.SetSelected(_uiNode);
+    }
 
     private void TurnOffOtherTogglesInGroup()
     {

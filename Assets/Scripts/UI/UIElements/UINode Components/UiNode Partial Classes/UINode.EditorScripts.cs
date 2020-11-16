@@ -21,4 +21,5 @@ public partial class UINode
     private bool NeedTooltip() => (_enabledFunctions & Setting.TooplTip) != 0;
     private bool NeedEvents() => (_enabledFunctions & Setting.Events) != 0;
     private bool GroupSettings() => _buttonFunction != ButtonFunction.ToggleGroup;
+
 }

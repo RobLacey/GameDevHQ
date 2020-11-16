@@ -39,7 +39,7 @@ public enum FadeTween
 
 public enum EffectType { In, Out, Both }
 
-public enum ToggleGroup { None, TG1, TG2, TG3, TG4, TG5 }
+public enum ToggleGroup { TG1, TG2, TG3, TG4, TG5 }
 
 public enum EscapeKey { None, BackOneLevel, BackToHome, GlobalSetting, HoverClose }
 
