@@ -263,7 +263,8 @@
               </e>
               <e p="TestRunner.cs" t="Include" />
               <e p="Tween Components" t="Include">
-                <e p="FadeTweener.cs" t="Include" />
+                <e p="BuildTweenData.cs" t="Include" />
+                <e p="FadeTween.cs" t="Include" />
                 <e p="PositionSettings.cs" t="Include" />
                 <e p="PositionTween.cs" t="Include" />
                 <e p="PunchTweener.cs" t="Include" />
@@ -273,7 +274,6 @@
                 <e p="ScaleTweener.cs" t="Include" />
                 <e p="ShakeTweener.cs" t="Include" />
                 <e p="TweenBase.cs" t="Include" />
-                <e p="TweenSettings.cs" t="Include" />
                 <e p="UITweener.cs" t="Include" />
                 <e p="UITweener.EditorScripts.cs" t="Include" />
               </e>
@@ -285,6 +285,7 @@
                 <e p="OldSystem.cs" t="Include" />
                 <e p="SizeAndPositionScheme.cs" t="Include" />
                 <e p="ToolTipScheme.cs" t="Include" />
+                <e p="TweenScheme.cs" t="Include" />
               </e>
               <e p="UI Utilities" t="Include">
                 <e p="BucketCreator.cs" t="Include" />
@@ -296,6 +297,7 @@
                 <e p="Factorys" t="Include">
                   <e p="BranchFactory.cs" t="Include" />
                   <e p="NodeFactory.cs" t="Include" />
+                  <e p="TweenFactory.cs" t="Include" />
                 </e>
                 <e p="IMonoBehaviourSub.cs" t="Include" />
                 <e p="ServiceLocator.cs" t="Include" />

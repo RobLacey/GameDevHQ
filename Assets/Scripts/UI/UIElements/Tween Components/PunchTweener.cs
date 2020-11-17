@@ -16,20 +16,20 @@ public class PunchTweener
     [SerializeField] [AllowNesting] [Range(1, 10)] int _vibrato = 5;
 
     //Variables
-    List<TweenSettings> _buildList = new List<TweenSettings>();
+    List<BuildTweenData> _buildList = new List<BuildTweenData>();
     private Coroutine _coroutine;
 
     //Properties
     public bool CheckInEffectType => _punchWhen == EffectType.In || _punchWhen == EffectType.Both;
     public bool CheckOutEffectType => _punchWhen == EffectType.Out || _punchWhen == EffectType.Both;
 
-    public void SetUpPunchTween(List<TweenSettings> buildSettings)
+    public void SetUpPunchTween(List<BuildTweenData> buildSettings)
     {
         _buildList = buildSettings;
 
         foreach (var item in _buildList)
         {
-            item._punchStartScale = item._element.localScale;
+            item._punchStartScale = item.Element.localScale;
         }
     }
 
@@ -67,7 +67,7 @@ public class PunchTweener
     {
         foreach (var item in _buildList)
         {
-            DOTween.Kill("position" + item._element.GetInstanceID());
+            DOTween.Kill("position" + item.Element.GetInstanceID());
         }
     }
 
@@ -76,7 +76,7 @@ public class PunchTweener
     {
         foreach (var item in _buildList)
         {
-            item._element.localScale = item._punchStartScale;
+            item.Element.localScale = item._punchStartScale;
         }
     }
 
@@ -90,16 +90,16 @@ public class PunchTweener
             {
                 if (index == _buildList.Count - 1)
                 {
-                    item._element.DOPunchScale(_strength, _duration, _vibrato, _elasticity)
-                            .SetId("punch" + item._element.GetInstanceID())
+                    item.Element.DOPunchScale(_strength, _duration, _vibrato, _elasticity)
+                            .SetId("punch" + item.Element.GetInstanceID())
                             .SetAutoKill(true)
                             .Play()
                             .OnComplete(tweenCallback);
                 }
                 else
                 {
-                    item._element.DOPunchScale(_strength, _duration, _vibrato, _elasticity)
-                                                .SetId("punch" + item._element.GetInstanceID())
+                    item.Element.DOPunchScale(_strength, _duration, _vibrato, _elasticity)
+                                                .SetId("punch" + item.Element.GetInstanceID())
                                                 .SetAutoKill(true)
                                                 .Play();
                     yield return new WaitForSeconds(item._buildNextAfterDelay);

@@ -4543,55 +4543,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList: []
-  _useGlobalTime: 1
-  _globalInTime: 1
-  _globalOutTime: 1
-  _positionTween: 0
-  _rotationTween: 0
-  _canvasGroupFade: 3
-  _scaleTransition: 0
-  _punchShakeTween: 0
-  _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _posTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-    _pixelSnapping: 0
-  _rotateTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _scaleTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _punchTween:
-    _punchWhen: 0
-    _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.5
-    _elasticity: 0.5
-    _vibrato: 5
-  _shakeTween:
-    _shakeWhen: 0
-    _strength: {x: 0.2, y: 0.2, z: 0.2}
-    _duration: 0.5
-    _vibrato: 10
-    _randomness: 45
-    _fadeOut: 1
-  _fadeTween:
-    _inTime: 0.5
-    _outTime: 0.5
-    _fadeEase: 1
+  _scheme: {fileID: 0}
 --- !u!114 &246213782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4804,55 +4756,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTime: 0
-  _globalInTime: 1
-  _globalOutTime: 1
-  _positionTween: 1
-  _rotationTween: 0
-  _canvasGroupFade: 0
-  _scaleTransition: 0
-  _punchShakeTween: 0
-  _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _posTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 6
-    _easeOut: 5
-    _pixelSnapping: 0
-  _rotateTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 0
-    _easeOut: 0
-  _scaleTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 0
-    _easeOut: 0
-  _punchTween:
-    _punchWhen: 0
-    _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.5
-    _elasticity: 0.5
-    _vibrato: 5
-  _shakeTween:
-    _shakeWhen: 0
-    _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.5
-    _vibrato: 5
-    _randomness: 45
-    _fadeOut: 0
-  _fadeTween:
-    _inTime: 2
-    _outTime: 2
-    _fadeEase: 1
+  _scheme: {fileID: 0}
 --- !u!114 &274292517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8759,55 +8663,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTime: 1
-  _globalInTime: 1
-  _globalOutTime: 1
-  _positionTween: 1
-  _rotationTween: 0
-  _canvasGroupFade: 0
-  _scaleTransition: 0
-  _punchShakeTween: 0
-  _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _posTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-    _pixelSnapping: 0
-  _rotateTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _scaleTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _punchTween:
-    _punchWhen: 0
-    _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.5
-    _elasticity: 0.5
-    _vibrato: 5
-  _shakeTween:
-    _shakeWhen: 0
-    _strength: {x: 0.2, y: 0.2, z: 0.2}
-    _duration: 0.5
-    _vibrato: 10
-    _randomness: 45
-    _fadeOut: 1
-  _fadeTween:
-    _inTime: 1
-    _outTime: 1
-    _fadeEase: 1
+  _scheme: {fileID: 0}
 --- !u!114 &413526951
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9887,6 +9743,11 @@ PrefabInstance:
     - target: {fileID: 4726497964099142034, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4726497964099142034, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: m_OverrideSorting
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
@@ -10097,7 +9958,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _globalInTime
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -10137,7 +9998,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _scaleTransition
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -10212,12 +10073,12 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _globalOutTime
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _rotationTween
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -10302,7 +10163,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasGroupFade
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -10377,12 +10238,12 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _fadeTween._inTime
-      value: 0.2
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _fadeTween._outTime
-      value: 0.2
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -10539,6 +10400,12 @@ PrefabInstance:
       propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._rotateToo.y
       value: 90
       objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _scheme
+      value: 
+      objectReference: {fileID: 11400000, guid: 288aa10055ca42443a0371953c985365,
+        type: 2}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10892,55 +10759,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTime: 1
-  _globalInTime: 1
-  _globalOutTime: 1
-  _positionTween: 3
-  _rotationTween: 0
-  _canvasGroupFade: 0
-  _scaleTransition: 0
-  _punchShakeTween: 0
-  _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _posTween:
-    _inTime: 0.4
-    _outTime: 0.4
-    _easeIn: 6
-    _easeOut: 5
-    _pixelSnapping: 0
-  _rotateTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _scaleTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _punchTween:
-    _punchWhen: 0
-    _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.5
-    _elasticity: 0.5
-    _vibrato: 5
-  _shakeTween:
-    _shakeWhen: 0
-    _strength: {x: 0.2, y: 0.2, z: 0.2}
-    _duration: 0.5
-    _vibrato: 10
-    _randomness: 45
-    _fadeOut: 1
-  _fadeTween:
-    _inTime: 1
-    _outTime: 1
-    _fadeEase: 1
+  _scheme: {fileID: 0}
 --- !u!114 &504002780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10977,7 +10796,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 504002776}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 2
   m_Camera: {fileID: 0}
@@ -13059,55 +12878,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTime: 0
-  _globalInTime: 0.1
-  _globalOutTime: 0.1
-  _positionTween: 2
-  _rotationTween: 0
-  _canvasGroupFade: 1
-  _scaleTransition: 0
-  _punchShakeTween: 2
-  _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _posTween:
-    _inTime: 0.1
-    _outTime: 0.1
-    _easeIn: 1
-    _easeOut: 1
-    _pixelSnapping: 0
-  _rotateTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _scaleTween:
-    _inTime: 0.5
-    _outTime: 0.5
-    _easeIn: 1
-    _easeOut: 1
-  _punchTween:
-    _punchWhen: 0
-    _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.5
-    _elasticity: 0.5
-    _vibrato: 5
-  _shakeTween:
-    _shakeWhen: 0
-    _strength: {x: 0.2, y: 0.2, z: 0.2}
-    _duration: 0.5
-    _vibrato: 10
-    _randomness: 45
-    _fadeOut: 1
-  _fadeTween:
-    _inTime: 0.5
-    _outTime: 0.5
-    _fadeEase: 1
+  _scheme: {fileID: 0}
 --- !u!114 &620683492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13248,6 +13019,51 @@ PrefabInstance:
       propertyPath: _buildObjectsList.Array.data[0]._tweenMiddlePosition.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._grabMidPosition
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._element
+      value: 
+      objectReference: {fileID: 634434329}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._element
+      value: 
+      objectReference: {fileID: 634434329}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._element
+      value: 
+      objectReference: {fileID: 634434329}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._grabEndPosition
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenTargetPosition.x
+      value: -1860
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._goToMidPosition
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._grabStartPosition
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenStartPosition.x
+      value: 1875
+      objectReference: {fileID: 0}
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: m_Enabled
@@ -13261,6 +13077,11 @@ PrefabInstance:
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: m_OverridePixelPerfect
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: m_OverrideSorting
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 997165033627275256, guid: 8e09348a0583a7e4b875cd1513db467b,
@@ -14058,7 +13879,7 @@ PrefabInstance:
     - target: {fileID: 4726497964099142034, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -14163,7 +13984,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasGroupFade
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -14223,12 +14044,12 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _fadeTween._outTime
-      value: 0.2
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _fadeTween._inTime
-      value: 0.2
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -14393,7 +14214,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _scaleTransition
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -14533,7 +14354,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _rotationTween
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -14549,6 +14370,16 @@ PrefabInstance:
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._rotateToo.y
       value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _useGlobalTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _scheme
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -17679,6 +17510,21 @@ PrefabInstance:
       propertyPath: _canvasRenderer
       value: 
       objectReference: {fileID: 926952841}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._element
+      value: 
+      objectReference: {fileID: 926952842}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._element
+      value: 
+      objectReference: {fileID: 926952842}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._element
+      value: 
+      objectReference: {fileID: 926952842}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -21133,6 +20979,21 @@ PrefabInstance:
       propertyPath: _fadeTween._outTime
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._element
+      value: 
+      objectReference: {fileID: 984987783}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._element
+      value: 
+      objectReference: {fileID: 984987783}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._element
+      value: 
+      objectReference: {fileID: 984987783}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -23244,55 +23105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList: []
-  _useGlobalTime: 1
-  _globalInTime: 1
-  _globalOutTime: 1
-  _positionTween: 0
-  _rotationTween: 0
-  _canvasGroupFade: 3
-  _scaleTransition: 0
-  _punchShakeTween: 0
-  _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _posTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-    _pixelSnapping: 0
-  _rotateTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _scaleTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _punchTween:
-    _punchWhen: 0
-    _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.5
-    _elasticity: 0.5
-    _vibrato: 5
-  _shakeTween:
-    _shakeWhen: 0
-    _strength: {x: 0.2, y: 0.2, z: 0.2}
-    _duration: 0.5
-    _vibrato: 10
-    _randomness: 45
-    _fadeOut: 1
-  _fadeTween:
-    _inTime: 0.5
-    _outTime: 0.5
-    _fadeEase: 1
+  _scheme: {fileID: 0}
 --- !u!114 &1064311447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24357,6 +24170,21 @@ PrefabInstance:
       propertyPath: _buildObjectsList.Array.data[0]._tweenTargetPosition.y
       value: 37
       objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._element
+      value: 
+      objectReference: {fileID: 1096179285}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._element
+      value: 
+      objectReference: {fileID: 1096179285}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._element
+      value: 
+      objectReference: {fileID: 1096179285}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -25045,55 +24873,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList: []
-  _useGlobalTime: 1
-  _globalInTime: 1
-  _globalOutTime: 1
-  _positionTween: 0
-  _rotationTween: 0
-  _canvasGroupFade: 3
-  _scaleTransition: 0
-  _punchShakeTween: 0
-  _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _posTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-    _pixelSnapping: 0
-  _rotateTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _scaleTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _punchTween:
-    _punchWhen: 0
-    _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.5
-    _elasticity: 0.5
-    _vibrato: 5
-  _shakeTween:
-    _shakeWhen: 0
-    _strength: {x: 0.2, y: 0.2, z: 0.2}
-    _duration: 0.5
-    _vibrato: 10
-    _randomness: 45
-    _fadeOut: 1
-  _fadeTween:
-    _inTime: 0.5
-    _outTime: 0.5
-    _fadeEase: 1
+  _scheme: {fileID: 0}
 --- !u!114 &1248739663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26478,55 +26258,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTime: 1
-  _globalInTime: 1
-  _globalOutTime: 1
-  _positionTween: 1
-  _rotationTween: 0
-  _canvasGroupFade: 0
-  _scaleTransition: 0
-  _punchShakeTween: 0
-  _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _posTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 6
-    _easeOut: 5
-    _pixelSnapping: 0
-  _rotateTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _scaleTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _punchTween:
-    _punchWhen: 0
-    _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.5
-    _elasticity: 0.5
-    _vibrato: 5
-  _shakeTween:
-    _shakeWhen: 0
-    _strength: {x: 0.2, y: 0.2, z: 0.2}
-    _duration: 0.5
-    _vibrato: 10
-    _randomness: 45
-    _fadeOut: 1
-  _fadeTween:
-    _inTime: 1
-    _outTime: 1
-    _fadeEase: 1
+  _scheme: {fileID: 0}
 --- !u!114 &1396258921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27079,7 +26811,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasGroupFade
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -28507,55 +28239,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTime: 1
-  _globalInTime: 1
-  _globalOutTime: 1
-  _positionTween: 0
-  _rotationTween: 0
-  _canvasGroupFade: 2
-  _scaleTransition: 2
-  _punchShakeTween: 2
-  _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _posTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-    _pixelSnapping: 0
-  _rotateTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _scaleTween:
-    _inTime: 0.5
-    _outTime: 0.5
-    _easeIn: 1
-    _easeOut: 1
-  _punchTween:
-    _punchWhen: 0
-    _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.5
-    _elasticity: 0.5
-    _vibrato: 5
-  _shakeTween:
-    _shakeWhen: 0
-    _strength: {x: 0.2, y: 0.2, z: 0.2}
-    _duration: 0.5
-    _vibrato: 10
-    _randomness: 45
-    _fadeOut: 1
-  _fadeTween:
-    _inTime: 0.5
-    _outTime: 0.5
-    _fadeEase: 1
+  _scheme: {fileID: 0}
 --- !u!114 &1478859611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32324,55 +32008,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList: []
-  _useGlobalTime: 1
-  _globalInTime: 1
-  _globalOutTime: 1
-  _positionTween: 0
-  _rotationTween: 0
-  _canvasGroupFade: 0
-  _scaleTransition: 0
-  _punchShakeTween: 0
-  _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _posTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-    _pixelSnapping: 0
-  _rotateTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _scaleTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _punchTween:
-    _punchWhen: 0
-    _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.5
-    _elasticity: 0.5
-    _vibrato: 5
-  _shakeTween:
-    _shakeWhen: 0
-    _strength: {x: 0.2, y: 0.2, z: 0.2}
-    _duration: 0.5
-    _vibrato: 10
-    _randomness: 45
-    _fadeOut: 1
-  _fadeTween:
-    _inTime: 1
-    _outTime: 1
-    _fadeEase: 1
+  _scheme: {fileID: 0}
 --- !u!114 &1712214356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33098,55 +32734,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTime: 1
-  _globalInTime: 1
-  _globalOutTime: 1
-  _positionTween: 0
-  _rotationTween: 0
-  _canvasGroupFade: 3
-  _scaleTransition: 0
-  _punchShakeTween: 1
-  _shakeOrPunchAtEnd: 0
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _posTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-    _pixelSnapping: 0
-  _rotateTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _scaleTween:
-    _inTime: 0.5
-    _outTime: 0.5
-    _easeIn: 1
-    _easeOut: 1
-  _punchTween:
-    _punchWhen: 0
-    _strength: {x: 0.5, y: 0.5, z: 0}
-    _duration: 0.5
-    _elasticity: 0.5
-    _vibrato: 5
-  _shakeTween:
-    _shakeWhen: 0
-    _strength: {x: 1, y: 1, z: 1}
-    _duration: 0.5
-    _vibrato: 10
-    _randomness: 45
-    _fadeOut: 1
-  _fadeTween:
-    _inTime: 0.5
-    _outTime: 0.5
-    _fadeEase: 1
+  _scheme: {fileID: 0}
 --- !u!114 &1743252785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33645,6 +33233,51 @@ PrefabInstance:
       propertyPath: _addTweenEventTriggers
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._grabStartPosition
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._element
+      value: 
+      objectReference: {fileID: 1154447022}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._element
+      value: 
+      objectReference: {fileID: 1154447022}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._element
+      value: 
+      objectReference: {fileID: 1154447022}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenStartPosition.x
+      value: 1867
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._goToMidPosition
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._grabMidPosition
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._grabEndPosition
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenTargetPosition.x
+      value: -1904
+      objectReference: {fileID: 0}
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: m_Enabled
@@ -33658,6 +33291,16 @@ PrefabInstance:
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: m_OverridePixelPerfect
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: m_OverrideSorting
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: m_SortingOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 997165033627275256, guid: 8e09348a0583a7e4b875cd1513db467b,
@@ -34003,12 +33646,12 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasGroupFade
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -34035,6 +33678,21 @@ PrefabInstance:
       propertyPath: _fadeTween._outTime
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._element
+      value: 
+      objectReference: {fileID: 1824353055}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._element
+      value: 
+      objectReference: {fileID: 1824353055}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._element
+      value: 
+      objectReference: {fileID: 1824353055}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -35741,6 +35399,21 @@ PrefabInstance:
       propertyPath: _buildObjectsList.Array.data[0]._tweenMiddlePosition.x
       value: 388
       objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._element
+      value: 
+      objectReference: {fileID: 392278896}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._element
+      value: 
+      objectReference: {fileID: 392278896}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._element
+      value: 
+      objectReference: {fileID: 392278896}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -36725,55 +36398,7 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  _useGlobalTime: 0
-  _globalInTime: 0.1
-  _globalOutTime: 0.1
-  _positionTween: 2
-  _rotationTween: 0
-  _canvasGroupFade: 1
-  _scaleTransition: 0
-  _punchShakeTween: 2
-  _shakeOrPunchAtEnd: 1
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _posTween:
-    _inTime: 0.1
-    _outTime: 0.1
-    _easeIn: 1
-    _easeOut: 1
-    _pixelSnapping: 0
-  _rotateTween:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
-  _scaleTween:
-    _inTime: 0.1
-    _outTime: 0.5
-    _easeIn: 1
-    _easeOut: 1
-  _punchTween:
-    _punchWhen: 0
-    _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.5
-    _elasticity: 0.5
-    _vibrato: 5
-  _shakeTween:
-    _shakeWhen: 0
-    _strength: {x: 0.2, y: 0.2, z: 0.2}
-    _duration: 0.5
-    _vibrato: 10
-    _randomness: 45
-    _fadeOut: 1
-  _fadeTween:
-    _inTime: 0.5
-    _outTime: 0.5
-    _fadeEase: 1
+  _scheme: {fileID: 0}
 --- !u!114 &2018220713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37837,6 +37462,21 @@ PrefabInstance:
       propertyPath: _buildObjectsList.Array.data[0]._tweenTargetPosition.x
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._element
+      value: 
+      objectReference: {fileID: 2090451337}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._element
+      value: 
+      objectReference: {fileID: 2090451337}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._element
+      value: 
+      objectReference: {fileID: 2090451337}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -41145,6 +40785,21 @@ PrefabInstance:
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._goToEndPosition
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._positionSettings._element
+      value: 
+      objectReference: {fileID: 2054211501}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._element
+      value: 
+      objectReference: {fileID: 2054211501}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._element
+      value: 
+      objectReference: {fileID: 2054211501}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalPosition.x

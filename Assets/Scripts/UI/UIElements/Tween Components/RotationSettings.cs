@@ -19,10 +19,10 @@ public class RotationSettings
 
     public void SetRectTransform(RectTransform rectTransform) => _element = rectTransform;
 
-    public void SetRotationTween(RotationTweenType rotationTween)
+    public void SetRotationTween(TweenStyle rotationTween)
     {
-        Debug.Log(rotationTween);
-        if (rotationTween != RotationTweenType.NoTween)
+        //Debug.Log(rotationTween);
+        if (rotationTween != TweenStyle.NoTween)
         {
             RotationTween = true;
         }
@@ -31,7 +31,7 @@ public class RotationSettings
             RotationTween = false;
         }
 
-        if (rotationTween == RotationTweenType.InAndOut)
+        if (rotationTween == TweenStyle.InAndOut)
         {
             // _rotateFrom = Vector3.zero;
             // _rotateMidPoint = Vector3.zero;
@@ -40,7 +40,7 @@ public class RotationSettings
         }
         else
         {
-            if (rotationTween == RotationTweenType.In)
+            if (rotationTween == TweenStyle.In)
             {
                 // _rotateFrom = Vector3.zero;
                 // _rotateMidPoint = Vector3.zero;

@@ -25,9 +25,9 @@ public class ScaleSettings
 
     public void SetRectTransform(RectTransform rectTransform) => _element = rectTransform;
 
-    public void SetScaleTween(ScaleTween scaleTween)
+    public void SetScaleTween(TweenStyle scaleTween)
     {
-        if (scaleTween != ScaleTween.NoTween)
+        if (scaleTween != TweenStyle.NoTween)
         {
             DoScaleTween = true;
         }
@@ -36,7 +36,7 @@ public class ScaleSettings
             DoScaleTween = false;
         }
 
-        if (scaleTween == ScaleTween.Scale_InAndOut)
+        if (scaleTween == TweenStyle.InAndOut)
         {
             // _startScale = Vector3.zero;
             // _fullSize = _element.localScale;
@@ -45,7 +45,7 @@ public class ScaleSettings
         }
         else
         {
-            if (scaleTween == ScaleTween.Scale_InOnly)
+            if (scaleTween == TweenStyle.In)
             {
                 // _startScale = Vector3.zero;
                 // _fullSize = Vector3.zero;

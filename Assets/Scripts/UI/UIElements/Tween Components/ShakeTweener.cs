@@ -17,20 +17,20 @@ public class ShakeTweener
     [SerializeField] [AllowNesting] bool _fadeOut = true;
 
     //Variables
-    List<TweenSettings> _buildList = new List<TweenSettings>();
+    List<BuildTweenData> _buildList = new List<BuildTweenData>();
     private Coroutine _coroutine;
 
     //Properties
     private bool CheckInEffectType => _shakeWhen == EffectType.In || _shakeWhen == EffectType.Both;
     private bool CheckOutEffectType => _shakeWhen == EffectType.Out || _shakeWhen == EffectType.Both;
 
-    public void SetUpShakeTween(List<TweenSettings> buildSettings)
+    public void SetUpShakeTween(List<BuildTweenData> buildSettings)
     {
         _buildList = buildSettings;
 
         foreach (var item in _buildList)
         {
-            item._shakeStartScale = item._element.localScale;
+            item._shakeStartScale = item.Element.localScale;
         }
     }
 
@@ -68,7 +68,7 @@ public class ShakeTweener
     {
         foreach (var item in _buildList)
         {
-            DOTween.Kill("shake" + item._element.GetInstanceID());
+            DOTween.Kill("shake" + item.Element.GetInstanceID());
         }
     }
 
@@ -77,7 +77,7 @@ public class ShakeTweener
     {
         foreach (var item in _buildList)
         {
-            item._element.localScale = item._shakeStartScale;
+            item.Element.localScale = item._shakeStartScale;
         }
     }
 
@@ -91,16 +91,16 @@ public class ShakeTweener
             {
                 if (index == _buildList.Count - 1)
                 {
-                    item._element.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut)
-                                                    .SetId("shake" + item._element.GetInstanceID())
+                    item.Element.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut)
+                                                    .SetId("shake" + item.Element.GetInstanceID())
                                                     .SetAutoKill(true)
                                                     .Play()
                                                     .OnComplete(tweenCallback);
                 }
                 else
                 {
-                    item._element.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut)
-                                            .SetId("shake" + item._element.GetInstanceID())
+                    item.Element.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut)
+                                            .SetId("shake" + item.Element.GetInstanceID())
                                             .SetAutoKill(true)
                                             .Play();
                     yield return new WaitForSeconds(item._buildNextAfterDelay);

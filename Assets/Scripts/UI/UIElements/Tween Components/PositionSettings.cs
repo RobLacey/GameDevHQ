@@ -106,9 +106,9 @@ public class PositionSettings
         _goToEndPosition = false;
     }
     
-    public void SetPositionTween(PositionTweenType positionTween)
+    public void SetPositionTween(TweenStyle tween)
     {
-        if (positionTween != PositionTweenType.NoTween)
+        if (tween != TweenStyle.NoTween)
         {
             PositionTween = true;
         }
@@ -117,7 +117,7 @@ public class PositionSettings
             PositionTween = false;
         }
 
-        if (positionTween == PositionTweenType.InAndOut)
+        if (tween == TweenStyle.InAndOut)
         {
             MiddleTween = true;
         }

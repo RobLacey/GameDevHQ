@@ -21,34 +21,60 @@ public abstract class TweenBase
 
     //Variables
     protected float _tweenTime;
-    protected float _globalTime;
+    private float _globalTime;
     protected Ease _tweenEase;
-    protected Coroutine _coroutine;
+    private Coroutine _coroutine;
     protected string _tweenName;
-    protected List<TweenSettings> _listToUse;
-    protected List<TweenSettings> _reversedBuild = new List<TweenSettings>();
-    protected List<TweenSettings> _buildList = new List<TweenSettings>();
+    protected TweenStyle _tweenType;
+
+    protected List<BuildTweenData> _listToUse;
+    private List<BuildTweenData> _reversedBuild = new List<BuildTweenData>();
+    protected List<BuildTweenData> _buildList = new List<BuildTweenData>();
 
     //Delegates
-    protected Action<RectTransform> _endEffectTrigger;
-    protected TweenCallback _callback;
+    private Action<RectTransform> _endEffectTrigger;
+    private TweenCallback _callback;
 
     public bool UsingGlobalTime { get; set; }
 
-    public abstract void SetUpTweens(List<TweenSettings> buildObjectsList, 
-                                     Action<RectTransform> effectCall);
+    public virtual void SetUpTweens(List<BuildTweenData> buildObjectsList,
+                                     Action<RectTransform> effectCall)
+    {
+        _tweenName = GetType().Name;
+        SetUpTweensCommon(buildObjectsList, effectCall);
 
-    protected void SetUpTweensCommon(List<TweenSettings> buildObjectsList, 
+    }
+
+    protected void SetUpTweensCommon(List<BuildTweenData> buildObjectsList, 
                                      Action<RectTransform> effectCall)
     {
         _endEffectTrigger = effectCall;
         _buildList = buildObjectsList;
-        _reversedBuild = new List<TweenSettings>(_buildList);
+        _reversedBuild = new List<BuildTweenData>(_buildList);
         _reversedBuild.Reverse();
     }
-    
-    public abstract void StartTween(Enum tweenType, float tweenTime,
-                                    TweenType isIn, TweenCallback tweenCallback);
+
+    public void StartTween(Enum tweenType, float tweenTime,
+                           TweenType isIn, TweenCallback tweenCallback)
+    {
+        _tweenType = (TweenStyle)tweenType;
+        if (_tweenType == TweenStyle.NoTween) return;
+        StartTweenCommon(tweenTime, tweenCallback);
+
+        switch (_tweenType)
+        {
+            case TweenStyle.In:
+                InTween(isIn);
+                break;
+            case TweenStyle.Out:
+                OutTween(isIn);
+                break;
+            case TweenStyle.InAndOut:
+                InAndOutTween(isIn);
+                break;
+        }
+
+    }
     
     protected void StartTweenCommon(float tweenTime, TweenCallback tweenCallback)
     {
@@ -88,7 +114,6 @@ public abstract class TweenBase
     {
         if (isIn == TweenType.In)
         {
-            RewindTweens();
             DoInTween();
         }
         else
@@ -97,7 +122,7 @@ public abstract class TweenBase
         }
     }
 
-    protected virtual void DoInTween()
+    private void DoInTween()
     {
         _tweenEase = _easeIn;
         _listToUse = _buildList;
@@ -106,7 +131,7 @@ public abstract class TweenBase
         _coroutine = StaticCoroutine.StartCoroutine(TweenSequence());
     }
 
-    protected virtual void DoOutTween(List<TweenSettings> passedBuildList)
+    private void DoOutTween(List<BuildTweenData> passedBuildList)
     {
         _tweenEase = _easeOut;
         _listToUse = passedBuildList;
@@ -120,11 +145,40 @@ public abstract class TweenBase
     {
         foreach (var item in _buildList)
         {
-            DOTween.Kill($"{_tweenName}{item._element.GetInstanceID()}");
+            DOTween.Kill($"{_tweenName}{item.Element.GetInstanceID()}");
         }
     }
 
-    protected abstract IEnumerator TweenSequence();
+    private IEnumerator TweenSequence()
+    {
+        bool finished = false;
+        int index = 0;
+        while (!finished)
+        {
+            foreach (var item in _listToUse)
+            {
+                if (index == _listToUse.Count - 1)
+                {
+                    Tween tween = DoTweenProcess(item, _callback);
+                    yield return tween.WaitForCompletion();
+                    _endEffectTrigger?.Invoke(item.Element);
+                }
+                else
+                {
+                    DoTweenProcess(item, EndAction(item));
+                    yield return new WaitForSeconds(item._buildNextAfterDelay);
+                    index++;
+                }
+            }
+            finished = true;
+        }
+
+        yield return null;
+
+        TweenCallback EndAction(BuildTweenData tweenSettings) => () => _endEffectTrigger?.Invoke(tweenSettings.Element);
+    }
+
+    protected abstract Tween DoTweenProcess(BuildTweenData item, TweenCallback callback);
     protected abstract void RewindTweens();
 
     protected abstract void OutTweenTargetSettings();

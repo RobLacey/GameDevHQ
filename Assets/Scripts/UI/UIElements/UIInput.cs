@@ -4,6 +4,7 @@ using System.Linq;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPressed, 
                        ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, IServiceUser
@@ -153,16 +154,13 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
         }
         
         if (CanSwitchBranches() && SwitchGroupProcess()) return;
-
+        
         OnChangeControlPressed?.RaiseEvent(this);
     }
 
     private bool CanPauseGame() => _inputScheme.PressPause();
 
-    private void PausedPressedActions()
-    {
-        OnPausePressed?.RaiseEvent(this);
-    }
+    private void PausedPressedActions() => OnPausePressed?.RaiseEvent(this);
 
     private bool CanSwitchBetweenInGameAndMenu()
     {
@@ -174,10 +172,26 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
     private bool CheckIfHotKeyAllowed()
     {
         if (_gameIsPaused || !_noActivePopUps) return false;
-        if (!_hotKeySettings.Any(hotKey => hotKey.CheckHotKeys())) return false;
+        if (!HasMatchingHotKey()) return false;
         if(!_inMenu)
             OnMenuAndGameSwitch?.RaiseEvent(this);
         return true;
+    }
+
+    private bool HasMatchingHotKey()
+    {
+        bool hasHotKey = false;
+        for (var index = 0; index < _hotKeySettings.Count; index++)
+        {
+            var hotKeySetting = _hotKeySettings[index];
+            if (hotKeySetting.CheckHotKeys())
+            {
+                hasHotKey = true;
+                break;
+            }
+        }
+
+        return hasHotKey;
     }
 
     private bool CanDoCancel() => _inputScheme.PressedCancel();

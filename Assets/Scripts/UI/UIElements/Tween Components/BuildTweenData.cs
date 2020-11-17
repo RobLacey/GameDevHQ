@@ -1,12 +1,10 @@
 ﻿using System;
 using UnityEngine;
-using NaughtyAttributes;
 
 [Serializable]
-public class TweenSettings
+public class BuildTweenData
 {
-    [SerializeField] [AllowNesting] /*[OnValueChanged("ReturnElement")]*/ public RectTransform _element;
-
+    [SerializeField] private RectTransform _element;
     [SerializeField] public PositionSettings _positionSettings;
     [SerializeField] public ScaleSettings _scaleSettings;
     [SerializeField] public RotationSettings _rotationSettings;
@@ -20,24 +18,27 @@ public class TweenSettings
     public PositionSettings PositionSettings => _positionSettings;
     public ScaleSettings ScaleSettings => _scaleSettings;
     public RotationSettings RotationSettings => _rotationSettings;
+    public RectTransform Element => _element;
+    public CanvasGroup MyCanvasGroup { get; private set; }
 
-    public void ReturnElement()
+    public void SetElement()
     {
         if (_element == null)
         {
             //_positionSettings.ClearPositionTween();
+            MyCanvasGroup = null;
             _positionSettings.SetRectTransform(null);
             _scaleSettings.SetRectTransform(null);
             _rotationSettings.SetRectTransform(null);
         }
         else
         {
+            MyCanvasGroup = SetCanvasGroup(_element);
             _positionSettings.SetRectTransform(_element);
             _scaleSettings.SetRectTransform(_element);
             _rotationSettings.SetRectTransform(_element);
         }
     }
 
-   // public bool ScaleTween { get; set; }
-    // public bool RotationTween { get; set; }
+    private CanvasGroup SetCanvasGroup(RectTransform element) => element.GetComponent<CanvasGroup>();
 }

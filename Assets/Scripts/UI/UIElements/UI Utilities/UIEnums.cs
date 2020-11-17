@@ -2,29 +2,9 @@
 using System;
 
 
-public enum UIEventTypes
-{
-    Normal, Highlighted, Selected, Pressed, Cancelled
-}
-
 public enum IsActive
 {
     Yes, No
-}
-
-public enum PositionTweenType 
-{ 
-    NoTween, In, Out, InAndOut
-}
-
-public enum RotationTweenType 
-{ 
-    NoTween, In, Out, InAndOut
-}
-
-public enum ScaleTween 
-{ 
-    NoTween, Scale_InOnly, Scale_OutOnly, Scale_InAndOut 
 }
 
 public enum PunchShakeTween 
@@ -32,9 +12,9 @@ public enum PunchShakeTween
     NoTween, Punch, Shake 
 }
 
-public enum FadeTween 
+public enum TweenStyle 
 { 
-    NoTween, FadeIn, FadeOut, FadeInAndOut 
+    NoTween, In, Out, InAndOut 
 }
 
 public enum EffectType { In, Out, Both }
