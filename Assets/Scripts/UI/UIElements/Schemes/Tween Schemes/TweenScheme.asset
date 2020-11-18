@@ -15,9 +15,9 @@ MonoBehaviour:
   _positionTween: 0
   _rotationTween: 0
   _fadeTween: 0
-  _scaleTween: 3
-  _punchShakeTween: 0
-  _shakeOrPunchAtEnd: 1
+  _scaleTween: 0
+  _punchTween: 3
+  _shakeTween: 0
   _positionData:
     _inTime: 1
     _outTime: 1
@@ -29,22 +29,28 @@ MonoBehaviour:
     _easeIn: 1
     _easeOut: 1
   _scaleData:
-    _inTime: 1
-    _outTime: 1
+    _inTime: 0.1
+    _outTime: 0.1
     _easeIn: 1
     _easeOut: 1
   _fadeData:
-    _inTime: 1
-    _outTime: 1
+    _inTime: 0.1
+    _outTime: 0.1
     _easeIn: 1
     _easeOut: 1
-  _addTweenEventTriggers: 1
-  _middleOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
-  _endOfTweenAction:
-    m_PersistentCalls:
-      m_Calls: []
+  _shakeData:
+    _shakeWhen: 0
+    _strength: {x: 0.4, y: 0.4, z: 0.4}
+    _duration: 0.5
+    _vibrato: 10
+    _randomness: 45
+    _fadeOut: 1
+  _punchData:
+    _punchWhen: 0
+    _strength: {x: 0.1, y: 0.1, z: 0}
+    _duration: 1.15
+    _elasticity: 0.5
+    _vibrato: 5
   _useGlobalTime: 1
   _globalInTime: 1
   _globalOutTime: 1

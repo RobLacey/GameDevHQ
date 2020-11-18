@@ -20,72 +20,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf145f6b-d551-4e26-8fbc-722270da7110" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Audio Schemes.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Audio Schemes/Sound Scheme.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Audio Schemes/Sound Scheme.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Colour Schemes.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Colour Schemes/Half Life Scheme.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Colour Schemes/Half Life Scheme.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Colour Schemes/Main Scheme.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Colour Schemes/Main Scheme.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Colour Schemes/Test Scheme.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Colour Schemes/Test Scheme.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Input Schemes.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Input Schemes/Scheme - New.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Input Schemes/Scheme - New.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Input Schemes/Scheme - Old.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Input Schemes/Scheme - Old.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Size And Position Schemes.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Size And Position Schemes/ShakeSceme.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Size And Position Schemes/ShakeSceme.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Size And Position Schemes/Size Test.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Size And Position Schemes/Size Test.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Size And Position Schemes/SizeAndPosScheme.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Size And Position Schemes/SizeAndPosScheme.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/ToolTip Schemes.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/ToolTip Schemes/ToolTipScheme - Main.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/ToolTip Schemes/ToolTipScheme - Main.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Tween Schemes.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Tween Schemes/TweenScheme.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Tween Schemes/TweenScheme.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTween.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTween.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/TweenScheme.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/TweenScheme.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/TweenFactory.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/TweenFactory.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/indexLayout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Audio Schemes.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Audio Schemes/Sound Scheme.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Audio Schemes/Sound Scheme.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Colour Schemes.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Colour Schemes/Half Life Scheme.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Colour Schemes/Half Life Scheme.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Colour Schemes/Main Scheme.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Colour Schemes/Main Scheme.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Colour Schemes/Test Scheme.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Colour Schemes/Test Scheme.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Input Schemes.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Input Schemes/Scheme - New.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Input Schemes/Scheme - New.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Input Schemes/Scheme - Old.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Input Schemes/Scheme - Old.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Size And Position Schemes.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Size And Position Schemes/ShakeSceme.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Size And Position Schemes/ShakeSceme.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Size And Position Schemes/Size Test.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Size And Position Schemes/Size Test.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Size And Position Schemes/SizeAndPosScheme.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Size And Position Schemes/SizeAndPosScheme.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/ToolTip Schemes.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/ToolTip Schemes/ToolTipScheme - Main.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/ToolTip Schemes/ToolTipScheme - Main.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTweener.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTweener.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Tween Schemes/TweenScheme.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Tween Schemes/TweenScheme.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/BuildTweenData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/BuildTweenData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTween.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTween.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PositionSettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PositionSettings.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PositionTween.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PositionTween.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PunchTweener.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PunchTweener.cs" afterDir="false" />
@@ -95,12 +36,11 @@
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ScaleTweener.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ScaleTweener.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ShakeTweener.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ShakeTweener.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenSettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/BuildTweenData.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenSettings.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/BuildTweenData.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.EditorScripts.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.EditorScripts.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.EditorScripts.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.EditorScripts.cs.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/TweenScheme.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/TweenScheme.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/TweenFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/TweenFactory.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +58,6 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PunchTweener.cs.meta" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.EditorScripts.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/BuildTweenData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ShakeTweener.cs.meta" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ScaleTweener.cs" root0="FORCE_HIGHLIGHTING" />
@@ -225,26 +164,26 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/InputScheme.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/NodeFunctionBase.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/UIColour.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PositionSettings.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/RotationSettings.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ShakeTweener.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PunchTweener.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTweener.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ScaleTweener.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/RotateTween.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PositionTween.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTween.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenSettings.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/TweenSettings.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/TweenFactory.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/BuildTweenData.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/TweenScheme.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/RotationSettings.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PositionSettings.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ScaleSettings.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/BuildTweenData.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.EditorScripts.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/FadeTween.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/RotateTween.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ScaleTweener.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/ShakeTweener.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PunchTweener.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/PositionTween.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/TweenFactory.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/TweenScheme.cs" />
       </list>
     </option>
   </component>
@@ -274,7 +213,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C#" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RiderTodoViewSettings" groupByProject="false" />
@@ -439,6 +378,7 @@
       <workItem from="1605519701495" duration="22786000" />
       <workItem from="1605559169705" duration="3473000" />
       <workItem from="1605604165629" duration="25075000" />
+      <workItem from="1605690312823" duration="21509000" />
     </task>
     <servers />
   </component>
@@ -564,19 +504,20 @@
     <state width="1493" height="218" key="GridCell.Tab.3.right/0.0.1536.864/-1920.0.1536.864@-1920.0.1536.864" timestamp="1604598339426" />
     <state width="1493" height="218" key="GridCell.Tab.3.right/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1602150895093" />
     <state width="1875" height="279" key="GridCell.Tab.3.right/0.0.1536.864/1920.0.1920.1080@1920.0.1920.1080" timestamp="1604676665184" />
-    <state x="535" y="157" width="472" height="601" key="RiderGenerateDialog" timestamp="1605605611275">
+    <state x="535" y="157" width="472" height="601" key="RiderGenerateDialog" timestamp="1605713060253">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
     <state x="-1385" y="157" key="RiderGenerateDialog/0.0.1536.864/-1920.0.1536.864@-1920.0.1536.864" timestamp="1605278028282" />
     <state x="2865" y="142" key="RiderGenerateDialog/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1602263688331" />
     <state x="535" y="157" key="RiderGenerateDialog/0.0.1536.864/1920.0.1920.1080@0.0.1536.864" timestamp="1603205773775" />
     <state x="2589" y="196" key="RiderGenerateDialog/0.0.1536.864/1920.0.1920.1080@1920.0.1920.1080" timestamp="1604759330090" />
-    <state x="535" y="157" key="RiderGenerateDialog/0.0.1536.864/1920.1.1536.864@0.0.1536.864" timestamp="1605605611275" />
+    <state x="535" y="157" key="RiderGenerateDialog/0.0.1536.864/1920.1.1536.864@0.0.1536.864" timestamp="1605713060253" />
     <state x="535" y="157" width="472" height="601" key="RiderGenerateDialog/0.0.1536.864@0.0.1536.864" timestamp="1603189023360" />
-    <state x="277" y="77" key="SettingsEditor" timestamp="1604227418974">
+    <state x="277" y="77" key="SettingsEditor" timestamp="1605690412047">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
     <state x="2197" y="77" key="SettingsEditor/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1598527890029" />
+    <state x="277" y="77" key="SettingsEditor/0.0.1536.864/1920.1.1536.864@0.0.1536.864" timestamp="1605690412047" />
     <state x="277" y="77" key="SettingsEditor/0.0.1536.864@0.0.1536.864" timestamp="1604227418974" />
     <state width="499" height="447" key="SwitcherDM" timestamp="1605543672871">
       <screen x="1920" y="1" width="1536" height="864" />

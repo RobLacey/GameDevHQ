@@ -19,7 +19,7 @@ public class RotationSettings
 
     public void SetRectTransform(RectTransform rectTransform) => _element = rectTransform;
 
-    public void SetRotationTween(TweenStyle rotationTween)
+    public void SetUpTween(TweenStyle rotationTween)
     {
         //Debug.Log(rotationTween);
         if (rotationTween != TweenStyle.NoTween)

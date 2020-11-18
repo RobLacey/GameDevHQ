@@ -106,7 +106,7 @@ public class PositionSettings
         _goToEndPosition = false;
     }
     
-    public void SetPositionTween(TweenStyle tween)
+    public void SetUpTween(TweenStyle tween)
     {
         if (tween != TweenStyle.NoTween)
         {

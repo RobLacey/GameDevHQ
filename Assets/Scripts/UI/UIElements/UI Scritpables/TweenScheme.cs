@@ -12,15 +12,15 @@ public class TweenScheme: ScriptableObject
     [SerializeField] 
     private TweenStyle _rotationTween = TweenStyle.NoTween;
     [SerializeField] 
-    [Label("Fade (Canvas Group Only)")] private TweenStyle _fadeTween = TweenStyle.NoTween;
+    private TweenStyle _fadeTween = TweenStyle.NoTween;
     [SerializeField] 
-    [Label("Scale Tween")]
     private TweenStyle _scaleTween = TweenStyle.NoTween;
     [SerializeField] 
-    [Label("Shake or Punch Tween")] private PunchShakeTween _punchShakeTween = PunchShakeTween.NoTween;
+    private TweenStyle _punchTween = TweenStyle.NoTween;
     [SerializeField] 
-    [Label("Shake/Punch At End (In Only)")] private IsActive _shakeOrPunchAtEnd = IsActive.No;
-
+    private TweenStyle _shakeTween = TweenStyle.NoTween;
+    
+    [Header("Tween Data", order = 1)] [HorizontalLine(1, EColor.Blue , order = 2)]
     [SerializeField] /*[ShowIf("Position")]*/ 
     private TweenData _positionData;
     [SerializeField] /*[ShowIf("Rotation")] */
@@ -29,16 +29,12 @@ public class TweenScheme: ScriptableObject
     private TweenData _scaleData;
     [SerializeField] /*[ShowIf("Fade")] */
     private TweenData _fadeData;
+    [SerializeField] /*[ShowIf("Fade")] */
+    private ShakeData _shakeData;
+    [SerializeField] /*[ShowIf("Fade")] */
+    private PunchData _punchData;
 
-    [Header("Event Settings")] [HorizontalLine(1, EColor.Blue , order = 3)]
-    [SerializeField] 
-    private IsActive _addTweenEventTriggers = IsActive.No;
-    [SerializeField] 
-    [ShowIf("AddTweenEvent")] [Label("Event At After Start/Mid-Point of Tween")] 
-    private TweenTrigger _middleOfTweenAction;
-    [SerializeField] 
-    [ShowIf("AddTweenEvent")] [Label("Event At End of Tween")]
-    private TweenTrigger _endOfTweenAction;
+
 
     [Header("Time Settings", order = 1)] [HorizontalLine(1, EColor.Blue , order = 4)]
     [SerializeField]
@@ -51,13 +47,13 @@ public class TweenScheme: ScriptableObject
     private float _globalOutTime = 1;
 
     //Events
-    private Action Change;
+    private Action _onChange;
 
-    private void OnValidate() => Change?.Invoke();
+    private void OnValidate() => _onChange?.Invoke();
 
-    public void Subscribe(Action listener) => Change += listener;
+    public void Subscribe(Action listener) => _onChange += listener;
 
-    public void Unsubscribe(Action listener) => Change -= listener;
+    public void Unsubscribe(Action listener) => _onChange -= listener;
 
     public TweenStyle PositionTween => _positionTween;
 
@@ -67,9 +63,8 @@ public class TweenScheme: ScriptableObject
 
     public TweenStyle ScaleTween => _scaleTween;
 
-    public PunchShakeTween PunchOrShakeTween => _punchShakeTween;
-
-    public IsActive ShakeOrPunchAtEnd => _shakeOrPunchAtEnd;
+    public TweenStyle PunchTween => _punchTween;
+    public TweenStyle ShakeTween => _shakeTween;
 
     public TweenData PositionData => _positionData;
 
@@ -78,6 +73,9 @@ public class TweenScheme: ScriptableObject
     public TweenData ScaleData => _scaleData;
 
     public TweenData FadeData => _fadeData;
+    public PunchData PunchData => _punchData;
+    public ShakeData ShakeData => _shakeData;
+    
     public float SetPositionTime(TweenType tweenType)
     {
         return tweenType == TweenType.In ? SetInTime(_positionData) : SetOutTime(_positionData);
@@ -94,10 +92,6 @@ public class TweenScheme: ScriptableObject
     {
         return tweenType == TweenType.In ? SetInTime(_fadeData) : SetOutTime(_fadeData);
     }
-
-    public TweenTrigger MiddleOfTweenAction => _middleOfTweenAction;
-
-    public TweenTrigger EndOfTweenAction => _endOfTweenAction;
 
     private float SetInTime(TweenData tween) => _useGlobalTime == IsActive.Yes ? _globalInTime : tween.InTime;
 
@@ -128,8 +122,8 @@ public class TweenScheme: ScriptableObject
 
     public bool Scale() => _scaleTween != TweenStyle.NoTween;
     public bool Fade() => _fadeTween != TweenStyle.NoTween;
-    public bool Punch() => _punchShakeTween == PunchShakeTween.Punch;
+    public bool Punch() => _punchTween != TweenStyle.NoTween;
 
-    public bool Shake() => _punchShakeTween == PunchShakeTween.Shake; 
+    public bool Shake() => _shakeTween != TweenStyle.NoTween; 
 }
 

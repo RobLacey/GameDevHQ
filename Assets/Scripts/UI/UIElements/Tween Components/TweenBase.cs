@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-using NaughtyAttributes;
 using UnityEngine;
 
 /// <summary>
@@ -12,20 +11,13 @@ using UnityEngine;
 [Serializable]
 public abstract class TweenBase 
 {
-    [SerializeField] [AllowNesting] [HideIf("UsingGlobalTime")]
-    protected float _inTime = 1;
-    [SerializeField] [AllowNesting] [HideIf("UsingGlobalTime")]
-    protected float _outTime = 1;
-    [SerializeField] protected Ease _easeIn = Ease.Linear;
-    [SerializeField] protected Ease _easeOut = Ease.Linear;
-
     //Variables
     protected float _tweenTime;
-    private float _globalTime;
     protected Ease _tweenEase;
     private Coroutine _coroutine;
     protected string _tweenName;
-    protected TweenStyle _tweenType;
+    protected TweenStyle _tweenStyle;
+    protected TweenScheme _scheme;
 
     protected List<BuildTweenData> _listToUse;
     private List<BuildTweenData> _reversedBuild = new List<BuildTweenData>();
@@ -35,14 +27,13 @@ public abstract class TweenBase
     private Action<RectTransform> _endEffectTrigger;
     private TweenCallback _callback;
 
-    public bool UsingGlobalTime { get; set; }
-
     public virtual void SetUpTweens(List<BuildTweenData> buildObjectsList,
-                                     Action<RectTransform> effectCall)
+                                    TweenScheme tweenScheme,
+                                    Action<RectTransform> effectCall)
     {
         _tweenName = GetType().Name;
+        _scheme = tweenScheme;
         SetUpTweensCommon(buildObjectsList, effectCall);
-
     }
 
     protected void SetUpTweensCommon(List<BuildTweenData> buildObjectsList, 
@@ -54,34 +45,34 @@ public abstract class TweenBase
         _reversedBuild.Reverse();
     }
 
-    public void StartTween(Enum tweenType, float tweenTime,
-                           TweenType isIn, TweenCallback tweenCallback)
+    public virtual void StartTween(TweenType tweenType, TweenCallback tweenCallback)
     {
-        _tweenType = (TweenStyle)tweenType;
-        if (_tweenType == TweenStyle.NoTween) return;
-        StartTweenCommon(tweenTime, tweenCallback);
+        StartTweenCommon(tweenCallback);
 
-        switch (_tweenType)
+        switch (_tweenStyle)
         {
             case TweenStyle.In:
-                InTween(isIn);
+                InTween(tweenType);
                 break;
             case TweenStyle.Out:
-                OutTween(isIn);
+                OutTween(tweenType);
                 break;
             case TweenStyle.InAndOut:
-                InAndOutTween(isIn);
+                InAndOutTween(tweenType);
                 break;
+            case TweenStyle.NoTween:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
 
     }
     
-    protected void StartTweenCommon(float tweenTime, TweenCallback tweenCallback)
+    protected void StartTweenCommon(TweenCallback tweenCallback)
     {
         StopRunningTweens();
         StaticCoroutine.StopCoroutines(_coroutine);
         _callback = tweenCallback;
-        _globalTime = tweenTime;
     }
     
     protected void InTween(TweenType isIn)
@@ -97,9 +88,9 @@ public abstract class TweenBase
         }
     }
 
-    protected void OutTween(TweenType isIn)
+    protected void OutTween(TweenType tweenType)
     {
-        if (isIn == TweenType.In)
+        if (tweenType == TweenType.In)
         {
             RewindTweens();
             _callback?.Invoke();
@@ -110,9 +101,9 @@ public abstract class TweenBase
         }
     }
 
-    protected void InAndOutTween(TweenType isIn)
+    protected void InAndOutTween(TweenType tweenType)
     {
-        if (isIn == TweenType.In)
+        if (tweenType == TweenType.In)
         {
             DoInTween();
         }
@@ -122,23 +113,18 @@ public abstract class TweenBase
         }
     }
 
-    private void DoInTween()
+    protected virtual void DoInTween()
     {
-        _tweenEase = _easeIn;
         _listToUse = _buildList;
-        SetInTime();
         InTweenTargetSettings();
         _coroutine = StaticCoroutine.StartCoroutine(TweenSequence());
     }
 
-    private void DoOutTween(List<BuildTweenData> passedBuildList)
+    protected virtual void DoOutTween(List<BuildTweenData> passedBuildList)
     {
-        _tweenEase = _easeOut;
         _listToUse = passedBuildList;
-        SetOutTime();
         OutTweenTargetSettings();
         _coroutine = StaticCoroutine.StartCoroutine(TweenSequence());
-
     }
 
     private void StopRunningTweens()
@@ -181,10 +167,10 @@ public abstract class TweenBase
     protected abstract Tween DoTweenProcess(BuildTweenData item, TweenCallback callback);
     protected abstract void RewindTweens();
 
-    protected abstract void OutTweenTargetSettings();
     protected abstract void InTweenTargetSettings();
+    protected abstract void OutTweenTargetSettings();
 
-    protected void SetInTime() => _tweenTime = _globalTime > 0 ? _globalTime : _inTime;
-
-    protected void SetOutTime() => _tweenTime = _globalTime > 0 ? _globalTime : _outTime;
+    // protected void SetInTime() => _tweenTime = _globalTime > 0 ? _globalTime : _inTime;
+    //
+    // protected void SetOutTime() => _tweenTime = _globalTime > 0 ? _globalTime : _outTime;
 }

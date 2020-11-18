@@ -275,7 +275,6 @@
                 <e p="ShakeTweener.cs" t="Include" />
                 <e p="TweenBase.cs" t="Include" />
                 <e p="UITweener.cs" t="Include" />
-                <e p="UITweener.EditorScripts.cs" t="Include" />
               </e>
               <e p="UI Scritpables" t="Include">
                 <e p="AudioScheme.cs" t="Include" />

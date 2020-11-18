@@ -7,10 +7,11 @@ using System;
 [Serializable]
 public class ScaleTweener : TweenBase
 {
-    public override void SetUpTweens(List<BuildTweenData> buildObjectsList, 
+    public override void SetUpTweens(List<BuildTweenData> buildObjectsList,
+                                     TweenScheme tweenScheme,
                                      Action<RectTransform> effectCall)
     {
-        base.SetUpTweens(buildObjectsList, effectCall);
+        base.SetUpTweens(buildObjectsList, tweenScheme, effectCall);
 
         foreach (var item in _buildList)
         {
@@ -28,6 +29,13 @@ public class ScaleTweener : TweenBase
                    .OnComplete(callback);
     }
 
+    public override void StartTween(TweenType tweenType, TweenCallback tweenCallback)
+    {
+        if (_scheme is null) return;
+        _tweenStyle = _scheme.ScaleTween;
+        base.StartTween(tweenType, tweenCallback);
+    }
+
     protected override void RewindTweens()
     {
         foreach (var item in _buildList) 
@@ -35,10 +43,24 @@ public class ScaleTweener : TweenBase
             item.Element.transform.localScale = item.ScaleSettings.StartScale;
         }
     }
+    
+    protected override void DoInTween()
+    {
+        _tweenEase = _scheme.ScaleData.EaseIn;
+        _tweenTime = _scheme.SetScaleTime(TweenType.In);
+        base.DoInTween();
+    }
+
+    protected override void DoOutTween(List<BuildTweenData> passedBuildList)
+    {
+        _tweenEase = _scheme.ScaleData.EaseOut;
+        _tweenTime = _scheme.SetScaleTime(TweenType.Out);
+        base.DoOutTween(passedBuildList);
+    }
 
     protected override void InTweenTargetSettings()
     {
-        if (_tweenType == TweenStyle.InAndOut)
+        if (_tweenStyle == TweenStyle.InAndOut)
         {
             foreach (var uIObject in _listToUse)
             {

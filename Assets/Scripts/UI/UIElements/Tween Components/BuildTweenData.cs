@@ -40,5 +40,19 @@ public class BuildTweenData
         }
     }
 
+    public void ActivateTweenSettings(TweenScheme scheme)
+    {
+        _positionSettings.SetUpTween(scheme.PositionTween);
+        _rotationSettings.SetUpTween(scheme.RotationTween);
+        _scaleSettings.SetUpTween(scheme.ScaleTween);
+    }
+    
+    public void ClearSettings(TweenStyle clear)
+    {
+        _positionSettings.SetUpTween(clear);
+        _rotationSettings.SetUpTween(clear);
+        _scaleSettings.SetUpTween(clear);
+    }
+
     private CanvasGroup SetCanvasGroup(RectTransform element) => element.GetComponent<CanvasGroup>();
 }

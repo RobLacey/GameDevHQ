@@ -25,7 +25,7 @@ public class ScaleSettings
 
     public void SetRectTransform(RectTransform rectTransform) => _element = rectTransform;
 
-    public void SetScaleTween(TweenStyle scaleTween)
+    public void SetUpTween(TweenStyle scaleTween)
     {
         if (scaleTween != TweenStyle.NoTween)
         {

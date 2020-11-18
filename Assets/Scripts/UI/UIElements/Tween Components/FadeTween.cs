@@ -1,5 +1,7 @@
 ﻿using DG.Tweening;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 [Serializable]
 public class FadeTween : TweenBase
@@ -7,7 +9,6 @@ public class FadeTween : TweenBase
     private float _targetAlpha;
     private bool _firstTime = true;
 
-   
     protected override Tween DoTweenProcess(BuildTweenData item, TweenCallback callback)
     {
         return item.MyCanvasGroup.DOFade(_targetAlpha, _tweenTime)
@@ -18,23 +19,42 @@ public class FadeTween : TweenBase
                             .OnComplete(callback);
     }
 
+    public override void StartTween(TweenType tweenType, TweenCallback tweenCallback)
+    {
+        if (_scheme is null) return;
+        _tweenStyle = _scheme.FadeTween;
+        base.StartTween(tweenType, tweenCallback);
+    }
+
     protected override void RewindTweens()
     {
-        if (_tweenType == TweenStyle.In || _tweenType == TweenStyle.InAndOut)
+        if (_tweenStyle == TweenStyle.In || _tweenStyle == TweenStyle.InAndOut)
         {
             SetUpCanvasGroup(alphaPreset:0);
-            //MyCanvasGroup.alpha = 0;
         }
         else
         {
             SetUpCanvasGroup(alphaPreset:1);
-            //MyCanvasGroup.alpha = 1;
         }
+    }
+    
+    protected override void DoInTween()
+    {
+        _tweenEase = _scheme.FadeData.EaseIn;
+        _tweenTime = _scheme.SetFadeTime(TweenType.In);
+        base.DoInTween();
+    }
+
+    protected override void DoOutTween(List<BuildTweenData> passedBuildList)
+    {
+        _tweenEase = _scheme.FadeData.EaseOut;
+        _tweenTime = _scheme.SetFadeTime(TweenType.Out);
+        base.DoOutTween(passedBuildList);
     }
 
     protected override void InTweenTargetSettings()
     {
-        if (_tweenType == TweenStyle.In || _tweenType == TweenStyle.InAndOut)
+        if (_tweenStyle == TweenStyle.In || _tweenStyle == TweenStyle.InAndOut)
         {
             SetUpCanvasGroup(alphaPreset: 0);
             _targetAlpha = 1;
