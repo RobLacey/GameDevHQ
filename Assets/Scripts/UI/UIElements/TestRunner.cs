@@ -32,9 +32,9 @@ public class TestRunner : MonoBehaviour, IEventUser
         [SerializeField] public UnityEvent _event6;
     }
 
-    private void SaveLastHighlighted(IHighlightedNode args) => _lastHighlighted = args.Highlighted.ReturnNode;
-    private void SaveLastSelected(ISelectedNode args) => _lastSelected = args.Selected.ReturnNode;
-    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
+    private void SaveLastHighlighted(IHighlightedNode args) => _lastHighlighted = (UINode)args.Highlighted;
+    private void SaveLastSelected(ISelectedNode args) => _lastSelected = (UINode)args.Selected;
+    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = (UIBranch) args.ActiveBranch.ThisBranch;
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
 
@@ -71,13 +71,13 @@ public class TestRunner : MonoBehaviour, IEventUser
             _history.Clear();
             return;
         }
-        if (_history.Contains(args.AddNode))
+        if (_history.Contains((UINode)args.AddNode))
         {
-            _history.Remove(args.AddNode);
+            _history.Remove((UINode) args.AddNode);
         }
         else
         {
-            _history.Add(args.AddNode);
+            _history.Add((UINode) args.AddNode);
         }
     }
     

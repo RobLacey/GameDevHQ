@@ -6,13 +6,13 @@ public static class UIBranchGroups
     private static int groupIndex;
     private static int index;
 
-    public static int SetGroupIndex(UINode defaultStartPosition, List<GroupList> branchGroupsList)
+    public static int SetGroupIndex(INode defaultStartPosition, List<GroupList> branchGroupsList)
     {
         groupIndex = 0;
         index = 0;
         foreach (var branchGroup in branchGroupsList)
         {
-            if (branchGroup._nodes.Any(node => node == defaultStartPosition))
+            if (branchGroup._nodes.Any(node => ReferenceEquals(node, defaultStartPosition))) //TODO check this works
             {
                 groupIndex = index;
                 return groupIndex;

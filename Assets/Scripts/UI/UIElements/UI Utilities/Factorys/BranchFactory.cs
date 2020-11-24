@@ -1,77 +1,86 @@
 ﻿public class BranchFactory
 {
-    private UIBranch _uiBranch;
-    private UIBranch[] _allBranches;
+    private IBranch _branch;
+    private static readonly IInjectClass injectClass = new IoC();
+    
     public static BranchFactory Factory { get; } = new BranchFactory();
 
-    public BranchFactory PassThisBranch(UIBranch branch)
+    public BranchFactory PassThisBranch(IBranch passedBranch)
     {
-        _uiBranch = branch;
+        _branch = passedBranch;
         return this;
     }
 
-    public BranchFactory PassAllBranches(UIBranch[] allBranches)
-    {
-        _allBranches = allBranches;
-        return this;
-    }
-
-    public BranchBase CreateType(BranchType branchType)
+    public IBranchBase CreateType(BranchType branchType)
     {
         switch (branchType)
         {
             case BranchType.HomeScreen:
-                CreateHomeScreenBranch(_uiBranch);
-                return new HomeScreenBranch(_uiBranch);
+            {
+                CreateHomeScreenBranch(_branch);
+                return injectClass.WithParams<IHomeScreenBranch>(_branch);
+            }            
             case BranchType.Standard:
-                CreateStandardBranch(_uiBranch);
-                return new StandardBranch(_uiBranch);
+            {
+                CreateStandardBranch(_branch);
+                return injectClass.WithParams<IStandardBranch>(_branch);
+            }            
             case BranchType.ResolvePopUp:
-                CreateResolvePopUp(_uiBranch);
-                return new ResolvePopUp(_uiBranch, _allBranches);
+            {
+                CreateResolvePopUp(_branch);
+                return injectClass.WithParams<IResolvePopUpBranch>(_branch);
+            }
             case BranchType.OptionalPopUp:
-                CreateOptionalPopUp(_uiBranch);
-                return new OptionalPopUp(_uiBranch, _allBranches);
+            {
+                CreateOptionalPopUp(_branch);
+                return injectClass.WithParams<IOptionalPopUpBranch>(_branch);
+            }
              case BranchType.TimedPopUp:
-                 CreateTimedPopUp(_uiBranch);
-                 return new Timed(_uiBranch);
+             {
+                 CreateTimedPopUp(_branch);
+                 return injectClass.WithParams<ITimedPopUpBranch>(_branch);
+             }
             case BranchType.PauseMenu:
-                CreatePauseMenu(_uiBranch);
-                return new PauseMenu(_uiBranch, _allBranches);
+            {
+                CreatePauseMenu(_branch);
+                return injectClass.WithParams<IPauseBranch>(_branch);
+            }
             case BranchType.Internal:
-                CreateInternal(_uiBranch);
-                return new StandardBranch(_uiBranch);
+            {
+                CreateInternal(_branch);
+                return injectClass.WithParams<IStandardBranch>(_branch);
+            }
         }
 
         return null;
     }
     
-    private static void CreateHomeScreenBranch(UIBranch branch)
+    private static void CreateHomeScreenBranch(IBranch branch)
     {
         branch.ScreenType = ScreenType.Normal;
         branch.EscapeKeySetting = EscapeKey.None;
     }
 
-    private static void CreateStandardBranch(UIBranch branch)
+    private static void CreateStandardBranch(IBranch branch)
     {
         branch.TweenOnHome = IsActive.No;
     }
 
-    private static void CreateResolvePopUp(UIBranch branch)
+    private static void CreateResolvePopUp(IBranch branch)
     {
         branch.EscapeKeySetting = EscapeKey.BackOneLevel;
         branch.TweenOnHome = IsActive.No;
         branch.SetStayOn(IsActive.No);
     }
 
-    private static void CreateOptionalPopUp(UIBranch branch)
+    private static void CreateOptionalPopUp(IBranch branch)
     {
         branch.ScreenType = ScreenType.Normal;
         branch.EscapeKeySetting = EscapeKey.BackOneLevel;
         branch.SetStayOn(IsActive.No);
     }
     
-    private static void CreateTimedPopUp(UIBranch branch)
+    private static void CreateTimedPopUp(IBranch branch)
     {
         branch.ScreenType = ScreenType.Normal;
         branch.TweenOnHome = IsActive.No;
@@ -79,13 +88,13 @@
         branch.SetStayOn(IsActive.No);
     }
 
-    private static void CreatePauseMenu(UIBranch branch)
+    private static void CreatePauseMenu(IBranch branch)
     {
         branch.EscapeKeySetting = EscapeKey.BackOneLevel;
         branch.TweenOnHome = IsActive.No;
     }
     
-    private static void CreateInternal(UIBranch branch)
+    private static void CreateInternal(IBranch branch)
     {
         branch.TweenOnHome = IsActive.No;
         branch.EscapeKeySetting = EscapeKey.BackOneLevel;

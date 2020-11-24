@@ -5,7 +5,7 @@ using System.Linq;
 public interface IHistoryManagement
 {
     IHistoryManagement CloseToThisPoint(INode node);
-    IHistoryManagement CurrentHistory(List<UINode> history);
+    IHistoryManagement CurrentHistory(List<INode> history);
     void Run();
     void ClearAllHistory();
     void ClearHistoryStopAtInternalBranch();
@@ -23,7 +23,7 @@ public class HistoryListManagement : IHistoryManagement
     private readonly HistoryTracker _historyTracker;
     private INode _targetNode, _hotKeyParent;
     private bool _hasHistory;
-    private List<UINode> _history = new List<UINode>();
+    private List<INode> _history = new List<INode>();
 
     public IHistoryManagement CloseToThisPoint(INode node)
     {
@@ -36,7 +36,7 @@ public class HistoryListManagement : IHistoryManagement
         return this;
     }
     
-    public IHistoryManagement CurrentHistory(List<UINode> history)
+    public IHistoryManagement CurrentHistory(List<INode> history)
     {
         _history = history;
         _hasHistory = true;
@@ -63,11 +63,11 @@ public class HistoryListManagement : IHistoryManagement
 
     private void CloseAllChildNodesAfterPoint()
     {
-        if (!_history.Contains(_targetNode.ReturnNode)) return;
+        if (!_history.Contains(_targetNode)) return;
         
         for (int i = _history.Count -1; i > 0; i--)
         {
-            if (_history[i] == _targetNode.ReturnNode) break;
+            if (_history[i] == _targetNode) break;
             CloseThisLevel(_history[i]);
         }
         CloseThisLevel(_targetNode);
@@ -75,11 +75,11 @@ public class HistoryListManagement : IHistoryManagement
 
     private void CloseThisLevel(INode node)
     {
-        _history.Remove(node.ReturnNode);
+        _history.Remove(node);
         node.HasChildBranch.LastSelected.DeactivateNode();
         node.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel, EndOfTweenActions);
 
-        _historyTracker.AddNodeToTestRunner(node.ReturnNode);
+        _historyTracker.AddNodeToTestRunner(node);
 
         void EndOfTweenActions() => node.MyBranch.MoveToBranchWithoutTween();
     }
@@ -107,7 +107,7 @@ public class HistoryListManagement : IHistoryManagement
         ResetAndClearHistoryList(stopAtInternalBranch, firstInHistory);
     }
 
-    private void ResetAndClearHistoryList(bool stopAtInternalBranch, UINode firstInHistory)
+    private void ResetAndClearHistoryList(bool stopAtInternalBranch, INode firstInHistory)
     {
         foreach (var currentNode in _history)
         {
@@ -121,7 +121,7 @@ public class HistoryListManagement : IHistoryManagement
         _history.Clear();
     }
 
-    private void ResetNode(UINode currentNode, UINode firstInHistory)
+    private void ResetNode(INode currentNode, INode firstInHistory)
     {
         if (currentNode == firstInHistory)
         {
@@ -134,10 +134,10 @@ public class HistoryListManagement : IHistoryManagement
         }
     }
 
-    private bool SkipIfNodeIsHotKeysParent(UINode uiNode) 
-        => !(_hotKeyParent is null) && uiNode == _hotKeyParent.ReturnNode;
+    private bool SkipIfNodeIsHotKeysParent(INode uiNode) 
+        => !(_hotKeyParent is null) && uiNode == _hotKeyParent;
 
-    private bool IfNodeIsInternalBranch(UINode uiNode, bool stopAtInternalBranch, List<UINode> history)
+    private bool IfNodeIsInternalBranch(INode uiNode, bool stopAtInternalBranch, List<INode> history)
     {
         if (!uiNode.HasChildBranch.IsInternalBranch() || !stopAtInternalBranch) return false;
 

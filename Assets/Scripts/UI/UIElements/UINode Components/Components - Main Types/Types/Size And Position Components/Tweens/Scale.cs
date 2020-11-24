@@ -1,9 +1,12 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 
-public class Scale : BasePositionAndScale, INodeTween
+public interface IScale : INodeTween { }
+
+
+public class Scale : BasePositionAndScale, IScale
 {
-    public Scale(IPositionScaleTween data, string iD) : base(data, iD)
+    public Scale(IPositionScaleTween data) : base(data)
     {
         TweenEndTarget = _tweenData.StartSize + _scheme.ChangeBy;
     }

@@ -4,11 +4,11 @@ using System.Linq;
 
 public interface IMoveBackInHistory
 {
-    IMoveBackInHistory AddHistory(List<UINode> history);
+    IMoveBackInHistory AddHistory(List<INode> history);
     IMoveBackInHistory IsOnHomeScreen(bool onHomeScreen);
-    IMoveBackInHistory ActiveBranch(UIBranch activeBranch);
-    UINode BackOneLevelProcess();
-    UINode BackToHomeProcess();
+    IMoveBackInHistory ActiveBranch(IBranch activeBranch);
+    INode BackOneLevelProcess();
+    INode BackToHomeProcess();
 }
 public class MoveBackInHistory : IMoveBackInHistory
 {
@@ -21,12 +21,12 @@ public class MoveBackInHistory : IMoveBackInHistory
     //Variables
     private readonly HistoryTracker _historyTracker;
     private readonly IHistoryManagement _historyListManagement;
-    private UIBranch _activeBranch;
-    private List<UINode> _history;
+    private IBranch _activeBranch;
+    private List<INode> _history;
     private bool _onHomeScreen, _hasHistory, _hasOnHome, _hasActiveBranch;
 
     //Main
-    public IMoveBackInHistory AddHistory(List<UINode> history)
+    public IMoveBackInHistory AddHistory(List<INode> history)
     {
         _history = history;
         _hasHistory = true;
@@ -40,7 +40,7 @@ public class MoveBackInHistory : IMoveBackInHistory
         return this;
     }
 
-    public IMoveBackInHistory ActiveBranch(UIBranch activeBranch)
+    public IMoveBackInHistory ActiveBranch(IBranch activeBranch)
     {
         _activeBranch = activeBranch;
         _hasActiveBranch = true;
@@ -68,7 +68,7 @@ public class MoveBackInHistory : IMoveBackInHistory
         _hasOnHome = false;
     }
 
-    public UINode BackOneLevelProcess()
+    public INode BackOneLevelProcess()
     {
         CheckForExceptionsOneLevel();
         var lastNode = _history.Last();
@@ -86,9 +86,9 @@ public class MoveBackInHistory : IMoveBackInHistory
         return _history.Count == 0 ? null : _history.Last();
     }
 
-    private bool IsHomeScreenBranch(UINode lastNode) => lastNode.MyBranch.IsHomeScreenBranch() && !_onHomeScreen;
+    private bool IsHomeScreenBranch(INode lastNode) => lastNode.MyBranch.IsHomeScreenBranch() && !_onHomeScreen;
 
-    private static void DoMoveBackOneLevel(INode lastNode, UIBranch activeBranch)
+    private static void DoMoveBackOneLevel(INode lastNode, IBranch activeBranch)
     {
         lastNode.DeactivateNode();
         
@@ -105,7 +105,7 @@ public class MoveBackInHistory : IMoveBackInHistory
         void NoTween() => lastNode.MyBranch.MoveToBranchWithoutTween();
     }
 
-    public UINode BackToHomeProcess()
+    public INode BackToHomeProcess()
     {
         CheckForExceptionsBackHome();
         _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, CallBack);
@@ -116,7 +116,7 @@ public class MoveBackInHistory : IMoveBackInHistory
         void CallBack() => BackHomeCallBack(_history);
     }
 
-    private void BackHomeCallBack(List<UINode> history)
+    private void BackHomeCallBack(List<INode> history)
     {
         if (history.Count <= 0) return;
         _historyListManagement.CurrentHistory(history)

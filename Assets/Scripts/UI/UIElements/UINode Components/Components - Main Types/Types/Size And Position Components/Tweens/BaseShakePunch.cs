@@ -7,11 +7,11 @@ public abstract class BaseShakePunch
     protected readonly string _id;
     protected int _loopTime;
 
-    protected BaseShakePunch(IPunchShakeTween node, string iD)
+    protected BaseShakePunch(IPunchShakeTween node)
     {
         _tweenData = node;
         _scheme = node.Scheme;
-        _id = $"ShakeOrPunch{iD}";
+        _id = $"ShakeOrPunch{node.GameObjectID}";
     }
     
     public void DoTween(IsActive activate)

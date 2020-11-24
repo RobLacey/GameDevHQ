@@ -19,7 +19,7 @@ public class UIHomeGroup : IEventUser, IHomeGroup
     private bool _onHomeScreen = true;
     private bool _gameIsPaused;
     private int _index;
-    private UIBranch _lastActiveHomeBranch;
+    private IBranch _lastActiveHomeBranch;
     
     //Properties
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
@@ -80,7 +80,7 @@ public class UIHomeGroup : IEventUser, IHomeGroup
     private bool ActiveBranchIsPopUpOrPaused(IActiveBranch args) 
         => args.ActiveBranch.IsAPopUpBranch() || args.ActiveBranch.IsPauseMenuBranch() || _gameIsPaused;
 
-    private void FindHomeScreenBranch(UIBranch newBranch)
+    private void FindHomeScreenBranch(IBranch newBranch)
     {
         while (!newBranch.IsHomeScreenBranch())
         {
@@ -89,7 +89,7 @@ public class UIHomeGroup : IEventUser, IHomeGroup
         SearchHomeBranchesAndSet(newBranch);
     }
 
-    private void SearchHomeBranchesAndSet(UIBranch newBranch)
+    private void SearchHomeBranchesAndSet(IBranch newBranch)
     {
         for (var index = 0; index < _homeGroup.Length; index++)
         {

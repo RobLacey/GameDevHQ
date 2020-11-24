@@ -3,13 +3,13 @@ using UnityEngine;
 using System;
 using DG.Tweening;
 using NaughtyAttributes;
-using UnityEngine.Events;
 
 public class UITweener : MonoBehaviour
 {
     [SerializeField] 
     [ReorderableList] [Label("List Of Objects To Tween")]
     private List<BuildTweenData> _buildObjectsList = new List<BuildTweenData>();
+    
     [SerializeField] 
     [Expandable] 
     private TweenScheme _scheme;
@@ -17,16 +17,14 @@ public class UITweener : MonoBehaviour
     [Header("Event Settings")] [HorizontalLine(1, EColor.Blue , order = 3)]
     [SerializeField] 
     private IsActive _addTweenEventTriggers = IsActive.No;
+    
     [SerializeField] 
-    [ShowIf("AddUserEvents")] [Label("Event At After Start/Mid-Point of Tween")] 
-    private TweenTrigger _inTweenEvent_End;
-    [SerializeField] 
-    [ShowIf("AddUserEvents")] [Label("Event At End of Tween")]
-    private TweenTrigger _outTweenEvent_End;
+    [ShowIf("UserEvents")] [BoxGroup("Tween Events")] [Label("Expand...")] 
+    private TweenEvents _tweenEvents;
 
     //Variables
     private int _counter, _effectCounter;
-    private List<TweenBase> _activeTweens;
+    private List<ITweenBase> _activeTweens;
     //private TweenBase _endTween;
     private bool _hasScheme;
     private TweenScheme _lastTweenScheme;
@@ -34,15 +32,12 @@ public class UITweener : MonoBehaviour
     //Delegates
     private Action _finishedTweenCallback;
     private TweenTrigger _currentUserEvent;
+    private ITestClass _newClass;
 
-    //Classes
-    [Serializable]
-    public class TweenTrigger : UnityEvent{ }
-    
     //Editor
-    private bool AddUserEvents =>  _addTweenEventTriggers == IsActive.Yes;
-
-    public void Awake() 
+    private bool UserEvents =>  _addTweenEventTriggers == IsActive.Yes;
+    
+    public void Awake()
     {
         if(_buildObjectsList.Count == 0 || _scheme is null) return;
         _activeTweens = TweenFactory.CreateTypes(_scheme);
@@ -56,7 +51,7 @@ public class UITweener : MonoBehaviour
             activeTween.SetUpTweens(_buildObjectsList, _scheme, PunchOrShakeEndEffect);
         }
     }
-
+    
     private void OnValidate()
     {
         PassInSchemeToBuildObjects();
@@ -115,12 +110,18 @@ public class UITweener : MonoBehaviour
         }
     }
     
-    public void ActivateTweens(Action callBack) 
-        => StartProcessingTweens(TweenType.In, callBack, _inTweenEvent_End);
-
-    public void DeactivateTweens(Action callBack) 
-        => StartProcessingTweens(TweenType.Out, callBack, _outTweenEvent_End);
-
+    public void ActivateTweens(Action callBack)
+    {
+        if(UserEvents)
+            _tweenEvents.InTweenEvent_Start?.Invoke();
+        StartProcessingTweens(TweenType.In, callBack, _tweenEvents.InTweenEvent_End);
+    }
+    public void DeactivateTweens(Action callBack)
+    {
+        if(UserEvents)
+            _tweenEvents.OutTweenEvent_Start?.Invoke();
+        StartProcessingTweens(TweenType.Out, callBack, _tweenEvents.OutTweenEvent_End);
+    }
     private void StartProcessingTweens(TweenType tweenType, Action callBack, TweenTrigger userEvent)
     {
         _finishedTweenCallback = callBack;
@@ -161,7 +162,8 @@ public class UITweener : MonoBehaviour
     {
         _effectCounter--;
         if (_effectCounter > 0) return;
-        _currentUserEvent?.Invoke();
+        if(UserEvents)
+            _currentUserEvent?.Invoke();
         _finishedTweenCallback?.Invoke();
     }
     
@@ -184,4 +186,6 @@ public class UITweener : MonoBehaviour
         //         break;
         // }
     }
+
 }
+

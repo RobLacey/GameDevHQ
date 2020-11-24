@@ -2,20 +2,32 @@
 
 public static class NodeFactory
 {
-    public static NodeBase Factory(ButtonFunction functions, UINode node)
+    private static IInjectClass injectClass = new IoC();
+    
+    public static INodeBase Factory(ButtonFunction functions, INode node)
     {
         switch (functions)
         {
             case ButtonFunction.Standard:
-                return new Standard(node);
+            {
+                return injectClass.WithParams<IStandard>(node);
+            }
             case ButtonFunction.ToggleGroup:
-                return new LinkedToggles(node);
+            {
+                return injectClass.WithParams<ILinkedToggles>(node);
+            }
             case ButtonFunction.ToggleNotLinked:
-                return new ToggleNotLinked(node);
+            {
+                return injectClass.WithParams<IToggleNotLinked>(node);
+            }
             case ButtonFunction.HoverToActivate:
-                return new HoverToActivate(node);
+            {
+                return injectClass.WithParams<IHoverToActivate>(node);
+            }
             case ButtonFunction.CancelOrBack:
-                return new CancelOrBackButton(node);
+            {
+                return injectClass.WithParams<ICancelOrBack>(node);
+            }
             default:
                 throw new Exception("No Node Type Found");
         }

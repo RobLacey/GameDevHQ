@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using NaughtyAttributes;
+using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// UIHub is the core of the system and looks after starting the system Up and general state management 
@@ -28,9 +30,14 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
     private bool _inMenu, _startingInGame;
     private InputScheme _inputScheme;
     
+    //private static ClassCreator<ICreate> newClass { get; } = new ClassCreator<ICreate>(typeof(TestClass));
+    private ITestClass _testClass1;
+    private readonly IInjectClass _newIoC = new IoC();
+
     //Properties
     private void SaveInMenu(IInMenu args)
     {
+        
         _inMenu = args.InTheMenu;
         if(!_inMenu) SetEventSystem(null);
     }
@@ -38,7 +45,24 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
 
     //Main
     private void Awake()
-    {
+    { 
+        var counter = 0;
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+       
+        
+       for (int i = 0; i < 1; i++)
+       { 
+           var args = new TestClassArgs(4, NavigationType.RightAndLeft);
+            _testClass1 = _newIoC.WithParams<ITestClass>(args);
+           counter++;
+       }
+       stopwatch.Stop();
+       //Debug.Log($"Test took {stopwatch.ElapsedMilliseconds} milliseconds");
+       Debug.Log($"Test took {stopwatch.Elapsed} milliseconds");
+       Debug.Log(counter);
+       _testClass1.CheckConstruction();
+       
         _inputScheme = GetComponent<UIInput>().ReturnScheme;
         _startingInGame = GetComponent<UIInput>().StartInGame();
         ObserveEvents();
@@ -58,19 +82,19 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
 
     private void OnEnable()
     {
-        ServiceLocator.AddService<IAudioService>(new UIAudioManager(GetComponent<AudioSource>()));
-        ServiceLocator.AddService<IBucketCreator>(new BucketCreator(transform, "Tooltip Holder"));
-        ServiceLocator.AddService<IHistoryTrack>(new HistoryTracker(_inputScheme.GlobalCancelAction));
-        ServiceLocator.AddService<IHomeGroup>(new UIHomeGroup(_homeBranches.ToArray()));
+        ServiceLocator.Bind<IAudioService>(new UIAudioManager(GetComponent<AudioSource>()));
+        ServiceLocator.Bind<IBucketCreator>(new BucketCreator(transform, "Tooltip Holder"));
+        ServiceLocator.Bind<IHistoryTrack>(new HistoryTracker(_inputScheme.GlobalCancelAction));
+        ServiceLocator.Bind<IHomeGroup>(new UIHomeGroup(_homeBranches.ToArray()));
     }
 
     private void OnDisable()
     {
         RemoveFromEvents();
-        ServiceLocator.RemoveService<IAudioService>();
-        ServiceLocator.RemoveService<IBucketCreator>();
-        ServiceLocator.RemoveService<IHistoryTrack>();
-        ServiceLocator.RemoveService<IHomeGroup>();
+        ServiceLocator.Remove<IAudioService>();
+        ServiceLocator.Remove<IBucketCreator>();
+        ServiceLocator.Remove<IHistoryTrack>();
+        ServiceLocator.Remove<IHomeGroup>();
     }
 
     private void Start()
@@ -93,7 +117,7 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
         else
         {
             EventSystem.current.SetSelectedGameObject(_homeBranches.First()
-                               .DefaultStartOnThisNode.ReturnNode.gameObject);
+                               .DefaultStartOnThisNode.ReturnGameObject);
             _inMenu = true;
         }
     }
@@ -108,7 +132,7 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
     private void SetLastHighlighted(IHighlightedNode args)
     {
         _lastHighlighted = args.Highlighted;
-        if(_inMenu) SetEventSystem(_lastHighlighted.ReturnNode.gameObject);
+        if(_inMenu) SetEventSystem(_lastHighlighted.ReturnGameObject);
     }
 
     public static void SetEventSystem(GameObject newGameObject) 

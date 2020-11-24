@@ -1,18 +1,28 @@
 ﻿
 public static class SizeAndPositionFactory
 {
-    public static INodeTween AssignType(TweenEffect tweenEffect, UISizeAndPosition parent, string iD)
+    private static readonly IInjectClass injectClass = new IoC();
+    
+    public static INodeTween AssignType(TweenEffect tweenEffect, ISizeAndPosition parent)
     {
         switch (tweenEffect)
         {
             case TweenEffect.Punch:
-                return new Punch(parent, iD);
+            {
+                return injectClass.WithParams<IPunch>(parent);
+            }            
             case TweenEffect.Shake:
-                return new Shake(parent, iD);
+            {
+                return injectClass.WithParams<IShake>(parent);
+            }
             case TweenEffect.Position:
-                return new Position(parent, iD);
+            {
+                return injectClass.WithParams<IPosition>(parent);
+            }
             case TweenEffect.Scale:
-                return new Scale(parent, iD);
+            {
+                return injectClass.WithParams<IScale>(parent);
+            }
         }
 
         return null;

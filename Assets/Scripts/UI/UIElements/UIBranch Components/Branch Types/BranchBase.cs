@@ -1,17 +1,28 @@
 ﻿using UnityEngine;
 
-public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IServiceUser
+public interface IBranchBase
 {
-    protected BranchBase(UIBranch branch)
+    void OnDisable();
+    void SetUpAsTabBranch();
+    void SetUpBranchesOnStart(ISetUpStartBranches args);
+    void SetUpBranch(IBranch newParentController = null);
+    void SetCanvas(ActiveCanvas active);
+    void SetBlockRaycast(BlockRaycast active);
+    void ActivateStoredPosition();
+}
+
+public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IServiceUser, IBranchBase
+{
+    protected BranchBase(IBranch branch)
     {
-        _myBranch = branch;
+        _myBranch = branch.ThisBranch;
         _myCanvas = _myBranch.MyCanvas;
         _myCanvasGroup = _myBranch.MyCanvasGroup;
         _screenData = new ScreenData(_myBranch.ScreenType);
         OnEnable();
     }
     
-    protected readonly UIBranch _myBranch;
+    protected readonly IBranch _myBranch;
     protected readonly ScreenData _screenData;
     protected bool _inMenu, _canStart, _gameIsPaused, _resolvePopUps;
     protected IHistoryTrack _historyTrack;
@@ -37,7 +48,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
     protected virtual void SaveIfOnHomeScreen(IOnHomeScreen args) => OnHomeScreen = args.OnHomeScreen;
     protected virtual void SaveOnStart(IOnStart args) => _canStart = true;
     public bool OnHomeScreen { get; private set; } = true;
-    public UIBranch IgnoreThisBranch => _myBranch;
+    public IBranch IgnoreThisBranch => _myBranch;
 
     //Main
     private void OnEnable()
@@ -74,17 +85,17 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
         EventLocator.Unsubscribe<IClearScreen>(ClearBranchForFullscreen);
     }
     
-    public void SubscribeToService() => _historyTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+    public void SubscribeToService() => _historyTrack = ServiceLocator.Get<IHistoryTrack>(this);
 
     public void SetUpAsTabBranch() => _isTabBranch = true;
 
-    protected virtual void SetUpBranchesOnStart(ISetUpStartBranches args)
+    public virtual void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
         SetBlockRaycast(BlockRaycast.No);
         SetCanvas(ActiveCanvas.No);
     }
 
-    public abstract void SetUpBranch(UIBranch newParentController = null);
+    public abstract void SetUpBranch(IBranch newParentController = null);
     
     public void SetCanvas(ActiveCanvas active) => _myCanvas.enabled = active == ActiveCanvas.Yes;
 

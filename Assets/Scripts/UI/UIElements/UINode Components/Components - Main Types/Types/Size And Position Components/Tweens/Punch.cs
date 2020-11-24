@@ -1,8 +1,11 @@
 ﻿using DG.Tweening;
 
-public class Punch : BaseShakePunch, INodeTween
+public interface IPunch : INodeTween{ }
+
+
+public class Punch : BaseShakePunch, IPunch
 {
-    public Punch(IPunchShakeTween node, string iD) : base(node, iD) { }
+    public Punch(IPunchShakeTween node) : base(node) { }
     
     private protected override void RunTween()
     {

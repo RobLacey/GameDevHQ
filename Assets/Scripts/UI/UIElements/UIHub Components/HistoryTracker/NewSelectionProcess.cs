@@ -4,10 +4,10 @@ using System.Linq;
 
 public interface INewSelectionProcess
 {
-    UINode Run();
-    INewSelectionProcess NewNode(UINode newNode);
-    INewSelectionProcess CurrentHistory(List<UINode> history);
-    INewSelectionProcess LastSelectedNode(UINode lastSelected);
+    INode Run();
+    INewSelectionProcess NewNode(INode newNode);
+    INewSelectionProcess CurrentHistory(List<INode> history);
+    INewSelectionProcess LastSelectedNode(INode lastSelected);
 }
 
 public class NewSelectionProcess : INewSelectionProcess
@@ -20,31 +20,31 @@ public class NewSelectionProcess : INewSelectionProcess
 
     //Variables
     private readonly HistoryTracker _historyTracker;
-    private UINode _newNode, _lastSelected;
-    private List<UINode> _history = new List<UINode>();
+    private INode _newNode, _lastSelected;
+    private List<INode> _history = new List<INode>();
     private readonly IHistoryManagement _historyManagement;
     private bool _hasHistory, _hasLastSelected, _hasNewNode;
 
-    public INewSelectionProcess NewNode(UINode newNode)
+    public INewSelectionProcess NewNode(INode newNode)
     {
         _newNode = newNode;
         _hasNewNode = true;
         return this;
     }
-    public INewSelectionProcess CurrentHistory(List<UINode> history)
+    public INewSelectionProcess CurrentHistory(List<INode> history)
     {
         _history = history;
         _hasHistory = true;
         return this;
     }
-    public INewSelectionProcess LastSelectedNode(UINode lastSelected)
+    public INewSelectionProcess LastSelectedNode(INode lastSelected)
     {
         _lastSelected = lastSelected;
         _hasLastSelected = true;
         return this;
     }
 
-    public UINode Run()
+    public INode Run()
     {
         CheckForExceptions();
         DoSelectedProcess();
@@ -95,7 +95,7 @@ public class NewSelectionProcess : INewSelectionProcess
 
         _historyTracker.AddNodeToTestRunner(_newNode);
 
-        _history.Add(_newNode.ReturnNode);
+        _history.Add(_newNode);
         _lastSelected = _newNode;
     }
 

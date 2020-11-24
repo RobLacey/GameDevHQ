@@ -5,7 +5,7 @@ public interface IManagePopUpHistory
     IManagePopUpHistory IsGamePaused(bool isPaused);
     IManagePopUpHistory NoPopUpAction(Action noPopUpAction);
     void DoPopUpCheckAndHandle();
-    void HandlePopUps(UIBranch popUpToCancel);
+    void HandlePopUps(IBranch popUpToCancel);
     void MoveToNextPopUp();
 }
 
@@ -58,7 +58,7 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
         }
     }
 
-    public void HandlePopUps(UIBranch popUpToCancel)
+    public void HandlePopUps(IBranch popUpToCancel)
     {
         if(popUpToCancel.EscapeKeySetting == EscapeKey.None) return;
         _popUpController.RemoveNextPopUp(popUpToCancel);

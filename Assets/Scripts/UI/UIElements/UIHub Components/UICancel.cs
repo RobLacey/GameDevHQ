@@ -49,7 +49,7 @@ public class UICancel : ICancel, IServiceUser, IEventUser
 
     public void SubscribeToService()
     {
-        _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+        _uiHistoryTrack = ServiceLocator.Get<IHistoryTrack>(this);
     }
 
     private void CancelPressed(ICancelPressed args)

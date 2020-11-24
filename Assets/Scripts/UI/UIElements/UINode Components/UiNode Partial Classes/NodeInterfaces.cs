@@ -1,12 +1,26 @@
 ﻿
-public interface INode : IToggles
+using System;
+using UnityEngine;
+
+public interface INode : IToggles, IParameters
 {
-    UIBranch MyBranch { get; }
-    UIBranch HasChildBranch { get; }
-    UINode ReturnNode { get; }
+    EscapeKey EscapeKeyType { get; }
+    bool CloseHooverOnExit { get; }
+    bool IsSelected { get; }
+    IBranch MyBranch { get; }
+    IBranch HasChildBranch { get; }
+    bool DontStoreTheseNodeTypesInHistory { get; }
+    GameObject ReturnGameObject { get; }
     void SetNodeAsActive();
     void DeactivateNode();
-    bool DontStoreTheseNodeTypesInHistory { get; }
+    void ThisNodeIsSelected();
+    void ThisNodeIsHighLighted();
+    void SetAsHighlighted();
+    void SetNotHighlighted();
+    void SetSelectedStatus(bool isSelected, Action endAction);
+    void DoPress();
+    void SetNodeAsSelected_NoEffects();
+    void SetNodeAsNotSelected_NoEffects();
 }
 
 public interface IToggles
@@ -15,7 +29,6 @@ public interface IToggles
     bool IsToggleGroup { get; }
     IsActive ReturnStartAsSelected { get; }
     IsActive SetStartAsSelected { set; }
-    UINode ReturnNode { get; }
 
 }
         

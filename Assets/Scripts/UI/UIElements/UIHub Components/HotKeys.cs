@@ -13,7 +13,7 @@ public class HotKeys : IEventUser, IHotKeyPressed
     //Variables
     private bool _hasParentNode;
     private INode _parentNode;
-    private UIBranch _activeBranch;
+    private IBranch _activeBranch;
     private InputScheme _inputScheme;
     
     //Events
@@ -21,8 +21,8 @@ public class HotKeys : IEventUser, IHotKeyPressed
     
     //Properties
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
-    public UINode ParentNode => _parentNode.ReturnNode;
-    public UIBranch MyBranch => _myBranch;
+    public INode ParentNode => _parentNode;
+    public IBranch MyBranch => _myBranch;
     
     //Main
     public void OnAwake(InputScheme inputScheme)
@@ -90,7 +90,7 @@ public class HotKeys : IEventUser, IHotKeyPressed
         _parentNode = branchesNodes.First(node => _myBranch == node.HasChildBranch);
     }
     
-    private void FindHomeScreenParent(UIBranch branch)
+    private void FindHomeScreenParent(IBranch branch)
     {
         while (!branch.IsHomeScreenBranch())
         {

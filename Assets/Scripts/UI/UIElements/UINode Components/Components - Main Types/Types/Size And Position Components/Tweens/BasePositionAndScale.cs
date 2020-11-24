@@ -7,11 +7,11 @@ public abstract class BasePositionAndScale
     private protected readonly SizeAndPositionScheme _scheme;
     private protected readonly string _id;
 
-    private protected BasePositionAndScale(IPositionScaleTween data, string id)
+    private protected BasePositionAndScale(IPositionScaleTween data)
     {
         _tweenData = data;
         _scheme = data.Scheme;
-        _id = $"PositionOrScale{id}";
+        _id = $"PositionOrScale{data.GameObjectID}";
     }
 
     private protected Vector3 TweenEndTarget { get; set; }

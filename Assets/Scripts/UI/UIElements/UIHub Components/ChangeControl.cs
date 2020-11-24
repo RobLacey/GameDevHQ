@@ -44,7 +44,7 @@ public class ChangeControl : IEventUser, IAllowKeys, IServiceUser
         EventLocator.Unsubscribe<IOnStart>(StartGame);
     }
     
-    public void SubscribeToService() => _historyTracker = ServiceLocator.GetNewService<IHistoryTrack>(this);
+    public void SubscribeToService() => _historyTracker = ServiceLocator.Get<IHistoryTrack>(this);
 
 
     private void StartGame(IOnStart onStart)
@@ -120,7 +120,7 @@ public class ChangeControl : IEventUser, IAllowKeys, IServiceUser
         CanAllowKeys = true;
         SetAllowKeys();
         SetNextHighlightedForKeys();
-        UIHub.SetEventSystem(_lastHighlighted.ReturnNode.gameObject);
+        UIHub.SetEventSystem(_lastHighlighted.ReturnGameObject);
     }
 
     private void SetAllowKeys()

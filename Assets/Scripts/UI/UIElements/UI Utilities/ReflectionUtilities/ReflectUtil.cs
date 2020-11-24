@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public static class ReflectUtil
 {
@@ -10,30 +10,30 @@ public static class ReflectUtil
         NavigationType.AllDirections, 
         NavigationType.RightAndLeft
     };
-
-    public static void SetFields<T>(T testClass)
+    
+    public static void SetFields<T>(T testClass, Type attribute)
     {
         Type type = typeof(T);
-        var fieldInfo = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+        var fieldInfo = type.GetFields(BindingFlags.Instance
+                                       | BindingFlags.DeclaredOnly
+                                       | BindingFlags.NonPublic);
         
-        foreach (var info in fieldInfo)
-        {
-            switch (info.Name)
-            {
-                case "_count":
-                    info.SetValue(testClass, (int)info.GetValue(testClass) + 1);
-                    break;
-                case "_navType":
-                    info.SetValue(testClass, directions[index]);
-                    index++;
-                    break;
-                default:
-                    // throw new Exception("No field found - Possible name change or deletion");
-                    break;
-            }
-        }
+        SearchClass(testClass, attribute, fieldInfo);
     }
 
+    private static void SearchClass<T>(T testClass, Type attribute, FieldInfo[] fieldInfo)
+    {
+        foreach (var info in fieldInfo)
+        {
+            if(info.GetCustomAttribute(attribute) is null) continue;
+            var type = info.FieldType;
+            
+             var newType = ClassCreate.Get(type);
+            //var newType = System.Activator.CreateInstance(info.FieldType);
+            info.SetValue(testClass, newType);
+        }
+    }
+    
     public static void GetProperty<T>(T testClass, Type attribute)
     {
         Type type = typeof(T);

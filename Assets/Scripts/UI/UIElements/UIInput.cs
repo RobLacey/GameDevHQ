@@ -21,7 +21,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
     private bool _noActivePopUps = true;
     private bool _onHomeScreen = true;
     private UINode _lastHomeScreenNode;
-    private UIBranch _activeBranch;
+    private IBranch _activeBranch;
     private MenuAndGameSwitching _menuToGameSwitching;
     private ChangeControl _changeControl;
     private IHistoryTrack _historyTrack;
@@ -84,7 +84,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
         SubscribeToService();
     }
     
-    public void SubscribeToService() => _historyTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+    public void SubscribeToService() => _historyTrack = ServiceLocator.Get<IHistoryTrack>(this);
 
 
     private void SetUpHotKeys()

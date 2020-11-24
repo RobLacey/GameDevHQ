@@ -1,6 +1,17 @@
-﻿public abstract class NodeBase : IServiceUser, IEventUser
+﻿public interface INodeBase
 {
-    protected NodeBase(UINode node)
+    bool PointerOverNode { get; set; }
+    void Start();
+    void DeactivateNode();
+    void OnDisable();
+    void OnEnter(bool isDragEvent);
+    void OnExit(bool isDragEvent);
+    void OnSelected(bool isDragEvent);
+}
+
+public abstract class NodeBase : IServiceUser, IEventUser, INodeBase
+{
+    protected NodeBase(INode node)
     {
         _uiNode = node;
         MyBranch = _uiNode.MyBranch;
@@ -8,18 +19,18 @@
     }
     
     //Variables
-    protected UINode _uiNode;
+    protected INode _uiNode;
     protected IHistoryTrack _uiHistoryTrack;
 
     //Properties
     public bool PointerOverNode { get; set; }
-    public UIBranch MyBranch { get; protected set; }
+    public IBranch MyBranch { get; protected set; }
     
     public virtual void ObserveEvents() { }
 
     public virtual void RemoveFromEvents(){ }
 
-    public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.GetNewService<IHistoryTrack>(this);
+    public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.Get<IHistoryTrack>(this);
 
     public virtual void Start() => ObserveEvents();
 

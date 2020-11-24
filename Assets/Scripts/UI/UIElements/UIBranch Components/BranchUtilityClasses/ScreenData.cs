@@ -9,7 +9,7 @@ public class ScreenData : IEventUser
         ObserveEvents();
     }
 
-    private readonly List<UIBranch> _clearedBranches = new List<UIBranch>();
+    private readonly List<IBranch> _clearedBranches = new List<IBranch>();
     public bool  _wasInTheMenu, _locked;
     public bool _wasOnHomeScreen = true;
     private readonly bool _isFullscreen;
@@ -38,13 +38,13 @@ public class ScreenData : IEventUser
         _wasOnHomeScreen = args.OnHomeScreen;
     }
 
-    public void StoreClearScreenData(UIBranch[] allBranches, UIBranch thisBranch, BlockRaycast blockRaycast)
+    public void StoreClearScreenData(IBranch[] allBranches, IBranch thisBranch, BlockRaycast blockRaycast)
     {
         _locked = true;
         StoreActiveBranches(allBranches, thisBranch, blockRaycast == BlockRaycast.Yes);
     }
     
-    private void StoreActiveBranches(UIBranch[] allBranches, UIBranch thisBranch, bool blockRaycast)
+    private void StoreActiveBranches(IBranch[] allBranches, IBranch thisBranch, bool blockRaycast)
     {
         foreach (var branchToClear in allBranches)
         {
@@ -54,10 +54,10 @@ public class ScreenData : IEventUser
                 _clearedBranches.Add(branchToClear);
             
             if (blockRaycast) 
-                branchToClear.Branch.SetBlockRaycast(BlockRaycast.No);
+                branchToClear.BranchBase.SetBlockRaycast(BlockRaycast.No);
         }
 
-        bool IsAPopUp(UIBranch branchToClear) => branchToClear.IsAPopUpBranch() || branchToClear.IsTimedPopUp;
+        bool IsAPopUp(IBranch branchToClear) => branchToClear.IsAPopUpBranch() || branchToClear.IsTimedPopUp();
     }
 
     public void RestoreScreen()
@@ -67,8 +67,8 @@ public class ScreenData : IEventUser
         foreach (var branch in _clearedBranches)
         {
             if(_isFullscreen)
-                branch.Branch.SetCanvas(ActiveCanvas.Yes);
-            branch.Branch.SetBlockRaycast(BlockRaycast.Yes);
+                branch.BranchBase.SetCanvas(ActiveCanvas.Yes);
+            branch.BranchBase.SetBlockRaycast(BlockRaycast.Yes);
         }
         _clearedBranches.Clear();
     }

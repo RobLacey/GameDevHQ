@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc88850385a84b3d9350959903cba623, type: 3}
   m_Name: DropDownTween
   m_EditorClassIdentifier: 
-  _positionTween: 0
+  _positionTween: 3
   _rotationTween: 0
   _fadeTween: 0
   _scaleTween: 0
   _punchTween: 0
   _shakeTween: 0
   _positionData:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
+    _inTime: 0.2
+    _outTime: 0.2
+    _easeIn: 6
+    _easeOut: 5
   _rotationData:
     _inTime: 1
     _outTime: 1

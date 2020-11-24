@@ -4,7 +4,7 @@ using System.Linq;
 
 public interface ITestList
 {
-    UINode AddNode { get; }
+    INode AddNode { get; }
 }
 
 public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser, IReturnToHome, ITestList, ICancelHoverOverButton
@@ -21,11 +21,11 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser, IReturnTo
     }
 
     //Variables
-    private readonly List<UINode> _history = new List<UINode>();
-    private UINode _lastSelected;
+    private readonly List<INode> _history = new List<INode>();
+    private INode _lastSelected;
     private bool _canStart, _isPaused, _activateOnReturnHome;
     private bool _onHomeScreen = true, _noPopUps = true;
-    private UIBranch _activeBranch;
+    private IBranch _activeBranch;
     private readonly EscapeKey _globalCancelAction;
     
     //Properties
@@ -48,9 +48,9 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser, IReturnTo
     
     //TODO Remove Test Rig
     private static CustomEvent<ITestList> AddANode { get; } = new CustomEvent<ITestList>();
-    public UINode AddNode { get; private set; }
+    public INode AddNode { get; private set; }
     
-    public void AddNodeToTestRunner(UINode node)
+    public void AddNodeToTestRunner(INode node)
     {
         AddNode = node;
         AddANode?.RaiseEvent(this);
@@ -85,13 +85,13 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser, IReturnTo
         EventLocator.Unsubscribe<ICancelPopUp>(CancelPopUpFromButton);
     }
     
-    public void SubscribeToService() => ServiceLocator.AddService<ICancel>(new UICancel(_globalCancelAction));
+    public void SubscribeToService() => ServiceLocator.Bind<ICancel>(new UICancel(_globalCancelAction));
 
     public void OnEnable() => ObserveEvents();
 
     public void OnDisable()
     {
-        ServiceLocator.RemoveService<ICancel>();
+        ServiceLocator.Remove<ICancel>();
         RemoveFromEvents();
     }
     
@@ -103,7 +103,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser, IReturnTo
         if(!_canStart) return;
         if(node.DontStoreTheseNodeTypesInHistory) return;
         
-        _lastSelected = SelectionProcess.NewNode(node.ReturnNode)
+        _lastSelected = SelectionProcess.NewNode(node)
                                        .CurrentHistory(_history)
                                        .LastSelectedNode(_lastSelected)
                                        .Run();

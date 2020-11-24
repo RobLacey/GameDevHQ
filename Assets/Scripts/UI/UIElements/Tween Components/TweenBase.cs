@@ -4,6 +4,15 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
+public interface ITweenBase
+{
+    void StartTween(TweenType tweenType, TweenCallback tweenCallback);
+
+    void SetUpTweens(List<BuildTweenData> buildObjectsList,
+                     TweenScheme tweenScheme,
+                     Action<RectTransform> effectCall);
+}
+
 /// <summary>
 /// This class is the base for the major tween classes. If it involves build lists this is the one to use
 /// </summary>

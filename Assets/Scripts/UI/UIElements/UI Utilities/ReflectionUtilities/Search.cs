@@ -16,13 +16,10 @@ public static class Search
 
     private static void GetAssemblyInfo(Type type)
     {
-        
         Debug.Log(Assembly.GetExecutingAssembly());
 
         foreach (var currentTypes in Assembly.GetExecutingAssembly().GetTypes())
         {
-            Debug.Log(currentTypes.GetTypeInfo().Namespace);
-
             GetDeclaredMethods(currentTypes);
             GetMemberInfo(currentTypes);
         }
@@ -34,10 +31,7 @@ public static class Search
         {
             foreach (var declaredMethod in currentTypes.GetTypeInfo().DeclaredMethods)
             {
-                if (declaredMethod.Name == "SpareMethod")
-                {
-                    Debug.Log("Method Found");
-                }
+                Debug.Log(declaredMethod);
             }
         }
     }

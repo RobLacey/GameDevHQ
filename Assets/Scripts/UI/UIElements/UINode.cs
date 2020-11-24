@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(RectTransform))]
 
-public partial class UINode : MonoBehaviour, INode, IToggles, IEventUser, ICancelButtonActivated,
+public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonActivated,
                               IHighlightedNode, ISelectedNode, IPointerEnterHandler, IPointerDownHandler,
                               IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
 {
@@ -61,36 +61,36 @@ public partial class UINode : MonoBehaviour, INode, IToggles, IEventUser, ICance
     [SerializeField] 
     [Space(5f)] [BoxGroup("Functions")] [Label("Event Settings")] [ShowIf("NeedEvents")]  
     private EventSettings _events;
-    [ContextMenuItem("TestCase", "Test")]
-    [SerializeField] private Vector3 _test;
-    [ColorUsage(false)]
-    [SerializeField]
-    private Color colorNoAlpha;
-
-    [ColorUsage(true, true, 0.0f, 0.5f, 0.0f, 0.5f)]
-    [SerializeField]
-    private Color colorHdr;
-
-    [Header("Text Attributes")]
-    [TextArea]
-    [Tooltip("A string using the TextArea attribute")]
-    [SerializeField]
-    private string descriptionTextArea;
-    [Multiline]
-    [Tooltip("A string using the MultiLine attribute")]
-    [SerializeField]
-    private string descriptionMultiLine;
-    private void Test()
-    {
-        _test = GetComponent<RectTransform>().anchoredPosition3D;
-    }
+    // [ContextMenuItem("TestCase", "Test")]
+    // [SerializeField] private Vector3 _test;
+    // [ColorUsage(false)]
+    // [SerializeField]
+    // private Color colorNoAlpha;
+    //
+    // [ColorUsage(true, true, 0.0f, 0.5f, 0.0f, 0.5f)]
+    // [SerializeField]
+    // private Color colorHdr;
+    //
+    // [Header("Text Attributes")]
+    // [TextArea]
+    // [Tooltip("A string using the TextArea attribute")]
+    // [SerializeField]
+    // private string descriptionTextArea;
+    // [Multiline]
+    // [Tooltip("A string using the MultiLine attribute")]
+    // [SerializeField]
+    // private string descriptionMultiLine;
+    // private void Test()
+    // {
+    //     _test = GetComponent<RectTransform>().anchoredPosition3D;
+    // }
 
     //Variables
     private bool _inMenu, _allowKeys, _childIsMoving;
     private INode _lastHighlighted;
     private IUiEvents _uiNodeEvents;
     private IDisabledNode _disabledNode;
-    private NodeBase _nodeBase;
+    private INodeBase _nodeBase;
     private readonly List<NodeFunctionBase> _activeFunctions = new List<NodeFunctionBase>();
 
     private bool _canStart;
@@ -105,14 +105,14 @@ public partial class UINode : MonoBehaviour, INode, IToggles, IEventUser, ICance
     //Properties & Enums
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     public bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
-    public bool DontStoreTheseNodeTypesInHistory => IsToggleGroup || IsToggleNotLinked || !HasChildBranch;
+    public bool DontStoreTheseNodeTypesInHistory => IsToggleGroup || IsToggleNotLinked || HasChildBranch is null;
     private bool IsCancelOrBack => _buttonFunction == ButtonFunction.CancelOrBack;
     public bool IsSelected { get; private set; }
     public ToggleData ToggleData => _toggleData;
-    public UIBranch MyBranch { get; private set; }
-    public UIBranch HasChildBranch => _navigation.ChildBranch;
-    public UINode ReturnNode => this;
+    public IBranch MyBranch { get; private set; }
+    public IBranch HasChildBranch => _navigation.ChildBranch;
     public EscapeKey EscapeKeyType => _escapeKeyFunction;
+    public GameObject ReturnGameObject => gameObject;
     public INode Highlighted => this;
     public INode Selected => this;
     public UINavigation Navigation => _navigation.Instance;
@@ -130,7 +130,7 @@ public partial class UINode : MonoBehaviour, INode, IToggles, IEventUser, ICance
         {
             SetNotHighlighted();
         }
-        else if (_lastHighlighted.ReturnNode == this && _allowKeys)
+        else if (ReferenceEquals(_lastHighlighted, this) && _allowKeys) //TODO Check this works
         {
             SetNodeAsActive();
         }
@@ -146,7 +146,7 @@ public partial class UINode : MonoBehaviour, INode, IToggles, IEventUser, ICance
     private void SaveAllowKeys(IAllowKeys args)
     {
         _allowKeys = args.CanAllowKeys;
-        if(!_allowKeys && _lastHighlighted.ReturnNode == this)
+        if(!_allowKeys && ReferenceEquals(_lastHighlighted, this)) //TODO Check this works
         {
             SetNotHighlighted();
         }    
@@ -162,7 +162,7 @@ public partial class UINode : MonoBehaviour, INode, IToggles, IEventUser, ICance
     private void UnHighlightThisNode(IHighlightedNode args)
     {
         if(!_allowKeys) return;
-        if (_lastHighlighted.ReturnNode == this && args.Highlighted.ReturnNode != this)
+        if (_lastHighlighted == this && args.Highlighted != this)
         {
             SetNotHighlighted();
         }
@@ -184,7 +184,7 @@ public partial class UINode : MonoBehaviour, INode, IToggles, IEventUser, ICance
     //Main
     private void Awake()
     {
-        MyBranch = GetComponentInParent<UIBranch>();
+        MyBranch = GetComponentInParent<IBranch>();
         _uiNodeEvents = new UiEvents(gameObject.GetInstanceID(), this);
         StartNodeFactory();
         SetUpUiFunctions();

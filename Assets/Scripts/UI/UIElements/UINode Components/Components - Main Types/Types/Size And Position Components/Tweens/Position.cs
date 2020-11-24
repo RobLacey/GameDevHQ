@@ -1,9 +1,12 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 
-public class Position : BasePositionAndScale, INodeTween
+public interface IPosition : INodeTween { }
+
+
+public class Position : BasePositionAndScale, IPosition
 {
-    public Position(IPositionScaleTween data, string iD) : base(data, iD)
+    public Position(IPositionScaleTween data) : base(data)
     {
         TweenEndTarget = _tweenData.StartPosition + _scheme.PixelsToMoveBy;
     }

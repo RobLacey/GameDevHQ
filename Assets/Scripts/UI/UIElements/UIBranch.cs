@@ -6,13 +6,14 @@ using UnityEngine.UI;
 using NaughtyAttributes;
 using UnityEngine.Events;
 
+
 [RequireComponent(typeof(Canvas))]
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
-public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch
+public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch, IBranch
 {
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
@@ -73,15 +74,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
                                  .DefaultReturn(LastSelected)
                                  .RunOn(ThisGroupsUiNodes);
     }    
-    public void SetNoTween() => _tweenOnChange = false;
-    public void DontSetBranchAsActive() => _canActivateBranch = false;
-    public UIBranch ActiveBranch => this;
-
-    /// <summary>
-    /// Call To to start any PopUps through I StartPopUp
-    /// </summary>
-    // ReSharper disable once UnusedMember.Global
-    public void StartPopUp() => OnStartPopUp?.Invoke();
     
     //Delegates & Events
     public event Action OnStartPopUp; 
@@ -116,33 +108,38 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     
     private void Awake()
     {
-        ThisGroupsUiNodes = SetBranchesChildNodes.GetChildNodes(this);
+        ThisGroupsUiNodes = SetBranchesChildNodes.GetChildNodes(this); // TODO LOOK AT THIS
         MyCanvasGroup = GetComponent<CanvasGroup>();
         MyCanvasGroup.blocksRaycasts = false;
         _uiTweener = GetComponent<UITweener>();
         MyCanvas = GetComponent<Canvas>();
-        Branch = BranchFactory.Factory
-                              .PassThisBranch(this) 
-                              .PassAllBranches(FindObjectsOfType<UIBranch>()) 
-                              .CreateType(_branchType);
+        BranchBase = BranchFactory.Factory.PassThisBranch(this).CreateType(_branchType);
         MyParentBranch = this;
         SetStartPositions();
         ObserveEvents();
     }
 
+    public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
+
     private void OnDisable()
     {
-        Branch.OnDisable();
+        BranchBase.OnDisable();
         RemoveFromEvents();
     }
 
     private void Start() => SetNodesChildrenToThisBranch();
+    
+    /// <summary>
+    /// Call To to start any PopUps through I StartPopUp
+    /// </summary>
+    // ReSharper disable once UnusedMember.Global
+    public void StartPopUp() => OnStartPopUp?.Invoke();
 
     private void SetNodesChildrenToThisBranch()
     {
         foreach (var node in ThisGroupsUiNodes)
         {
-            if (!node.HasChildBranch) continue;
+            if (node.HasChildBranch is null) continue;
             node.HasChildBranch.MyParentBranch = this;
         }
     }
@@ -153,7 +150,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         LastHighlighted = DefaultStartOnThisNode;
         LastSelected = DefaultStartOnThisNode;
         if(_groupsList.Count <= 1) return;
-        _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartOnThisNode.ReturnNode, _groupsList);
+        _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
     }
 
     private void SetDefaultStartPosition()
@@ -174,21 +171,26 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
 
     private void FromHotKey(IHotKeyPressed args)
     {
-        if (args.MyBranch == this)
+        if (ReferenceEquals(args.MyBranch, this))
         {
             MoveToThisBranch();
         }
     }
+    
+    public void DoNotTween() => _tweenOnChange = false;
+
+    public void DontSetBranchAsActive() => _canActivateBranch = false;
+
     public void MoveToBranchWithoutTween()
     {
-        Branch.SetBlockRaycast(BlockRaycast.Yes);
+        BranchBase.SetBlockRaycast(BlockRaycast.Yes);
         _tweenOnChange = false;
         MoveToThisBranch();
     }
     
-    public void MoveToThisBranch(UIBranch newParentBranch = null)
+    public void MoveToThisBranch(IBranch newParentBranch = null)
     {
-        Branch.SetUpBranch(newParentBranch);
+        BranchBase.SetUpBranch(newParentBranch);
         if (_canActivateBranch) SetAsActiveBranch();
         
         if (_tweenOnChange)
@@ -214,11 +216,11 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     public void ResetBranchesStartPosition()
     {
         if (_saveExitSelection == IsActive.Yes) return;
-        _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartOnThisNode.ReturnNode, _groupsList);
+        _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
         LastHighlighted = DefaultStartOnThisNode;
     }
 
-    public void NavigateToChildBranch(UIBranch moveToo)
+    public void NavigateToChildBranch(IBranch moveToo)
     {
         if (moveToo.IsInternalBranch())
         {
@@ -257,7 +259,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     {
         _branchEvents?.OnBranchExit.Invoke();
         if (_stayOn == IsActive.No || outTweenType == OutTweenType.Cancel)
-            Branch.SetBlockRaycast(BlockRaycast.No);
+            BranchBase.SetBlockRaycast(BlockRaycast.No);
     }
 
     private void ProcessTween(OutTweenType outTweenType)
@@ -269,9 +271,9 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private void OutTweenCallback(OutTweenType outTweenType)
     {
         if(_stayOn == IsActive.No || outTweenType == OutTweenType.Cancel)
-            Branch.SetCanvas(ActiveCanvas.No);
+            BranchBase.SetCanvas(ActiveCanvas.No);
         if(!IsPauseMenuBranch()) 
-            Branch.ActivateStoredPosition();
+            BranchBase.ActivateStoredPosition();
         OnFinishTweenCallBack?.Invoke();
     }
 
@@ -283,7 +285,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         {
            LastHighlighted.SetNodeAsActive();
         }
-        Branch.SetBlockRaycast(BlockRaycast.Yes);
+        BranchBase.SetBlockRaycast(BlockRaycast.Yes);
         _branchEvents?.OnBranchEnter.Invoke();
         _canActivateBranch = true;
     }

@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 
-public class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, IPunchShakeTween
+public interface ISizeAndPosition : IPositionScaleTween, IPunchShakeTween { }
+
+public class UISizeAndPosition : NodeFunctionBase, ISizeAndPosition
 {
     public UISizeAndPosition(ISizeAndPositionSettings settings, IUiEvents uiEvents)
     {
@@ -14,15 +16,16 @@ public class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, IPunchSh
     //Variables
     private readonly SizeAndPositionScheme _scheme;
     private INodeTween _tween;
-    private string _gameObjectID;
 
-    //Properties
+    //Properties & Set/Getters
     public SizeAndPositionScheme Scheme => _scheme;
     public bool IsPressed { get; private set; }
     public RectTransform MyRect { get; }
     public Transform MyTransform { get; private set; }
     public Vector3 StartPosition { get; private set; }
     public Vector3 StartSize { get; private set; }
+    public string GameObjectID { get; private set; }
+
     protected override bool CanBeHighlighted() => _scheme.CanBeHighlighted || _scheme.CanBeSelectedAndHighlight;
     protected override bool CanBePressed()  => !_scheme.NotSet && !_scheme.CanBeSelectedAndHighlight;
     protected override bool FunctionNotActive() => !CanActivate && !_scheme.NotSet;
@@ -33,7 +36,7 @@ public class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, IPunchSh
         if(!_scheme || MyRect is null) return;
         base.OnAwake(events);
         _scheme.OnAwake();
-        _gameObjectID = events.MasterNodeID.ToString();
+        GameObjectID = events.MasterNodeID.ToString();
         SetVariables();
     }
 
@@ -43,7 +46,7 @@ public class UISizeAndPosition : NodeFunctionBase, IPositionScaleTween, IPunchSh
         StartSize = MyRect.localScale;
         StartPosition = MyRect.anchoredPosition3D;
         if(CanActivate)
-            _tween = SizeAndPositionFactory.AssignType(_scheme.TweenEffect, this, _gameObjectID);
+            _tween = SizeAndPositionFactory.AssignType(_scheme.TweenEffect, this);
     }
 
     protected override void SaveIsSelected(bool isSelected)

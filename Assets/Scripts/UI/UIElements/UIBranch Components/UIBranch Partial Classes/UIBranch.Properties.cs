@@ -14,7 +14,7 @@ public partial class UIBranch
     public bool IsInternalBranch() => _branchType == BranchType.Internal;
     public bool IsHomeScreenBranch() => _branchType == BranchType.HomeScreen;
     public BranchType ReturnBranchType => _branchType;
-    public bool IsTimedPopUp => _branchType == BranchType.TimedPopUp;
+    public bool IsTimedPopUp() => _branchType == BranchType.TimedPopUp;
     public bool CanvasIsEnabled => MyCanvas.enabled;
     public bool CanStoreAndRestoreOptionalPoUp => _storeOrResetOptional == StoreAndRestorePopUps.StoreAndRestore;
     public INode DefaultStartOnThisNode => _startOnThisNode;
@@ -23,8 +23,11 @@ public partial class UIBranch
     public INode[] ThisGroupsUiNodes { get; private set; }
     public Canvas MyCanvas { get; private set; } 
     public CanvasGroup MyCanvasGroup { get; private set; }
-    public BranchBase Branch { get; private set; }
-    public UIBranch MyParentBranch { get; set; }
+    public IBranchBase BranchBase { get; private set; }
+    public IBranch MyParentBranch { get; set; }
+    public IBranch ThisBranch => this;
+    public IBranch ActiveBranch => this;
+
 
     public EscapeKey EscapeKeySetting
     {

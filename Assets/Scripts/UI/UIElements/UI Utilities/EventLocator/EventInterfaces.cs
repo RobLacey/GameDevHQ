@@ -26,7 +26,7 @@ public interface ICancelButtonActivated: ICancelPopUp, ICancelHoverOver //**
 } 
 public interface ICancelPopUp
 {
-    UIBranch MyBranch { get; }
+    IBranch MyBranch { get; }
 }
 public interface ICancelHoverOver { }
 public interface ICancelHoverOverButton { }
@@ -50,7 +50,7 @@ public interface ISelectedNode//**
 
 public interface IActiveBranch//**
 {
-    UIBranch ActiveBranch { get; }
+    IBranch ActiveBranch { get; }
 }
 
 public interface ISetUpStartBranches //**
@@ -81,28 +81,28 @@ public interface INoPopUps //**
 
 public interface IRemoveOptionalPopUp //**
 {
-    UIBranch ThisPopUp { get; }
+    IBranch ThisPopUp { get; }
 }
 
 public interface IAddOptionalPopUp //**
 {
-    UIBranch ThisPopUp { get; }
+    IBranch ThisPopUp { get; }
 }
 
 public interface IAddResolvePopUp //**
 {
-    UIBranch ThisPopUp { get; }
+    IBranch ThisPopUp { get; }
 }
 
 public interface IClearScreen //**
 {
-    UIBranch IgnoreThisBranch { get; }
+    IBranch IgnoreThisBranch { get; }
 }
 
 public interface IHotKeyPressed
 {
-    UINode ParentNode { get; }
-    UIBranch MyBranch { get; }
+    INode ParentNode { get; }
+    IBranch MyBranch { get; }
 }
 
 
