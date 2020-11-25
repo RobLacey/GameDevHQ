@@ -12,14 +12,14 @@ public interface INewSelectionProcess
 
 public class NewSelectionProcess : INewSelectionProcess
 {
-    public NewSelectionProcess(HistoryTracker historyTracker, IHistoryManagement historyManagement )
+    public NewSelectionProcess(IHistoryTrack historyTracker)
     {
         _historyTracker = historyTracker;
-        _historyManagement = historyManagement;
+        _historyManagement = historyTracker.HistoryListManagement;
     }
 
     //Variables
-    private readonly HistoryTracker _historyTracker;
+    private readonly IHistoryTrack _historyTracker;
     private INode _newNode, _lastSelected;
     private List<INode> _history = new List<INode>();
     private readonly IHistoryManagement _historyManagement;

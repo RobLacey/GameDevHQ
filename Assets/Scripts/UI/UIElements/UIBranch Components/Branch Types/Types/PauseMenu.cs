@@ -17,7 +17,7 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch
     
     //Properties
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
-    private bool WasInGame() => !_screenData._wasInTheMenu;
+    private bool WasInGame() => !_screenData.WasOnHomeScreen;
     public bool GameIsPaused => _gameIsPaused;
     
     //Events
@@ -76,7 +76,7 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch
 
     private void EnterPause()
     {
-        _screenData.StoreClearScreenData(_allBranches, _myBranch.ThisBranch, BlockRaycast.Yes);
+        _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.Yes);
         _myBranch.MoveToThisBranch();
     }
 

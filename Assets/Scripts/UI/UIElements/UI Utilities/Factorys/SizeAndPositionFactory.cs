@@ -1,7 +1,7 @@
 ﻿
 public static class SizeAndPositionFactory
 {
-    private static readonly IInjectClass injectClass = new IoC();
+    private static readonly IInjectClass injectClass = new InjectClass();
     
     public static INodeTween AssignType(TweenEffect tweenEffect, ISizeAndPosition parent)
     {

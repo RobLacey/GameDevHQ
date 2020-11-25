@@ -2,22 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public interface ITestList
+public interface ITestList //TODO Remove
 {
     INode AddNode { get; }
 }
 
-public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser, IReturnToHome, ITestList, ICancelHoverOverButton
+public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser, 
+                              IReturnToHome, ITestList, ICancelHoverOverButton
 {
-    public HistoryTracker(EscapeKey globalCancelAction)
+    public HistoryTracker(IHub hub)
     {
-        _globalCancelAction = globalCancelAction;
+        _globalCancelAction = hub.Scheme.GlobalCancelAction;
         SubscribeToService();
         OnEnable();
-        HistoryListManagement = new HistoryListManagement(this);
-        SelectionProcess = new NewSelectionProcess(this, HistoryListManagement);
-        MoveBackInHistory = new MoveBackInHistory(this, HistoryListManagement);
-        PopUpHistory = new ManagePopUpHistory(this, new PopUpController());
+        //TODO *** Demo of Static and instance Injection plus self injection
+        // PopUpHistory has example of ***
+        IInjectClass injectClass = InjectClass.Class.NoParams<IInjectClass>();
+        HistoryListManagement = InjectClass.Class.WithParams<IHistoryManagement>(this);
+        SelectionProcess = injectClass.WithParams<INewSelectionProcess> (this);
+        MoveBackInHistory = injectClass.WithParams<IMoveBackInHistory>(this); 
+        PopUpHistory = injectClass.WithParams<IManagePopUpHistory>(this);
     }
 
     //Variables
@@ -31,7 +35,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser, IReturnTo
     //Properties
     private IManagePopUpHistory PopUpHistory { get; }
     private IMoveBackInHistory MoveBackInHistory { get; }
-    private IHistoryManagement HistoryListManagement { get; }
+    public IHistoryManagement HistoryListManagement { get; }
     private INewSelectionProcess SelectionProcess { get; }
     public bool ActivateOnReturnHome => _activateOnReturnHome;
     private void SaveOnHomScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
@@ -48,6 +52,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser, IReturnTo
     
     //TODO Remove Test Rig
     private static CustomEvent<ITestList> AddANode { get; } = new CustomEvent<ITestList>();
+    
     public INode AddNode { get; private set; }
     
     public void AddNodeToTestRunner(INode node)

@@ -35,12 +35,12 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
     }
 
     //Main
-    public override void SetUpBranchesOnStart(ISetUpStartBranches args)
+    protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
         SetCanvas(ActiveCanvas.Yes);
         SetBlockRaycast(BlockRaycast.No);
 
-        if (args.StartBranch != _myBranch.ThisBranch)
+        if (args.StartBranch != _myBranch)
         {
             _myBranch.DontSetBranchAsActive();
         }
@@ -56,10 +56,14 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
     public override void SetUpBranch(IBranch newParentController = null)
     {
         _myBranch.ResetBranchesStartPosition();
+        
         if(!_canStart || !_inMenu) return;
+        
         SetCanvas(ActiveCanvas.Yes);
+        
         if (CannotTweenOnHome)
             _myBranch.DoNotTween();
+        
         InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
     }
 

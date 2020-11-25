@@ -1,37 +1,36 @@
 ﻿using System.Collections.Generic;
 
-public class ScreenData : IEventUser
+public interface IScreenData
 {
-    public ScreenData(ScreenType screenType)
+    bool WasOnHomeScreen { get; }
+    void RemoveFromEvents();
+    void RestoreScreen();
+    void StoreClearScreenData(IBranch[] allBranches, IBranch thisBranch, BlockRaycast blockRaycast);
+}
+
+public class ScreenData : IEventUser, IScreenData
+{
+    public ScreenData(IBranchParams branch)
     {
-        if (screenType == ScreenType.FullScreen)
+        if (branch.MyScreenType == ScreenType.FullScreen)
             _isFullscreen = true;
         ObserveEvents();
     }
 
     private readonly List<IBranch> _clearedBranches = new List<IBranch>();
-    public bool  _wasInTheMenu, _locked;
-    public bool _wasOnHomeScreen = true;
+    private bool  _locked;
+    private bool _wasOnHomeScreen = true;
     private readonly bool _isFullscreen;
 
-    public void ObserveEvents()
-    {
-        EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
-        EventLocator.Subscribe<IInMenu>(SaveInMenu, this);
-    }
+    //Propertues
+    public bool WasOnHomeScreen => _wasOnHomeScreen;
 
-    public void RemoveFromEvents()
-    {
-        EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
-        EventLocator.Unsubscribe<IInMenu>(SaveInMenu);
-    }
     
-    protected virtual void SaveInMenu(IInMenu args)
-    {
-        if (_locked) return;
-        _wasInTheMenu = args.InTheMenu;
-    }
-    
+    //Main
+    public void ObserveEvents() => EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
+
+    public void RemoveFromEvents() => EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
+
     private void SaveOnHomeScreen(IOnHomeScreen args)
     {
         if (_locked) return;
@@ -71,5 +70,6 @@ public class ScreenData : IEventUser
             branch.BranchBase.SetBlockRaycast(BlockRaycast.Yes);
         }
         _clearedBranches.Clear();
+        _locked = false;
     }
 }

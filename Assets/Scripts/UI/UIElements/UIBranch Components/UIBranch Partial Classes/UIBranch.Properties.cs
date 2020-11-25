@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using NaughtyAttributes;
+using UnityEngine;
 
 /// <summary>
 /// This partial class holds all the classes properties as UIBranch is an important link between higher and lower parts of the system
@@ -26,6 +27,7 @@ public partial class UIBranch
     public IBranchBase BranchBase { get; private set; }
     public IBranch MyParentBranch { get; set; }
     public IBranch ThisBranch => this;
+    public GameObject ThisBranchesGameObject => gameObject;
     public IBranch ActiveBranch => this;
 
 

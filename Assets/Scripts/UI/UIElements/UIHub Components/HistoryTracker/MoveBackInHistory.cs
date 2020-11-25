@@ -10,16 +10,17 @@ public interface IMoveBackInHistory
     INode BackOneLevelProcess();
     INode BackToHomeProcess();
 }
+
 public class MoveBackInHistory : IMoveBackInHistory
 {
-    public MoveBackInHistory(HistoryTracker historyTracker, IHistoryManagement historyListManagement)
+    public MoveBackInHistory(IHistoryTrack historyTracker)
     {
         _historyTracker = historyTracker;
-        _historyListManagement = historyListManagement;
+        _historyListManagement = historyTracker.HistoryListManagement;
     }
     
     //Variables
-    private readonly HistoryTracker _historyTracker;
+    private readonly IHistoryTrack _historyTracker;
     private readonly IHistoryManagement _historyListManagement;
     private IBranch _activeBranch;
     private List<INode> _history;

@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-
+﻿
 public interface IHomeGroup : IMonoBehaviourSub { }
 
 /// <summary>
@@ -8,14 +7,14 @@ public interface IHomeGroup : IMonoBehaviourSub { }
 /// </summary>
 public class UIHomeGroup : IEventUser, IHomeGroup
 {
-    public UIHomeGroup(UIBranch[] homeGroupBranches)
+    public UIHomeGroup(IHub hub)
     {
-        _homeGroup = homeGroupBranches;
+        _homeGroup = hub.HomeBranches;
         OnEnable();
     }
     
     //Variables
-    private readonly UIBranch[] _homeGroup;
+    private readonly IBranch[] _homeGroup;
     private bool _onHomeScreen = true;
     private bool _gameIsPaused;
     private int _index;

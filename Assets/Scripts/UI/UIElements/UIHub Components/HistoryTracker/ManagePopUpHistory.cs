@@ -11,16 +11,15 @@ public interface IManagePopUpHistory
 
 public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
 {
-    public ManagePopUpHistory(IHistoryTrack historyTracker, IPopUpController popUpController)
+    public ManagePopUpHistory(IHistoryTrack historyTracker)
     {
         _historyTracker = historyTracker;
-        _popUpController = popUpController;
         ObserveEvents();
     }
     
     //Variables
     private readonly IHistoryTrack _historyTracker;
-    private readonly IPopUpController _popUpController;
+    private readonly IPopUpController _popUpController = InjectClass.Class.NoParams<IPopUpController>();
     private bool _noPopUps = true;
     private bool _isPaused;
     private Action _noPopUpAction;

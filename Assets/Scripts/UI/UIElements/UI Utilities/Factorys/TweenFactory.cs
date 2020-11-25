@@ -2,7 +2,7 @@
 
 public class TweenFactory
 {
-    private static readonly IInjectClass injectClass = new IoC();
+    private static readonly IInjectClass injectClass = new InjectClass();
     
     public static List<ITweenBase> CreateTypes(TweenScheme scheme)
     {

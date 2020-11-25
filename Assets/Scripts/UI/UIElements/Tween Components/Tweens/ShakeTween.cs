@@ -7,7 +7,7 @@ public interface IShakeTween: ITweenBase { }
 
 
 [Serializable]
-public class ShakeTweener : TweenBase, IShakeTween
+public class ShakeTween : TweenBase, IShakeTween
 {
     //Properties
     // private bool CheckInEffectType => _shakeWhen == EffectType.In || _shakeWhen == EffectType.Both;

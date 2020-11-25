@@ -25,39 +25,56 @@ public class ClassCreate
         return this;
     }
 
-    public void WithParamaters() => _hasParameters.Add(_interfaceType);
+    public void WithParameters() => _hasParameters.Add(_interfaceType);
 
-    public static T Get<T>(IParameters args)
+    public static T Get<T>(IParameters args = null)
     {
         var typeOfNewClass = typeof(T);
-        var temp = classes[typeOfNewClass];
-        
-        if (!_hasParameters.Contains(typeOfNewClass))
-        {
+        var newClass = classes[typeOfNewClass];
+        var hasParams = _hasParameters.Contains(typeOfNewClass);
+
+        return args is null ? NoParameters<T>(typeOfNewClass, newClass, hasParams) 
+                            : WithParameters<T>(args, typeOfNewClass, newClass, hasParams);
+    }
+
+    private static T WithParameters<T>(IParameters args, Type typeOfNewClass, object newClass, bool hasParams)
+    {
+        if (!hasParams)
             throw new Exception($"Class DOESN'T HAVE Parameters : {typeOfNewClass}");
-        }
+        
         try
         {
-            return (T) System.Activator.CreateInstance((Type) temp, args);
+            return (T) System.Activator.CreateInstance((Type) newClass, args);
         }
         catch (Exception e)
         {
-            throw new Exception($"Possible missing Interface on class : { temp } " +
-                                $"{Environment.NewLine} Error is : { e }");
+            ThrowCreationException(newClass, e);
         }
-        
+
+        return default;
     }
 
-    public static T Get<T>()
+    private static T NoParameters<T>(Type typeOfNewClass, object newClass, bool hasParams)
     {
-        var typeOfNewClass = typeof(T);
-        var temp = classes[typeOfNewClass];
-        
-        if (_hasParameters.Contains(typeOfNewClass))
+        if (hasParams)
+            throw new Exception($"Constructor HAS Parameters : {typeOfNewClass}");
+
+        try
         {
-                throw new Exception($"Constructor HAS Parameters : {typeOfNewClass}");
+            return(T) System.Activator.CreateInstance((Type) newClass);
         }
-        return(T) System.Activator.CreateInstance((Type) temp);
+        catch (Exception e)
+        {
+            ThrowCreationException(newClass, e);
+        }
+
+        return default;
+    }
+
+    private static void ThrowCreationException(object newClass, Exception e)
+    {
+        throw new Exception($"Possible missing Interface on class or NO Binding : {newClass} " +
+                            $"{Environment.NewLine} Error is : {e}");
     }
     
     public static object Get(Type type/*, IParameters args = null*/)
@@ -80,10 +97,17 @@ public interface IInjectClass
     T NoParams<T>();
 }
 
-public class IoC : IInjectClass
+public abstract class InjectClassBase : IInjectClass
 {
-    public T WithParams<T>(IParameters args) => ClassCreate.Get<T>(args);
-    public T NoParams<T>() => ClassCreate.Get<T>();
+    public abstract T WithParams<T>(IParameters args);
+    public abstract T NoParams<T>();
+}
+
+public class InjectClass : InjectClassBase
+{
+    public static InjectClass Class { get; } = new InjectClass();
+    public override T WithParams<T>(IParameters args) => ClassCreate.Get<T>(args);
+    public override T NoParams<T>() => ClassCreate.Get<T>();
 }
 
 

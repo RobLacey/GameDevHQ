@@ -75,11 +75,7 @@ public class UITooltip : NodeFunctionBase,  IServiceUser
         CheckSetUpForError();
     }
     
-    public void SubscribeToService()
-    {
-        _bucketCreator = ServiceLocator.Get<IBucketCreator>(this);
-        //return _bucketCreator is null;
-    }
+    public void SubscribeToService() => _bucketCreator = ServiceLocator.Get<IBucketCreator>(this);
 
 
     protected override void SavePointerStatus(bool pointerOver)

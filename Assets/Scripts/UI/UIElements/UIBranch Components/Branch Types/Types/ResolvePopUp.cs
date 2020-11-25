@@ -30,7 +30,7 @@ public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolveP
     public override void SetUpBranch(IBranch newParentController = null)
     {
         if(_myBranch.CanvasIsEnabled) return;
-        _screenData.StoreClearScreenData(_allBranches, _myBranch.ThisBranch, BlockRaycast.Yes);
+        _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.Yes);
         SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
         AddResolvePopUp?.RaiseEvent(this);

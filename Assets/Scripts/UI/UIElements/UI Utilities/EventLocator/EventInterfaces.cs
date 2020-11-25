@@ -55,7 +55,7 @@ public interface IActiveBranch//**
 
 public interface ISetUpStartBranches //**
 {
-    UIBranch StartBranch { get; }
+    IBranch StartBranch { get; }
 } 
 public interface IOnStart { }//**
 

@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 
-public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPressed, 
+public interface IInput : IParameters
+{
+    InputScheme ReturnScheme { get; }
+    bool StartInGame();
+}
+
+public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitchGroupPressed, 
                        ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, IServiceUser
 {
     [SerializeField] 
@@ -22,8 +26,8 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
     private bool _onHomeScreen = true;
     private UINode _lastHomeScreenNode;
     private IBranch _activeBranch;
-    private MenuAndGameSwitching _menuToGameSwitching;
-    private ChangeControl _changeControl;
+    private IMenuAndGameSwitching _menuToGameSwitching;
+    private IChangeControl _changeControl;
     private IHistoryTrack _historyTrack;
 
     //Events
@@ -75,10 +79,8 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ISwitchGroupPre
     private void Awake()
     {
         _inputScheme.OnAwake();
-        _changeControl = new ChangeControl(_inputScheme, StartInGame());
-        _menuToGameSwitching = new MenuAndGameSwitching();
-        if (_inputScheme.InGameMenuSystem == InGameSystem.On)
-            _menuToGameSwitching.StartWhere = _inputScheme.WhereToStartGame;
+        _changeControl = InjectClass.Class.WithParams<IChangeControl>(this);
+        _menuToGameSwitching = InjectClass.Class.WithParams<IMenuAndGameSwitching>(this);
         SetUpHotKeys();
         ObserveEvents();
         SubscribeToService();

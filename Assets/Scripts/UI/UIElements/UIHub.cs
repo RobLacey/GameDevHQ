@@ -1,20 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using NaughtyAttributes;
-using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// UIHub is the core of the system and looks after starting the system Up and general state management 
 /// </summary>
 
+public interface IHub : IParameters
+{
+    GameObject ThisGameObject { get; }
+    IBranch[] HomeBranches { get; }
+    InputScheme Scheme { get; }
+}
+
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(UIInput))]
 
-public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
+public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnStart
 {
     [SerializeField]
     [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")]
@@ -29,10 +34,6 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
     private INode _lastHighlighted;
     private bool _inMenu, _startingInGame;
     private InputScheme _inputScheme;
-    
-    //private static ClassCreator<ICreate> newClass { get; } = new ClassCreator<ICreate>(typeof(TestClass));
-    private ITestClass _testClass1;
-    private readonly IInjectClass _newIoC = new IoC();
 
     //Properties
     private void SaveInMenu(IInMenu args)
@@ -41,30 +42,17 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
         _inMenu = args.InTheMenu;
         if(!_inMenu) SetEventSystem(null);
     }
-    public UIBranch StartBranch => _homeBranches.First();
+    public IBranch StartBranch => _homeBranches.First();
+    public GameObject ThisGameObject => gameObject;
+    public IBranch[] HomeBranches => _homeBranches.ToArray<IBranch>();
+    public InputScheme Scheme => _inputScheme;
 
     //Main
     private void Awake()
     { 
-        var counter = 0;
-        Stopwatch stopwatch = new Stopwatch();
-        stopwatch.Start();
-       
-        
-       for (int i = 0; i < 1; i++)
-       { 
-           var args = new TestClassArgs(4, NavigationType.RightAndLeft);
-            _testClass1 = _newIoC.WithParams<ITestClass>(args);
-           counter++;
-       }
-       stopwatch.Stop();
-       //Debug.Log($"Test took {stopwatch.ElapsedMilliseconds} milliseconds");
-       Debug.Log($"Test took {stopwatch.Elapsed} milliseconds");
-       Debug.Log(counter);
-       _testClass1.CheckConstruction();
-       
-        _inputScheme = GetComponent<UIInput>().ReturnScheme;
-        _startingInGame = GetComponent<UIInput>().StartInGame();
+       var uIInput = GetComponent<IInput>();
+        _inputScheme = uIInput.ReturnScheme;
+        _startingInGame = uIInput.StartInGame();
         ObserveEvents();
     }
     
@@ -82,10 +70,19 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
 
     private void OnEnable()
     {
-        ServiceLocator.Bind<IAudioService>(new UIAudioManager(GetComponent<AudioSource>()));
-        ServiceLocator.Bind<IBucketCreator>(new BucketCreator(transform, "Tooltip Holder"));
-        ServiceLocator.Bind<IHistoryTrack>(new HistoryTracker(_inputScheme.GlobalCancelAction));
-        ServiceLocator.Bind<IHomeGroup>(new UIHomeGroup(_homeBranches.ToArray()));
+        ServiceLocator.Bind(InjectClass.Class.WithParams<IAudioService>(this));
+        ServiceLocator.Bind(InjectClass.Class.WithParams<IHistoryTrack>(this));
+        ServiceLocator.Bind(InjectClass.Class.WithParams<IHomeGroup>(this));
+        SetUpBucketCreatorService();
+    }
+
+    private void SetUpBucketCreatorService()
+    {
+        var bucket = InjectClass.Class.NoParams<IBucketCreator>();
+        bucket.SetName("ToolTip Holder")
+              .SetParent(transform)
+              .CreateBucket();
+        ServiceLocator.Bind(bucket);
     }
 
     private void OnDisable()
@@ -124,7 +121,7 @@ public class UIHub : MonoBehaviour, IEventUser, ISetUpStartBranches, IOnStart
     
     private IEnumerator EnableStartControls()
     {
-        yield return new WaitForSeconds(_inputScheme.StartDelay);
+        yield return new WaitForSeconds(Scheme.StartDelay);
         if(!_startingInGame)
             OnStart?.RaiseEvent(this);
     }

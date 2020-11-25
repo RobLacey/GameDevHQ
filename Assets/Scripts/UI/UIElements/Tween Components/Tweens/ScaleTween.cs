@@ -7,7 +7,7 @@ public interface IScaleTween: ITweenBase { }
 
 // ReSharper disable IdentifierTypo
 [Serializable]
-public class ScaleTweener : TweenBase, IScaleTween
+public class ScaleTween : TweenBase, IScaleTween
 {
     public override void SetUpTweens(List<BuildTweenData> buildObjectsList,
                                      TweenScheme tweenScheme,

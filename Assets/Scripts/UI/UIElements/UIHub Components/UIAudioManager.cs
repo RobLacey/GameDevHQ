@@ -12,7 +12,10 @@ public class UIAudioManager : IAudioService
     private bool IsPlayingCancel { get; set; }
 
     
-    public UIAudioManager(AudioSource audioSource) => _myAudioSource = audioSource;
+    public UIAudioManager(IHub hub)
+    {
+        _myAudioSource = hub.ThisGameObject.GetComponent<AudioSource>();
+    }
 
     private void Play(AudioClip audioClip, float volume)
     {

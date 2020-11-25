@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-public static class UIBranchGroups
+public static class BranchGroups
 {
     private static int groupIndex;
     private static int index;

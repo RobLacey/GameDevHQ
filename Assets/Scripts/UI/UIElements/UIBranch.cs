@@ -54,8 +54,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private UITweener _uiTweener;
     private int _groupIndex;
     private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
-    private bool _activePopUp;
-    private bool _isTabBranch;
+    private bool _activePopUp, _isTabBranch;
 
     //Enum
     private enum StoreAndRestorePopUps { StoreAndRestore, Reset }
@@ -64,13 +63,13 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveHighlighted(IHighlightedNode args)
     {
-        LastHighlighted = NodeSearch.Search.Find(args.Highlighted)
+        LastHighlighted = NodeSearch.Find(args.Highlighted)
                                     .DefaultReturn(LastSelected)
                                     .RunOn(ThisGroupsUiNodes);
     }
     private void SaveSelected(ISelectedNode args)
     {
-        LastSelected = NodeSearch.Search.Find(args.Selected)
+        LastSelected = NodeSearch.Find(args.Selected)
                                  .DefaultReturn(LastSelected)
                                  .RunOn(ThisGroupsUiNodes);
     }    
@@ -150,7 +149,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         LastHighlighted = DefaultStartOnThisNode;
         LastSelected = DefaultStartOnThisNode;
         if(_groupsList.Count <= 1) return;
-        _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
+        _groupIndex = BranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
     }
 
     private void SetDefaultStartPosition()
@@ -210,13 +209,13 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private void SwitchBranchGroup(ISwitchGroupPressed args)
     {
         if (_onHomeScreen || !CanvasIsEnabled || _groupsList.Count <= 1) return;
-        _groupIndex = UIBranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, args.SwitchType);
+        _groupIndex = BranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, args.SwitchType);
     }
 
     public void ResetBranchesStartPosition()
     {
         if (_saveExitSelection == IsActive.Yes) return;
-        _groupIndex = UIBranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
+        _groupIndex = BranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
         LastHighlighted = DefaultStartOnThisNode;
     }
 

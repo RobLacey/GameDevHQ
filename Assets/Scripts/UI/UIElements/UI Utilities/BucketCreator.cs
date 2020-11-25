@@ -1,27 +1,31 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public interface IBucketCreator
 {
-    void SetParentTransFrom(Transform parent);
+    IBucketCreator SetParent(Transform parent);
+    IBucketCreator SetName(String name);
     Transform CreateBucket();
 }
 
 public class BucketCreator : IBucketCreator
 {
     private Transform _parent;
-    private readonly string _name;
+    private string _name;
     private Transform _bucket;
 
-    public BucketCreator(Transform parent, string name)
+    public IBucketCreator SetParent(Transform parent)
     {
         _parent = parent;
+        return this;
+    }
+
+    public IBucketCreator SetName(string name)
+    {
         _name = name;
+        return this;
     }
-    public void SetParentTransFrom(Transform parent)
-    {
-        _parent = parent;
-    }
-    
+
     public Transform CreateBucket()
     {
         if (GameObject.Find(_name)) return _bucket;
@@ -35,9 +39,22 @@ public class BucketCreator : IBucketCreator
     }
 }
 
-public class NullObject : IBucketCreator
+public class NullBucketObject : IBucketCreator
 {
-    public void SetParentTransFrom(Transform parent) { }
+    private Transform _parent;
+    private string _name;
+
+    public IBucketCreator SetParent(Transform parent)
+    {
+        Debug.Log($"Set Parent to { parent }");
+        return this;
+    }
+
+    public IBucketCreator SetName(string name)
+    {
+        Debug.Log($"Set Name to { name }");
+        return this;
+    }
 
     public Transform CreateBucket()
     {

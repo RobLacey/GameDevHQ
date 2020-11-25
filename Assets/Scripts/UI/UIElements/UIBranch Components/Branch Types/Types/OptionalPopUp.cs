@@ -64,7 +64,7 @@ public class OptionalPopUpPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp,
         
         IfActiveResolvePopUps();
         SetCanvas(ActiveCanvas.Yes);
-        _screenData.StoreClearScreenData(_allBranches, _myBranch.ThisBranch, BlockRaycast.No);
+        _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.No);
         _restoreOnHome = false;
     }
 

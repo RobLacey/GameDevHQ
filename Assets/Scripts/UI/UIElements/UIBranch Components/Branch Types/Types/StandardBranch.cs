@@ -4,7 +4,7 @@ public class StandardBranch : BranchBase, IStandardBranch
 {
     public StandardBranch(IBranch branch) : base(branch) { }
 
-    public override void SetUpBranchesOnStart(ISetUpStartBranches args)
+    protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
         SetBlockRaycast(BlockRaycast.No);
         if (_isTabBranch) return;

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+
 
 public interface IHistoryManagement
 {
@@ -14,13 +16,13 @@ public interface IHistoryManagement
 
 public class HistoryListManagement : IHistoryManagement
 {
-    public HistoryListManagement(HistoryTracker historyTracker)
+    public HistoryListManagement(IHistoryTrack historyTracker)
     {
         _historyTracker = historyTracker;
     }
 
     //Variables
-    private readonly HistoryTracker _historyTracker;
+    private readonly IHistoryTrack _historyTracker;
     private INode _targetNode, _hotKeyParent;
     private bool _hasHistory;
     private List<INode> _history = new List<INode>();

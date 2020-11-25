@@ -2,7 +2,7 @@
 
 public static class NodeFactory
 {
-    private static IInjectClass injectClass = new IoC();
+    private static IInjectClass injectClass = new InjectClass();
     
     public static INodeBase Factory(ButtonFunction functions, INode node)
     {

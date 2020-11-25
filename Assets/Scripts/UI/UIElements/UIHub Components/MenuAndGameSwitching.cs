@@ -1,7 +1,15 @@
 ﻿
-public class MenuAndGameSwitching : IEventUser, IInMenu
+public interface IMenuAndGameSwitching : IEventUser { }
+
+public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu
 {
-    public MenuAndGameSwitching() => OnAwake();
+    public MenuAndGameSwitching(IInput input)
+    {
+        if (input.ReturnScheme.InGameMenuSystem == InGameSystem.On)
+            StartWhere = input.ReturnScheme.WhereToStartGame;
+
+        ObserveEvents();
+    }
 
     //Variables
     private bool _noPopUps = true;
@@ -20,8 +28,6 @@ public class MenuAndGameSwitching : IEventUser, IInMenu
         if (!InTheMenu && !_noPopUps) _wasInGame = true;
          PopUpEventHandler();
     }
-
-    private void OnAwake() => ObserveEvents();
 
     public void ObserveEvents()
     {

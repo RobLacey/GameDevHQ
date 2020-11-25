@@ -1,7 +1,7 @@
 ﻿public class BranchFactory
 {
     private IBranch _branch;
-    private static readonly IInjectClass injectClass = new IoC();
+    private static readonly IInjectClass injectClass = new InjectClass();
     
     public static BranchFactory Factory { get; } = new BranchFactory();
 

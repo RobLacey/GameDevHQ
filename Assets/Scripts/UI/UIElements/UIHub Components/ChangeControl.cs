@@ -3,14 +3,16 @@
 /// <summary>
 /// Class that handles switching control from the mouse to a keyboard or controller
 /// </summary>
-///
-public class ChangeControl : IEventUser, IAllowKeys, IServiceUser
+
+public interface IChangeControl : IEventUser { }
+
+public class ChangeControl : IChangeControl, IAllowKeys, IServiceUser
 {
-    public ChangeControl(InputScheme inputScheme, bool startInGame)
+    public ChangeControl(IInput input)
     {
-        _controlMethod = inputScheme.ControlType;
-        _inputScheme = inputScheme;
-        _startInGame = startInGame;
+        _inputScheme = input.ReturnScheme;
+        _controlMethod = _inputScheme.ControlType;
+        _startInGame = input.StartInGame();
         SubscribeToService();
         ObserveEvents();
     }

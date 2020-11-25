@@ -33,6 +33,7 @@ public interface IBranch : IParameters
     IBranch[] FindAllBranches();
     INode[] ThisGroupsUiNodes { get; }
     INode LastSelected { get; }
+    GameObject ThisBranchesGameObject { get; }
 
 
     void NavigateToChildBranch(IBranch moveToo);

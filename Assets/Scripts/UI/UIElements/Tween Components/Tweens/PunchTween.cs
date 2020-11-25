@@ -7,7 +7,7 @@ public interface IPunchTween: ITweenBase { }
 
 
 [Serializable]
-public class PunchTweener : TweenBase, IPunchTween
+public class PunchTween : TweenBase, IPunchTween
 {
     //Properties
     // public bool CheckInEffectType => _punchWhen == EffectType.In || _punchWhen == EffectType.Both;

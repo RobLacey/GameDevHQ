@@ -1,29 +1,34 @@
 ﻿using UnityEngine;
 
-public interface IBranchBase
+public interface IBranchBase : IParameters
 {
     void OnDisable();
     void SetUpAsTabBranch();
-    void SetUpBranchesOnStart(ISetUpStartBranches args);
     void SetUpBranch(IBranch newParentController = null);
     void SetCanvas(ActiveCanvas active);
     void SetBlockRaycast(BlockRaycast active);
     void ActivateStoredPosition();
 }
 
-public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IServiceUser, IBranchBase
+public interface IBranchParams
+{
+    ScreenType MyScreenType { get; }
+}
+
+public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IServiceUser, IBranchBase, IBranchParams
 {
     protected BranchBase(IBranch branch)
     {
         _myBranch = branch.ThisBranch;
         _myCanvas = _myBranch.MyCanvas;
         _myCanvasGroup = _myBranch.MyCanvasGroup;
-        _screenData = new ScreenData(_myBranch.ScreenType);
+        MyScreenType = _myBranch.ScreenType;
+        _screenData = InjectClass.Class.WithParams<IScreenData>(this);
         OnEnable();
     }
     
     protected readonly IBranch _myBranch;
-    protected readonly ScreenData _screenData;
+    protected readonly IScreenData _screenData;
     protected bool _inMenu, _canStart, _gameIsPaused, _resolvePopUps;
     protected IHistoryTrack _historyTrack;
     private readonly Canvas _myCanvas;
@@ -34,7 +39,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
     private static CustomEvent<IOnHomeScreen> SetIsOnHomeScreen { get; } = new CustomEvent<IOnHomeScreen>();
     private static CustomEvent<IClearScreen> DoClearScreen { get; } = new CustomEvent<IClearScreen>();
 
-    //Properties
+    //Properties & Set/Getters
     protected void InvokeOnHomeScreen(bool onHome)
     {
         OnHomeScreen = onHome;
@@ -49,6 +54,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
     protected virtual void SaveOnStart(IOnStart args) => _canStart = true;
     public bool OnHomeScreen { get; private set; } = true;
     public IBranch IgnoreThisBranch => _myBranch;
+    public ScreenType MyScreenType { get; }
 
     //Main
     private void OnEnable()
@@ -89,7 +95,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
 
     public void SetUpAsTabBranch() => _isTabBranch = true;
 
-    public virtual void SetUpBranchesOnStart(ISetUpStartBranches args)
+    protected virtual void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
         SetBlockRaycast(BlockRaycast.No);
         SetCanvas(ActiveCanvas.No);
@@ -121,7 +127,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
 
     protected void CanGoToFullscreen()
     {
-        if (_myBranch.ScreenType != ScreenType.FullScreen) return;
+        if (MyScreenType != ScreenType.FullScreen) return;
         InvokeDoClearScreen();
         InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
     }
@@ -130,9 +136,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
     {
         _screenData.RestoreScreen();
         
-        if (_screenData._wasOnHomeScreen)
+        if (_screenData.WasOnHomeScreen)
             InvokeOnHomeScreen(true);
-        
-        _screenData._locked = false;
     }
 }

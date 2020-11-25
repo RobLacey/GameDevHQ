@@ -3,11 +3,11 @@ using UnityEngine;
 
 public class SetBranchesChildNodes
 {
-    public static UINode[] GetChildNodes(UIBranch branch)
+    public static INode[] GetChildNodes(IBranch branch)
     {
-        var listOfChildren = new List<UINode>();
+        var listOfChildren = new List<INode>();
 
-        foreach (var child in branch.gameObject.GetComponentsInChildren<Transform>())
+        foreach (var child in branch.ThisBranchesGameObject.GetComponentsInChildren<Transform>())
         {
             if (CheckIfNestedUIBranch(child, branch)) break;
             CheckIfChildUINode(listOfChildren, child);
@@ -16,16 +16,16 @@ public class SetBranchesChildNodes
         return listOfChildren.ToArray();
     }
 
-    private static bool CheckIfNestedUIBranch(Transform child, UIBranch branch)
+    private static bool CheckIfNestedUIBranch(Transform child, IBranch branch)
     {
-        var isBranch = child.gameObject.GetComponent<UIBranch>();
+        var isBranch = child.gameObject.GetComponent<IBranch>();
         return isBranch != null && isBranch != branch;
     }
 
-    private static void CheckIfChildUINode(List<UINode> listOfChildren, Transform child)
+    private static void CheckIfChildUINode(List<INode> listOfChildren, Transform child)
     {
-        var isNode = child.GetComponent<UINode>();
-        if (isNode)
+        var isNode = child.GetComponent<INode>();
+        if (!(isNode is null))
             listOfChildren.Add(isNode);
     }
 }
