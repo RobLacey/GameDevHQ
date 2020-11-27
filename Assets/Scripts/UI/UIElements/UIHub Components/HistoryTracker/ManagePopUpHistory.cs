@@ -19,7 +19,7 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
     
     //Variables
     private readonly IHistoryTrack _historyTracker;
-    private readonly IPopUpController _popUpController = InjectClass.Class.NoParams<IPopUpController>();
+    private readonly IPopUpController _popUpController = EJect.Class.NoParams<IPopUpController>();
     private bool _noPopUps = true;
     private bool _isPaused;
     private Action _noPopUpAction;
@@ -29,9 +29,9 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
     private void ActivePopUps(INoPopUps args) => _noPopUps = args.NoActivePopUps;
 
     //Main
-    public void ObserveEvents() => EventLocator.Subscribe<INoPopUps>(ActivePopUps, this);
+    public void ObserveEvents() => EVent.Do.Subscribe<INoPopUps>(ActivePopUps);
 
-    public void RemoveFromEvents() => EventLocator.Unsubscribe<INoPopUps>(ActivePopUps);
+    public void RemoveFromEvents() => EVent.Do.Unsubscribe<INoPopUps>(ActivePopUps);
 
     public IManagePopUpHistory IsGamePaused(bool isPaused)
     {

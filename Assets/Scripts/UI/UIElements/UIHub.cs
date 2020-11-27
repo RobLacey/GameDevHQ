@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -26,9 +27,8 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
     private List<UIBranch> _homeBranches;
 
     //Events
-    private static CustomEvent<IOnStart> OnStart { get; } = new CustomEvent<IOnStart>();
-    private static CustomEvent<ISetUpStartBranches> SetUpBranchesAtStart { get; } 
-        = new CustomEvent<ISetUpStartBranches>();
+    private Action<IOnStart> OnStart { get; } = EVent.Do.FetchEVent<IOnStart>();
+    private Action<ISetUpStartBranches> SetUpBranchesAtStart { get; } = EVent.Do.FetchEVent<ISetUpStartBranches>();
     
     //Variables
     private INode _lastHighlighted;
@@ -38,7 +38,6 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
     //Properties
     private void SaveInMenu(IInMenu args)
     {
-        
         _inMenu = args.InTheMenu;
         if(!_inMenu) SetEventSystem(null);
     }
@@ -58,27 +57,27 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
     
     public void ObserveEvents()
     {
-        EventLocator.Subscribe<IHighlightedNode>(SetLastHighlighted, this);
-        EventLocator.Subscribe<IInMenu>(SaveInMenu, this);
+        EVent.Do.Subscribe<IHighlightedNode>(SetLastHighlighted);
+        EVent.Do.Subscribe<IInMenu>(SaveInMenu);
     }
     
     public void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<IHighlightedNode>(SetLastHighlighted);
-        EventLocator.Unsubscribe<IInMenu>(SaveInMenu);
+        EVent.Do.Unsubscribe<IHighlightedNode>(SetLastHighlighted);
+        EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
     }
 
     private void OnEnable()
     {
-        ServiceLocator.Bind(InjectClass.Class.WithParams<IAudioService>(this));
-        ServiceLocator.Bind(InjectClass.Class.WithParams<IHistoryTrack>(this));
-        ServiceLocator.Bind(InjectClass.Class.WithParams<IHomeGroup>(this));
+        ServiceLocator.Bind(EJect.Class.WithParams<IAudioService>(this));
+        ServiceLocator.Bind(EJect.Class.WithParams<IHistoryTrack>(this));
+        ServiceLocator.Bind(EJect.Class.WithParams<IHomeGroup>(this));
         SetUpBucketCreatorService();
     }
 
     private void SetUpBucketCreatorService()
     {
-        var bucket = InjectClass.Class.NoParams<IBucketCreator>();
+        var bucket = EJect.Class.NoParams<IBucketCreator>();
         bucket.SetName("ToolTip Holder")
               .SetParent(transform)
               .CreateBucket();
@@ -102,13 +101,13 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
     }
 
     private void SetStartPositionsAndSettings() 
-        => SetUpBranchesAtStart?.RaiseEvent(this);
+        => SetUpBranchesAtStart?.Invoke(this);
 
     private void CheckIfStartingInGame()
     {
         if (_startingInGame)
         {
-            OnStart?.RaiseEvent(this);
+            OnStart?.Invoke(this);
             _inMenu = false;
         }
         else
@@ -123,7 +122,7 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
     {
         yield return new WaitForSeconds(Scheme.StartDelay);
         if(!_startingInGame)
-            OnStart?.RaiseEvent(this);
+            OnStart?.Invoke(this);
     }
     
     private void SetLastHighlighted(IHighlightedNode args)

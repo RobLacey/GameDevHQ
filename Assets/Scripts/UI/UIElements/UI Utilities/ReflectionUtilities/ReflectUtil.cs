@@ -28,9 +28,9 @@ public static class ReflectUtil
             if(info.GetCustomAttribute(attribute) is null) continue;
             var type = info.FieldType;
             
-             var newType = ClassCreate.Get(type);
+            // var newType = ClassCreate.Get(type);
             //var newType = System.Activator.CreateInstance(info.FieldType);
-            info.SetValue(testClass, newType);
+           // info.SetValue(testClass, newType);
         }
     }
     

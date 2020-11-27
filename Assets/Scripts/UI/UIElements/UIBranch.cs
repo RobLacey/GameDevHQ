@@ -76,8 +76,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     
     //Delegates & Events
     public event Action OnStartPopUp; 
-    private event Action OnFinishTweenCallBack;
-    private static CustomEvent<IActiveBranch> SetActiveBranch { get; }  = new CustomEvent<IActiveBranch>();
+    private Action OnFinishTweenCallBack { get; set; }
+    private  Action<IActiveBranch> SetActiveBranch { get; } = EVent.Do.FetchEVent<IActiveBranch>();
 
     //InternalClasses
     [Serializable]
@@ -89,25 +89,25 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
 
     public void ObserveEvents()
     {
-        EventLocator.Subscribe<ISwitchGroupPressed>(SwitchBranchGroup, this);
-        EventLocator.Subscribe<IHighlightedNode>(SaveHighlighted, this);
-        EventLocator.Subscribe<ISelectedNode>(SaveSelected, this);
-        EventLocator.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen, this);
-        EventLocator.Subscribe<IHotKeyPressed>(FromHotKey, this);
+        EVent.Do.Subscribe<ISwitchGroupPressed>(SwitchBranchGroup);
+        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Subscribe<ISelectedNode>(SaveSelected);
+        EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
+        EVent.Do.Subscribe<IHotKeyPressed>(FromHotKey);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<ISwitchGroupPressed>(SwitchBranchGroup);
-        EventLocator.Unsubscribe<IHighlightedNode>(SaveHighlighted);
-        EventLocator.Unsubscribe<ISelectedNode>(SaveSelected);
-        EventLocator.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
-        EventLocator.Unsubscribe<IHotKeyPressed>(FromHotKey);
+        EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchBranchGroup);
+        EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Unsubscribe<ISelectedNode>(SaveSelected);
+        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
+        EVent.Do.Unsubscribe<IHotKeyPressed>(FromHotKey);
     }
     
     private void Awake()
     {
-        ThisGroupsUiNodes = SetBranchesChildNodes.GetChildNodes(this); // TODO LOOK AT THIS
+        ThisGroupsUiNodes = SetBranchesChildNodes.GetChildNodes(this);
         MyCanvasGroup = GetComponent<CanvasGroup>();
         MyCanvasGroup.blocksRaycasts = false;
         _uiTweener = GetComponent<UITweener>();
@@ -204,7 +204,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         _tweenOnChange = true;
     }
     
-    private void SetAsActiveBranch() => SetActiveBranch?.RaiseEvent(this);
+    private void SetAsActiveBranch() => SetActiveBranch?.Invoke(this);
 
     private void SwitchBranchGroup(ISwitchGroupPressed args)
     {

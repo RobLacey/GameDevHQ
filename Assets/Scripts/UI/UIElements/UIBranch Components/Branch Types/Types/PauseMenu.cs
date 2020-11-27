@@ -1,4 +1,6 @@
-﻿/// <summary>
+﻿using System;
+
+/// <summary>
 /// Need To Make this a singleton or check thee is only one of these
 /// </summary>
 
@@ -21,20 +23,20 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch
     public bool GameIsPaused => _gameIsPaused;
     
     //Events
-    private static CustomEvent<IGameIsPaused> OnGamePaused { get; } = new CustomEvent<IGameIsPaused>();
+    private Action<IGameIsPaused> OnGamePaused { get; } = EVent.Do.FetchEVent<IGameIsPaused>();
     
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EventLocator.Subscribe<IPausePressed>(StartPopUp, this);
-        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
+        EVent.Do.Subscribe<IPausePressed>(StartPopUp);
+        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
     }
     
     public override void RemoveFromEvents()
     {
         base.RemoveFromEvents();
-        EventLocator.Unsubscribe<IPausePressed>(StartPopUp);
-        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
+        EVent.Do.Unsubscribe<IPausePressed>(StartPopUp);
+        EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
     }
 
     //Main
@@ -63,14 +65,14 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch
     private void PauseGame()
     {
         _gameIsPaused = true;
-        OnGamePaused?.RaiseEvent(this);
+        OnGamePaused?.Invoke(this);
         EnterPause();
     }
 
     private void UnPauseGame()
     {
         _gameIsPaused = false;
-        OnGamePaused?.RaiseEvent(this);
+        OnGamePaused?.Invoke(this);
         ExitPause();
     }
 

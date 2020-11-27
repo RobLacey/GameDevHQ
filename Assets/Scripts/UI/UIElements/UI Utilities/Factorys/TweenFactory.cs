@@ -2,7 +2,7 @@
 
 public class TweenFactory
 {
-    private static readonly IInjectClass injectClass = new InjectClass();
+    private static readonly IEJect ieJect = new EJect();
     
     public static List<ITweenBase> CreateTypes(TweenScheme scheme)
     {
@@ -10,32 +10,32 @@ public class TweenFactory
         
         if (scheme.Position())
         {
-            activeTween.Add(injectClass.NoParams<IPositionTween>());
+            activeTween.Add(ieJect.NoParams<IPositionTween>());
         }
         
         if (scheme.Rotation())
         {
-            activeTween.Add(injectClass.NoParams<IRotationTween>());
+            activeTween.Add(ieJect.NoParams<IRotationTween>());
         }
         
         if (scheme.Scale())
         {
-            activeTween.Add(injectClass.NoParams<IScaleTween>());
+            activeTween.Add(ieJect.NoParams<IScaleTween>());
         }
         
         if (scheme.Fade())
         {
-            activeTween.Add(injectClass.NoParams<IFadeTween>());
+            activeTween.Add(ieJect.NoParams<IFadeTween>());
         }
 
         if (scheme.Punch())
         {
-            activeTween.Add(injectClass.NoParams<IPunchTween>());
+            activeTween.Add(ieJect.NoParams<IPunchTween>());
         }
         
         if (scheme.Shake())
         {
-            activeTween.Add(injectClass.NoParams<IShakeTween>());
+            activeTween.Add(ieJect.NoParams<IShakeTween>());
         }
         return activeTween;
     }

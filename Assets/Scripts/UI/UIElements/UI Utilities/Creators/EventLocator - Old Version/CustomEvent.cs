@@ -11,7 +11,7 @@ public interface ICustomEvent<TType>
 public class CustomEvent<TType> : ICustomEvent<TType>
 {
     private event Action<TType> Raise;
-    
+
     public CustomEvent()
     {
         EventLocator.AddEvent(this);

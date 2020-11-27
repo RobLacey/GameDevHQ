@@ -46,6 +46,7 @@ public static class EventLocator
     private static bool EventExistsAndLocked(Type eventType)
     {
         if (!events.ContainsKey(eventType)) return false;
+        
         if (locked)
         {
             Debug.Log($"{eventType} already set. Flush existing and Unlock first to set");
@@ -58,7 +59,10 @@ public static class EventLocator
     
     private static bool EventDoesNotExistYet(IEventUser caller, Type eventType)
     {
-        if (events.ContainsKey(eventType)) return false;
+        if (events.ContainsKey(eventType))
+        {
+            return false;
+        }
         
         if (!waitingForEventStore.ContainsKey(eventType))
         {

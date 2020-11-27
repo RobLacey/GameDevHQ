@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 public interface IMenuAndGameSwitching : IEventUser { }
 
 public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu
@@ -16,7 +18,7 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu
     private bool _wasInGame;
 
     //Events
-    private static CustomEvent<IInMenu> IsInMenu { get; } = new CustomEvent<IInMenu>();
+    private Action<IInMenu> IsInMenu { get; } = EVent.Do.FetchEVent<IInMenu>();
 
     //Properties
     public bool InTheMenu { get; set; } = true;
@@ -31,18 +33,18 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu
 
     public void ObserveEvents()
     {
-        EventLocator.Subscribe<IMenuGameSwitchingPressed>(CheckForActivation, this);
-        EventLocator.Subscribe<IGameIsPaused>(WhenTheGameIsPaused, this);
-        EventLocator.Subscribe<IOnStart>(StartUp, this);
-        EventLocator.Subscribe<INoPopUps>(SaveNoPopUps, this);
+        EVent.Do.Subscribe<IMenuGameSwitchingPressed>(CheckForActivation);
+        EVent.Do.Subscribe<IGameIsPaused>(WhenTheGameIsPaused);
+        EVent.Do.Subscribe<IOnStart>(StartUp);
+        EVent.Do.Subscribe<INoPopUps>(SaveNoPopUps);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<IMenuGameSwitchingPressed>(CheckForActivation);
-        EventLocator.Unsubscribe<IGameIsPaused>(WhenTheGameIsPaused);
-        EventLocator.Unsubscribe<IOnStart>(StartUp);
-        EventLocator.Unsubscribe<INoPopUps>(SaveNoPopUps);
+        EVent.Do.Unsubscribe<IMenuGameSwitchingPressed>(CheckForActivation);
+        EVent.Do.Unsubscribe<IGameIsPaused>(WhenTheGameIsPaused);
+        EVent.Do.Unsubscribe<IOnStart>(StartUp);
+        EVent.Do.Unsubscribe<INoPopUps>(SaveNoPopUps);
     }
     
     private void CheckForActivation(IMenuGameSwitchingPressed arg)
@@ -103,7 +105,7 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu
         BroadcastState();
     }
 
-    private void BroadcastState() => IsInMenu?.RaiseEvent(this);
+    private void BroadcastState() => IsInMenu?.Invoke(this);
 
     private void WhenTheGameIsPaused(IGameIsPaused args)
     {

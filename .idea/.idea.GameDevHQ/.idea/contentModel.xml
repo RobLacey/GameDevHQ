@@ -300,14 +300,46 @@
                 </e>
                 <e p="Attributes.cs" t="Include" />
                 <e p="BucketCreator.cs" t="Include" />
-                <e p="ClassCreator" t="Include">
-                  <e p="Bindings.cs" t="Include" />
-                  <e p="ClassCreator.cs" t="Include" />
-                </e>
-                <e p="EventLocator" t="Include">
-                  <e p="CustomEvent.cs" t="Include" />
-                  <e p="EventInterfaces.cs" t="Include" />
-                  <e p="EventLocator.cs" t="Include" />
+                <e p="Creators" t="Include">
+                  <e p="BindBase.cs" t="Include" />
+                  <e p="EJect" t="Include">
+                    <e p="Bindings" t="Include">
+                      <e p="ClassBindings.cs" t="Include" />
+                      <e p="ClassBindingsSub.cs" t="Include" />
+                    </e>
+                    <e p="ClassCreator.cs" t="Include" />
+                    <e p="EjectBase.cs" t="Include" />
+                    <e p="IEject.cs" t="Include" />
+                    <e p="Injectors" t="Include">
+                      <e p="Eject.cs" t="Include" />
+                      <e p="EJectSub.cs" t="Include" />
+                    </e>
+                    <e p="IParameters.cs" t="Include" />
+                  </e>
+                  <e p="EVent" t="Include">
+                    <e p="Bindings" t="Include">
+                      <e p="EventBindings.cs" t="Include" />
+                      <e p="EVentBindingsSub.cs" t="Include" />
+                    </e>
+                    <e p="CustomEvent.cs" t="Include" />
+                    <e p="EVentBaseClass.cs" t="Include" />
+                    <e p="EventHandlers" t="Include">
+                      <e p="EVent.cs" t="Include" />
+                      <e p="EVentSub.cs" t="Include" />
+                    </e>
+                    <e p="EVentMaster.cs" t="Include" />
+                    <e p="IEVent.cs" t="Include" />
+                  </e>
+                  <e p="EventLocator - Old Version" t="Include">
+                    <e p="CustomEvent.cs" t="Include" />
+                    <e p="EventInterfaces.cs" t="Include" />
+                    <e p="EventLocator.cs" t="Include" />
+                  </e>
+                  <e p="UI Event Callers (Depreciated)" t="Include">
+                    <e p="CustomEventHandler.cs" t="Include" />
+                    <e p="UIDataEvents.cs" t="Include" />
+                    <e p="UiEventCaller.cs" t="Include" />
+                  </e>
                 </e>
                 <e p="Factorys" t="Include">
                   <e p="BranchFactory.cs" t="Include" />
@@ -324,11 +356,6 @@
                   <e p="ServiceLocator.cs" t="Include" />
                 </e>
                 <e p="StaticCoroutine.cs" t="Include" />
-                <e p="UI Event Callers (Depreciated)" t="Include">
-                  <e p="CustomEventHandler.cs" t="Include" />
-                  <e p="UIDataEvents.cs" t="Include" />
-                  <e p="UiEventCaller.cs" t="Include" />
-                </e>
                 <e p="UIEnums.cs" t="Include" />
               </e>
               <e p="UIBranch Components" t="Include">

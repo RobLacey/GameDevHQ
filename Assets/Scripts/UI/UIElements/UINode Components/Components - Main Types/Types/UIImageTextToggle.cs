@@ -33,9 +33,17 @@ public class UIImageTextToggle : NodeFunctionBase
         CycleToggle(_isSelected);
     }
 
-    public override void ObserveEvents() => EventLocator.Subscribe<IAllowKeys>(OnControlsChanged, this);
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EVent.Do.Subscribe<IAllowKeys>(OnControlsChanged);
+    }
 
-    public override void RemoveFromEvents() => EventLocator.Unsubscribe<IAllowKeys>(OnControlsChanged);
+    public override void RemoveFromEvents()
+    {
+        base.RemoveFromEvents();
+        EVent.Do.Unsubscribe<IAllowKeys>(OnControlsChanged);
+    }
 
     private bool CacheAndCheckForStartingUIElements()
     {

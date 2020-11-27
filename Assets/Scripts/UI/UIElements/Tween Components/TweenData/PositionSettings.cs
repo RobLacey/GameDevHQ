@@ -35,7 +35,7 @@ public class PositionSettings
     [ShowIf("PositionTween")] [Label("End Position")] [ReadOnly]  
     private Vector3 _tweenTargetPosition;
 
-    [SerializeField] [ReadOnly]  private RectTransform _element;
+    private RectTransform _element;
     
     //Properties
     public Vector3 StartPos => _tweenStartPosition;

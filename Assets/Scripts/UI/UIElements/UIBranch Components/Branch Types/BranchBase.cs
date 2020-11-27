@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public interface IBranchBase : IParameters
 {
@@ -23,7 +24,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
         _myCanvas = _myBranch.MyCanvas;
         _myCanvasGroup = _myBranch.MyCanvasGroup;
         MyScreenType = _myBranch.ScreenType;
-        _screenData = InjectClass.Class.WithParams<IScreenData>(this);
+        _screenData = EJect.Class.WithParams<IScreenData>(this);
         OnEnable();
     }
     
@@ -36,17 +37,17 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
     protected bool _isTabBranch;
 
     //Events
-    private static CustomEvent<IOnHomeScreen> SetIsOnHomeScreen { get; } = new CustomEvent<IOnHomeScreen>();
-    private static CustomEvent<IClearScreen> DoClearScreen { get; } = new CustomEvent<IClearScreen>();
+    private Action<IOnHomeScreen> SetIsOnHomeScreen { get; } = EVent.Do.FetchEVent<IOnHomeScreen>();
+    private Action<IClearScreen> DoClearScreen { get; } = EVent.Do.FetchEVent<IClearScreen>();
 
     //Properties & Set/Getters
     protected void InvokeOnHomeScreen(bool onHome)
     {
         OnHomeScreen = onHome;
-        SetIsOnHomeScreen?.RaiseEvent(this);
+        SetIsOnHomeScreen?.Invoke(this);
     }
 
-    private void InvokeDoClearScreen() => DoClearScreen?.RaiseEvent(this);
+    private void InvokeDoClearScreen() => DoClearScreen?.Invoke(this);
     private void SaveResolvePopUps(INoResolvePopUp args) => _resolvePopUps = args.ActiveResolvePopUps;
     private void SaveIfGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     protected virtual void SaveInMenu(IInMenu args) => _inMenu = args.InTheMenu;
@@ -71,24 +72,24 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
     
     public virtual void ObserveEvents()
     {
-        EventLocator.Subscribe<IGameIsPaused>(SaveIfGamePaused, this);
-        EventLocator.Subscribe<ISetUpStartBranches>(SetUpBranchesOnStart, this);
-        EventLocator.Subscribe<IOnStart>(SaveOnStart, this);
-        EventLocator.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen, this);
-        EventLocator.Subscribe<IInMenu>(SaveInMenu, this);
-        EventLocator.Subscribe<INoResolvePopUp>(SaveResolvePopUps, this);
-        EventLocator.Subscribe<IClearScreen>(ClearBranchForFullscreen, this);
+        EVent.Do.Subscribe<INoResolvePopUp>(SaveResolvePopUps);
+        EVent.Do.Subscribe<IGameIsPaused>(SaveIfGamePaused);
+        EVent.Do.Subscribe<ISetUpStartBranches>(SetUpBranchesOnStart);
+        EVent.Do.Subscribe<IOnStart>(SaveOnStart);
+        EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
+        EVent.Do.Subscribe<IInMenu>(SaveInMenu);
+        EVent.Do.Subscribe<IClearScreen>(ClearBranchForFullscreen);
     }
 
     public virtual void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<IGameIsPaused>(SaveIfGamePaused);
-        EventLocator.Unsubscribe<ISetUpStartBranches>(SetUpBranchesOnStart);
-        EventLocator.Unsubscribe<IOnStart>(SaveOnStart);
-        EventLocator.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
-        EventLocator.Unsubscribe<IInMenu>(SaveInMenu);
-        EventLocator.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
-        EventLocator.Unsubscribe<IClearScreen>(ClearBranchForFullscreen);
+        EVent.Do.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
+        EVent.Do.Unsubscribe<IGameIsPaused>(SaveIfGamePaused);
+        EVent.Do.Unsubscribe<ISetUpStartBranches>(SetUpBranchesOnStart);
+        EVent.Do.Unsubscribe<IOnStart>(SaveOnStart);
+        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
+        EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
+        EVent.Do.Unsubscribe<IClearScreen>(ClearBranchForFullscreen);
     }
     
     public void SubscribeToService() => _historyTrack = ServiceLocator.Get<IHistoryTrack>(this);

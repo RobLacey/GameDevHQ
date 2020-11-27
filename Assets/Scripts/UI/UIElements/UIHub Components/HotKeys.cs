@@ -17,7 +17,7 @@ public class HotKeys : IEventUser, IHotKeyPressed
     private InputScheme _inputScheme;
     
     //Events
-    private static CustomEvent<IHotKeyPressed> HotKeyPressed { get; } = new CustomEvent<IHotKeyPressed>();
+    private Action<IHotKeyPressed> HotKeyPressed { get; } = EVent.Do.FetchEVent<IHotKeyPressed>();
     
     //Properties
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
@@ -32,9 +32,9 @@ public class HotKeys : IEventUser, IHotKeyPressed
         ObserveEvents();
     }
     
-    public void ObserveEvents() => EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
+    public void ObserveEvents() => EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
 
-    public void RemoveFromEvents() => EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
+    public void RemoveFromEvents() => EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
 
     private void IsAllowedType()
     {
@@ -99,5 +99,5 @@ public class HotKeys : IEventUser, IHotKeyPressed
         _parentNode = branch.LastSelected;
     }
     
-    private void StartThisHotKeyBranch() => HotKeyPressed?.RaiseEvent(this);
+    private void StartThisHotKeyBranch() => HotKeyPressed?.Invoke(this);
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine.EventSystems;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public abstract class NodeFunctionBase : IEventUser
 {
@@ -30,6 +31,7 @@ public abstract class NodeFunctionBase : IEventUser
 
     public virtual void OnDisable()
     {
+        RemoveFromEvents();
         if(_uiEvents is null) return;
         _uiEvents.WhenPointerOver -= SavePointerStatus;
         _uiEvents.IsSelected -= SaveIsSelected;

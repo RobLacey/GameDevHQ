@@ -5,12 +5,14 @@ using UnityEngine;
 [Serializable]
 public class RotationSettings
 { 
-    [SerializeField] [ReadOnly] private RectTransform _element;
 
     [SerializeField] [AllowNesting] [ShowIf("RotationTween")] private Vector3 _rotateFrom;
     [SerializeField] [AllowNesting] [ShowIf("MidRotation")] private Vector3 _rotateMidPoint;
     [SerializeField] [AllowNesting] [ShowIf("RotationTween")] private Vector3 _rotateToo;
 
+    private RectTransform _element;
+
+    //Properties
     public bool RotationTween { get; set; }
     public bool MidRotation { get; set; }
     public Vector3 StartRotation => _rotateFrom;

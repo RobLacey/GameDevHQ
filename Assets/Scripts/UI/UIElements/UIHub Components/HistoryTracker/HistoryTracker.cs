@@ -17,11 +17,11 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser,
         OnEnable();
         //TODO *** Demo of Static and instance Injection plus self injection
         // PopUpHistory has example of ***
-        IInjectClass injectClass = InjectClass.Class.NoParams<IInjectClass>();
-        HistoryListManagement = InjectClass.Class.WithParams<IHistoryManagement>(this);
-        SelectionProcess = injectClass.WithParams<INewSelectionProcess> (this);
-        MoveBackInHistory = injectClass.WithParams<IMoveBackInHistory>(this); 
-        PopUpHistory = injectClass.WithParams<IManagePopUpHistory>(this);
+        var iEJect = EJect.Class.NoParams<IEJect>();
+        HistoryListManagement = EJect.Class.WithParams<IHistoryManagement>(this);
+        SelectionProcess = iEJect.WithParams<INewSelectionProcess> (this);
+        MoveBackInHistory = iEJect.WithParams<IMoveBackInHistory>(this); 
+        PopUpHistory = iEJect.WithParams<IManagePopUpHistory>(this);
     }
 
     //Variables
@@ -46,48 +46,48 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser,
     public bool IsPaused => _isPaused;
 
     //Events
-    private static CustomEvent<IReturnToHome> ReturnedToHome { get; } = new CustomEvent<IReturnToHome>();
-    private static CustomEvent<ICancelHoverOverButton> CancelHoverToActivate { get; } 
-        = new CustomEvent<ICancelHoverOverButton>();
+    private Action<IReturnToHome> ReturnHome { get; } = EVent.Do.FetchEVent<IReturnToHome>();
+    private Action<ICancelHoverOverButton> CancelHoverToActivate { get; }
+        = EVent.Do.FetchEVent<ICancelHoverOverButton>();
     
     //TODO Remove Test Rig
-    private static CustomEvent<ITestList> AddANode { get; } = new CustomEvent<ITestList>();
+    private Action<ITestList> AddANode { get; } = EVent.Do.FetchEVent<ITestList>();
     
     public INode AddNode { get; private set; }
     
     public void AddNodeToTestRunner(INode node)
     {
         AddNode = node;
-        AddANode?.RaiseEvent(this);
+        AddANode?.Invoke(this);
     }
     
     //Main
     public void ObserveEvents()
     {
-        EventLocator.Subscribe<IOnStart>(SetCanStart, this);
-        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
-        EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomScreen, this);
-        EventLocator.Subscribe<IGameIsPaused>(SaveIsGamePaused, this);
-        EventLocator.Subscribe<INoPopUps>(NoPopUps, this);
-        EventLocator.Subscribe<IHotKeyPressed>(SetFromHotkey, this);
-        EventLocator.Subscribe<IDisabledNode>(CloseNodesAfterDisabledNode, this);
-        EventLocator.Subscribe<ISwitchGroupPressed>(SwitchGroupPressed, this);
-        EventLocator.Subscribe<IInMenu>(SwitchToGame, this);
-        EventLocator.Subscribe<ICancelPopUp>(CancelPopUpFromButton, this);
+        EVent.Do.Subscribe<IOnStart>(SetCanStart);
+        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomScreen);
+        EVent.Do.Subscribe<IGameIsPaused>(SaveIsGamePaused);
+        EVent.Do.Subscribe<INoPopUps>(NoPopUps);
+        EVent.Do.Subscribe<IHotKeyPressed>(SetFromHotkey);
+        EVent.Do.Subscribe<IDisabledNode>(CloseNodesAfterDisabledNode);
+        EVent.Do.Subscribe<ISwitchGroupPressed>(SwitchGroupPressed);
+        EVent.Do.Subscribe<IInMenu>(SwitchToGame);
+        EVent.Do.Subscribe<ICancelPopUp>(CancelPopUpFromButton);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<IOnStart>(SetCanStart);
-        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
-        EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomScreen);
-        EventLocator.Unsubscribe<IGameIsPaused>(SaveIsGamePaused);
-        EventLocator.Unsubscribe<INoPopUps>(NoPopUps);
-        EventLocator.Unsubscribe<IHotKeyPressed>(SetFromHotkey);
-        EventLocator.Unsubscribe<IDisabledNode>(CloseNodesAfterDisabledNode);
-        EventLocator.Unsubscribe<ISwitchGroupPressed>(SwitchGroupPressed);
-        EventLocator.Unsubscribe<IInMenu>(SwitchToGame);
-        EventLocator.Unsubscribe<ICancelPopUp>(CancelPopUpFromButton);
+        EVent.Do.Unsubscribe<IOnStart>(SetCanStart);
+        EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
+        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomScreen);
+        EVent.Do.Unsubscribe<IGameIsPaused>(SaveIsGamePaused);
+        EVent.Do.Unsubscribe<INoPopUps>(NoPopUps);
+        EVent.Do.Unsubscribe<IHotKeyPressed>(SetFromHotkey);
+        EVent.Do.Unsubscribe<IDisabledNode>(CloseNodesAfterDisabledNode);
+        EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchGroupPressed);
+        EVent.Do.Unsubscribe<IInMenu>(SwitchToGame);
+        EVent.Do.Unsubscribe<ICancelPopUp>(CancelPopUpFromButton);
     }
     
     public void SubscribeToService() => ServiceLocator.Bind<ICancel>(new UICancel(_globalCancelAction));
@@ -138,7 +138,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser,
                                             .ActiveBranch(_activeBranch)
                                             .BackToHomeProcess();
 
-    public void DoCancelHoverToActivate() => CancelHoverToActivate?.RaiseEvent(this);
+    public void DoCancelHoverToActivate() => CancelHoverToActivate?.Invoke(this);
 
     private void SwitchGroupPressed(ISwitchGroupPressed args)
     {
@@ -173,7 +173,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser,
     public void BackToHomeScreen(ActivateNodeOnReturnHome activate)
     {
         _activateOnReturnHome = activate == ActivateNodeOnReturnHome.Yes;
-        ReturnedToHome?.RaiseEvent(this);
+        ReturnHome?.Invoke(this);
     }
 
     public void MoveToLastBranchInHistory()

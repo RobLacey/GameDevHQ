@@ -58,12 +58,14 @@ public class UITooltip : NodeFunctionBase,  IServiceUser
 
     public override void ObserveEvents()
     {
-        EventLocator.Subscribe<IAllowKeys>(SaveAllowKeys, this);
+        base.ObserveEvents();
+        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
 
     public override void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<IAllowKeys>(SaveAllowKeys);
+        base.RemoveFromEvents();
+        EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
 
     private void SetUp(RectTransform rectTransform)

@@ -30,19 +30,19 @@ public class UIHomeGroup : IEventUser, IHomeGroup
 
     public void ObserveEvents()
     {
-        EventLocator.Subscribe<IReturnToHome>(ActivateHomeGroupBranch, this);
-        EventLocator.Subscribe<ISwitchGroupPressed>(SwitchHomeGroups, this);
-        EventLocator.Subscribe<IActiveBranch>(SetActiveHomeBranch, this);
-        EventLocator.Subscribe<IGameIsPaused>(GameIsPaused, this);
-        EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
+        EVent.Do.Subscribe<IReturnToHome>(ActivateHomeGroupBranch);
+        EVent.Do.Subscribe<ISwitchGroupPressed>(SwitchHomeGroups);
+        EVent.Do.Subscribe<IActiveBranch>(SetActiveHomeBranch);
+        EVent.Do.Subscribe<IGameIsPaused>(GameIsPaused);
+        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
     }
     public void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<IReturnToHome>(ActivateHomeGroupBranch);
-        EventLocator.Unsubscribe<ISwitchGroupPressed>(SwitchHomeGroups);
-        EventLocator.Unsubscribe<IActiveBranch>(SetActiveHomeBranch);
-        EventLocator.Unsubscribe<IGameIsPaused>(GameIsPaused);
-        EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        EVent.Do.Unsubscribe<IReturnToHome>(ActivateHomeGroupBranch);
+        EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchHomeGroups);
+        EVent.Do.Unsubscribe<IActiveBranch>(SetActiveHomeBranch);
+        EVent.Do.Unsubscribe<IGameIsPaused>(GameIsPaused);
+        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
     }
 
     private void SwitchHomeGroups(ISwitchGroupPressed args)

@@ -1,4 +1,6 @@
-﻿public interface IOptionalPopUpBranch : IBranchBase { } 
+﻿using System;
+
+public interface IOptionalPopUpBranch : IBranchBase { } 
 
 public class OptionalPopUpPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp, IAddOptionalPopUp, IOptionalPopUpBranch
 {
@@ -16,10 +18,9 @@ public class OptionalPopUpPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp,
     public IBranch ThisPopUp => _myBranch;
 
     //Events
-    private static CustomEvent<IAddOptionalPopUp> AddOptionalPopUp { get; } = new CustomEvent<IAddOptionalPopUp>();
-    private static CustomEvent<IRemoveOptionalPopUp> RemoveOptionalPopUp { get; } 
-        = new CustomEvent<IRemoveOptionalPopUp>();
-
+    private Action<IAddOptionalPopUp> AddOptionalPopUp { get; } = EVent.Do.FetchEVent<IAddOptionalPopUp>();
+    private Action<IRemoveOptionalPopUp> RemoveOptionalPopUp { get; } = EVent.Do.FetchEVent<IRemoveOptionalPopUp>();
+    
     protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
     {
         base.SaveIfOnHomeScreen(args);
@@ -60,7 +61,7 @@ public class OptionalPopUpPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp,
     public override void SetUpBranch(IBranch newParentController = null)
     {
         if(!_myBranch.CanvasIsEnabled && !_restoreOnHome) 
-            AddOptionalPopUp?.RaiseEvent(this);
+            AddOptionalPopUp?.Invoke(this);
         
         IfActiveResolvePopUps();
         SetCanvas(ActiveCanvas.Yes);
@@ -96,7 +97,7 @@ public class OptionalPopUpPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp,
         }
         else
         {
-            RemoveOptionalPopUp?.RaiseEvent(this);
+            RemoveOptionalPopUp?.Invoke(this);
         }
     }
 }

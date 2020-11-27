@@ -5,7 +5,6 @@ using UnityEngine;
 [Serializable]
 public class ScaleSettings
 {
-    [SerializeField] [ReadOnly] RectTransform _element;
 
     [SerializeField] [AllowNesting] [ShowIf("DoScaleTween")]
     private Vector3 _startScale;
@@ -16,6 +15,8 @@ public class ScaleSettings
     [SerializeField] [AllowNesting] [ShowIf("DoScaleTween")] [Label("End Scale")]
     private Vector3 _endScale;
 
+    RectTransform _element;
+    
     public bool DoScaleTween { get; set; }
     private bool MidTween { get; set; }
 

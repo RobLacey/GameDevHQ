@@ -2,7 +2,7 @@
 
 public static class NodeFactory
 {
-    private static IInjectClass injectClass = new InjectClass();
+    private static IEJect ieJect = new EJect();
     
     public static INodeBase Factory(ButtonFunction functions, INode node)
     {
@@ -10,23 +10,23 @@ public static class NodeFactory
         {
             case ButtonFunction.Standard:
             {
-                return injectClass.WithParams<IStandard>(node);
+                return ieJect.WithParams<IStandard>(node);
             }
             case ButtonFunction.ToggleGroup:
             {
-                return injectClass.WithParams<ILinkedToggles>(node);
+                return ieJect.WithParams<ILinkedToggles>(node);
             }
             case ButtonFunction.ToggleNotLinked:
             {
-                return injectClass.WithParams<IToggleNotLinked>(node);
+                return ieJect.WithParams<IToggleNotLinked>(node);
             }
             case ButtonFunction.HoverToActivate:
             {
-                return injectClass.WithParams<IHoverToActivate>(node);
+                return ieJect.WithParams<IHoverToActivate>(node);
             }
             case ButtonFunction.CancelOrBack:
             {
-                return injectClass.WithParams<ICancelOrBack>(node);
+                return ieJect.WithParams<ICancelOrBack>(node);
             }
             default:
                 throw new Exception("No Node Type Found");

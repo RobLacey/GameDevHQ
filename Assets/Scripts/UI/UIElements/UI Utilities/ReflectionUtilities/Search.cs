@@ -25,9 +25,9 @@ public static class Search
         }
     }
 
-    private static void GetDeclaredMethods(Type currentTypes)
+    private static void GetDeclaredMethods(Type currentTypes, Type targetType = null)
     {
-        if (currentTypes == typeof(TestClass))
+        if (currentTypes == targetType)
         {
             foreach (var declaredMethod in currentTypes.GetTypeInfo().DeclaredMethods)
             {
@@ -36,9 +36,9 @@ public static class Search
         }
     }
     
-    private static void GetMemberInfo(Type currentTypes)
+    private static void GetMemberInfo(Type currentTypes, Type targetType = null)
     {
-        if (currentTypes == typeof(TestClass))
+        if (currentTypes == targetType)
         {
             foreach (var member in currentTypes.GetMembers(BindingFlags.Instance
                                                            | BindingFlags.Static

@@ -1,4 +1,6 @@
-﻿public interface ICancelOrBack : INodeBase { }
+﻿using System;
+
+public interface ICancelOrBack : INodeBase { }
 
 
 public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBack
@@ -6,13 +8,11 @@ public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBac
     private readonly bool _isPopUp;
     
     public EscapeKey EscapeKeyType { get; }
-    
-    private static CustomEvent<ICancelButtonActivated> CancelButtonActive { get; } 
-        = new CustomEvent<ICancelButtonActivated>();
-    private static CustomEvent<ICancelPopUp> CancelPopUp { get; } 
-        = new CustomEvent<ICancelPopUp>();
-    private static CustomEvent<ICancelHoverOver> CancelHoverOver { get; } 
-        = new CustomEvent<ICancelHoverOver>();
+
+    private Action<ICancelButtonActivated> CancelButtonActive { get; } 
+        = EVent.Do.FetchEVent<ICancelButtonActivated>();
+    private Action<ICancelPopUp> CancelPopUp { get; } = EVent.Do.FetchEVent<ICancelPopUp>();
+    private Action<ICancelHoverOver> CancelHoverOver { get; } = EVent.Do.FetchEVent<ICancelHoverOver>();
 
     public CancelOrBackButton(INode node) : base(node)
     {
@@ -25,15 +25,15 @@ public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBac
     {
         if (EscapeKeyType == EscapeKey.HoverClose)
         {
-            CancelHoverOver?.RaiseEvent(this);
+            CancelHoverOver?.Invoke(this);
         }
         else if (_isPopUp)
         {
-            CancelPopUp?.RaiseEvent(this);
+            CancelPopUp?.Invoke(this);
         }
         else
         {
-            CancelButtonActive?.RaiseEvent(this);
+            CancelButtonActive?.Invoke(this);
         }
     }
 

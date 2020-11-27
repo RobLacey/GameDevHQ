@@ -26,25 +26,28 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
     public bool NoActivePopUps => _noPopUps;
     
     //Events
-    private static CustomEvent<INoResolvePopUp> NoResolvePopUpsEvent { get; } = new CustomEvent<INoResolvePopUp>();
-    private  static  CustomEvent<INoPopUps> AnyActivePopUps { get; } = new CustomEvent<INoPopUps>();
+    private Action<INoResolvePopUp> NoResolvePopUps { get; } = EVent.Do.FetchEVent<INoResolvePopUp>();
+    private Action<INoPopUps> NoPopUps { get; } = EVent.Do.FetchEVent<INoPopUps>();
     
     //Main
-    public void OnEnable() => ObserveEvents();
+    public void OnEnable()
+    {
+        ObserveEvents();
+    }
     public void OnDisable() => RemoveFromEvents();
 
     public void ObserveEvents()
     {
-        EventLocator.Subscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional, this);
-        EventLocator.Subscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen, this);
-        EventLocator.Subscribe<IAddResolvePopUp>(AddActivePopUps_Resolve, this);
+        EVent.Do.Subscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional);
+        EVent.Do.Subscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen);
+        EVent.Do.Subscribe<IAddResolvePopUp>(AddActivePopUps_Resolve);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional);
-        EventLocator.Unsubscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen);
-        EventLocator.Unsubscribe<IAddResolvePopUp>(AddActivePopUps_Resolve);
+        EVent.Do.Unsubscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional);
+        EVent.Do.Unsubscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen);
+        EVent.Do.Unsubscribe<IAddResolvePopUp>(AddActivePopUps_Resolve);
     }
 
     public IBranch NextPopUp()
@@ -94,7 +97,7 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
         if (ActiveOptionalPopUps) return;
         
         _noPopUps = true;
-        AnyActivePopUps?.RaiseEvent(this);
+        NoPopUps?.Invoke(this);
     }
 
     private void RemoveOptionalPopUp(IBranch popup)
@@ -109,23 +112,25 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
         }
     }
     
-    private void AddActivePopUps_Resolve(IAddResolvePopUp args) 
-        => AddToPopUpList(args.ThisPopUp, _activeResolvePopUps, NoResolvePopUpsEvent);
+    private void AddActivePopUps_Resolve(IAddResolvePopUp args)
+    {
+        AddToPopUpList(args.ThisPopUp, _activeResolvePopUps);
+        NoResolvePopUps?.Invoke(this);
+    }
 
     private void AddToActivePopUps_Optional(IAddOptionalPopUp args) 
         => AddToPopUpList(args.ThisPopUp, _activeOptionalPopUps);
 
 
     private void AddToPopUpList(IBranch newPopUp, 
-                                List<IBranch> popUpList,
-                                CustomEvent<INoResolvePopUp> noActivePopUpsEvent = null)
+                                List<IBranch> popUpList)
     {
 
         if(popUpList.Contains(newPopUp)) return;
         popUpList.Add(newPopUp);
-        noActivePopUpsEvent?.RaiseEvent(this);
         _noPopUps = false;
-        AnyActivePopUps?.RaiseEvent(this);
+        NoPopUps?.Invoke(this);
+        
     }
 
     private static void RemoveFromActivePopUpList(List<IBranch> popUpList, 
@@ -140,7 +145,7 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
     private void WhatToDoNext_Resolve(IBranch currentPopUpBranch)
     {
         if (ActiveResolvePopUps) return;
-        NoResolvePopUpsEvent?.RaiseEvent(this);
+        NoResolvePopUps?.Invoke(this);
         WhatToDoNext_Optional(currentPopUpBranch);
     }
 
@@ -148,6 +153,6 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
     {
         if (ActiveOptionalPopUps) return;
         _noPopUps = true;
-        AnyActivePopUps?.RaiseEvent(this);
+        NoPopUps?.Invoke(this);
     }
 }

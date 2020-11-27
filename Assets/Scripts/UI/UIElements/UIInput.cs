@@ -31,14 +31,15 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private IHistoryTrack _historyTrack;
 
     //Events
-    private static CustomEvent<IMenuGameSwitchingPressed> OnMenuAndGameSwitch { get; } 
-        = new CustomEvent<IMenuGameSwitchingPressed>();
-    private static CustomEvent<IPausePressed> OnPausePressed { get; } = new CustomEvent<IPausePressed>();
-    private static CustomEvent<ICancelPressed> OnCancelPressed { get; } = new CustomEvent<ICancelPressed>();
-    private static CustomEvent<IChangeControlsPressed> OnChangeControlPressed { get; } 
-        = new CustomEvent<IChangeControlsPressed>();
-    private static CustomEvent<ISwitchGroupPressed> OnSwitchGroupPressed { get; } 
-        = new CustomEvent<ISwitchGroupPressed>();
+    private Action<IPausePressed> OnPausedPressed { get; } = EVent.Do.FetchEVent<IPausePressed>();
+    private Action<IMenuGameSwitchingPressed> OnMenuAndGameSwitch { get; } 
+        = EVent.Do.FetchEVent<IMenuGameSwitchingPressed>();
+    private Action<ICancelPressed> OnCancelPressed { get; }
+        = EVent.Do.FetchEVent<ICancelPressed>();
+    private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; }
+        = EVent.Do.FetchEVent<ISwitchGroupPressed>();
+    private Action<IChangeControlsPressed> OnChangeControlPressed { get; }
+        = EVent.Do.FetchEVent<IChangeControlsPressed>();
     
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
@@ -79,8 +80,8 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private void Awake()
     {
         _inputScheme.OnAwake();
-        _changeControl = InjectClass.Class.WithParams<IChangeControl>(this);
-        _menuToGameSwitching = InjectClass.Class.WithParams<IMenuAndGameSwitching>(this);
+        _changeControl = EJect.Class.WithParams<IChangeControl>(this);
+        _menuToGameSwitching = EJect.Class.WithParams<IMenuAndGameSwitching>(this);
         SetUpHotKeys();
         ObserveEvents();
         SubscribeToService();
@@ -100,24 +101,24 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     
     public void ObserveEvents()
     {
-        EventLocator.Subscribe<IGameIsPaused>(SaveGameIsPaused, this);
-        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
-        EventLocator.Subscribe<IOnStart>(SaveOnStart, this);
-        EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
-        EventLocator.Subscribe<IInMenu>(SaveInMenu, this);
-        EventLocator.Subscribe<INoPopUps>(SaveNoActivePopUps, this);
-        EventLocator.Subscribe<IAllowKeys>(SaveAllowKeys, this);
+        EVent.Do.Subscribe<IGameIsPaused>(SaveGameIsPaused);
+        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+        EVent.Do.Subscribe<IOnStart>(SaveOnStart);
+        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        EVent.Do.Subscribe<IInMenu>(SaveInMenu);
+        EVent.Do.Subscribe<INoPopUps>(SaveNoActivePopUps);
+        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
-        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
-        EventLocator.Unsubscribe<IOnStart>(SaveOnStart);
-        EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
-        EventLocator.Unsubscribe<IInMenu>(SaveInMenu);
-        EventLocator.Unsubscribe<INoPopUps>(SaveNoActivePopUps);
-        EventLocator.Unsubscribe<IAllowKeys>(SaveAllowKeys);
+        EVent.Do.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
+        EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
+        EVent.Do.Unsubscribe<IOnStart>(SaveOnStart);
+        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
+        EVent.Do.Unsubscribe<INoPopUps>(SaveNoActivePopUps);
+        EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
     
     private void OnDisable()
@@ -157,17 +158,17 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         
         if (CanSwitchBranches() && SwitchGroupProcess()) return;
         
-        OnChangeControlPressed?.RaiseEvent(this);
+        OnChangeControlPressed?.Invoke(this);
     }
 
     private bool CanPauseGame() => _inputScheme.PressPause();
 
-    private void PausedPressedActions() => OnPausePressed?.RaiseEvent(this);
+    private void PausedPressedActions() => OnPausedPressed?.Invoke(this);
 
     private bool CanSwitchBetweenInGameAndMenu()
     {
         if (!_inputScheme.PressedMenuToGameSwitch()) return false;
-        OnMenuAndGameSwitch?.RaiseEvent(this);
+        OnMenuAndGameSwitch?.Invoke(this);
         return true;
     }
 
@@ -176,7 +177,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         if (_gameIsPaused || !_noActivePopUps) return false;
         if (!HasMatchingHotKey()) return false;
         if(!_inMenu)
-            OnMenuAndGameSwitch?.RaiseEvent(this);
+            OnMenuAndGameSwitch?.Invoke(this);
         return true;
     }
 
@@ -212,7 +213,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
 
     private bool CanUnpauseGame() => _gameIsPaused && _activeBranch.IsPauseMenuBranch();
     
-    private void CancelPressed() => OnCancelPressed?.RaiseEvent(this);
+    private void CancelPressed() => OnCancelPressed?.Invoke(this);
     
     private bool CanEnterPauseWithNothingSelected() =>
         (_noActivePopUps && !_gameIsPaused && _historyTrack.NoHistory) && NothingSelectedAction;
@@ -224,14 +225,14 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         if (_inputScheme.PressedPositiveSwitch())
         {
             SwitchType = SwitchType.Positive;
-            OnSwitchGroupPressed?.RaiseEvent(this);
+            OnSwitchGroupPressed?.Invoke(this);
             return true;
         }
 
         if (_inputScheme.PressedNegativeSwitch())
         {
             SwitchType = SwitchType.Negative;
-            OnSwitchGroupPressed?.RaiseEvent(this);
+            OnSwitchGroupPressed?.Invoke(this);
             return true;
         }
         return false;

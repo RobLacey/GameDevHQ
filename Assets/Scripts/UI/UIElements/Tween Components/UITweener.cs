@@ -32,7 +32,6 @@ public class UITweener : MonoBehaviour
     //Delegates
     private Action _finishedTweenCallback;
     private TweenTrigger _currentUserEvent;
-    private ITestClass _newClass;
 
     //Editor
     private bool UserEvents =>  _addTweenEventTriggers == IsActive.Yes;

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(RectTransform))]
 
-public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonActivated,
+public partial class UINode : MonoBehaviour, INode, IEventUser,
                               IHighlightedNode, ISelectedNode, IPointerEnterHandler, IPointerDownHandler,
                               IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
 {
@@ -97,10 +97,8 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
     private bool _setUpFinished;
 
     //Events
-    private static CustomEvent<IHighlightedNode> DoHighlighted { get; } 
-        = new CustomEvent<IHighlightedNode>();
-    private static CustomEvent<ISelectedNode> DoSelected { get; } 
-        = new CustomEvent<ISelectedNode>();
+    private Action<IHighlightedNode> DoHighlighted { get; } = EVent.Do.FetchEVent<IHighlightedNode>();
+    private Action<ISelectedNode> DoSelected { get; } = EVent.Do.FetchEVent<ISelectedNode>();
     
     //Properties & Enums
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
@@ -212,20 +210,20 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
 
     public void ObserveEvents()
     {
-        EventLocator.Subscribe<IAllowKeys>(SaveAllowKeys, this);
-        EventLocator.Subscribe<IHighlightedNode>(SaveHighlighted, this);
-        EventLocator.Subscribe<IInMenu>(SaveInMenuOrInGame, this);
-        EventLocator.Subscribe<IHotKeyPressed>(HotKeyPressed, this);
-        EventLocator.Subscribe<IOnStart>(CanStart, this);
+        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Subscribe<IInMenu>(SaveInMenuOrInGame);
+        EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
+        EVent.Do.Subscribe<IOnStart>(CanStart);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<IAllowKeys>(SaveAllowKeys);
-        EventLocator.Unsubscribe<IHighlightedNode>(SaveHighlighted);
-        EventLocator.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
-        EventLocator.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
-        EventLocator.Unsubscribe<IOnStart>(CanStart);
+        EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
+        EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
+        EVent.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
+        EVent.Do.Unsubscribe<IOnStart>(CanStart);
     }
     
     private void OnDisable()
@@ -286,9 +284,9 @@ public partial class UINode : MonoBehaviour, INode, IEventUser, ICancelButtonAct
         endAction.Invoke();
     }
     
-    public void ThisNodeIsSelected() => DoSelected?.RaiseEvent(this);
+    public void ThisNodeIsSelected() => DoSelected?.Invoke(this);
 
-    public void ThisNodeIsHighLighted() => DoHighlighted?.RaiseEvent(this);
+    public void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this);
     
     //Input Interfaces
     public void OnPointerEnter(PointerEventData eventData) => _nodeBase.OnEnter(IsDragEvent(eventData));

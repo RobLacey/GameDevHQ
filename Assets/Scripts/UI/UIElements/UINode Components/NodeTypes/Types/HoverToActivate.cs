@@ -11,17 +11,17 @@ public class HoverToActivate : NodeBase, IHoverToActivate
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EventLocator.Subscribe<IAllowKeys>(SaveAllowKeys, this);
-        EventLocator.Subscribe<ICancelHoverOver>(CancelHoverOver, this);
-        EventLocator.Subscribe<ICancelHoverOverButton>(CancelHoverOverFromButton, this);
+        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+        EVent.Do.Subscribe<ICancelHoverOver>(CancelHoverOver);
+        EVent.Do.Subscribe<ICancelHoverOverButton>(CancelHoverOverFromButton);
     }
 
     public override void RemoveFromEvents()
     {
         base.RemoveFromEvents();
-        EventLocator.Unsubscribe<IAllowKeys>(SaveAllowKeys);
-        EventLocator.Unsubscribe<ICancelHoverOver>(CancelHoverOver);
-        EventLocator.Unsubscribe<ICancelHoverOverButton>(CancelHoverOverFromButton);
+        EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
+        EVent.Do.Unsubscribe<ICancelHoverOver>(CancelHoverOver);
+        EVent.Do.Unsubscribe<ICancelHoverOverButton>(CancelHoverOverFromButton);
     }
 
     private void SaveAllowKeys(IAllowKeys newNode) => _allowKeys = newNode.CanAllowKeys;

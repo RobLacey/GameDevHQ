@@ -1,7 +1,7 @@
 ﻿public class BranchFactory
 {
     private IBranch _branch;
-    private static readonly IInjectClass injectClass = new InjectClass();
+    private static readonly IEJect ieJect = new EJect();
     
     public static BranchFactory Factory { get; } = new BranchFactory();
 
@@ -18,37 +18,37 @@
             case BranchType.HomeScreen:
             {
                 CreateHomeScreenBranch(_branch);
-                return injectClass.WithParams<IHomeScreenBranch>(_branch);
+                return ieJect.WithParams<IHomeScreenBranch>(_branch);
             }            
             case BranchType.Standard:
             {
                 CreateStandardBranch(_branch);
-                return injectClass.WithParams<IStandardBranch>(_branch);
+                return ieJect.WithParams<IStandardBranch>(_branch);
             }            
             case BranchType.ResolvePopUp:
             {
                 CreateResolvePopUp(_branch);
-                return injectClass.WithParams<IResolvePopUpBranch>(_branch);
+                return ieJect.WithParams<IResolvePopUpBranch>(_branch);
             }
             case BranchType.OptionalPopUp:
             {
                 CreateOptionalPopUp(_branch);
-                return injectClass.WithParams<IOptionalPopUpBranch>(_branch);
+                return ieJect.WithParams<IOptionalPopUpBranch>(_branch);
             }
              case BranchType.TimedPopUp:
              {
                  CreateTimedPopUp(_branch);
-                 return injectClass.WithParams<ITimedPopUpBranch>(_branch);
+                 return ieJect.WithParams<ITimedPopUpBranch>(_branch);
              }
             case BranchType.PauseMenu:
             {
                 CreatePauseMenu(_branch);
-                return injectClass.WithParams<IPauseBranch>(_branch);
+                return ieJect.WithParams<IPauseBranch>(_branch);
             }
             case BranchType.Internal:
             {
                 CreateInternal(_branch);
-                return injectClass.WithParams<IStandardBranch>(_branch);
+                return ieJect.WithParams<IStandardBranch>(_branch);
             }
         }
 

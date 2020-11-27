@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using NaughtyAttributes;
-using UnityEditor;
 
 public class TestRunner : MonoBehaviour, IEventUser
 {
@@ -31,7 +30,7 @@ public class TestRunner : MonoBehaviour, IEventUser
         [SerializeField] public UnityEvent _event5;
         [SerializeField] public UnityEvent _event6;
     }
-
+    
     private void SaveLastHighlighted(IHighlightedNode args) => _lastHighlighted = (UINode)args.Highlighted;
     private void SaveLastSelected(ISelectedNode args) => _lastSelected = (UINode)args.Selected;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = (UIBranch) args.ActiveBranch.ThisBranch;
@@ -46,23 +45,25 @@ public class TestRunner : MonoBehaviour, IEventUser
 
     public void ObserveEvents()
     {
-        EventLocator.Subscribe<IHighlightedNode>(SaveLastHighlighted, this);
-        EventLocator.Subscribe<ISelectedNode>(SaveLastSelected, this);
-        EventLocator.Subscribe<IActiveBranch>(SaveActiveBranch, this);
-        EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
-        EventLocator.Subscribe<ITestList>(ManageHistory, this);
-        EventLocator.Subscribe<IAllowKeys>(SaveAllowKeys, this);
+        EVent.Do.Subscribe<IHighlightedNode>(SaveLastHighlighted);
+        EVent.Do.Subscribe<ISelectedNode>(SaveLastSelected);
+        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        EVent.Do.Subscribe<ITestList>(ManageHistory);
+        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<IHighlightedNode>(SaveLastHighlighted);
-        EventLocator.Unsubscribe<ISelectedNode>(SaveLastSelected);
-        EventLocator.Unsubscribe<IActiveBranch>(SaveActiveBranch);
-        EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
-        EventLocator.Unsubscribe<ITestList>(ManageHistory);
-        EventLocator.Unsubscribe<IAllowKeys>(SaveAllowKeys);
+        EVent.Do.Unsubscribe<IHighlightedNode>(SaveLastHighlighted);
+        EVent.Do.Unsubscribe<ISelectedNode>(SaveLastSelected);
+        EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
+        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        EVent.Do.Unsubscribe<ITestList>(ManageHistory);
+        EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
+
+    private void OnDisable() => RemoveFromEvents();
 
     private void ManageHistory(ITestList args)
     {
@@ -80,8 +81,6 @@ public class TestRunner : MonoBehaviour, IEventUser
             _history.Add((UINode) args.AddNode);
         }
     }
-    
-    private void OnDisable() => RemoveFromEvents();
 
     [Button ()]
     public void Button_Event1()

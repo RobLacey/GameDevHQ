@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Class that handles switching control from the mouse to a keyboard or controller
@@ -30,20 +31,20 @@ public class ChangeControl : IChangeControl, IAllowKeys, IServiceUser
     public bool CanAllowKeys { get; private set; }
 
     //Events
-    private static CustomEvent<IAllowKeys> AllowKeysEvent { get; } = new CustomEvent<IAllowKeys>();
+    private Action<IAllowKeys> AllowKeys { get; } = EVent.Do.FetchEVent<IAllowKeys>();
     
     public void ObserveEvents()
     {
-        EventLocator.Subscribe<IChangeControlsPressed>(ChangeControlType, this);
-        EventLocator.Subscribe<IHighlightedNode>(SaveHighlighted, this);
-        EventLocator.Subscribe<IOnStart>(StartGame, this);
+        EVent.Do.Subscribe<IChangeControlsPressed>(ChangeControlType);
+        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Subscribe<IOnStart>(StartGame);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<IChangeControlsPressed>(ChangeControlType);
-        EventLocator.Unsubscribe<IHighlightedNode>(SaveHighlighted);
-        EventLocator.Unsubscribe<IOnStart>(StartGame);
+        EVent.Do.Unsubscribe<IChangeControlsPressed>(ChangeControlType);
+        EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Unsubscribe<IOnStart>(StartGame);
     }
     
     public void SubscribeToService() => _historyTracker = ServiceLocator.Get<IHistoryTrack>(this);
@@ -128,7 +129,7 @@ public class ChangeControl : IChangeControl, IAllowKeys, IServiceUser
     private void SetAllowKeys()
     {
         if (_controlMethod == ControlMethod.MouseOnly) return;
-        AllowKeysEvent?.RaiseEvent(this);
+        AllowKeys?.Invoke(this);
    }
 
     private void SetNextHighlightedForKeys() => _historyTracker.MoveToLastBranchInHistory();

@@ -1,4 +1,6 @@
-﻿public interface INodeBase
+﻿using UnityEngine;
+
+public interface INodeBase
 {
     bool PointerOverNode { get; set; }
     void Start();
@@ -26,17 +28,17 @@ public abstract class NodeBase : IServiceUser, IEventUser, INodeBase
     public bool PointerOverNode { get; set; }
     public IBranch MyBranch { get; protected set; }
     
+    public void OnDisable() => RemoveFromEvents();
+    
+    public virtual void Start() => ObserveEvents();
+    
     public virtual void ObserveEvents() { }
 
     public virtual void RemoveFromEvents(){ }
 
     public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.Get<IHistoryTrack>(this);
 
-    public virtual void Start() => ObserveEvents();
-
     public abstract void DeactivateNode();
-
-    public void OnDisable() => RemoveFromEvents();
 
     public virtual void OnEnter(bool isDragEvent)
     {

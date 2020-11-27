@@ -33,18 +33,18 @@ public class UICancel : ICancel, IServiceUser, IEventUser
 
     public void ObserveEvents()
     {
-        EventLocator.Subscribe<ICancelPressed>(CancelPressed, this);
-        EventLocator.Subscribe<ICancelButtonActivated>(CancelOrBackButtonPressed, this);
-        EventLocator.Subscribe<IGameIsPaused>(SaveGameIsPaused, this);
-        EventLocator.Subscribe<INoResolvePopUp>(SaveResolvePopUps, this);
+        EVent.Do.Subscribe<INoResolvePopUp>(SaveResolvePopUps);
+        EVent.Do.Subscribe<ICancelPressed>(CancelPressed);
+        EVent.Do.Subscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
+        EVent.Do.Subscribe<IGameIsPaused>(SaveGameIsPaused);
     }
 
     public void RemoveFromEvents()
     {
-        EventLocator.Unsubscribe<ICancelPressed>(CancelPressed);
-        EventLocator.Unsubscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
-        EventLocator.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
-        EventLocator.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
+        EVent.Do.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
+        EVent.Do.Unsubscribe<ICancelPressed>(CancelPressed);
+        EVent.Do.Unsubscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
+        EVent.Do.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
     }
 
     public void SubscribeToService()

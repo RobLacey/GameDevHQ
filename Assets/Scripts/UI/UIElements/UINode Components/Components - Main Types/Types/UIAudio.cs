@@ -35,15 +35,15 @@ public class UIAudio : NodeFunctionBase, IServiceUser
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EventLocator.Subscribe<IOnStart>(OnStart, this);
-        EventLocator.Subscribe<IHotKeyPressed>(HotKeyPressed, this);
+        EVent.Do.Subscribe<IOnStart>(OnStart);
+        EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
     }
 
     public override void RemoveFromEvents()
     {
         base.RemoveFromEvents();
-        EventLocator.Unsubscribe<IOnStart>(OnStart);
-        EventLocator.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
+        EVent.Do.Unsubscribe<IOnStart>(OnStart);
+        EVent.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
     }
 
     protected override bool CanBeHighlighted() => !UsingScheme() ? false : _audioScheme.HighlightedClip;

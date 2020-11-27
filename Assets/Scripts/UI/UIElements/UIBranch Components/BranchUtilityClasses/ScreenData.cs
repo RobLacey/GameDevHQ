@@ -27,9 +27,9 @@ public class ScreenData : IEventUser, IScreenData
 
     
     //Main
-    public void ObserveEvents() => EventLocator.Subscribe<IOnHomeScreen>(SaveOnHomeScreen, this);
+    public void ObserveEvents() => EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
 
-    public void RemoveFromEvents() => EventLocator.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
+    public void RemoveFromEvents() => EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
 
     private void SaveOnHomeScreen(IOnHomeScreen args)
     {

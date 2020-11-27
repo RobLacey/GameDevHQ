@@ -1,4 +1,6 @@
-﻿public interface IResolvePopUpBranch : IBranchBase { }
+﻿using System;
+
+public interface IResolvePopUpBranch : IBranchBase { }
 
 public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolvePopUpBranch
 {
@@ -15,7 +17,7 @@ public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolveP
     public IBranch ThisPopUp => _myBranch;
 
     //Events
-    private static CustomEvent<IAddResolvePopUp> AddResolvePopUp { get; } = new CustomEvent<IAddResolvePopUp>();
+    private Action<IAddResolvePopUp> AddResolvePopUp { get; } = EVent.Do.FetchEVent<IAddResolvePopUp>();
     
     //Main
     public void StartPopUp()
@@ -33,6 +35,6 @@ public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolveP
         _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.Yes);
         SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
-        AddResolvePopUp?.RaiseEvent(this);
+        AddResolvePopUp?.Invoke(this);
     }
 }
