@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 
 public abstract class NodeFunctionBase : IEventUser
 {
@@ -23,22 +22,22 @@ public abstract class NodeFunctionBase : IEventUser
         _uiEvents.OnMove += AxisMoveDirection;
         ObserveEvents();
     }
-    
-    public virtual void ObserveEvents() { }
-
-    public virtual void RemoveFromEvents() { }
-
 
     public virtual void OnDisable()
     {
-        RemoveFromEvents();
         if(_uiEvents is null) return;
         _uiEvents.WhenPointerOver -= SavePointerStatus;
         _uiEvents.IsSelected -= SaveIsSelected;
         _uiEvents.IsPressed -= ProcessPress;
         _uiEvents.IsDisabled -= IsDisabled;
         _uiEvents.OnMove -= AxisMoveDirection;
+        RemoveEvents();
     }
+
+    public virtual void ObserveEvents() { }
+
+    public virtual void RemoveEvents() { }
+
     protected abstract void SavePointerStatus(bool pointerOver);
 
     protected virtual void SaveIsSelected(bool isSelected)

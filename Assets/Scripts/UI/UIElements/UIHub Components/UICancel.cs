@@ -1,12 +1,16 @@
 ﻿using System;
 using UnityEngine;
 
-interface ICancel : IMonoBehaviourSub { }
+interface ICancel
+{
+    void OnEnable();
+    void OnDisable();
+}
 
 /// <summary>
 /// Class handles all UI cancel behaviour from cancel type to context sensitive cases
 /// </summary>
-public class UICancel : ICancel, IServiceUser, IEventUser
+public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
 {
     public UICancel(EscapeKey globalSetting)
     {
@@ -25,11 +29,11 @@ public class UICancel : ICancel, IServiceUser, IEventUser
 
     public void OnEnable()
     {
-        SubscribeToService();
+        UseEServLocator();
         ObserveEvents();
     }
 
-    public void OnDisable() => RemoveFromEvents();
+    public void OnDisable() => RemoveEvents();
 
     public void ObserveEvents()
     {
@@ -39,7 +43,7 @@ public class UICancel : ICancel, IServiceUser, IEventUser
         EVent.Do.Subscribe<IGameIsPaused>(SaveGameIsPaused);
     }
 
-    public void RemoveFromEvents()
+    public void RemoveEvents()
     {
         EVent.Do.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
         EVent.Do.Unsubscribe<ICancelPressed>(CancelPressed);
@@ -47,10 +51,7 @@ public class UICancel : ICancel, IServiceUser, IEventUser
         EVent.Do.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
     }
 
-    public void SubscribeToService()
-    {
-        _uiHistoryTrack = ServiceLocator.Get<IHistoryTrack>(this);
-    }
+    public void UseEServLocator() => _uiHistoryTrack = EServ.Locator.Get<IHistoryTrack>(this);
 
     private void CancelPressed(ICancelPressed args)
     {

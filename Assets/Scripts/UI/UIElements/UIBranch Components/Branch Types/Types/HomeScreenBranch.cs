@@ -1,4 +1,6 @@
-﻿public interface IHomeScreenBranch : IBranchBase { }
+﻿using UnityEngine;
+
+public interface IHomeScreenBranch : IBranchBase { }
 
 public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 {
@@ -40,16 +42,13 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
         SetCanvas(ActiveCanvas.Yes);
         SetBlockRaycast(BlockRaycast.No);
 
-        if (args.StartBranch != _myBranch)
-        {
-            _myBranch.DontSetBranchAsActive();
-        }
-        else
+        if (args.StartBranch == _myBranch)
         {
             _startBranch = true;
             _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
         }
 
+        _myBranch.DontSetBranchAsActive();
         _myBranch.MoveToThisBranch();
     }
 

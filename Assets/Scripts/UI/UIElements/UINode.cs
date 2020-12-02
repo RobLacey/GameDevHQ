@@ -8,7 +8,8 @@ using UnityEngine.EventSystems;
 
 public partial class UINode : MonoBehaviour, INode, IEventUser,
                               IHighlightedNode, ISelectedNode, IPointerEnterHandler, IPointerDownHandler,
-                              IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
+                              IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler,
+                              IEventDispatcher
 {
     [Header("Main Settings")]
     [HorizontalLine(1, color: EColor.Blue, order = 1)]
@@ -86,20 +87,17 @@ public partial class UINode : MonoBehaviour, INode, IEventUser,
     // }
 
     //Variables
-    private bool _inMenu, _allowKeys, _childIsMoving;
+    private bool _inMenu, _allowKeys, _childIsMoving, _setUpFinished;
     private INode _lastHighlighted;
     private IUiEvents _uiNodeEvents;
     private IDisabledNode _disabledNode;
     private INodeBase _nodeBase;
     private readonly List<NodeFunctionBase> _activeFunctions = new List<NodeFunctionBase>();
 
-    private bool _canStart;
-    private bool _setUpFinished;
-
     //Events
-    private Action<IHighlightedNode> DoHighlighted { get; } = EVent.Do.FetchEVent<IHighlightedNode>();
-    private Action<ISelectedNode> DoSelected { get; } = EVent.Do.FetchEVent<ISelectedNode>();
-    
+    private Action<IHighlightedNode> DoHighlighted { get; set; }
+    private Action<ISelectedNode> DoSelected { get; set; }
+
     //Properties & Enums
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     public bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
@@ -115,7 +113,6 @@ public partial class UINode : MonoBehaviour, INode, IEventUser,
     public INode Selected => this;
     public UINavigation Navigation => _navigation.Instance;
     public bool CloseHooverOnExit => _closeHoverOnExit;
-    private void CanStart(IOnStart args) => _canStart = true;
     public IsActive ReturnStartAsSelected => _startAsSelected;
     public IsActive SetStartAsSelected { set => _startAsSelected = value; }
 
@@ -184,9 +181,33 @@ public partial class UINode : MonoBehaviour, INode, IEventUser,
     {
         MyBranch = GetComponentInParent<IBranch>();
         _uiNodeEvents = new UiEvents(gameObject.GetInstanceID(), this);
+    }
+
+    private void OnEnable() 
+    {
+        FetchEvents();
         StartNodeFactory();
         SetUpUiFunctions();
         ObserveEvents();
+        _nodeBase.OnEnable();
+    }
+
+    private void OnDisable()
+    {
+        RemoveEvents();
+        foreach (var nodeFunctionBase in _activeFunctions)
+        {
+            nodeFunctionBase.OnDisable();
+        }
+        _nodeBase.OnDisable();
+    }
+
+    private void Start() => _nodeBase.Start();
+
+    public void FetchEvents()
+    {
+        DoHighlighted = EVent.Do.Fetch<IHighlightedNode>();
+        DoSelected = EVent.Do.Fetch<ISelectedNode>();
     }
 
     private void StartNodeFactory()
@@ -214,32 +235,19 @@ public partial class UINode : MonoBehaviour, INode, IEventUser,
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Subscribe<IInMenu>(SaveInMenuOrInGame);
         EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
-        EVent.Do.Subscribe<IOnStart>(CanStart);
     }
 
-    public void RemoveFromEvents()
+    public void RemoveEvents()
     {
         EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
         EVent.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
-        EVent.Do.Unsubscribe<IOnStart>(CanStart);
     }
-    
-    private void OnDisable()
-    {
-        foreach (var nodeFunctionBase in _activeFunctions)
-        {
-            nodeFunctionBase.OnDisable();
-        }
-        _nodeBase.OnDisable();
-    }
-
-    private void Start() => _nodeBase.Start();
 
     public void SetNodeAsActive()
     {
-        if (_disabledNode.NodeIsDisabled() || !_canStart) return;
+        if (_disabledNode.NodeIsDisabled()) return;
         
         if (_allowKeys && _inMenu)
         {

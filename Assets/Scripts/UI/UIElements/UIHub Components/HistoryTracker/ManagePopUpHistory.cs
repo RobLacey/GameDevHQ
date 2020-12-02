@@ -1,7 +1,10 @@
 ﻿using System;
+using UnityEngine;
 
 public interface IManagePopUpHistory
 {
+    void OnEnable();
+    void OnDisable();
     IManagePopUpHistory IsGamePaused(bool isPaused);
     IManagePopUpHistory NoPopUpAction(Action noPopUpAction);
     void DoPopUpCheckAndHandle();
@@ -11,12 +14,8 @@ public interface IManagePopUpHistory
 
 public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
 {
-    public ManagePopUpHistory(IHistoryTrack historyTracker)
-    {
-        _historyTracker = historyTracker;
-        ObserveEvents();
-    }
-    
+    public ManagePopUpHistory(IHistoryTrack historyTracker) => _historyTracker = historyTracker;
+
     //Variables
     private readonly IHistoryTrack _historyTracker;
     private readonly IPopUpController _popUpController = EJect.Class.NoParams<IPopUpController>();
@@ -29,9 +28,21 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
     private void ActivePopUps(INoPopUps args) => _noPopUps = args.NoActivePopUps;
 
     //Main
+    public void OnEnable()
+    {
+        ObserveEvents();
+        _popUpController.OnEnable();
+    }
+
+    public void OnDisable()
+    {
+        RemoveEvents();
+        _popUpController.OnDisable();
+    }
+
     public void ObserveEvents() => EVent.Do.Subscribe<INoPopUps>(ActivePopUps);
 
-    public void RemoveFromEvents() => EVent.Do.Unsubscribe<INoPopUps>(ActivePopUps);
+    public void RemoveEvents() => EVent.Do.Unsubscribe<INoPopUps>(ActivePopUps);
 
     public IManagePopUpHistory IsGamePaused(bool isPaused)
     {

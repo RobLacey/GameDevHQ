@@ -16,9 +16,9 @@ public class HoverToActivate : NodeBase, IHoverToActivate
         EVent.Do.Subscribe<ICancelHoverOverButton>(CancelHoverOverFromButton);
     }
 
-    public override void RemoveFromEvents()
+    public override void RemoveEvents()
     {
-        base.RemoveFromEvents();
+        base.RemoveEvents();
         EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Unsubscribe<ICancelHoverOver>(CancelHoverOver);
         EVent.Do.Unsubscribe<ICancelHoverOverButton>(CancelHoverOverFromButton);

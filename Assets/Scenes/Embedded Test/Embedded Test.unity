@@ -4728,14 +4728,11 @@ MonoBehaviour:
       _tweenStartPosition: {x: 1141, y: 463, z: 0}
       _tweenMiddlePosition: {x: 0, y: 0, z: 0}
       _tweenTargetPosition: {x: 758, y: 463, z: 0}
-      _element: {fileID: 1937333105}
     _scaleSettings:
-      _element: {fileID: 1937333105}
       _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
       _endScale: {x: 0, y: 0, z: 0}
     _rotationSettings:
-      _element: {fileID: 1937333105}
       _rotateFrom: {x: 0, y: 0, z: 0}
       _rotateMidPoint: {x: 0, y: 0, z: 0}
       _rotateToo: {x: 0, y: 0, z: 0}
@@ -10730,14 +10727,11 @@ MonoBehaviour:
       _tweenStartPosition: {x: 0, y: 205, z: 0}
       _tweenMiddlePosition: {x: 0, y: -234, z: 0}
       _tweenTargetPosition: {x: 0, y: 205, z: 0}
-      _element: {fileID: 504002777}
     _scaleSettings:
-      _element: {fileID: 504002777}
       _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
       _endScale: {x: 0, y: 0, z: 0}
     _rotationSettings:
-      _element: {fileID: 504002777}
       _rotateFrom: {x: 0, y: 0, z: 0}
       _rotateMidPoint: {x: 0, y: 0, z: 0}
       _rotateToo: {x: 0, y: 0, z: 0}
@@ -12863,14 +12857,11 @@ MonoBehaviour:
       _tweenStartPosition: {x: 0, y: 0, z: 0}
       _tweenMiddlePosition: {x: 0, y: 0, z: 0}
       _tweenTargetPosition: {x: 0, y: 0, z: 0}
-      _element: {fileID: 620683489}
     _scaleSettings:
-      _element: {fileID: 620683489}
       _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
       _endScale: {x: 0, y: 0, z: 0}
     _rotationSettings:
-      _element: {fileID: 620683489}
       _rotateFrom: {x: 0, y: 0, z: 0}
       _rotateMidPoint: {x: 0, y: 0, z: 0}
       _rotateToo: {x: 0, y: 0, z: 0}
@@ -26517,14 +26508,11 @@ MonoBehaviour:
       _tweenStartPosition: {x: 338, y: 0, z: 0}
       _tweenMiddlePosition: {x: 0, y: 0, z: 0}
       _tweenTargetPosition: {x: 0, y: 0, z: 0}
-      _element: {fileID: 1172980945}
     _scaleSettings:
-      _element: {fileID: 1172980945}
       _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
       _endScale: {x: 0, y: 0, z: 0}
     _rotationSettings:
-      _element: {fileID: 1172980945}
       _rotateFrom: {x: 0, y: 0, z: 0}
       _rotateMidPoint: {x: 0, y: 0, z: 0}
       _rotateToo: {x: 0, y: 0, z: 0}
@@ -28512,14 +28500,11 @@ MonoBehaviour:
       _tweenStartPosition: {x: 0, y: 0, z: 0}
       _tweenMiddlePosition: {x: 0, y: 0, z: 0}
       _tweenTargetPosition: {x: 0, y: 0, z: 0}
-      _element: {fileID: 1478859608}
     _scaleSettings:
-      _element: {fileID: 1478859608}
       _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
       _endScale: {x: 0, y: 0, z: 0}
     _rotationSettings:
-      _element: {fileID: 1478859608}
       _rotateFrom: {x: 0, y: 0, z: 0}
       _rotateMidPoint: {x: 0, y: 0, z: 0}
       _rotateToo: {x: 0, y: 0, z: 0}
@@ -33025,14 +33010,11 @@ MonoBehaviour:
       _tweenStartPosition: {x: 0, y: 0, z: 0}
       _tweenMiddlePosition: {x: 0, y: 0, z: 0}
       _tweenTargetPosition: {x: 0, y: 0, z: 0}
-      _element: {fileID: 1743252782}
     _scaleSettings:
-      _element: {fileID: 1743252782}
       _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
       _endScale: {x: 0, y: 0, z: 0}
     _rotationSettings:
-      _element: {fileID: 1743252782}
       _rotateFrom: {x: 0, y: 0, z: 0}
       _rotateMidPoint: {x: 0, y: 0, z: 0}
       _rotateToo: {x: 0, y: 0, z: 0}
@@ -36688,14 +36670,11 @@ MonoBehaviour:
       _tweenStartPosition: {x: 0, y: 0, z: 0}
       _tweenMiddlePosition: {x: 0, y: 0, z: 0}
       _tweenTargetPosition: {x: 0, y: 0, z: 0}
-      _element: {fileID: 2018220710}
     _scaleSettings:
-      _element: {fileID: 2018220710}
       _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
       _endScale: {x: 0, y: 0, z: 0}
     _rotationSettings:
-      _element: {fileID: 2018220710}
       _rotateFrom: {x: 0, y: 0, z: 0}
       _rotateMidPoint: {x: 0, y: 0, z: 0}
       _rotateToo: {x: 0, y: 0, z: 0}
@@ -41785,6 +41764,11 @@ PrefabInstance:
       propertyPath: _homeBranches.Array.data[4]
       value: 
       objectReference: {fileID: 413526949}
+    - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _nextScene
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 4421614741907461036, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _onScreenAtStart
@@ -42717,7 +42701,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f5dfd11c59dde44c933280df0ae6aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buttonFunction: 2
+  _buttonFunction: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -42775,7 +42759,19 @@ MonoBehaviour:
     _selectClickEvents:
       _onButtonClickEvent:
         m_PersistentCalls:
-          m_Calls: []
+          m_Calls:
+          - m_Target: {fileID: 537329691}
+            m_TargetAssemblyTypeName: UIHub, Assembly-CSharp
+            m_MethodName: LoadNextScene
+            m_Mode: 1
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
       _onDisable:
         m_PersistentCalls:
           m_Calls: []

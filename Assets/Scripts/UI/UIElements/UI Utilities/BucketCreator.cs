@@ -1,14 +1,14 @@
 ﻿using System;
 using UnityEngine;
 
-public interface IBucketCreator
+public interface IBucketCreator 
 {
     IBucketCreator SetParent(Transform parent);
     IBucketCreator SetName(String name);
     Transform CreateBucket();
 }
 
-public class BucketCreator : IBucketCreator
+public class BucketCreator : IBucketCreator, IIsAService
 {
     private Transform _parent;
     private string _name;
@@ -37,29 +37,9 @@ public class BucketCreator : IBucketCreator
         _bucket = newBucket.transform;
         return newBucket.transform;
     }
-}
 
-public class NullBucketObject : IBucketCreator
-{
-    private Transform _parent;
-    private string _name;
-
-    public IBucketCreator SetParent(Transform parent)
+    public void OnDisable()
     {
-        Debug.Log($"Set Parent to { parent }");
-        return this;
-    }
-
-    public IBucketCreator SetName(string name)
-    {
-        Debug.Log($"Set Name to { name }");
-        return this;
-    }
-
-    public Transform CreateBucket()
-    {
-        Debug.Log("Null Bucket Service Running - Expect inconsistent behaviour");
-        return null;
+        ;
     }
 }
-

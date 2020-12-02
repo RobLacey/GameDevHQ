@@ -3,21 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CreateClass
+public class EJectMaster
 {
-    private static readonly Hashtable classes = new Hashtable();
-    private static readonly List<Type> classesWithParameters = new List<Type>();
-    private static Type instanceType;
-    private static Type interfaceType;
-    private static readonly CreateClass create = new CreateClass();
+    private readonly Hashtable classes = new Hashtable();
+    private readonly List<Type> classesWithParameters = new List<Type>();
+    private Type instanceType;
+    private Type interfaceType;
     
-    public static CreateClass Bind<T>()
+    public EJectMaster Bind<T>()
     {
         instanceType = typeof(T);
-        return create;
+        return this;
     }
 
-    public CreateClass To<T>()
+    public EJectMaster To<T>()
     {
         interfaceType = typeof(T);
         classes.Add(interfaceType, instanceType);
@@ -26,7 +25,7 @@ public class CreateClass
 
     public void WithParameters() => classesWithParameters.Add(interfaceType);
 
-    public static T Get<T>(IParameters args = null)
+    public T Get<T>(IParameters args = null)
     {
         var typeOfNewClass = typeof(T);
         var newClass = classes[typeOfNewClass];
@@ -37,7 +36,7 @@ public class CreateClass
             : WithParameters<T>(args, typeOfNewClass, newClass, hasParams);
     }
 
-    private static T WithParameters<T>(IParameters args, Type typeOfNewClass, object newClass, bool hasParams)
+    private T WithParameters<T>(IParameters args, Type typeOfNewClass, object newClass, bool hasParams)
     {
         if (!hasParams)
             ThrowParameterException("Class DOESN'T HAVE Parameters or no Binding", typeOfNewClass);
@@ -45,7 +44,7 @@ public class CreateClass
         return (T) System.Activator.CreateInstance((Type) newClass, args);
     }
 
-    private static T NoParameters<T>(Type typeOfNewClass, object newClass, bool hasParams)
+    private T NoParameters<T>(Type typeOfNewClass, object newClass, bool hasParams)
     {
         if (hasParams)
             ThrowParameterException("Constructor HAS Parameters", typeOfNewClass);
@@ -53,7 +52,7 @@ public class CreateClass
         return (T) System.Activator.CreateInstance((Type) newClass);
     }
 
-    private static void ThrowParameterException(string message, Type typeOfNewClass)
+    private void ThrowParameterException(string message, Type typeOfNewClass)
     {
         throw new Exception($"{message} : {typeOfNewClass}");
     }

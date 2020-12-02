@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using UnityEngine;
 
 public class CustomEVent<TType>
 {
@@ -13,9 +15,4 @@ public class CustomEVent<TType>
     }
 
     public void RemoveListener(Action<TType> newEvent) => Raise -= newEvent;
-
-    public void FlushEvent()
-    {
-        Raise = null;
-    }
 }

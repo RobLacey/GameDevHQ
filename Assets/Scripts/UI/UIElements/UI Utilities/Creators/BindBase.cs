@@ -1,12 +1,10 @@
-﻿public abstract class BindBase
+﻿
+public abstract class BindBase
 {
+    protected EJectMaster _eJectMaster;
     private bool _bound;
 
-    protected BindBase()
-    {
-        BindAllObjects();
-    }
-    
+    public EJectMaster EJectClass() => _eJectMaster;
     protected abstract void BindAllObjects();
     
     protected bool CheckIfAlreadyBound()

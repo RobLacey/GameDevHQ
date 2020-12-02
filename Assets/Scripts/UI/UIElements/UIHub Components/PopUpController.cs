@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public interface IPopUpController : IMonoBehaviourSub
+public interface IPopUpController
 {
+    void OnEnable();
+    void OnDisable();
     IBranch NextPopUp();
     void RemoveNextPopUp(IBranch popUpToRemove);
 }
@@ -11,10 +13,8 @@ public interface IPopUpController : IMonoBehaviourSub
 /// This Class Looks after managing switching between PopUps
 /// </summary>
 ///
-public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, INoPopUps
+public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, INoPopUps, IEventDispatcher
 {
-    public PopUpController() => OnEnable();
-
     //Variables
     private readonly List<IBranch> _activeResolvePopUps = new List<IBranch>();
     private readonly List<IBranch> _activeOptionalPopUps = new List<IBranch>();
@@ -26,15 +26,26 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
     public bool NoActivePopUps => _noPopUps;
     
     //Events
-    private Action<INoResolvePopUp> NoResolvePopUps { get; } = EVent.Do.FetchEVent<INoResolvePopUp>();
-    private Action<INoPopUps> NoPopUps { get; } = EVent.Do.FetchEVent<INoPopUps>();
+    private Action<INoResolvePopUp> NoResolvePopUps { get; set; }
+    private Action<INoPopUps> NoPopUps { get; set; }
     
     //Main
     public void OnEnable()
     {
+        FetchEvents();
         ObserveEvents();
     }
-    public void OnDisable() => RemoveFromEvents();
+
+    public void OnDisable()
+    {
+        RemoveEvents();
+    }
+    
+    public void FetchEvents()
+    {
+        NoResolvePopUps = EVent.Do.Fetch<INoResolvePopUp>();
+        NoPopUps = EVent.Do.Fetch<INoPopUps>();
+    }
 
     public void ObserveEvents()
     {
@@ -43,7 +54,7 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
         EVent.Do.Subscribe<IAddResolvePopUp>(AddActivePopUps_Resolve);
     }
 
-    public void RemoveFromEvents()
+    public void RemoveEvents()
     {
         EVent.Do.Unsubscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional);
         EVent.Do.Unsubscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen);

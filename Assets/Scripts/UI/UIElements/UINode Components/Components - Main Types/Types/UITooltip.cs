@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UITooltip : NodeFunctionBase,  IServiceUser
+public class UITooltip : NodeFunctionBase,  IEServUser
 {
     public UITooltip(ToolTipSettings settings, IUiEvents uiEvents)
     {
@@ -53,7 +53,7 @@ public class UITooltip : NodeFunctionBase,  IServiceUser
     {
         base.OnAwake(uiEvents);
         SetUp(uiEvents.ReturnMasterNode.GetComponent<RectTransform>());
-        SubscribeToService();
+        UseEServLocator();
     }
 
     public override void ObserveEvents()
@@ -62,9 +62,9 @@ public class UITooltip : NodeFunctionBase,  IServiceUser
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
 
-    public override void RemoveFromEvents()
+    public override void RemoveEvents()
     {
-        base.RemoveFromEvents();
+        base.RemoveEvents();
         EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
 
@@ -77,7 +77,7 @@ public class UITooltip : NodeFunctionBase,  IServiceUser
         CheckSetUpForError();
     }
     
-    public void SubscribeToService() => _bucketCreator = ServiceLocator.Get<IBucketCreator>(this);
+    public void UseEServLocator() => _bucketCreator = EServ.Locator.Get<IBucketCreator>(this);
 
 
     protected override void SavePointerStatus(bool pointerOver)

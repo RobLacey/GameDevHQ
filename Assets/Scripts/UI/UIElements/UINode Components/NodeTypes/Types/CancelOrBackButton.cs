@@ -3,16 +3,25 @@
 public interface ICancelOrBack : INodeBase { }
 
 
-public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBack
+public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBack, IEventDispatcher
 {
     private readonly bool _isPopUp;
     
     public EscapeKey EscapeKeyType { get; }
 
-    private Action<ICancelButtonActivated> CancelButtonActive { get; } 
-        = EVent.Do.FetchEVent<ICancelButtonActivated>();
-    private Action<ICancelPopUp> CancelPopUp { get; } = EVent.Do.FetchEVent<ICancelPopUp>();
-    private Action<ICancelHoverOver> CancelHoverOver { get; } = EVent.Do.FetchEVent<ICancelHoverOver>();
+    //Events
+    private Action<ICancelButtonActivated> CancelButtonActive { get; set; }
+    private Action<ICancelPopUp> CancelPopUp { get; set; }
+    private Action<ICancelHoverOver> CancelHoverOver { get; set; }
+
+    public override void Start() => FetchEvents();
+
+    public void FetchEvents()
+    {
+        CancelButtonActive = EVent.Do.Fetch<ICancelButtonActivated>();
+        CancelPopUp= EVent.Do.Fetch<ICancelPopUp>();
+        CancelHoverOver= EVent.Do.Fetch<ICancelHoverOver>();
+    }
 
     public CancelOrBackButton(INode node) : base(node)
     {

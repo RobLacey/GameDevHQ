@@ -13,7 +13,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
-public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch, IBranch
+public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch, IBranch, IEventDispatcher
 {
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
@@ -77,7 +77,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     //Delegates & Events
     public event Action OnStartPopUp; 
     private Action OnFinishTweenCallBack { get; set; }
-    private  Action<IActiveBranch> SetActiveBranch { get; } = EVent.Do.FetchEVent<IActiveBranch>();
+    private  Action<IActiveBranch> SetActiveBranch { get; set; }
 
     //InternalClasses
     [Serializable]
@@ -86,6 +86,33 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         public UnityEvent OnBranchEnter;
         public UnityEvent OnBranchExit;
     }
+
+    private void Awake()
+    {
+        ThisGroupsUiNodes = SetBranchesChildNodes.GetChildNodes(this);
+        MyCanvasGroup = GetComponent<CanvasGroup>();
+        MyCanvasGroup.blocksRaycasts = false;
+        _uiTweener = GetComponent<UITweener>();
+        MyCanvas = GetComponent<Canvas>();
+        MyParentBranch = this;
+        SetStartPositions();
+    }
+
+    private void OnEnable()
+    {
+        FetchEvents();
+        ObserveEvents();
+        BranchBase = BranchFactory.Factory.PassThisBranch(this).CreateType(_branchType);
+        BranchBase.OnEnable();
+    }
+
+    private void OnDisable()
+    {
+        RemoveEvents();
+        BranchBase.OnDisable();
+    }
+    
+    public void FetchEvents() => SetActiveBranch = EVent.Do.Fetch<IActiveBranch>();
 
     public void ObserveEvents()
     {
@@ -96,7 +123,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         EVent.Do.Subscribe<IHotKeyPressed>(FromHotKey);
     }
 
-    public void RemoveFromEvents()
+    public void RemoveEvents()
     {
         EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchBranchGroup);
         EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
@@ -104,27 +131,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         EVent.Do.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
         EVent.Do.Unsubscribe<IHotKeyPressed>(FromHotKey);
     }
-    
-    private void Awake()
-    {
-        ThisGroupsUiNodes = SetBranchesChildNodes.GetChildNodes(this);
-        MyCanvasGroup = GetComponent<CanvasGroup>();
-        MyCanvasGroup.blocksRaycasts = false;
-        _uiTweener = GetComponent<UITweener>();
-        MyCanvas = GetComponent<Canvas>();
-        BranchBase = BranchFactory.Factory.PassThisBranch(this).CreateType(_branchType);
-        MyParentBranch = this;
-        SetStartPositions();
-        ObserveEvents();
-    }
 
     public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
-
-    private void OnDisable()
-    {
-        BranchBase.OnDisable();
-        RemoveFromEvents();
-    }
 
     private void Start() => SetNodesChildrenToThisBranch();
     

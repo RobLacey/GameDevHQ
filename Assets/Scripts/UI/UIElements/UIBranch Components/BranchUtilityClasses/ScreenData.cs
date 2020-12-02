@@ -2,19 +2,19 @@
 
 public interface IScreenData
 {
+    void OnEnable();
+    void OnDisable();
     bool WasOnHomeScreen { get; }
-    void RemoveFromEvents();
     void RestoreScreen();
     void StoreClearScreenData(IBranch[] allBranches, IBranch thisBranch, BlockRaycast blockRaycast);
 }
 
-public class ScreenData : IEventUser, IScreenData
+public class ScreenData : IScreenData
 {
     public ScreenData(IBranchParams branch)
     {
         if (branch.MyScreenType == ScreenType.FullScreen)
             _isFullscreen = true;
-        ObserveEvents();
     }
 
     private readonly List<IBranch> _clearedBranches = new List<IBranch>();
@@ -25,11 +25,11 @@ public class ScreenData : IEventUser, IScreenData
     //Propertues
     public bool WasOnHomeScreen => _wasOnHomeScreen;
 
-    
-    //Main
-    public void ObserveEvents() => EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+    public void OnEnable() => EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
 
-    public void RemoveFromEvents() => EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
+    public void OnDisable() => EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
+
+    //Main
 
     private void SaveOnHomeScreen(IOnHomeScreen args)
     {

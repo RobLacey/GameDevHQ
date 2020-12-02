@@ -7,15 +7,11 @@ using UnityEngine;
 /// </summary>
 public class UIAudioManager : IAudioService
 {
-    private readonly AudioSource _myAudioSource;
+    private AudioSource _myAudioSource;
     private bool IsPlayingSelected { get; set; }
     private bool IsPlayingCancel { get; set; }
 
-    
-    public UIAudioManager(IHub hub)
-    {
-        _myAudioSource = hub.ThisGameObject.GetComponent<AudioSource>();
-    }
+    public UIAudioManager(IHub hub) => _myAudioSource = hub.ThisGameObject.GetComponent<AudioSource>();
 
     private void Play(AudioClip audioClip, float volume)
     {
@@ -24,10 +20,10 @@ public class UIAudioManager : IAudioService
         _myAudioSource.Play();
     }
 
+    public void OnDisable() => _myAudioSource = null;
+
     public void PlaySelect(AudioClip audioClip, float volume)
     {
-       // Debug.Log("Selected");
-
         IsPlayingSelected = true;
         Play(audioClip, volume);
         StaticCoroutine.StartCoroutine(Timer(audioClip.length, ()=> IsPlayingSelected = false));
@@ -36,7 +32,6 @@ public class UIAudioManager : IAudioService
     public void PlayCancel(AudioClip audioClip, float volume)
     {
         if(IsPlayingSelected) return;
-//        Debug.Log("Cancel");
         IsPlayingCancel = true;
         Play(audioClip, volume);
         StaticCoroutine.StartCoroutine(Timer(audioClip.length, ()=> IsPlayingCancel = false));
@@ -57,8 +52,9 @@ public class UIAudioManager : IAudioService
     public void PlayDisabled(AudioClip audioClip, float volume) => Play(audioClip, volume);
 }
 
-public interface IAudioService
+public interface IAudioService 
 {
+    void OnDisable();
     void PlaySelect(AudioClip audioClip, float volume);
     void PlayCancel(AudioClip audioClip, float volume);
     void PlayHighlighted(AudioClip audioClip, float volume);

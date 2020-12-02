@@ -2,15 +2,22 @@
 
 public class DisabledNode : IDisabledNode
 {
+    public DisabledNode(UINode uiNode)
+    {
+        _uiNode = uiNode;
+        ThisIsDisabled = EVent.Do.Fetch<IDisabledNode>();
+    }
+
     private readonly UINode _uiNode;
     private bool _isDisabled;
 
-    private Action<IDisabledNode> ThisIsDisabled { get; } = EVent.Do.FetchEVent<IDisabledNode>();
+    //Events
+    private Action<IDisabledNode> ThisIsDisabled { get; }
 
-    public DisabledNode(UINode uiNode) => _uiNode = uiNode;
-
+    //Properties
     public INode ThisNodeIsDisabled => _uiNode;
     
+    //Main
     public bool IsDisabled
     {
         get => _isDisabled;
@@ -30,6 +37,7 @@ public class DisabledNode : IDisabledNode
         _uiNode.Navigation.MoveToNextFreeNode();
         return true;
     }
+
 }
 
 

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [Serializable]
-public class HotKeys : IEventUser, IHotKeyPressed
+public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
 {
     [SerializeField] 
     private HotKey _hotKeyInput;
@@ -17,8 +17,8 @@ public class HotKeys : IEventUser, IHotKeyPressed
     private InputScheme _inputScheme;
     
     //Events
-    private Action<IHotKeyPressed> HotKeyPressed { get; } = EVent.Do.FetchEVent<IHotKeyPressed>();
-    
+    private Action<IHotKeyPressed> HotKeyPressed { get; set; }
+
     //Properties
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     public INode ParentNode => _parentNode;
@@ -29,12 +29,21 @@ public class HotKeys : IEventUser, IHotKeyPressed
     {
         _inputScheme = inputScheme;
         IsAllowedType();
+    }
+
+    public void OnEnable()
+    {
+        FetchEvents();
         ObserveEvents();
     }
-    
-    public void ObserveEvents() => EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
 
-    public void RemoveFromEvents() => EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
+    public void OnDisable() => RemoveEvents();
+
+    public void FetchEvents() => HotKeyPressed = EVent.Do.Fetch<IHotKeyPressed>();
+
+    public void ObserveEvents() => EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+    
+    public void RemoveEvents()  => EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
 
     private void IsAllowedType()
     {

@@ -1,32 +1,46 @@
 ﻿
-public interface IHomeGroup : IMonoBehaviourSub { }
+using System;
+using UnityEngine;
+
+public interface IHomeGroup
+{
+    void OnEnable();
+    void OnDisable();
+}
 
 /// <summary>
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
 /// is for keyboard or controller. Differ from internal branch groups as involve Branches not Nodes
 /// </summary>
-public class UIHomeGroup : IEventUser, IHomeGroup
+public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
 {
     public UIHomeGroup(IHub hub)
     {
         _homeGroup = hub.HomeBranches;
-        OnEnable();
+
+        foreach (var branch in _homeGroup)
+        {
+            if(!branch.IsHomeScreenBranch())
+                throw new Exception($"{branch.ThisBranchesGameObject.name} isn't a Home Screen branch");
+        }
     }
-    
+
     //Variables
     private readonly IBranch[] _homeGroup;
     private bool _onHomeScreen = true;
     private bool _gameIsPaused;
     private int _index;
     private IBranch _lastActiveHomeBranch;
-    
-    //Properties
-    private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
-    private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
 
+    //Properties
+
+    private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
+
+    private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
+    
     public void OnEnable() => ObserveEvents();
 
-    public void OnDisable() => RemoveFromEvents();
+    public void OnDisable() => RemoveEvents();
 
     public void ObserveEvents()
     {
@@ -36,7 +50,8 @@ public class UIHomeGroup : IEventUser, IHomeGroup
         EVent.Do.Subscribe<IGameIsPaused>(GameIsPaused);
         EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
     }
-    public void RemoveFromEvents()
+
+    public void RemoveEvents()
     {
         EVent.Do.Unsubscribe<IReturnToHome>(ActivateHomeGroupBranch);
         EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchHomeGroups);
@@ -44,7 +59,7 @@ public class UIHomeGroup : IEventUser, IHomeGroup
         EVent.Do.Unsubscribe<IGameIsPaused>(GameIsPaused);
         EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
     }
-
+    
     private void SwitchHomeGroups(ISwitchGroupPressed args)
     {
         if (!_onHomeScreen) return;
@@ -106,4 +121,5 @@ public class UIHomeGroup : IEventUser, IHomeGroup
         }
         _homeGroup[_index].MoveToBranchWithoutTween();
     }
+
 }

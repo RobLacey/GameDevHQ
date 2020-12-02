@@ -23,28 +23,30 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch
     public bool GameIsPaused => _gameIsPaused;
     
     //Events
-    private Action<IGameIsPaused> OnGamePaused { get; } = EVent.Do.FetchEVent<IGameIsPaused>();
-    
+    private Action<IGameIsPaused> OnGamePaused { get; set; }
+
+
+    public override void FetchEvents()
+    {
+        base.FetchEvents();
+        OnGamePaused = EVent.Do.Fetch<IGameIsPaused>();
+    }
+
     public override void ObserveEvents()
     {
         base.ObserveEvents();
         EVent.Do.Subscribe<IPausePressed>(StartPopUp);
         EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
     }
-    
-    public override void RemoveFromEvents()
+
+    public override void RemoveEvents()
     {
-        base.RemoveFromEvents();
+        base.RemoveEvents();
         EVent.Do.Unsubscribe<IPausePressed>(StartPopUp);
         EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
     }
 
     //Main
-    public override void OnDisable()
-    {
-        base.OnDisable();
-        RemoveFromEvents();
-    }
 
     private void StartPopUp(IPausePressed e) => StartPopUp();
 

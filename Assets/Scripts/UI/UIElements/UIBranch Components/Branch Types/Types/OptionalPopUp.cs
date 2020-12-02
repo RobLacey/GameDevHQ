@@ -18,9 +18,17 @@ public class OptionalPopUpPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp,
     public IBranch ThisPopUp => _myBranch;
 
     //Events
-    private Action<IAddOptionalPopUp> AddOptionalPopUp { get; } = EVent.Do.FetchEVent<IAddOptionalPopUp>();
-    private Action<IRemoveOptionalPopUp> RemoveOptionalPopUp { get; } = EVent.Do.FetchEVent<IRemoveOptionalPopUp>();
-    
+    private Action<IAddOptionalPopUp> AddOptionalPopUp { get; set; }
+    private Action<IRemoveOptionalPopUp> RemoveOptionalPopUp { get; set; }
+
+
+    public override void FetchEvents()
+    {
+        base.FetchEvents();
+        AddOptionalPopUp = EVent.Do.Fetch<IAddOptionalPopUp>();
+        RemoveOptionalPopUp = EVent.Do.Fetch<IRemoveOptionalPopUp>();
+    }
+
     protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
     {
         base.SaveIfOnHomeScreen(args);

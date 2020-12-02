@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class UIAudio : NodeFunctionBase, IServiceUser
+public class UIAudio : NodeFunctionBase, IEServUser
 {
     public UIAudio(IAudioSettings settings, IUiEvents uiEvents)
     {
@@ -27,10 +27,10 @@ public class UIAudio : NodeFunctionBase, IServiceUser
     {
         base.OnAwake(uiEvents);
         _uiEvents.MuteAudio += AudioIsMuted;
-        SubscribeToService();
+        UseEServLocator();
     }
 
-     public void SubscribeToService() => _audioService = ServiceLocator.Get<IAudioService>(this);
+     public void UseEServLocator() => _audioService = EServ.Locator.Get<IAudioService>(this);
 
     public override void ObserveEvents()
     {
@@ -39,9 +39,9 @@ public class UIAudio : NodeFunctionBase, IServiceUser
         EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
     }
 
-    public override void RemoveFromEvents()
+    public override void RemoveEvents()
     {
-        base.RemoveFromEvents();
+        base.RemoveEvents();
         EVent.Do.Unsubscribe<IOnStart>(OnStart);
         EVent.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
     }

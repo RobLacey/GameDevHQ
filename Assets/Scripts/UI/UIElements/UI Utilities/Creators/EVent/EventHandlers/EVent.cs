@@ -1,11 +1,15 @@
 ﻿using System;
-using UnityEngine;
+using System.Collections;
 
-public class EVent : EVentBaseClass<EVentBindings, EVent>
+public interface IEVent : IEVentBase { }
+
+public class EVent : EVentBaseClass<EVent>, IEVent
 {
-    public override Action<T> FetchEVent<T>() => EVentMaster.Get<T>();
+    public override Hashtable EVentsList { get; set; } = new Hashtable();
 
-    public override void Subscribe<T>(Action<T> listener) => EVentMaster.Subscribe(listener);
+    public override Action<T> Fetch<T>() => EVentMaster.Get<T>(EVentsList);
 
-    public override void Unsubscribe<T>(Action<T> listener) => EVentMaster.Unsubscribe(listener);
+    public override void Subscribe<T>(Action<T> listener) => EVentMaster.Subscribe(listener, EVentsList);
+
+    public override void Unsubscribe<T>(Action<T> listener) => EVentMaster.Unsubscribe(listener, EVentsList);
 }

@@ -11,14 +11,14 @@ public interface IInput : IParameters
 }
 
 public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitchGroupPressed, 
-                       ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, IServiceUser
+                       ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, IEServUser, IEventDispatcher
 {
     [SerializeField] 
     [Expandable] private InputScheme _inputScheme;
     [SerializeField] 
-    private InGameOrInMenu _returnToGameControl;
-    [SerializeField] 
     [ReorderableList] private List<HotKeys> _hotKeySettings;
+    [SerializeField] 
+    private InGameOrInMenu _returnToGameControl;
 
     //Variables
     private bool _canStart, _inMenu, _gameIsPaused, _allowKeys;
@@ -31,16 +31,12 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private IHistoryTrack _historyTrack;
 
     //Events
-    private Action<IPausePressed> OnPausedPressed { get; } = EVent.Do.FetchEVent<IPausePressed>();
-    private Action<IMenuGameSwitchingPressed> OnMenuAndGameSwitch { get; } 
-        = EVent.Do.FetchEVent<IMenuGameSwitchingPressed>();
-    private Action<ICancelPressed> OnCancelPressed { get; }
-        = EVent.Do.FetchEVent<ICancelPressed>();
-    private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; }
-        = EVent.Do.FetchEVent<ISwitchGroupPressed>();
-    private Action<IChangeControlsPressed> OnChangeControlPressed { get; }
-        = EVent.Do.FetchEVent<IChangeControlsPressed>();
-    
+    private Action<IPausePressed> OnPausedPressed { get; set; }
+    private Action<IMenuGameSwitchingPressed> OnMenuAndGameSwitch { get; set; }
+    private Action<ICancelPressed> OnCancelPressed { get; set; }
+    private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; set; }
+    private Action<IChangeControlsPressed> OnChangeControlPressed { get; set; }
+
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
 
@@ -70,25 +66,38 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveOnHomeScreen (IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveAllowKeys (IAllowKeys args) => _allowKeys = args.CanAllowKeys;
-    public SwitchType SwitchType { get; set; }
+    public SwitchType SwitchType { get; private set; }
     public InputScheme ReturnScheme => _inputScheme;
     public EscapeKey EscapeKeySettings => _activeBranch.EscapeKeySetting;
     private bool NothingSelectedAction => _inputScheme.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
 
-    
     //Main
     private void Awake()
     {
         _inputScheme.OnAwake();
         _changeControl = EJect.Class.WithParams<IChangeControl>(this);
         _menuToGameSwitching = EJect.Class.WithParams<IMenuAndGameSwitching>(this);
-        SetUpHotKeys();
-        ObserveEvents();
-        SubscribeToService();
+        UseEServLocator();
     }
-    
-    public void SubscribeToService() => _historyTrack = ServiceLocator.Get<IHistoryTrack>(this);
 
+    private void OnEnable()
+    {
+        FetchEvents();
+        SetUpHotKeys();
+        _changeControl.OnEnable();
+        _menuToGameSwitching.OnEnable();
+        ObserveEvents();
+    }
+
+    private void OnDisable()
+    {
+        ShutDownHotKeys();
+        _changeControl.OnDisable();
+        _menuToGameSwitching.OnDisable();
+        RemoveEvents();
+    }
+
+    public void UseEServLocator() => _historyTrack = EServ.Locator.Get<IHistoryTrack>(this);
 
     private void SetUpHotKeys()
     {
@@ -96,9 +105,28 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         foreach (var hotKey in _hotKeySettings)
         {
             hotKey.OnAwake(_inputScheme);
+            hotKey.OnEnable();
         }
     }
     
+    private void ShutDownHotKeys()
+    {
+        if (_hotKeySettings.Count == 0) return;
+        foreach (var hotKey in _hotKeySettings)
+        {
+            hotKey.OnDisable();
+        }
+    }
+
+    public void FetchEvents()
+    {
+        OnPausedPressed = EVent.Do.Fetch<IPausePressed>();
+        OnMenuAndGameSwitch = EVent.Do.Fetch<IMenuGameSwitchingPressed>();
+        OnCancelPressed = EVent.Do.Fetch<ICancelPressed>();
+        OnSwitchGroupPressed  = EVent.Do.Fetch<ISwitchGroupPressed>();
+        OnChangeControlPressed = EVent.Do.Fetch<IChangeControlsPressed>();
+    }
+
     public void ObserveEvents()
     {
         EVent.Do.Subscribe<IGameIsPaused>(SaveGameIsPaused);
@@ -110,7 +138,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
 
-    public void RemoveFromEvents()
+    public void RemoveEvents()
     {
         EVent.Do.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
         EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
@@ -119,17 +147,6 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
         EVent.Do.Unsubscribe<INoPopUps>(SaveNoActivePopUps);
         EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
-    }
-    
-    private void OnDisable()
-    {
-        RemoveFromEvents();
-        _changeControl.RemoveFromEvents();
-        _menuToGameSwitching.RemoveFromEvents();
-        foreach (HotKeys hotKeys in _hotKeySettings)
-        {
-            hotKeys.RemoveFromEvents();
-        }
     }
 
     private void Update()

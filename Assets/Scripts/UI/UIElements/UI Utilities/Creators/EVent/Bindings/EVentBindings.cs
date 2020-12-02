@@ -1,59 +1,67 @@
-﻿using UnityEngine;
+﻿
+using System.Collections;
 
 public class EVentBindings : BindBase
 {
-    protected override void BindAllObjects()
+    private Hashtable _events = new Hashtable();
+
+    public EVentBindings()
+    {
+        BindAllObjects();
+        EVent.Do.EVentsList = _events;
+    }
+
+    private void CreateEvent<TType>() => _events.Add(typeof(TType), new CustomEVent<TType>());
+    
+    protected sealed override void BindAllObjects()
     {
         if (CheckIfAlreadyBound()) return;
 
         //PopUps
-        EVentMaster.CreateEvent<IRemoveOptionalPopUp>();
-        EVentMaster.CreateEvent<IAddOptionalPopUp>();
-        EVentMaster.CreateEvent<IAddResolvePopUp>();
-        EVentMaster.CreateEvent<INoResolvePopUp>();
-        EVentMaster.CreateEvent<INoPopUps>();
+        CreateEvent<IRemoveOptionalPopUp>();//
+        CreateEvent<IAddOptionalPopUp>();//
+        CreateEvent<IAddResolvePopUp>();//
+        CreateEvent<INoResolvePopUp>();//
+        CreateEvent<INoPopUps>();//
         
         //History
-        EVentMaster.CreateEvent<IReturnToHome>();
-        EVentMaster.CreateEvent<IOnHomeScreen>();
-        EVentMaster.CreateEvent<IOnStart>();
-        EVentMaster.CreateEvent<IGameIsPaused>();
-        EVentMaster.CreateEvent<IInMenu>();
+        CreateEvent<IReturnToHome>();//
+        CreateEvent<IOnHomeScreen>();//
+        CreateEvent<IOnStart>();//
+        CreateEvent<IGameIsPaused>();//
+        CreateEvent<IInMenu>();//
+        CreateEvent<ISceneChange>();
+       // CreateEvent<ISceneStart>();
         
         //Input
-        EVentMaster.CreateEvent<IPausePressed>();
-        EVentMaster.CreateEvent<ISwitchGroupPressed>();
-        EVentMaster.CreateEvent<IHotKeyPressed>();
-        EVentMaster.CreateEvent<IMenuGameSwitchingPressed>();
+        CreateEvent<IPausePressed>();
+        CreateEvent<ISwitchGroupPressed>();//
+        CreateEvent<IHotKeyPressed>();//
+        CreateEvent<IMenuGameSwitchingPressed>();//
         
         //ChangeControl
-        EVentMaster.CreateEvent<IAllowKeys>();
-        EVentMaster.CreateEvent<IChangeControlsPressed>();
+        CreateEvent<IAllowKeys>();//
+        CreateEvent<IChangeControlsPressed>();//
         
         //Cancel
-        EVentMaster.CreateEvent<ICancelHoverOverButton>();
-        EVentMaster.CreateEvent<ICancelPressed>();
-        EVentMaster.CreateEvent<ICancelButtonActivated>();
-        EVentMaster.CreateEvent<ICancelPopUp>();
-        EVentMaster.CreateEvent<ICancelHoverOver>();
+        CreateEvent<ICancelHoverOverButton>();
+        CreateEvent<ICancelPressed>();//
+        CreateEvent<ICancelButtonActivated>();//
+        CreateEvent<ICancelPopUp>();//
+        CreateEvent<ICancelHoverOver>();
         
-        //Node
-        EVentMaster.CreateEvent<IHighlightedNode>();
-        EVentMaster.CreateEvent<ISelectedNode>();
-        EVentMaster.CreateEvent<IDisabledNode>();
+        // //Node
+        CreateEvent<IHighlightedNode>();//
+        CreateEvent<ISelectedNode>();//
+        CreateEvent<IDisabledNode>();//
         
         //Branch
-        EVentMaster.CreateEvent<IActiveBranch>();
-        EVentMaster.CreateEvent<IClearScreen>();
-        EVentMaster.CreateEvent<ISetUpStartBranches>();
+        CreateEvent<IActiveBranch>();//
+        CreateEvent<IClearScreen>();//
+        CreateEvent<ISetUpStartBranches>();//
         
         //Test
-        EVentMaster.CreateEvent<ITestList>();
-
-
-        
-        
-        
+        CreateEvent<ITestList>();
     }
 
 }

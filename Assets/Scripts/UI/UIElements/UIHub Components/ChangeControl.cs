@@ -5,50 +5,61 @@ using UnityEngine;
 /// Class that handles switching control from the mouse to a keyboard or controller
 /// </summary>
 
-public interface IChangeControl : IEventUser { }
+public interface IChangeControl : IEventUser
+{
+    void OnEnable();
+    void OnDisable();
+}
 
-public class ChangeControl : IChangeControl, IAllowKeys, IServiceUser
+public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispatcher
 {
     public ChangeControl(IInput input)
     {
         _inputScheme = input.ReturnScheme;
         _controlMethod = _inputScheme.ControlType;
         _startInGame = input.StartInGame();
-        SubscribeToService();
-        ObserveEvents();
+        UseEServLocator();
     }
 
     //Variables
     private readonly ControlMethod _controlMethod;
     private readonly bool _startInGame;
-    private bool _usingMouse;
-    private INode _lastHighlighted;
+    private bool _usingMouse, _sceneStarted;
     private readonly InputScheme _inputScheme;
     private IHistoryTrack _historyTracker;
 
     //Properties
-    private void SaveHighlighted(IHighlightedNode args) => _lastHighlighted = args.Highlighted;
     public bool CanAllowKeys { get; private set; }
 
     //Events
-    private Action<IAllowKeys> AllowKeys { get; } = EVent.Do.FetchEVent<IAllowKeys>();
+    private Action<IAllowKeys> AllowKeys { get; set; }
+
+    public void UseEServLocator() => _historyTracker = EServ.Locator.Get<IHistoryTrack>(this);
+
+    public void OnEnable()
+    {
+        FetchEvents();
+        ObserveEvents();
+    }
+
+    public void OnDisable()
+    {
+        RemoveEvents();
+    }
     
+    public void FetchEvents() => AllowKeys = EVent.Do.Fetch<IAllowKeys>();
+
     public void ObserveEvents()
     {
         EVent.Do.Subscribe<IChangeControlsPressed>(ChangeControlType);
-        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Subscribe<IOnStart>(StartGame);
     }
 
-    public void RemoveFromEvents()
+    public void RemoveEvents()
     {
         EVent.Do.Unsubscribe<IChangeControlsPressed>(ChangeControlType);
-        EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Unsubscribe<IOnStart>(StartGame);
     }
-    
-    public void SubscribeToService() => _historyTracker = ServiceLocator.Get<IHistoryTrack>(this);
-
 
     private void StartGame(IOnStart onStart)
     {
@@ -61,6 +72,8 @@ public class ChangeControl : IChangeControl, IAllowKeys, IServiceUser
         {
             SetUpKeysOrCtrl();
         }
+
+        _sceneStarted = true;
     }
 
     private bool MousePreferredControlMethod() 
@@ -122,8 +135,8 @@ public class ChangeControl : IChangeControl, IAllowKeys, IServiceUser
         _usingMouse = false;
         CanAllowKeys = true;
         SetAllowKeys();
+        if(!_sceneStarted) return;
         SetNextHighlightedForKeys();
-        UIHub.SetEventSystem(_lastHighlighted.ReturnGameObject);
     }
 
     private void SetAllowKeys()

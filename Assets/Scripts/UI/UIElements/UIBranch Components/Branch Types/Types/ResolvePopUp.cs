@@ -17,9 +17,16 @@ public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolveP
     public IBranch ThisPopUp => _myBranch;
 
     //Events
-    private Action<IAddResolvePopUp> AddResolvePopUp { get; } = EVent.Do.FetchEVent<IAddResolvePopUp>();
-    
+    private Action<IAddResolvePopUp> AddResolvePopUp { get; set; }
+
     //Main
+
+    public override void FetchEvents()
+    {
+        base.FetchEvents();
+        AddResolvePopUp = EVent.Do.Fetch<IAddResolvePopUp>();
+    }
+
     public void StartPopUp()
     {
         if(!_canStart) return;

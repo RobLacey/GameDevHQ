@@ -5,6 +5,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using NaughtyAttributes;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// UIHub is the core of the system and looks after starting the system Up and general state management 
@@ -17,23 +19,32 @@ public interface IHub : IParameters
     InputScheme Scheme { get; }
 }
 
+[RequireComponent(typeof(Canvas))]
+[RequireComponent(typeof(CanvasScaler))]
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(UIInput))]
 
-public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnStart
+public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnStart, ISceneChange, 
+                     IEServUser, IEventDispatcher
 {
+    [SerializeField] private int _nextScene;
     [SerializeField]
     [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")]
     private List<UIBranch> _homeBranches;
 
     //Events
-    private Action<IOnStart> OnStart { get; } = EVent.Do.FetchEVent<IOnStart>();
-    private Action<ISetUpStartBranches> SetUpBranchesAtStart { get; } = EVent.Do.FetchEVent<ISetUpStartBranches>();
-    
+    private Action<IOnStart> OnStart { get; set; }
+    private Action<ISetUpStartBranches> SetUpBranchesAtStart { get; set; }
+    private Action<ISceneChange> SceneChanging { get; set; }
+
     //Variables
     private INode _lastHighlighted;
     private bool _inMenu, _startingInGame;
     private InputScheme _inputScheme;
+    private EVentBindings _eVentBindings = new EVentBindings();
+    private IHistoryTrack _historyTrack;
+    private IAudioService _audioService;
+    private IHomeGroup _homeGroup;
 
     //Properties
     private void SaveInMenu(IInMenu args)
@@ -52,27 +63,56 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
        var uIInput = GetComponent<IInput>();
         _inputScheme = uIInput.ReturnScheme;
         _startingInGame = uIInput.StartInGame();
-        ObserveEvents();
+        _historyTrack = EJect.Class.WithParams<IHistoryTrack>(this);
+        _audioService = EJect.Class.WithParams<IAudioService>(this);
+        _homeGroup = EJect.Class.WithParams<IHomeGroup>(this);
+        UseEServLocator();
     }
-    
+
+
+    private void OnEnable()
+    {
+        FetchEvents();
+        _historyTrack.OnEnable();
+        _homeGroup.OnEnable();
+        ObserveEvents();
+        SetUpBucketCreatorService();
+    }
+
+    private void OnDisable()
+    {
+        _historyTrack.OnDisable();
+        _homeGroup.OnDisable();
+        _audioService.OnDisable();
+        RemoveEvents();
+    }
+
+    public void FetchEvents()
+    {
+        OnStart = EVent.Do.Fetch<IOnStart>();
+        SetUpBranchesAtStart  = EVent.Do.Fetch<ISetUpStartBranches>();
+        SceneChanging = EVent.Do.Fetch<ISceneChange>();
+    }
+
+    public void UseEServLocator()
+    {
+        EServ.Locator.AddNew(_historyTrack);
+        EServ.Locator.AddNew(_audioService);
+        EServ.Locator.AddNew(_homeGroup);
+    }
+
     public void ObserveEvents()
     {
         EVent.Do.Subscribe<IHighlightedNode>(SetLastHighlighted);
         EVent.Do.Subscribe<IInMenu>(SaveInMenu);
+        EVent.Do.Subscribe<IAllowKeys>(SwitchedToKeys);
     }
-    
-    public void RemoveFromEvents()
+
+    public void RemoveEvents()
     {
         EVent.Do.Unsubscribe<IHighlightedNode>(SetLastHighlighted);
         EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
-    }
-
-    private void OnEnable()
-    {
-        ServiceLocator.Bind(EJect.Class.WithParams<IAudioService>(this));
-        ServiceLocator.Bind(EJect.Class.WithParams<IHistoryTrack>(this));
-        ServiceLocator.Bind(EJect.Class.WithParams<IHomeGroup>(this));
-        SetUpBucketCreatorService();
+        EVent.Do.Unsubscribe<IAllowKeys>(SwitchedToKeys);
     }
 
     private void SetUpBucketCreatorService()
@@ -81,16 +121,7 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         bucket.SetName("ToolTip Holder")
               .SetParent(transform)
               .CreateBucket();
-        ServiceLocator.Bind(bucket);
-    }
-
-    private void OnDisable()
-    {
-        RemoveFromEvents();
-        ServiceLocator.Remove<IAudioService>();
-        ServiceLocator.Remove<IBucketCreator>();
-        ServiceLocator.Remove<IHistoryTrack>();
-        ServiceLocator.Remove<IHomeGroup>();
+        EServ.Locator.AddNew(bucket);
     }
 
     private void Start()
@@ -100,8 +131,7 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         StartCoroutine(EnableStartControls());
     }
 
-    private void SetStartPositionsAndSettings() 
-        => SetUpBranchesAtStart?.Invoke(this);
+    private void SetStartPositionsAndSettings() => SetUpBranchesAtStart?.Invoke(this);
 
     private void CheckIfStartingInGame()
     {
@@ -123,6 +153,7 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         yield return new WaitForSeconds(Scheme.StartDelay);
         if(!_startingInGame)
             OnStart?.Invoke(this);
+        SetEventSystem(_lastHighlighted.ReturnGameObject);
     }
     
     private void SetLastHighlighted(IHighlightedNode args)
@@ -131,7 +162,12 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         if(_inMenu) SetEventSystem(_lastHighlighted.ReturnGameObject);
     }
 
-    public static void SetEventSystem(GameObject newGameObject) 
+    private void SwitchedToKeys(IAllowKeys args)
+    {
+        SetEventSystem(_lastHighlighted.ReturnGameObject);
+    }
+
+    private static void SetEventSystem(GameObject newGameObject) 
         => EventSystem.current.SetSelectedGameObject(newGameObject);
     
     [Button("Add a New Branch")]
@@ -168,4 +204,17 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         newTree.AddComponent<RectTransform>();
         return newTree;
     }
+
+    public void LoadNextScene()
+    {
+        StartCoroutine(StartOut());
+    }
+
+    private IEnumerator StartOut()
+    {
+        yield return new WaitForSeconds(0.5f);
+        SceneChanging?.Invoke(this);
+        SceneManager.LoadScene(_nextScene);
+    }
+
 }

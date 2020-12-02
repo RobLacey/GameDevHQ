@@ -1,27 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public interface ITestList //TODO Remove
 {
     INode AddNode { get; }
 }
 
-public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser, 
-                              IReturnToHome, ITestList, ICancelHoverOverButton
+public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser, 
+                              IReturnToHome, ITestList, ICancelHoverOverButton, IEventDispatcher
 {
     public HistoryTracker(IHub hub)
     {
         _globalCancelAction = hub.Scheme.GlobalCancelAction;
-        SubscribeToService();
-        OnEnable();
-        //TODO *** Demo of Static and instance Injection plus self injection
-        // PopUpHistory has example of ***
-        var iEJect = EJect.Class.NoParams<IEJect>();
+        UseEServLocator();
         HistoryListManagement = EJect.Class.WithParams<IHistoryManagement>(this);
-        SelectionProcess = iEJect.WithParams<INewSelectionProcess> (this);
-        MoveBackInHistory = iEJect.WithParams<IMoveBackInHistory>(this); 
-        PopUpHistory = iEJect.WithParams<IManagePopUpHistory>(this);
+        SelectionProcess = EJect.Class.WithParams<INewSelectionProcess> (this);
+        MoveBackInHistory = EJect.Class.WithParams<IMoveBackInHistory>(this); 
+        PopUpHistory = EJect.Class.WithParams<IManagePopUpHistory>(this);
     }
 
     //Variables
@@ -31,6 +28,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser,
     private bool _onHomeScreen = true, _noPopUps = true;
     private IBranch _activeBranch;
     private readonly EscapeKey _globalCancelAction;
+    private ICancel _cancel;
     
     //Properties
     private IManagePopUpHistory PopUpHistory { get; }
@@ -46,22 +44,44 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser,
     public bool IsPaused => _isPaused;
 
     //Events
-    private Action<IReturnToHome> ReturnHome { get; } = EVent.Do.FetchEVent<IReturnToHome>();
-    private Action<ICancelHoverOverButton> CancelHoverToActivate { get; }
-        = EVent.Do.FetchEVent<ICancelHoverOverButton>();
+    private Action<IReturnToHome> ReturnHome { get; set; }
+    private Action<ICancelHoverOverButton> CancelHoverToActivate { get; set; }
     
     //TODO Remove Test Rig
-    private Action<ITestList> AddANode { get; } = EVent.Do.FetchEVent<ITestList>();
+    private Action<ITestList> DoAddANode { get; set; }
     
     public INode AddNode { get; private set; }
     
     public void AddNodeToTestRunner(INode node)
     {
         AddNode = node;
-        AddANode?.Invoke(this);
+        DoAddANode?.Invoke(this);
     }
     
     //Main
+    public void OnEnable()
+    {
+        FetchEvents();
+        ObserveEvents();
+        _cancel.OnEnable();
+        PopUpHistory.OnEnable();
+    }
+
+    public void OnDisable()
+    {
+        RemoveEvents();
+        _cancel.OnDisable();
+        PopUpHistory.OnDisable();
+    }
+    
+    public void FetchEvents()
+    {
+        ReturnHome = EVent.Do.Fetch<IReturnToHome>();
+        CancelHoverToActivate = EVent.Do.Fetch<ICancelHoverOverButton>();
+        DoAddANode = EVent.Do.Fetch<ITestList>();
+    }
+
+
     public void ObserveEvents()
     {
         EVent.Do.Subscribe<IOnStart>(SetCanStart);
@@ -76,7 +96,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser,
         EVent.Do.Subscribe<ICancelPopUp>(CancelPopUpFromButton);
     }
 
-    public void RemoveFromEvents()
+    public void RemoveEvents()
     {
         EVent.Do.Unsubscribe<IOnStart>(SetCanStart);
         EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
@@ -89,17 +109,13 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser,
         EVent.Do.Unsubscribe<IInMenu>(SwitchToGame);
         EVent.Do.Unsubscribe<ICancelPopUp>(CancelPopUpFromButton);
     }
-    
-    public void SubscribeToService() => ServiceLocator.Bind<ICancel>(new UICancel(_globalCancelAction));
 
-    public void OnEnable() => ObserveEvents();
-
-    public void OnDisable()
+    public void UseEServLocator()
     {
-        ServiceLocator.Remove<ICancel>();
-        RemoveFromEvents();
+        _cancel = new UICancel(_globalCancelAction);
+        EServ.Locator.AddNew(_cancel);
     }
-    
+
     private void SetCanStart(IOnStart onStart) => _canStart = true;
 
     //Main
@@ -133,11 +149,13 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser,
         }
     }
 
-    public void BackToHome() 
-        => _lastSelected = MoveBackInHistory.AddHistory(_history)
-                                            .ActiveBranch(_activeBranch)
-                                            .BackToHomeProcess();
-
+    public void BackToHome()
+    {
+        if(_history.Count == 0) return;
+        _lastSelected = MoveBackInHistory.AddHistory(_history)
+                                         .ActiveBranch(_activeBranch)
+                                         .BackToHomeProcess();
+    }
     public void DoCancelHoverToActivate() => CancelHoverToActivate?.Invoke(this);
 
     private void SwitchGroupPressed(ISwitchGroupPressed args)
@@ -184,6 +202,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IServiceUser,
             
             return;
         }
+        
         if (_history.Count == 0 || _isPaused)
         {
             IfPausedOrNoHistory();

@@ -3,10 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using Debug = UnityEngine.Debug;
 
+public interface IEventDispatcher
+{
+    void FetchEvents();
+}
+
 public interface IEventUser
 {
     void ObserveEvents();
-    void RemoveFromEvents();
+    void RemoveEvents();
 }
 
 public static class EventLocator

@@ -1,11 +1,16 @@
-﻿using UnityEngine;
-
-public class ClassBindingsSub : BindBase
+﻿public class ClassBindingsSub : BindBase
 {
-    protected override void BindAllObjects()
+    public ClassBindingsSub()
+    {
+        _eJectMaster = new EJectMaster();
+        BindAllObjects();
+    }
+
+    protected sealed override void BindAllObjects()
     {
         if(CheckIfAlreadyBound()) return;
 
-        //Add Classes
+        // ****Add Classes Here****
+
     }
 }

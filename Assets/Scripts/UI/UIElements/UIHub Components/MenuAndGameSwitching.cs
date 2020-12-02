@@ -1,16 +1,19 @@
 ﻿
 using System;
+using UnityEngine;
 
-public interface IMenuAndGameSwitching : IEventUser { }
+public interface IMenuAndGameSwitching : IEventUser
+{
+    void OnEnable();
+    void OnDisable();
+}
 
-public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu
+public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispatcher
 {
     public MenuAndGameSwitching(IInput input)
     {
         if (input.ReturnScheme.InGameMenuSystem == InGameSystem.On)
             StartWhere = input.ReturnScheme.WhereToStartGame;
-
-        ObserveEvents();
     }
 
     //Variables
@@ -18,11 +21,11 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu
     private bool _wasInGame;
 
     //Events
-    private Action<IInMenu> IsInMenu { get; } = EVent.Do.FetchEVent<IInMenu>();
+    private Action<IInMenu> IsInMenu { get; set; }
 
     //Properties
     public bool InTheMenu { get; set; } = true;
-    public StartInMenu StartWhere { get; set; }
+    private StartInMenu StartWhere { get; }
 
     private void SaveNoPopUps(INoPopUps args)
     {
@@ -30,6 +33,16 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu
         if (!InTheMenu && !_noPopUps) _wasInGame = true;
          PopUpEventHandler();
     }
+    
+    public void OnEnable()
+    {
+        FetchEvents();
+        ObserveEvents();
+    }
+
+    public void OnDisable() => RemoveEvents();
+
+    public void FetchEvents() => IsInMenu = EVent.Do.Fetch<IInMenu>();
 
     public void ObserveEvents()
     {
@@ -39,14 +52,14 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu
         EVent.Do.Subscribe<INoPopUps>(SaveNoPopUps);
     }
 
-    public void RemoveFromEvents()
+    public void RemoveEvents()
     {
         EVent.Do.Unsubscribe<IMenuGameSwitchingPressed>(CheckForActivation);
         EVent.Do.Unsubscribe<IGameIsPaused>(WhenTheGameIsPaused);
         EVent.Do.Unsubscribe<IOnStart>(StartUp);
         EVent.Do.Unsubscribe<INoPopUps>(SaveNoPopUps);
     }
-    
+
     private void CheckForActivation(IMenuGameSwitchingPressed arg)
     {
         if (!_noPopUps) return;

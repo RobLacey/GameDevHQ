@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 4421614741107817062}
   - component: {fileID: 4421614741107817063}
   - component: {fileID: 4421614741107817060}
-  - component: {fileID: 4421614741107817061}
-  - component: {fileID: 8288626678962552612}
   - component: {fileID: 4421614741107817081}
   - component: {fileID: 9083441568170203453}
   - component: {fileID: 5711224037595763713}
@@ -85,31 +83,6 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
---- !u!114 &4421614741107817061
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4421614741107817058}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
---- !u!222 &8288626678962552612
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4421614741107817058}
-  m_CullTransparentMesh: 0
 --- !u!114 &4421614741107817081
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,11 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 031b6fb864dbb044d8e3a145109c2c68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _atStartDelay: 0
-  _startGameWhere: 1
-  _globalCancelFunction: 1
   _homeBranches: []
-  _hotKeySettings: []
 --- !u!82 &9083441568170203453
 AudioSource:
   m_ObjectHideFlags: 0
@@ -235,15 +204,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 328ed8e34d6089144b9e8a9ce07619e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mainControlType: 0
-  _pauseOptionsOnEscape: 1
-  _pauseOptionButton: 
-  _posSwitchButton: 
-  _negSwitchButton: 
-  _cancelButton: 
-  _menuAndGameSwitching:
-    _inGameMenuSystem: 1
-    _switchToMenusButton: 
-    _returnToGameControl:
-      m_PersistentCalls:
-        m_Calls: []
+  _inputScheme: {fileID: 0}
+  _returnToGameControl:
+    m_PersistentCalls:
+      m_Calls: []
+  _hotKeySettings: []

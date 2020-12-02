@@ -39,9 +39,9 @@ public class UIImageTextToggle : NodeFunctionBase
         EVent.Do.Subscribe<IAllowKeys>(OnControlsChanged);
     }
 
-    public override void RemoveFromEvents()
+    public override void RemoveEvents()
     {
-        base.RemoveFromEvents();
+        base.RemoveEvents();
         EVent.Do.Unsubscribe<IAllowKeys>(OnControlsChanged);
     }
 

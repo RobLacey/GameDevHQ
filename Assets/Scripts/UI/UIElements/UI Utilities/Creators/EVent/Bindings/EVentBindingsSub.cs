@@ -1,10 +1,17 @@
 ﻿public class EVentBindingsSub : BindBase
 {
-    protected override void BindAllObjects()
+    public EVentBindingsSub()
+    {
+        //_eVentMaster = new EVentMaster();
+        BindAllObjects();
+    }
+
+    protected sealed override void BindAllObjects()
     {
         if (CheckIfAlreadyBound()) return;
 
-        //ADD EVENTS Here *****
+        //Node
+
     }
 
 }

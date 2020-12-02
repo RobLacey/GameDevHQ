@@ -113,6 +113,8 @@ public interface IDisabledNode
     bool NodeIsDisabled();
 }
 
+public interface ISceneChange { }
+
 
 
 

@@ -307,14 +307,19 @@
                       <e p="ClassBindings.cs" t="Include" />
                       <e p="ClassBindingsSub.cs" t="Include" />
                     </e>
-                    <e p="ClassCreator.cs" t="Include" />
                     <e p="EjectBase.cs" t="Include" />
+                    <e p="EJectMaster.cs" t="Include" />
                     <e p="IEject.cs" t="Include" />
                     <e p="Injectors" t="Include">
                       <e p="Eject.cs" t="Include" />
                       <e p="EJectSub.cs" t="Include" />
                     </e>
                     <e p="IParameters.cs" t="Include" />
+                  </e>
+                  <e p="EServ" t="Include">
+                    <e p="EServ.cs" t="Include" />
+                    <e p="EServBase.cs" t="Include" />
+                    <e p="EServMaster.cs" t="Include" />
                   </e>
                   <e p="EVent" t="Include">
                     <e p="Bindings" t="Include">
@@ -327,12 +332,11 @@
                       <e p="EVent.cs" t="Include" />
                       <e p="EVentSub.cs" t="Include" />
                     </e>
+                    <e p="EventInterfaces.cs" t="Include" />
                     <e p="EVentMaster.cs" t="Include" />
-                    <e p="IEVent.cs" t="Include" />
                   </e>
                   <e p="EventLocator - Old Version" t="Include">
                     <e p="CustomEvent.cs" t="Include" />
-                    <e p="EventInterfaces.cs" t="Include" />
                     <e p="EventLocator.cs" t="Include" />
                   </e>
                   <e p="UI Event Callers (Depreciated)" t="Include">
@@ -347,13 +351,10 @@
                   <e p="SizeAndPositionFactory.cs" t="Include" />
                   <e p="TweenFactory.cs" t="Include" />
                 </e>
-                <e p="IMonoBehaviourSub.cs" t="Include" />
+                <e p="NullBucketObject.cs" t="Include" />
                 <e p="ReflectionUtilities" t="Include">
                   <e p="ReflectUtil.cs" t="Include" />
                   <e p="Search.cs" t="Include" />
-                </e>
-                <e p="ServiceLocator" t="Include">
-                  <e p="ServiceLocator.cs" t="Include" />
                 </e>
                 <e p="StaticCoroutine.cs" t="Include" />
                 <e p="UIEnums.cs" t="Include" />
@@ -446,6 +447,7 @@
                   </e>
                 </e>
                 <e p="NodeTypes" t="Include">
+                  <e p="INodeBase.cs" t="Include" />
                   <e p="NodeBase.cs" t="Include" />
                   <e p="Types" t="Include">
                     <e p="CancelOrBackButton.cs" t="Include" />

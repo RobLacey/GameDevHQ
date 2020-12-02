@@ -1,8 +1,10 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public interface IBranchBase : IParameters
 {
+    void OnEnable();
     void OnDisable();
     void SetUpAsTabBranch();
     void SetUpBranch(IBranch newParentController = null);
@@ -16,7 +18,8 @@ public interface IBranchParams
     ScreenType MyScreenType { get; }
 }
 
-public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IServiceUser, IBranchBase, IBranchParams
+public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, IBranchBase, IBranchParams,
+                                   IEventDispatcher
 {
     protected BranchBase(IBranch branch)
     {
@@ -25,7 +28,6 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
         _myCanvasGroup = _myBranch.MyCanvasGroup;
         MyScreenType = _myBranch.ScreenType;
         _screenData = EJect.Class.WithParams<IScreenData>(this);
-        OnEnable();
     }
     
     protected readonly IBranch _myBranch;
@@ -37,8 +39,8 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
     protected bool _isTabBranch;
 
     //Events
-    private Action<IOnHomeScreen> SetIsOnHomeScreen { get; } = EVent.Do.FetchEVent<IOnHomeScreen>();
-    private Action<IClearScreen> DoClearScreen { get; } = EVent.Do.FetchEVent<IClearScreen>();
+    private Action<IOnHomeScreen> SetIsOnHomeScreen { get; set; }
+    private Action<IClearScreen> DoClearScreen { get; set; }
 
     //Properties & Set/Getters
     protected void InvokeOnHomeScreen(bool onHome)
@@ -58,18 +60,26 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
     public ScreenType MyScreenType { get; }
 
     //Main
-    private void OnEnable()
+    public void OnEnable()
     {
+        FetchEvents();
         ObserveEvents();
-        SubscribeToService();
-    }
-
-    public virtual void OnDisable()
-    {
-        RemoveFromEvents();
-        _screenData.RemoveFromEvents();
+        UseEServLocator();
+        _screenData.OnEnable();
     }
     
+    public void OnDisable()
+    {
+        RemoveEvents();
+        _screenData.OnDisable();
+    }
+
+    public virtual void FetchEvents()
+    {
+        SetIsOnHomeScreen = EVent.Do.Fetch<IOnHomeScreen>();
+        DoClearScreen = EVent.Do.Fetch<IClearScreen>();
+    }
+
     public virtual void ObserveEvents()
     {
         EVent.Do.Subscribe<INoResolvePopUp>(SaveResolvePopUps);
@@ -81,7 +91,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
         EVent.Do.Subscribe<IClearScreen>(ClearBranchForFullscreen);
     }
 
-    public virtual void RemoveFromEvents()
+    public virtual void RemoveEvents()
     {
         EVent.Do.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
         EVent.Do.Unsubscribe<IGameIsPaused>(SaveIfGamePaused);
@@ -91,8 +101,8 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, ISer
         EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
         EVent.Do.Unsubscribe<IClearScreen>(ClearBranchForFullscreen);
     }
-    
-    public void SubscribeToService() => _historyTrack = ServiceLocator.Get<IHistoryTrack>(this);
+
+    public void UseEServLocator() => _historyTrack = EServ.Locator.Get<IHistoryTrack>(this);
 
     public void SetUpAsTabBranch() => _isTabBranch = true;
 

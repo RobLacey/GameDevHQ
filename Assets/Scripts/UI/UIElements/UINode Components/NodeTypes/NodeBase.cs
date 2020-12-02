@@ -1,23 +1,10 @@
-﻿using UnityEngine;
-
-public interface INodeBase
-{
-    bool PointerOverNode { get; set; }
-    void Start();
-    void DeactivateNode();
-    void OnDisable();
-    void OnEnter(bool isDragEvent);
-    void OnExit(bool isDragEvent);
-    void OnSelected(bool isDragEvent);
-}
-
-public abstract class NodeBase : IServiceUser, IEventUser, INodeBase
+﻿public abstract class NodeBase : IEServUser, IEventUser, INodeBase
 {
     protected NodeBase(INode node)
     {
         _uiNode = node;
         MyBranch = _uiNode.MyBranch;
-        SubscribeToService();
+        UseEServLocator();
     }
     
     //Variables
@@ -27,16 +14,17 @@ public abstract class NodeBase : IServiceUser, IEventUser, INodeBase
     //Properties
     public bool PointerOverNode { get; set; }
     public IBranch MyBranch { get; protected set; }
-    
-    public void OnDisable() => RemoveFromEvents();
-    
-    public virtual void Start() => ObserveEvents();
-    
+
+    public virtual void Start() { }
+
+    public void OnEnable() => ObserveEvents();
+    public void OnDisable() => RemoveEvents();
+
     public virtual void ObserveEvents() { }
 
-    public virtual void RemoveFromEvents(){ }
+    public virtual void RemoveEvents() { }
 
-    public void SubscribeToService() => _uiHistoryTrack = ServiceLocator.Get<IHistoryTrack>(this);
+    public void UseEServLocator() => _uiHistoryTrack = EServ.Locator.Get<IHistoryTrack>(this);
 
     public abstract void DeactivateNode();
 
