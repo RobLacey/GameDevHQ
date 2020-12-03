@@ -88,7 +88,7 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch
     {
         SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
-        _myBranch.ResetBranchesStartPosition();
+        _myBranch.SetHighlightedNode();
     }
 
     private void ExitPause() => _myBranch.StartBranchExitProcess(OutTweenType.Cancel, RestoreLastStoredState);

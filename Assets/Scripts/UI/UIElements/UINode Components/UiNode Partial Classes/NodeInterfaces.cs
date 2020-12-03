@@ -21,6 +21,8 @@ public interface INode : IToggles, IParameters
     void DoPress();
     void SetNodeAsSelected_NoEffects();
     void SetNodeAsNotSelected_NoEffects();
+    
+    IUiEvents UINodeEvents { get; }
 }
 
 public interface IToggles

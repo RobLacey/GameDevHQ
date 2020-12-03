@@ -25,7 +25,8 @@ public interface IBranch : IParameters
     bool CanvasIsEnabled { get; }
     bool CanStoreAndRestoreOptionalPoUp { get; }
     void SetStayOn(IsActive setting);
-    IsActive TweenOnHome { get; set; }
+    IsActive GetStayOn();
+    DoTween TweenOnHome { get; set; }
     IBranch ThisBranch { get; }
     IBranchBase BranchBase { get; }
     IBranch MyParentBranch { get; set; }
@@ -40,7 +41,7 @@ public interface IBranch : IParameters
     void MoveToThisBranch(IBranch newParentBranch = null);
     void MoveToBranchWithoutTween();
     void DontSetBranchAsActive();
-    void ResetBranchesStartPosition();
+    void SetHighlightedNode();
     void DoNotTween();
     void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null);
 }

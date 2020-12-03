@@ -115,7 +115,7 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
 
     private void ActivateHomeGroupBranch(IReturnToHome args)
     {
-        if (!args.ActivateOnReturnHome)
+        if (args.ActivateOnReturnHome == ActivateNodeOnReturnHome.No)
         {
             _homeGroup[_index].DontSetBranchAsActive();
         }

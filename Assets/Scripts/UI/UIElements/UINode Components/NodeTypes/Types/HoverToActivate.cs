@@ -41,7 +41,8 @@ public class HoverToActivate : NodeBase, IHoverToActivate
     {
         if (!_allowKeys && _uiNode.IsSelected)
         {
-            _uiNode.SetAsHighlighted();
+            _uiNode.UINodeEvents.DoWhenPointerOver(PointerOverNode);
+           // _uiNode.SetAsHighlighted();
         }
         else
         {
@@ -57,7 +58,8 @@ public class HoverToActivate : NodeBase, IHoverToActivate
         {
             TurnNodeOnOff();
         }
-        _uiNode.SetNotHighlighted();
+        _uiNode.UINodeEvents.DoWhenPointerOver(PointerOverNode);
+        //_uiNode.SetNotHighlighted();
     }
 
     public override void OnSelected(bool isDragEvent) => TurnNodeOnOff();

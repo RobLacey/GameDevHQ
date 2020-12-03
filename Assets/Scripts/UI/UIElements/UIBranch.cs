@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 
 [RequireComponent(typeof(Canvas))]
@@ -23,14 +24,14 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [HideIf(EConditionOperator.Or, "IsOptional", "IsTimedPopUp", "IsHomeScreenBranch")]
     private ScreenType _screenType = ScreenType.FullScreen;
     [SerializeField] 
-    [HideIf("IsAPopUpBranch")] 
-    private IsActive _stayOn = IsActive.No;
+    [HideIf(EConditionOperator.Or, "IsAPopUpBranch", "IsFullScreen")] 
+    private IsActive _stayVisible = IsActive.No;
     [SerializeField] 
     [ShowIf("IsOptional")] private StoreAndRestorePopUps _storeOrResetOptional = StoreAndRestorePopUps.Reset;
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, "IsHomeScreenBranch", "IsStored")] 
-    [Label("Tween on Return To Home")]
-    private IsActive _tweenOnHome = IsActive.No;
+    [Label("On Return To Home Screen")]
+    private DoTween _tweenOnHome = DoTween.Tween;
     [SerializeField] 
     [Label("Save Position On Exit")] [HideIf("IsAPopUpBranch")] private IsActive _saveExitSelection = IsActive.Yes;
     [SerializeField] 
@@ -187,11 +188,11 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     public void DoNotTween() => _tweenOnChange = false;
 
     public void DontSetBranchAsActive() => _canActivateBranch = false;
-
+    
     public void MoveToBranchWithoutTween()
     {
-        BranchBase.SetBlockRaycast(BlockRaycast.Yes);
-        _tweenOnChange = false;
+        //BranchBase.SetBlockRaycast(BlockRaycast.Yes);
+        //_tweenOnChange = false;
         MoveToThisBranch();
     }
     
@@ -220,7 +221,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         _groupIndex = BranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, args.SwitchType);
     }
 
-    public void ResetBranchesStartPosition()
+    public void SetHighlightedNode()
     {
         if (_saveExitSelection == IsActive.Yes) return;
         _groupIndex = BranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
@@ -265,7 +266,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private void SetUpBranchForTween(OutTweenType outTweenType)
     {
         _branchEvents?.OnBranchExit.Invoke();
-        if (_stayOn == IsActive.No || outTweenType == OutTweenType.Cancel)
+        if (_stayVisible == IsActive.No || outTweenType == OutTweenType.Cancel)
             BranchBase.SetBlockRaycast(BlockRaycast.No);
     }
 
@@ -277,7 +278,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
 
     private void OutTweenCallback(OutTweenType outTweenType)
     {
-        if(_stayOn == IsActive.No || outTweenType == OutTweenType.Cancel)
+        if(_stayVisible == IsActive.No || outTweenType == OutTweenType.Cancel)
             BranchBase.SetCanvas(ActiveCanvas.No);
         if(!IsPauseMenuBranch()) 
             BranchBase.ActivateStoredPosition();

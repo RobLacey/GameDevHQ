@@ -11,7 +11,7 @@ public class ScaleTween : TweenBase, IScaleTween
 {
     public override void SetUpTweens(List<BuildTweenData> buildObjectsList,
                                      TweenScheme tweenScheme,
-                                     Action<RectTransform> effectCall)
+                                     Action<BuildTweenData> effectCall)
     {
         base.SetUpTweens(buildObjectsList, tweenScheme, effectCall);
 
@@ -20,7 +20,7 @@ public class ScaleTween : TweenBase, IScaleTween
             item.Element.transform.localScale = item.ScaleSettings.StartScale;
         }
     }
-    
+
     protected override Tween DoTweenProcess(BuildTweenData item, TweenCallback callback)
     {
         return item.Element.DOScale(item._scaleTo, _tweenTime)

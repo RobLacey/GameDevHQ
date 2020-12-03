@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 using DG.Tweening;
+using UnityEngine;
 
 public interface IPunchTween: ITweenBase { }
 
@@ -9,14 +9,23 @@ public interface IPunchTween: ITweenBase { }
 [Serializable]
 public class PunchTween : TweenBase, IPunchTween
 {
-    //Properties
-    // public bool CheckInEffectType => _punchWhen == EffectType.In || _punchWhen == EffectType.Both;
-    // public bool CheckOutEffectType => _punchWhen == EffectType.Out || _punchWhen == EffectType.Both;
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EVent.Do.Subscribe<IEndTween>(EndTweenEffect);
+    }
+
+    public override void RemoveEvents()
+    {
+        base.RemoveEvents();
+        EVent.Do.Unsubscribe<IEndTween>(EndTweenEffect);
+    }
 
     public override void SetUpTweens(List<BuildTweenData> buildObjectsList, 
-                                     TweenScheme tweenScheme, Action<RectTransform> effectCall)
+                                     TweenScheme tweenScheme, Action<BuildTweenData> effectCall)
     {
-        base.SetUpTweens(buildObjectsList, tweenScheme, effectCall);
+        base.SetUpTweens(buildObjectsList, tweenScheme, null);
+        
         foreach (var item in _buildList)
         {
             item._punchStartScale = item.Element.localScale;
@@ -39,7 +48,14 @@ public class PunchTween : TweenBase, IPunchTween
     }
     
     protected override Tween DoTweenProcess(BuildTweenData item, TweenCallback callback)
-    { 
+    {
+        if (_scheme.PunchData.EndTween)
+        {
+            Debug.Log("No pUnch");
+            callback?.Invoke();
+            return null;
+        } 
+
         var data = _scheme.PunchData;
         return item.Element.DOPunchScale(data.Strength, data.Duration, data.Vibrato, data.Elasticity)
                             .SetId($"{_tweenName}{item.Element.GetInstanceID()}")
@@ -52,19 +68,15 @@ public class PunchTween : TweenBase, IPunchTween
 
     protected override void OutTweenTargetSettings() => RewindTweens();
 
-    public void EndEffect(RectTransform rectTransform/*, IsActive isIn*/)
+    public static void EndTweenEffect(IEndTween item)
     {
-        Debug.Log("Here");
-        ///*if (isIn == IsActive.Yes) */DoEndEffect(rectTransform, CheckInEffectType);
-    }
+        if(!CanEndPunch()) return;
+        
+        var data = item.Scheme.PunchData;
+        item.EndTweenRect.DOPunchScale(data.Strength, data.Duration, data.Vibrato, data.Elasticity)
+            .SetAutoKill(true)
+            .Play();
 
-    // private void DoEndEffect(RectTransform rectTransform, bool checkTweenType)
-    // {
-    //     if (!checkTweenType) return;
-    //     ResetForTweens();
-    //     rectTransform.DOPunchScale(_strength, _duration, _vibrato, _elasticity)
-    //                  .SetId("punch" + rectTransform.gameObject.GetInstanceID())
-    //                  .SetAutoKill(true)
-    //                  .Play();
-    // }
+        bool CanEndPunch() => (item.Scheme.Punch() && item.Scheme.PunchData.EndTween);
+    }
 }

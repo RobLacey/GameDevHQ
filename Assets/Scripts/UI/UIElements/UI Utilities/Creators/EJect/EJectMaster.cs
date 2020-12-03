@@ -19,6 +19,9 @@ public class EJectMaster
     public EJectMaster To<T>()
     {
         interfaceType = typeof(T);
+        if(classes.ContainsKey(typeof(T)))
+            ThrowParameterException("Class Already Has Key : ", typeof(T));
+
         classes.Add(interfaceType, instanceType);
         return this;
     }

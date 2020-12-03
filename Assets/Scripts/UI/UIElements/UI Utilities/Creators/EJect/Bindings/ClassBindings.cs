@@ -25,6 +25,7 @@
         _eJectMaster.Bind<FadeTween>().To<IFadeTween>();
         _eJectMaster.Bind<PunchTween>().To<IPunchTween>();
         _eJectMaster.Bind<ShakeTween>().To<IShakeTween>();
+        _eJectMaster.Bind<TweenInspector>().To<ITweenInspector>();
         
         //Node Types
         _eJectMaster.Bind<Standard>().To<IStandard>().WithParameters();

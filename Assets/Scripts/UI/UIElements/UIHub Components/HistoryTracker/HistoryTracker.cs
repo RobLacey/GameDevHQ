@@ -24,7 +24,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
     //Variables
     private readonly List<INode> _history = new List<INode>();
     private INode _lastSelected;
-    private bool _canStart, _isPaused, _activateOnReturnHome;
+    private bool _canStart, _isPaused;
     private bool _onHomeScreen = true, _noPopUps = true;
     private IBranch _activeBranch;
     private readonly EscapeKey _globalCancelAction;
@@ -35,7 +35,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
     private IMoveBackInHistory MoveBackInHistory { get; }
     public IHistoryManagement HistoryListManagement { get; }
     private INewSelectionProcess SelectionProcess { get; }
-    public bool ActivateOnReturnHome => _activateOnReturnHome;
+    public ActivateNodeOnReturnHome ActivateOnReturnHome { get; private set; }
     private void SaveOnHomScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveIsGamePaused(IGameIsPaused args) => _isPaused = args.GameIsPaused;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
@@ -173,10 +173,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
     
     private void SetFromHotkey(IHotKeyPressed args)
     {
-        if (args.MyBranch.ScreenType != ScreenType.FullScreen && !_onHomeScreen)
-        {
-            BackToHomeScreen(ActivateNodeOnReturnHome.No);
-        }
+        DontSetHomeGroupParentAsActive(args);
         
         HistoryListManagement.IgnoreHotKeyParent(args.ParentNode)
                              .CurrentHistory(_history)
@@ -188,9 +185,17 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
         _lastSelected = args.ParentNode;
     }
 
+    private void DontSetHomeGroupParentAsActive(IHotKeyPressed args)
+    {
+        if (args.MyBranch.ScreenType != ScreenType.FullScreen && !_onHomeScreen)
+        {
+            BackToHomeScreen(ActivateNodeOnReturnHome.No);
+        }
+    }
+
     public void BackToHomeScreen(ActivateNodeOnReturnHome activate)
     {
-        _activateOnReturnHome = activate == ActivateNodeOnReturnHome.Yes;
+        ActivateOnReturnHome = activate;
         ReturnHome?.Invoke(this);
     }
 

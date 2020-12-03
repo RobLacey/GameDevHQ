@@ -49,13 +49,14 @@ public partial class UIBranch
         set => _screenType = value;
     }
 
-    public IsActive TweenOnHome
+    public DoTween TweenOnHome
     {
         get => _tweenOnHome;
         set => _tweenOnHome = value;
     }
     
-    public void SetStayOn(IsActive setting) => _stayOn = setting;
+    public void SetStayOn(IsActive setting) => _stayVisible = setting;
+    public IsActive GetStayOn() => _stayVisible;
 
     public float Timer => _timer;
 
@@ -65,5 +66,13 @@ public partial class UIBranch
     public bool IsStored() =>
         _branchType == BranchType.OptionalPopUp && _storeOrResetOptional == StoreAndRestorePopUps.StoreAndRestore; 
     public bool IsEmpty(UINode node) => node != null;
+
+    public bool IsFullScreen()
+    {
+        if (_screenType != ScreenType.FullScreen) return false;
+        
+        _stayVisible = IsActive.No;
+        return true;
+    }
 
 }

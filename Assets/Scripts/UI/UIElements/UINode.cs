@@ -116,6 +116,8 @@ public partial class UINode : MonoBehaviour, INode, IEventUser,
     public IsActive ReturnStartAsSelected => _startAsSelected;
     public IsActive SetStartAsSelected { set => _startAsSelected = value; }
 
+    public IUiEvents UINodeEvents => _uiNodeEvents;
+
     private void SaveInMenuOrInGame(IInMenu args)
     {
         _inMenu = args.InTheMenu;
@@ -249,14 +251,14 @@ public partial class UINode : MonoBehaviour, INode, IEventUser,
     {
         if (_disabledNode.NodeIsDisabled()) return;
         
+        ThisNodeIsHighLighted();
         if (_allowKeys && _inMenu)
         {
             _nodeBase.OnEnter(false);
-            SetAsHighlighted();
         }
         else
         {
-            SetNotHighlighted();
+            _nodeBase.OnExit(false);
         }
     }
 
@@ -267,17 +269,23 @@ public partial class UINode : MonoBehaviour, INode, IEventUser,
     public void SetAsHighlighted() 
     {
         if (_disabledNode.IsDisabled) return;
-        _uiNodeEvents.DoWhenPointerOver(_nodeBase.PointerOverNode);
         ThisNodeIsHighLighted();
+        _nodeBase.OnEnter(false);
+       // _uiNodeEvents.DoWhenPointerOver(_nodeBase.PointerOverNode);
     }
 
     public void SetNotHighlighted()
     {
         _nodeBase.PointerOverNode = false;
-        _uiNodeEvents.DoWhenPointerOver(_nodeBase.PointerOverNode);
+        _nodeBase.OnExit(false);
+        //_uiNodeEvents.DoWhenPointerOver(_nodeBase.PointerOverNode);
     }
 
-    public void SetNodeAsSelected_NoEffects() => SetSelectedStatus(true, SetNotHighlighted);
+    public void SetNodeAsSelected_NoEffects()
+    {
+        _uiNodeEvents.DoMuteAudio();
+        SetSelectedStatus(true, SetNotHighlighted);
+    }
 
     public void SetNodeAsNotSelected_NoEffects()
     {
@@ -297,7 +305,11 @@ public partial class UINode : MonoBehaviour, INode, IEventUser,
     public void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this);
     
     //Input Interfaces
-    public void OnPointerEnter(PointerEventData eventData) => _nodeBase.OnEnter(IsDragEvent(eventData));
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        ThisNodeIsHighLighted();
+        _nodeBase.OnEnter(IsDragEvent(eventData));
+    }
     public void OnPointerExit(PointerEventData eventData) => _nodeBase.OnExit(IsDragEvent(eventData));
     public void OnPointerDown(PointerEventData eventData) => PressedActions(IsDragEvent(eventData));
     public void OnSubmit(BaseEventData eventData) => PressedActions(false);

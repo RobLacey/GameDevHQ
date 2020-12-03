@@ -124,10 +124,15 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         EServ.Locator.AddNew(bucket);
     }
 
-    private void Start()
+    private void Start() => StartCoroutine(StartUIDelay());
+
+    private IEnumerator StartUIDelay()
     {
-        SetStartPositionsAndSettings();
+        yield return new WaitForEndOfFrame(); //Helps sync up Tweens and thread
+        if(_inputScheme.DelayUIStart != 0)
+            yield return new WaitForSeconds(_inputScheme.DelayUIStart);
         CheckIfStartingInGame();
+        SetStartPositionsAndSettings();
         StartCoroutine(EnableStartControls());
     }
 
@@ -142,18 +147,23 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         }
         else
         {
-            EventSystem.current.SetSelectedGameObject(_homeBranches.First()
-                               .DefaultStartOnThisNode.ReturnGameObject);
+            EventSystem.current.SetSelectedGameObject(GetFirstHighlightedNodeInHomeGroup());
             _inMenu = true;
         }
     }
-    
+
+    private GameObject GetFirstHighlightedNodeInHomeGroup()
+    {
+        return _homeBranches.First().DefaultStartOnThisNode.ReturnGameObject;
+    }
+
     private IEnumerator EnableStartControls()
     {
-        yield return new WaitForSeconds(Scheme.StartDelay);
+        if(_inputScheme.ControlActivateDelay != 0)
+            yield return new WaitForSeconds(Scheme.ControlActivateDelay);
         if(!_startingInGame)
             OnStart?.Invoke(this);
-        SetEventSystem(_lastHighlighted.ReturnGameObject);
+        SetEventSystem(GetFirstHighlightedNodeInHomeGroup());
     }
     
     private void SetLastHighlighted(IHighlightedNode args)
@@ -164,7 +174,13 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
 
     private void SwitchedToKeys(IAllowKeys args)
     {
-        SetEventSystem(_lastHighlighted.ReturnGameObject);
+        SetEventSystem(GetCorrectLastHighlighted());
+    }
+
+    private GameObject GetCorrectLastHighlighted()
+    {
+        return _lastHighlighted is null ? GetFirstHighlightedNodeInHomeGroup() : 
+                                          _lastHighlighted.ReturnGameObject;
     }
 
     private static void SetEventSystem(GameObject newGameObject) 

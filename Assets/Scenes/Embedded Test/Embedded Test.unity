@@ -4487,7 +4487,7 @@ MonoBehaviour:
   _branchType: 1
   _timer: 1
   _screenType: 0
-  _stayOn: 1
+  _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
@@ -4686,7 +4686,7 @@ MonoBehaviour:
   _branchType: 0
   _timer: 1
   _screenType: 0
-  _stayOn: 1
+  _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
@@ -4716,32 +4716,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8a427e419e3a5c458bd440912184959, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buildObjectsList:
-  - _element: {fileID: 1937333105}
-    _positionSettings:
-      _grabStartPosition: 1
-      _grabMidPosition: 0
-      _grabEndPosition: 1
-      _goToStartPosition: 0
-      _goToMidPosition: 0
-      _goToEndPosition: 0
-      _tweenStartPosition: {x: 1141, y: 463, z: 0}
-      _tweenMiddlePosition: {x: 0, y: 0, z: 0}
-      _tweenTargetPosition: {x: 758, y: 463, z: 0}
-    _scaleSettings:
-      _startScale: {x: 1, y: 1, z: 1}
-      _fullSize: {x: 0, y: 0, z: 0}
-      _endScale: {x: 0, y: 0, z: 0}
-    _rotationSettings:
-      _rotateFrom: {x: 0, y: 0, z: 0}
-      _rotateMidPoint: {x: 0, y: 0, z: 0}
-      _rotateToo: {x: 0, y: 0, z: 0}
-    _buildNextAfterDelay: 0
-    _moveTo: {x: 0, y: 0, z: 0}
-    _scaleTo: {x: 0, y: 0, z: 0}
-    _targetRotation: {x: 0, y: 0, z: 0}
-    _punchStartScale: {x: 0, y: 0, z: 0}
-    _shakeStartScale: {x: 0, y: 0, z: 0}
+  _buildObjectsList: []
   _scheme: {fileID: 0}
   _addTweenEventTriggers: 1
   _tweenEvents:
@@ -6359,6 +6334,11 @@ PrefabInstance:
       propertyPath: _startOnThisNode
       value: 
       objectReference: {fileID: 987943930}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _stayVisible
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _applyEffectsTo.Array.size
@@ -6367,7 +6347,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -8604,7 +8584,7 @@ MonoBehaviour:
   _branchType: 0
   _timer: 1
   _screenType: 0
-  _stayOn: 0
+  _stayVisible: 0
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 0
@@ -10685,7 +10665,7 @@ MonoBehaviour:
   _branchType: 1
   _timer: 1
   _screenType: 0
-  _stayOn: 0
+  _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 0
@@ -12815,7 +12795,7 @@ MonoBehaviour:
   _branchType: 2
   _timer: 2
   _screenType: 1
-  _stayOn: 1
+  _stayVisible: 1
   _storeOrResetOptional: 0
   _tweenOnHome: 0
   _saveExitSelection: 0
@@ -21156,7 +21136,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -23323,7 +23303,7 @@ MonoBehaviour:
   _branchType: 1
   _timer: 1
   _screenType: 0
-  _stayOn: 1
+  _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
@@ -24338,10 +24318,15 @@ PrefabInstance:
       propertyPath: _screenType
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _stayVisible
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -25095,7 +25080,7 @@ MonoBehaviour:
   _branchType: 1
   _timer: 1
   _screenType: 0
-  _stayOn: 1
+  _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
@@ -26466,7 +26451,7 @@ MonoBehaviour:
   _branchType: 0
   _timer: 1
   _screenType: 0
-  _stayOn: 0
+  _stayVisible: 0
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
@@ -26496,32 +26481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8a427e419e3a5c458bd440912184959, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buildObjectsList:
-  - _element: {fileID: 1172980945}
-    _positionSettings:
-      _grabStartPosition: 1
-      _grabMidPosition: 0
-      _grabEndPosition: 1
-      _goToStartPosition: 0
-      _goToMidPosition: 0
-      _goToEndPosition: 0
-      _tweenStartPosition: {x: 338, y: 0, z: 0}
-      _tweenMiddlePosition: {x: 0, y: 0, z: 0}
-      _tweenTargetPosition: {x: 0, y: 0, z: 0}
-    _scaleSettings:
-      _startScale: {x: 1, y: 1, z: 1}
-      _fullSize: {x: 0, y: 0, z: 0}
-      _endScale: {x: 0, y: 0, z: 0}
-    _rotationSettings:
-      _rotateFrom: {x: 0, y: 0, z: 0}
-      _rotateMidPoint: {x: 0, y: 0, z: 0}
-      _rotateToo: {x: 0, y: 0, z: 0}
-    _buildNextAfterDelay: 0
-    _moveTo: {x: 0, y: 0, z: 0}
-    _scaleTo: {x: 0, y: 0, z: 0}
-    _targetRotation: {x: 0, y: 0, z: 0}
-    _punchStartScale: {x: 0, y: 0, z: 0}
-    _shakeStartScale: {x: 0, y: 0, z: 0}
+  _buildObjectsList: []
   _scheme: {fileID: 0}
   _addTweenEventTriggers: 1
   _tweenEvents:
@@ -28458,7 +28418,7 @@ MonoBehaviour:
   _branchType: 3
   _timer: 6
   _screenType: 0
-  _stayOn: 1
+  _stayVisible: 1
   _storeOrResetOptional: 0
   _tweenOnHome: 0
   _saveExitSelection: 0
@@ -32256,7 +32216,7 @@ MonoBehaviour:
   _branchType: 1
   _timer: 1
   _screenType: 0
-  _stayOn: 0
+  _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
@@ -32968,7 +32928,7 @@ MonoBehaviour:
   _branchType: 5
   _timer: 1
   _screenType: 1
-  _stayOn: 0
+  _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
@@ -35173,10 +35133,15 @@ PrefabInstance:
       propertyPath: _userDefinedStartPosition
       value: 
       objectReference: {fileID: 1866266119}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _stayVisible
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -36628,7 +36593,7 @@ MonoBehaviour:
   _branchType: 3
   _timer: 5
   _screenType: 0
-  _stayOn: 1
+  _stayVisible: 1
   _storeOrResetOptional: 0
   _tweenOnHome: 0
   _saveExitSelection: 0
@@ -37502,6 +37467,11 @@ PrefabInstance:
       propertyPath: _screenType
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _stayVisible
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _applyEffectsTo.Array.size
@@ -37515,7 +37485,7 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -40918,6 +40888,11 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _stayOn
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _stayVisible
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,

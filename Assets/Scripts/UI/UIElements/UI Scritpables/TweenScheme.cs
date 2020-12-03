@@ -95,7 +95,7 @@ public class TweenScheme: ScriptableObject
 
     private float SetInTime(TweenData tween) => _useGlobalTime == IsActive.Yes ? _globalInTime : tween.InTime;
 
-    private float SetOutTime(TweenData tween) => _useGlobalTime == IsActive.Yes ? _globalInTime : tween.OutTime;
+    private float SetOutTime(TweenData tween) => _useGlobalTime == IsActive.Yes ? _globalOutTime : tween.OutTime;
 
 
     public bool GlobalTime() //**

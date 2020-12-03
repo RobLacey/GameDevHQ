@@ -25,7 +25,6 @@ public class BuildTweenData
     {
         if (_element == null)
         {
-            //_positionSettings.ClearPositionTween();
             MyCanvasGroup = null;
             _positionSettings.SetRectTransform(null);
             _scaleSettings.SetRectTransform(null);

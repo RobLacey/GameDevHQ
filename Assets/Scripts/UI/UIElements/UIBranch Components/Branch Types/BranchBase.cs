@@ -140,7 +140,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
     {
         if (MyScreenType != ScreenType.FullScreen) return;
         InvokeDoClearScreen();
-        InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
+        InvokeOnHomeScreen(false);
     }
     
     public void ActivateStoredPosition()

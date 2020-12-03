@@ -14,7 +14,7 @@ public class PositionTween : TweenBase, IPositionTween
 
     public override void SetUpTweens(List<BuildTweenData> buildObjectsList,
                                      TweenScheme tweenScheme,
-                                     Action<RectTransform> effectCall)
+                                     Action<BuildTweenData> effectCall)
     {
         base.SetUpTweens(buildObjectsList, tweenScheme, effectCall);
         
@@ -30,7 +30,7 @@ public class PositionTween : TweenBase, IPositionTween
         _tweenStyle = _scheme.PositionTween;
         base.StartTween(tweenType, tweenCallback);
     }
-
+    
     protected override Tween DoTweenProcess(BuildTweenData item, TweenCallback callback)
     {
         return item.Element.DOAnchorPos3D(item._moveTo, _tweenTime, _pixelSnapping)

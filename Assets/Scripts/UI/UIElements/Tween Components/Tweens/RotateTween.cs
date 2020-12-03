@@ -11,7 +11,7 @@ public class RotateTween : TweenBase, IRotationTween
 {
     public override void SetUpTweens(List<BuildTweenData> buildObjectsList,
                                      TweenScheme tweenScheme,
-                                     Action<RectTransform> effectCall)
+                                     Action<BuildTweenData> effectCall)
     {
         base.SetUpTweens(buildObjectsList, tweenScheme, effectCall);
         

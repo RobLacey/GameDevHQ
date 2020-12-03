@@ -17,7 +17,8 @@ MonoBehaviour:
   _startGameWhere: 0
   _pauseOptionsOnEscape: 0
   _globalEscapeFunction: 2
-  _atStartDelay: 0
+  _delayUIStart: 0
+  _controlActivateDelay: 2
   _pauseOptionButton: Pause
   _posSwitchButton: Posivtive Group Switch
   _negSwitchButton: Negative Group Switch

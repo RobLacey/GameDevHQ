@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public interface ITweenBase
+public interface ITweenBase : IEventUser
 {
     void StartTween(TweenType tweenType, TweenCallback tweenCallback);
 
     void SetUpTweens(List<BuildTweenData> buildObjectsList,
                      TweenScheme tweenScheme,
-                     Action<RectTransform> effectCall);
+                     Action<BuildTweenData> effectCall);
 }
 
 /// <summary>
@@ -18,7 +18,7 @@ public interface ITweenBase
 /// </summary>
 // ReSharper disable IdentifierTypo
 [Serializable]
-public abstract class TweenBase 
+public abstract class TweenBase : IEventUser
 {
     //Variables
     protected float _tweenTime;
@@ -33,12 +33,16 @@ public abstract class TweenBase
     protected List<BuildTweenData> _buildList = new List<BuildTweenData>();
 
     //Delegates
-    private Action<RectTransform> _endEffectTrigger;
+    private Action<BuildTweenData> _endEffectTrigger;
     private TweenCallback _callback;
+
+    public virtual void ObserveEvents() { }
+
+    public virtual void RemoveEvents() { }
 
     public virtual void SetUpTweens(List<BuildTweenData> buildObjectsList,
                                     TweenScheme tweenScheme,
-                                    Action<RectTransform> effectCall)
+                                    Action<BuildTweenData> effectCall)
     {
         _tweenName = GetType().Name;
         _scheme = tweenScheme;
@@ -46,7 +50,7 @@ public abstract class TweenBase
     }
 
     protected void SetUpTweensCommon(List<BuildTweenData> buildObjectsList, 
-                                     Action<RectTransform> effectCall)
+                                     Action<BuildTweenData> effectCall)
     {
         _endEffectTrigger = effectCall;
         _buildList = buildObjectsList;
@@ -154,14 +158,16 @@ public abstract class TweenBase
             {
                 if (index == _listToUse.Count - 1)
                 {
-                    Tween tween = DoTweenProcess(item, _callback);
-                    yield return tween.WaitForCompletion();
-                    _endEffectTrigger?.Invoke(item.Element);
+                    var tween = DoTweenProcess(item, _callback);
+                    if(!(tween is null))
+                        yield return tween.WaitForCompletion();
+                    _endEffectTrigger?.Invoke(item);
                 }
                 else
                 {
                     DoTweenProcess(item, EndAction(item));
-                    yield return new WaitForSeconds(item._buildNextAfterDelay);
+                    if(item._buildNextAfterDelay != 0)
+                        yield return new WaitForSeconds(item._buildNextAfterDelay);
                     index++;
                 }
             }
@@ -170,16 +176,11 @@ public abstract class TweenBase
 
         yield return null;
 
-        TweenCallback EndAction(BuildTweenData tweenSettings) => () => _endEffectTrigger?.Invoke(tweenSettings.Element);
+        TweenCallback EndAction(BuildTweenData tweenSettings) => () => _endEffectTrigger?.Invoke(tweenSettings);
     }
 
     protected abstract Tween DoTweenProcess(BuildTweenData item, TweenCallback callback);
     protected abstract void RewindTweens();
-
     protected abstract void InTweenTargetSettings();
     protected abstract void OutTweenTargetSettings();
-
-    // protected void SetInTime() => _tweenTime = _globalTime > 0 ? _globalTime : _inTime;
-    //
-    // protected void SetOutTime() => _tweenTime = _globalTime > 0 ? _globalTime : _outTime;
 }

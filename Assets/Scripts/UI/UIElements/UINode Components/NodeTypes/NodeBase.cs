@@ -32,14 +32,16 @@
     {
         if(isDragEvent) return;
         PointerOverNode = true;
-        _uiNode.SetAsHighlighted();
+        _uiNode.UINodeEvents.DoWhenPointerOver(PointerOverNode);
+        //_uiNode.SetAsHighlighted();
     }
 
     public virtual void OnExit(bool isDragEvent)
     {
         if(isDragEvent) return;
         PointerOverNode = false;
-        _uiNode.SetNotHighlighted();
+        _uiNode.UINodeEvents.DoWhenPointerOver(PointerOverNode);
+        //_uiNode.SetNotHighlighted();
     }
 
     protected abstract void TurnNodeOnOff();

@@ -8,7 +8,7 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
     public HomeScreenBranch(IBranch branch) : base(branch) { }
     
     //Properties
-    private bool CannotTweenOnHome => _myBranch.TweenOnHome == IsActive.No;
+    private bool CannotTweenOnHome => _myBranch.TweenOnHome == DoTween.DoNothing;
     
     //Main
     protected override void SaveInMenu(IInMenu args)
@@ -22,18 +22,20 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
         base.SaveOnStart(args);
         if (_startBranch)
         {
-            _myBranch.MoveToBranchWithoutTween();
+            _myBranch.DoNotTween();
+            _myBranch.MoveToThisBranch();
         }
         SetBlockRaycast(BlockRaycast.Yes);
     }
 
     protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
     {
+        if (!OnHomeScreen && args.OnHomeScreen)
+        {
+            SetCanvas(ActiveCanvas.Yes);
+            SetBlockRaycast(BlockRaycast.Yes);
+        }
         base.SaveIfOnHomeScreen(args);
-        if (!OnHomeScreen || _myBranch.CanvasIsEnabled) return;
-        
-        SetCanvas(ActiveCanvas.Yes);
-        SetBlockRaycast(BlockRaycast.Yes);
     }
 
     //Main
@@ -47,20 +49,22 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
             _startBranch = true;
             _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
         }
-
         _myBranch.DontSetBranchAsActive();
         _myBranch.MoveToThisBranch();
     }
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
-        _myBranch.ResetBranchesStartPosition();
+        _myBranch.SetHighlightedNode();
         
         if(!_canStart || !_inMenu) return;
         
         SetCanvas(ActiveCanvas.Yes);
         
-        if (CannotTweenOnHome)
+        if (CannotTweenOnHome && !OnHomeScreen)
+            _myBranch.DoNotTween();
+        
+        if (OnHomeScreen && _myBranch.GetStayOn() == IsActive.Yes)
             _myBranch.DoNotTween();
         
         InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());

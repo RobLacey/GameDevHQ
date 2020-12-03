@@ -9,11 +9,20 @@ public interface IShakeTween: ITweenBase { }
 [Serializable]
 public class ShakeTween : TweenBase, IShakeTween
 {
-    //Properties
-    // private bool CheckInEffectType => _shakeWhen == EffectType.In || _shakeWhen == EffectType.Both;
-    // private bool CheckOutEffectType => _shakeWhen == EffectType.Out || _shakeWhen == EffectType.Both;
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EVent.Do.Subscribe<IEndTween>(EndTweenEffect);
+    }
 
-    public override void SetUpTweens(List<BuildTweenData> buildObjectsList, TweenScheme tweenScheme, Action<RectTransform> effectCall)
+    public override void RemoveEvents()
+    {
+        base.RemoveEvents();
+        EVent.Do.Unsubscribe<IEndTween>(EndTweenEffect);
+    }
+
+    public override void SetUpTweens(List<BuildTweenData> buildObjectsList, TweenScheme tweenScheme, 
+                                    Action<BuildTweenData> effectCall)
     {
         base.SetUpTweens(buildObjectsList, tweenScheme, effectCall);
         foreach (var item in _buildList)
@@ -39,6 +48,13 @@ public class ShakeTween : TweenBase, IShakeTween
 
     protected override Tween DoTweenProcess(BuildTweenData item, TweenCallback callback)
     {
+        if (_scheme.ShakeData.EndTween)
+        {
+            Debug.Log("No Shake");
+            callback?.Invoke();
+            return null;
+        } 
+
         var data = _scheme.ShakeData;
         return item.Element.DOShakeScale(data.Duration, data.Strength, data.Vibrato, data.Randomness, data.FadeOut)
                            .SetId($"{_tweenName}{item.Element.GetInstanceID()}")
@@ -52,18 +68,15 @@ public class ShakeTween : TweenBase, IShakeTween
 
     protected override void OutTweenTargetSettings() => RewindTweens();
 
-    public void EndEffect(RectTransform rectTransform/*, IsActive isIn*/)
+    public static void EndTweenEffect(IEndTween item)
     {
-      //  /*if (isIn == IsActive.Yes) */DoEndEffectTween(rectTransform, CheckInEffectType);
-    }
+        if(!CanEndPunch()) return;
+        
+        var data = item.Scheme.ShakeData;
+        item.EndTweenRect.DOShakeScale(data.Duration, data.Strength, data.Vibrato, data.Randomness, data.FadeOut)
+                   .SetAutoKill(true)
+                   .Play();
 
-    // private void DoEndEffectTween(RectTransform rectTransform, bool checkForTween)
-    // {
-    //     if (!checkForTween) return;
-    //     ResetForTween();
-    //     rectTransform.DOShakeScale(_duration, _strength, _vibrato, _randomness, _fadeOut)
-    //                  .SetId("shake" + rectTransform.gameObject.GetInstanceID())
-    //                  .SetAutoKill(true)
-    //                  .Play();
-    // }
+        bool CanEndPunch() => (item.Scheme.Shake() && item.Scheme.ShakeData.EndTween);
+    }
 }

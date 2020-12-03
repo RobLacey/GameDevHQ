@@ -2,8 +2,40 @@
 <project version="4">
   <component name="ContentModelStore">
     <e p="C:\Unity Games\Repos\Unity3d\GameDevHQ" t="IncludeRecursive">
+      <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
+        <e p="AllIn1SpriteShader" t="Include">
+          <e p="Demo" t="Include">
+            <e p="Scripts" t="Include">
+              <e p="All1ShaderDemoController.cs" t="Include" />
+              <e p="Demo2AutoScroll.cs" t="Include" />
+              <e p="DemoCamera.cs" t="Include" />
+              <e p="DemoCircleExpositor.cs" t="Include" />
+              <e p="DemoItem.cs" t="Include" />
+              <e p="DemoRandomColorSwap.cs" t="Include" />
+            </e>
+          </e>
+          <e p="Editor" t="Include">
+            <e p="AllIn1ShaderScriptEditor.cs" t="Include" />
+            <e p="AllIn1SpriteShader.cs" t="Include" />
+            <e p="AllIn1SpriteShaderStencil.cs" t="Include" />
+          </e>
+          <e p="Resources" t="Include">
+            <e p="AllIn1OneShaderFunctions.cginc" t="Include" />
+            <e p="AllIn1SpriteShader.shader" t="Include" />
+            <e p="AllIn1SpriteShaderScaledTime.shader" t="Include" />
+            <e p="AllIn1SpriteShaderUiMask.shader" t="Include" />
+          </e>
+          <e p="Scripts" t="Include">
+            <e p="All1CreateUnifiedOutline.cs" t="Include" />
+            <e p="AllIn1Shader.cs" t="Include" />
+            <e p="AllIn1ShaderWindow.cs" t="Include" />
+            <e p="RandomSeed.cs" t="Include" />
+            <e p="SetAtlasUvs.cs" t="Include" />
+            <e p="SetGlobalTime.cs" t="Include" />
+          </e>
+        </e>
         <e p="Demigiant" t="Include">
           <e p="DOTween" t="Include">
             <e p="Modules" t="Include">
@@ -274,6 +306,7 @@
                   <e p="TweenData.cs" t="Include" />
                 </e>
                 <e p="TweenEvents.cs" t="Include" />
+                <e p="TweenInspector.cs" t="Include" />
                 <e p="Tweens" t="Include">
                   <e p="FadeTween.cs" t="Include" />
                   <e p="PositionTween.cs" t="Include" />

@@ -15,7 +15,7 @@ public class StandardBranch : BranchBase, IStandardBranch
     {
         SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
-        _myBranch.ResetBranchesStartPosition();
+        _myBranch.SetHighlightedNode();
         SetNewParentBranch(newParentController);
     }
 

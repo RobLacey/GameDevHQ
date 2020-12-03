@@ -31,7 +31,6 @@ public class EVentBindings : BindBase
         CreateEvent<IGameIsPaused>();//
         CreateEvent<IInMenu>();//
         CreateEvent<ISceneChange>();
-       // CreateEvent<ISceneStart>();
         
         //Input
         CreateEvent<IPausePressed>();
@@ -59,6 +58,7 @@ public class EVentBindings : BindBase
         CreateEvent<IActiveBranch>();//
         CreateEvent<IClearScreen>();//
         CreateEvent<ISetUpStartBranches>();//
+        CreateEvent<IEndTween>();
         
         //Test
         CreateEvent<ITestList>();

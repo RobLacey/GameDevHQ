@@ -13,13 +13,10 @@ public class UIAudio : NodeFunctionBase, IEServUser
     //Variables 
     private readonly AudioScheme _audioScheme;
     private IAudioService _audioService;
-    private bool _canStart;
-    private readonly IUiEvents _uiEvents;
     private bool _audioIsMute;
 
     //Properties
     private bool UsingScheme() => _audioScheme;
-    private void OnStart(IOnStart onStart) => _canStart = true;
     private void AudioIsMuted() => _audioIsMute = true;
 
     //Main
@@ -35,14 +32,12 @@ public class UIAudio : NodeFunctionBase, IEServUser
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EVent.Do.Subscribe<IOnStart>(OnStart);
         EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
     }
 
     public override void RemoveEvents()
     {
         base.RemoveEvents();
-        EVent.Do.Unsubscribe<IOnStart>(OnStart);
         EVent.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
     }
 
@@ -54,12 +49,12 @@ public class UIAudio : NodeFunctionBase, IEServUser
 
     private bool HasCancelSound() => !UsingScheme() ? false : _audioScheme.CancelledClip;
 
-    protected override bool FunctionNotActive() => !CanActivate || !UsingScheme() || !_canStart;
+    protected override bool FunctionNotActive() => !CanActivate || !UsingScheme();
 
     protected override void SavePointerStatus(bool pointerOver)
     {
+
         if (IsAudioMuted()) return;
-        
         if (pointerOver)
             PlayHighlightedAudio();
     }
@@ -122,7 +117,7 @@ public class UIAudio : NodeFunctionBase, IEServUser
 
     private void HotKeyPressed(IHotKeyPressed args)
     {
-        if (args.ParentNode == _uiEvents.ReturnMasterNode)
+        if (ReferenceEquals(args.ParentNode, _uiEvents.ReturnMasterNode))
             PlaySelectedAudio();
     }
 }

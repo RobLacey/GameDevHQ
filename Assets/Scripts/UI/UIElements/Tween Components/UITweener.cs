@@ -4,7 +4,13 @@ using System;
 using DG.Tweening;
 using NaughtyAttributes;
 
-public class UITweener : MonoBehaviour
+public interface IEndTween
+{
+    RectTransform EndTweenRect { get; }
+    TweenScheme Scheme { get; }
+}
+
+public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
 {
     [SerializeField] 
     [ReorderableList] [Label("List Of Objects To Tween")]
@@ -25,13 +31,15 @@ public class UITweener : MonoBehaviour
     //Variables
     private int _counter, _effectCounter;
     private List<ITweenBase> _activeTweens;
-    //private TweenBase _endTween;
-    private bool _hasScheme;
-    private TweenScheme _lastTweenScheme;
+    private readonly ITweenInspector _tweenInspector = EJect.Class.NoParams<ITweenInspector>();
+
+    public RectTransform EndTweenRect { get; private set; }
+    public TweenScheme Scheme => _scheme;
 
     //Delegates
-    private Action _finishedTweenCallback;
-    private TweenTrigger _currentUserEvent;
+    private Action FinishedTweenCallback{ get; set; }
+    private Action<IEndTween> EndTweenEffect { get; set; }
+    private TweenTrigger CurrentUserEvent{ get; set; }
 
     //Editor
     private bool UserEvents =>  _addTweenEventTriggers == IsActive.Yes;
@@ -40,9 +48,7 @@ public class UITweener : MonoBehaviour
     {
         if(_buildObjectsList.Count == 0 || _scheme is null) return;
         _activeTweens = TweenFactory.CreateTypes(_scheme);
-        //_endTween = TweenFactory.CreateEndTween(_scheme);
-        
-        //****** EndTween not part of Count At the moment
+        FetchEvents();
         
         foreach (var activeTween in _activeTweens)
         {
@@ -51,64 +57,30 @@ public class UITweener : MonoBehaviour
         }
     }
     
-    private void OnValidate()
-    {
-        PassInSchemeToBuildObjects();
-        
-        if(_scheme is null && _hasScheme)
-        {
-            SchemeHasBeenDeleted();
-            return;
-        }
+    public void FetchEvents() => EndTweenEffect = EVent.Do.Fetch<IEndTween>();
 
-        if (_scheme && !_hasScheme)
-        {
-            SchemeHasBeenAdded();
-        }
-        ConfigureSettings();
-    }
-
-    private void PassInSchemeToBuildObjects()
+    private void OnEnable()
     {
-        foreach (var element in _buildObjectsList)
+        if (_activeTweens is null) return;
+        foreach (var activeTween in _activeTweens)
         {
-            element.SetElement();
+            activeTween.ObserveEvents();
         }
     }
 
-    private void SchemeHasBeenDeleted()
+    private void OnDisable()
     {
-        _hasScheme = false;
-        if (_lastTweenScheme != null)
-            _lastTweenScheme.Unsubscribe(ConfigureSettings);
-        _lastTweenScheme = null;
-        ClearTweenSettings();
-    }
-
-    private void SchemeHasBeenAdded()
-    {
-        _hasScheme = true;
-        _lastTweenScheme = _scheme;
-        _scheme.Subscribe(ConfigureSettings);
-    }
-
-    private void ConfigureSettings()
-    {
-        if(_scheme is null) return;
-        foreach (var item in _buildObjectsList)
+        if (_activeTweens is null) return;
+        foreach (var activeTween in _activeTweens)
         {
-            item.ActivateTweenSettings(_scheme);
+            activeTween.RemoveEvents();
         }
     }
-    
-    private void ClearTweenSettings()
-    {
-        foreach (var item in _buildObjectsList)
-        {
-            item.ClearSettings(TweenStyle.NoTween);
-        }
-    }
-    
+
+    private void OnValidate() => _tweenInspector.CurrentScheme(_scheme)
+                                                .CurrentBuildList(_buildObjectsList)
+                                                .UpdateInspector();
+
     public void ActivateTweens(Action callBack)
     {
         if(UserEvents)
@@ -123,7 +95,7 @@ public class UITweener : MonoBehaviour
     }
     private void StartProcessingTweens(TweenType tweenType, Action callBack, TweenTrigger userEvent)
     {
-        _finishedTweenCallback = callBack;
+        FinishedTweenCallback = callBack;
         if (IfTweenCounterIsZero_In(userEvent)) return;
         ResetCounterAndCoroutines();
         DoTweens(tweenType, DoAtEndOfTweens(userEvent));
@@ -153,7 +125,7 @@ public class UITweener : MonoBehaviour
     
     private TweenCallback DoAtEndOfTweens(TweenTrigger value)
     {
-        _currentUserEvent = value;
+        CurrentUserEvent = value;
         return EndTweenUserEvent;
     }
     
@@ -162,29 +134,14 @@ public class UITweener : MonoBehaviour
         _effectCounter--;
         if (_effectCounter > 0) return;
         if(UserEvents)
-            _currentUserEvent?.Invoke();
-        _finishedTweenCallback?.Invoke();
+            CurrentUserEvent?.Invoke();
+        FinishedTweenCallback?.Invoke();
     }
     
-    private void PunchOrShakeEndEffect(RectTransform uiObject = null)
+    private void PunchOrShakeEndEffect(BuildTweenData item)
     {
-        Debug.Log("End Effect");
-       // if (_scheme.PunchTween == TweenStyle.NoTween) return;
-
-        // if (_scheme.Punch())
-        // {
-        //     _endTween.StartTween();
-        // }
-        // switch (_scheme.PunchOrShakeTween)
-        // {
-        //     case PunchShakeTween.Shake:
-        //         _shakeTween.EndEffect(uiObject);
-        //         break;
-        //     case PunchShakeTween.Punch:
-        //         _punchTween.EndEffect(uiObject);
-        //         break;
-        // }
+        EndTweenRect = item.Element;
+        EndTweenEffect?.Invoke(this);
     }
-
 }
 

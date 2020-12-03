@@ -35,7 +35,7 @@ public class OptionalPopUpPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp,
 
         if (!_restoreOnHome || !OnHomeScreen) return;
         
-        if (_myBranch.TweenOnHome == IsActive.Yes)
+        if (_myBranch.TweenOnHome == DoTween.Tween)
         {
             ActivateWithTween();
         }

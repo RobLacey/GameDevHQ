@@ -1,6 +1,6 @@
 ﻿public interface IReturnToHome
 {
-    bool ActivateOnReturnHome { get; }
+    ActivateNodeOnReturnHome ActivateOnReturnHome { get; }
 } 
 public interface IPausePressed { }
 

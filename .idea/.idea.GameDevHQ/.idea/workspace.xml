@@ -23,88 +23,322 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf145f6b-d551-4e26-8fbc-722270da7110" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test/Embedded Test Part 2.unity" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test/Embedded Test Part 2.unity.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test/Embedded Test.unity" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test/Embedded Test.unity.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EServ.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EServ/EServ.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EServ/EServ.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EServ/EServBase.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EServ/EServBase.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EServ/EServMaster.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/NullBucketObject.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/NullBucketObject.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/INodeBase.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/INodeBase.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProjectSettings/PackageManagerSettings.asset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Alpha Cutoff.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Alpha Cutoff.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/AlphaCutoff.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/AlphaCutoff.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/AtlasSpriteBoy.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/AtlasSpriteBoy.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Blur.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Blur.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Blur.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Blur.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Burn.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Burn.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Burn.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Burn.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/BurningSoldier.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/BurningSoldier.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/BurningSoldier.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/BurningSoldier.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Fade.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Fade.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Fade.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Fade.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Fill Amount 1.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Fill Amount 1.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Fill Amount.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Fill Amount.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/FillAmount.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/FillAmount.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Fish Eye.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Fish Eye.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Frame.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Frame.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Hallucination.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Hallucination.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Hit Effect 1.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Hit Effect 1.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Hit Effect.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Hit Effect.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/HitEffect.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/HitEffect.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Hologram.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Hologram.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/IceSoldier.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/IceSoldier.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/IceSoldier.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/IceSoldier.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Impact.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Impact.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Impact1.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Impact1.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/MotionBlur.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/MotionBlur.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Offset.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Offset.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Offset.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Offset.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Original.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Original.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Posterize.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Posterize.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Posterize.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Posterize.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Rotate.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Rotate.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Rotate.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Rotate.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Shield Soldier.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Shield Soldier.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/ShieldSparksPS.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/ShieldSparksPS.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Shine.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Shine.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Shine.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Shine.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/ShinyBoy.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/ShinyBoy.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Soldier.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Soldier.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/SoldierRun.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/SoldierRun.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Sprite.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Sprite.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Teleport.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Teleport.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Twist 1.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Twist 1.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Twist.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Twist.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Twist.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Twist.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/TwistDisappear.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/TwistDisappear.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Zoom.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Zoom.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Zoom.controller" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/Zoom.controller.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/hpBar.anim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Animation/hpBar.anim.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Demo.unity" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Demo.unity.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Demo2.unity" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Demo2.unity.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Fonts.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Fonts/CaviarDreams.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Fonts/CaviarDreams.ttf.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Fonts/CaviarDreams_Bold.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Fonts/CaviarDreams_Bold.ttf.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/Fire.mat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/Fire.mat.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/FireSoldier.mat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/FireSoldier.mat.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/Ice.mat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/Ice.mat.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/IceSoldier.mat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/IceSoldier.mat.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/Outline1.mat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/Outline1.mat.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/Shield.mat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/Shield.mat.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/ShieldSoldier.mat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/ShieldSoldier.mat.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/SnowFlake.mat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/SnowFlake.mat.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/Sparks.mat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Materials/Sparks.mat.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts/All1ShaderDemoController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts/All1ShaderDemoController.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts/Demo2AutoScroll.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts/Demo2AutoScroll.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts/DemoCamera.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts/DemoCamera.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts/DemoCircleExpositor.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts/DemoCircleExpositor.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts/DemoItem.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts/DemoItem.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts/DemoRandomColorSwap.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Scripts/DemoRandomColorSwap.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/BoyGirl.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/BoyGirl.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/Circle.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/Circle.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/IceTexture.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/IceTexture.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/Square.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/Square.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/backMountain.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/backMountain.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/coals.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/coals.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/coalsEmissive.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/coalsEmissive.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/flag.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/flag.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/grass.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/grass.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/shield.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/shield.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/shieldGlow.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/shieldGlow.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/snowFlake.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/snowFlake.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/spaceSoldier.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/spaceSoldier.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/spaceSoldierColorSwap.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/spaceSoldierColorSwap.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/spaceSoldierGlow.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/spaceSoldierGlow.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/spaceSoldierNormal.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/spaceSoldierNormal.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/spark.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/spark.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/sunDoodle.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/sunDoodle.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/water.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Demo/Textures/water.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Documentation.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Documentation.pdf.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Editor.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Editor/AllIn1ShaderScriptEditor.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Editor/AllIn1ShaderScriptEditor.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Editor/AllIn1SpriteShader.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Editor/AllIn1SpriteShader.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Editor/AllIn1SpriteShaderStencil.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Editor/AllIn1SpriteShaderStencil.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Materials.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Materials/EmptyMaterial.mat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Materials/EmptyMaterial.mat.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Materials/UIStencil.mat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Materials/UIStencil.mat.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Materials/UnscaledTIme.mat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Materials/UnscaledTIme.mat.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Resources.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Resources/AllIn1OneShaderFunctions.cginc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Resources/AllIn1OneShaderFunctions.cginc.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Resources/AllIn1SpriteShader.shader" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Resources/AllIn1SpriteShader.shader.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Resources/AllIn1SpriteShaderScaledTime.shader" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Resources/AllIn1SpriteShaderScaledTime.shader.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Resources/AllIn1SpriteShaderUiMask.shader" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Resources/AllIn1SpriteShaderUiMask.shader.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts/All1CreateUnifiedOutline.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts/All1CreateUnifiedOutline.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts/AllIn1Shader.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts/AllIn1Shader.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts/AllIn1ShaderWindow.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts/AllIn1ShaderWindow.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts/RandomSeed.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts/RandomSeed.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts/SetAtlasUvs.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts/SetAtlasUvs.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts/SetGlobalTime.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Scripts/SetGlobalTime.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/CustomEditorImage.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/CustomEditorImage.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-bumbleberry.psd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-bumbleberry.psd.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-cool.psd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-cool.psd.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-downwell.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-downwell.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-earthy.psd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-earthy.psd.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-gameboy-pop-1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-gameboy-pop-1x.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-gameboy.psd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-gameboy.psd.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-metroid-ii-sgb-1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-metroid-ii-sgb-1x.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-mist-gb-1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-mist-gb-1x.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-neapolitan.psd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-neapolitan.psd.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-nintendo-gameboy-bgb-1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-nintendo-gameboy-bgb-1x.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-nintendo-gameboy-black-zero-1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-nintendo-gameboy-black-zero-1x.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-platinum-1x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/palette-platinum-1x.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/shadeRamp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/shadeRamp.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/toonShadeRamp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/PaletteTextures/toonShadeRamp.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/UVChecker.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/UVChecker.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/fire.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/fire.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/fire2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/fire2.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/flameNoise.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/flameNoise.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/flameNoise2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/flameNoise2.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/gradient.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/gradient.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/gradient2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/gradient2.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/rainbow.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/rainbow.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/seamlessNoise.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/seamlessNoise.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/toonSeamlessNoise.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/AllIn1SpriteShader/Textures/toonSeamlessNoise.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Tween Schemes/Scene2 Menu 2.asset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Tween Schemes/Scene2 Menu 2.asset.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Tween Schemes/Scene2 Menu.asset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Tween Schemes/Scene2 Menu.asset.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenInspector.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenInspector.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/indexLayout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Embedded Test.unity.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Embedded Test/Embedded Test Part 2.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test/Embedded Test Part 2.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Embedded Test/Embedded Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test/Embedded Test.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Input Schemes/Scheme - Old.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Input Schemes/Scheme - Old.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/BucketCreator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/BucketCreator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/BindBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/BindBase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenData/BuildTweenData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenData/BuildTweenData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenData/PunchData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenData/PunchData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenData/ShakeData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenData/ShakeData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/PositionTween.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/PositionTween.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/PunchTween.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/PunchTween.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/RotateTween.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/RotateTween.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ScaleTween.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ScaleTween.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ShakeTween.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ShakeTween.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/InputScheme.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/InputScheme.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/TweenScheme.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/TweenScheme.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindingsSub.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindingsSub.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/ClassCreator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/EJectMaster.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/ClassCreator.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/EJectMaster.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/EJectBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/EJectBase.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Injectors/EJect.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Injectors/EJect.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Injectors/EJectSub.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Injectors/EJectSub.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/EJectMaster.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/EJectMaster.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/Bindings/EVentBindings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/Bindings/EVentBindings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/Bindings/EVentBindingsSub.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/Bindings/EVentBindingsSub.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/CustomEVent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/CustomEVent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentBaseClass.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentBaseClass.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentMaster.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentMaster.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EventHandlers/EVent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EventHandlers/EVent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EventHandlers/EVentSub.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EventHandlers/EVentSub.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/IEVent.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/IEVent.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EventLocator - Old Version/EventInterfaces.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentInterfaces.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EventLocator - Old Version/EventInterfaces.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EventInterfaces.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EventLocator - Old Version/EventLocator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EventLocator - Old Version/EventLocator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/IMonoBehaviourSub.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/IMonoBehaviourSub.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/ServiceLocator.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/ServiceLocator/ServiceLocator.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/ServiceLocator/ServiceLocator.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EServ/EServMaster.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/StaticCoroutine.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/StaticCoroutine.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentInterfaces.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentInterfaces.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/BranchFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/BranchFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/BranchBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/BranchBase.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/HomeScreenBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/HomeScreenBranch.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/OptionalPopUp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/OptionalPopUp.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/PauseMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/PauseMenu.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/ResolvePopUp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/ResolvePopUp.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchUtilityClasses/ScreenData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchUtilityClasses/ScreenData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/StandardBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/StandardBranch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/BranchInterfaces.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/BranchInterfaces.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/HistoryTracker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/HistoryTracker.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/IHistoryTrack.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/IHistoryTrack.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/ManagePopUpHistory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/ManagePopUpHistory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/MenuAndGameSwitching.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/MenuAndGameSwitching.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIAudioManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIAudioManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/NodeFunctionBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/NodeFunctionBase.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIAudio.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIAudio.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIImageTextToggle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIImageTextToggle.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UITooltip.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UITooltip.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/NodeBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/NodeBase.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/CancelOrBackButton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/CancelOrBackButton.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/Disable.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/Disable.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/HoverToActivate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/HoverToActivate.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/NodeInterfaces.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/NodeInterfaces.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/UIPrefabs/Main Canvas Control (Trunk).prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/UIPrefabs/Main Canvas Control (Trunk).prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -200,45 +434,14 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/Bindings/EVentBindingsSub.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/NodeBase.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/NodeFunctionBase.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EventLocator - Old Version/EventLocator.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/HomeScreenBranch.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentMaster.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/CustomEVent.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIAudioManager.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/IHistoryTrack.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/BucketCreator.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/NullBucketObject.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/EJectMaster.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindings.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/IEVent.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentInterfaces.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentBaseClass.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EventHandlers/EVent.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EventHandlers/EVentSub.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/Bindings/EVentBindings.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/BranchBase.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/OptionalPopUp.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/PauseMenu.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/ResolvePopUp.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchUtilityClasses/ScreenData.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/HistoryTracker.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/ManagePopUpHistory.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/MenuAndGameSwitching.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIAudio.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIImageTextToggle.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UITooltip.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/CancelOrBackButton.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/Disable.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/HoverToActivate.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EServ/EService.cs" />
@@ -248,9 +451,40 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/BindBase.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EServ/ServiceLocator/ServiceLocator.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EServ/ServiceLocator/EServMaster.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EServ/EServMaster.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/InputScheme.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/TweenScheme.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentInterfaces.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/HistoryTracker.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/BranchFactory.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/OptionalPopUp.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/BranchInterfaces.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Partial Classes/UIBranch.Properties.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/PositionTween.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/RotateTween.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ScaleTween.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/Bindings/EVentBindings.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenData/PunchData.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenData/ShakeData.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ShakeTween.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/PunchTween.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/BranchBase.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenData/BuildTweenData.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenInspector.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/EJectMaster.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindings.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/HomeScreenBranch.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIAudio.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/NodeInterfaces.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/NodeBase.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/HoverToActivate.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" />
       </list>
     </option>
   </component>
@@ -458,6 +692,7 @@
       <workItem from="1606724564316" duration="16939000" />
       <workItem from="1606815255459" duration="28574000" />
       <workItem from="1606899883613" duration="27732000" />
+      <workItem from="1606987868627" duration="27253000" />
     </task>
     <servers />
   </component>
@@ -583,10 +818,10 @@
     <state width="1493" height="218" key="GridCell.Tab.3.right/0.0.1536.864/-1920.0.1536.864@-1920.0.1536.864" timestamp="1604598339426" />
     <state width="1493" height="218" key="GridCell.Tab.3.right/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1602150895093" />
     <state width="1875" height="279" key="GridCell.Tab.3.right/0.0.1536.864/1920.0.1920.1080@1920.0.1920.1080" timestamp="1604676665184" />
-    <state x="-1385" y="157" width="472" height="601" key="RiderGenerateDialog" timestamp="1606925756431">
+    <state x="-1385" y="157" width="472" height="601" key="RiderGenerateDialog" timestamp="1607006357323">
       <screen x="-1920" y="0" width="1536" height="864" />
     </state>
-    <state x="-1385" y="157" key="RiderGenerateDialog/0.0.1536.864/-1920.0.1536.864@-1920.0.1536.864" timestamp="1606925756431" />
+    <state x="-1385" y="157" key="RiderGenerateDialog/0.0.1536.864/-1920.0.1536.864@-1920.0.1536.864" timestamp="1607006357323" />
     <state x="2865" y="142" key="RiderGenerateDialog/0.0.1536.864/1920.0.1536.864@1920.0.1536.864" timestamp="1602263688331" />
     <state x="535" y="157" key="RiderGenerateDialog/0.0.1536.864/1920.0.1920.1080@0.0.1536.864" timestamp="1603205773775" />
     <state x="2589" y="196" key="RiderGenerateDialog/0.0.1536.864/1920.0.1920.1080@1920.0.1920.1080" timestamp="1606384744646" />

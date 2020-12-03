@@ -18,8 +18,10 @@ public abstract class InputScheme : ScriptableObject
     [SerializeField]
     private PauseFunction _globalEscapeFunction;
     [SerializeField] 
-    [Header("Start Delay")] [Space(10f)] [Label("Enable Controls After..")]
-    protected float _atStartDelay;
+    [Header("Start Delay")] [Space(10f)] [Label("Delay UI Start By then..")]
+    protected float _delayUIStart;
+    [SerializeField] [Label("..Enable Controls After..")]
+    protected float _controlActivateDelay;
 
     //Variables
     protected Vector3 _mousePosition;
@@ -31,7 +33,8 @@ public abstract class InputScheme : ScriptableObject
     public ControlMethod ControlType => _mainControlType;
     public PauseOptionsOnEscape PauseOptions => _pauseOptionsOnEscape;
     public EscapeKey GlobalCancelAction => SetGlobalEscapeFunction();
-    public float StartDelay => _atStartDelay;
+    public float ControlActivateDelay => _controlActivateDelay;
+    public float DelayUIStart => _delayUIStart;
     public InGameSystem InGameMenuSystem => _inGameMenuSystem;
     public StartInMenu WhereToStartGame => _startGameWhere;
 

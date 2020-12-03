@@ -101,5 +101,7 @@ public enum ActiveCanvas { Yes, No }
 
 public enum ActivateNodeOnReturnHome { Yes, No }
 
+public enum DoTween { Tween, DoNothing }
+
 
 
