@@ -1,4 +1,5 @@
-﻿using UnityEngine.EventSystems;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class UINavigation : NodeFunctionBase
 {
@@ -51,29 +52,26 @@ public class UINavigation : NodeFunctionBase
         {
             case MoveDirection.Down when _down:
             {
-                HandleMove(_down, moveDirection);
+                _down.DoNonMouseMove(moveDirection);
                 break;
             }
             case MoveDirection.Up when _up:
             {
-                HandleMove(_up, moveDirection);
+                _up.DoNonMouseMove(moveDirection);
                 break;
             }
             case MoveDirection.Left when _left:
             {
-                HandleMove(_left, moveDirection);
+                _left.DoNonMouseMove(moveDirection);
                 break;
             }
             case MoveDirection.Right when _right:
             {
-                HandleMove(_right, moveDirection);
+                _right.DoNonMouseMove(moveDirection);
                 break;
             }
         }
     }
-
-    private static void HandleMove(UINode moveTo, MoveDirection moveDirection) 
-        => moveTo.CheckIfMoveAllowed(moveDirection);
 
     private protected override void ProcessPress()
     {

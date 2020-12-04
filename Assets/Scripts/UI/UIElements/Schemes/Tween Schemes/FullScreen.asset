@@ -10,37 +10,37 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cc88850385a84b3d9350959903cba623, type: 3}
-  m_Name: TweenScheme
+  m_Name: FullScreen
   m_EditorClassIdentifier: 
-  _positionTween: 0
+  _positionTween: 3
   _rotationTween: 0
   _fadeTween: 0
   _scaleTween: 0
-  _punchTween: 1
+  _punchTween: 0
   _shakeTween: 0
   _positionData:
-    _inTime: 0.3
-    _outTime: 0.3
-    _easeIn: 1
-    _easeOut: 1
+    _inTime: 0.5
+    _outTime: 0.5
+    _easeIn: 6
+    _easeOut: 5
   _rotationData:
     _inTime: 1
     _outTime: 1
     _easeIn: 1
     _easeOut: 1
   _scaleData:
-    _inTime: 0.1
-    _outTime: 0.1
+    _inTime: 1
+    _outTime: 1
     _easeIn: 1
     _easeOut: 1
   _fadeData:
-    _inTime: 0.3
-    _outTime: 0.3
+    _inTime: 1
+    _outTime: 1
     _easeIn: 1
     _easeOut: 1
   _shakeData:
     _atEndOfTweens: 1
-    _strength: {x: 0.4, y: 0.4, z: 0.4}
+    _strength: {x: 0.2, y: 0.2, z: 0.2}
     _duration: 0.5
     _vibrato: 10
     _randomness: 45
@@ -48,7 +48,7 @@ MonoBehaviour:
   _punchData:
     _atEndOfTweens: 1
     _strength: {x: 0.1, y: 0.1, z: 0}
-    _duration: 0.3
+    _duration: 0.5
     _elasticity: 0.5
     _vibrato: 5
   _useGlobalTime: 1

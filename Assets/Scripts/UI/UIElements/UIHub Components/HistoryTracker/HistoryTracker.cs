@@ -94,6 +94,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
         EVent.Do.Subscribe<ISwitchGroupPressed>(SwitchGroupPressed);
         EVent.Do.Subscribe<IInMenu>(SwitchToGame);
         EVent.Do.Subscribe<ICancelPopUp>(CancelPopUpFromButton);
+        EVent.Do.Subscribe<ISelectedNode>(SetSelected);
     }
 
     public void RemoveEvents()
@@ -108,6 +109,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
         EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchGroupPressed);
         EVent.Do.Unsubscribe<IInMenu>(SwitchToGame);
         EVent.Do.Unsubscribe<ICancelPopUp>(CancelPopUpFromButton);
+        EVent.Do.Unsubscribe<ISelectedNode>(SetSelected);
     }
 
     public void UseEServLocator()
@@ -119,12 +121,12 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
     private void SetCanStart(IOnStart onStart) => _canStart = true;
 
     //Main
-    public void SetSelected(INode node)
+    private void SetSelected(ISelectedNode newNode)
     {
         if(!_canStart) return;
-        if(node.DontStoreTheseNodeTypesInHistory) return;
+        if(newNode.UINode.CanStoreNodeInHistory) return;
         
-        _lastSelected = SelectionProcess.NewNode(node)
+        _lastSelected = SelectionProcess.NewNode(newNode.UINode)
                                        .CurrentHistory(_history)
                                        .LastSelectedNode(_lastSelected)
                                        .Run();
@@ -132,7 +134,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
 
     private void CloseNodesAfterDisabledNode(IDisabledNode args)
         => HistoryListManagement.CurrentHistory(_history)
-                                 .CloseToThisPoint(args.ThisNodeIsDisabled)
+                                 .CloseToThisPoint(args.ToThisDisabledNode)
                                  .Run();
 
     public void BackOneLevel() 
@@ -214,7 +216,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
         }
         else
         {
-            _history.Last().HasChildBranch.MoveToBranchWithoutTween();
+            _history.Last().HasChildBranch.MoveToThisBranch();
         }
     }
 
@@ -222,7 +224,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
     {
         if (_isPaused)
         {
-            _activeBranch.MoveToBranchWithoutTween();
+            _activeBranch.MoveToThisBranch();
         }
         else
         {

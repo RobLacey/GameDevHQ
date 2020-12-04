@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 
 [RequireComponent(typeof(Canvas))]
@@ -70,7 +69,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     }
     private void SaveSelected(ISelectedNode args)
     {
-        LastSelected = NodeSearch.Find(args.Selected)
+        LastSelected = NodeSearch.Find(args.UINode)
                                  .DefaultReturn(LastSelected)
                                  .RunOn(ThisGroupsUiNodes);
     }    
@@ -121,7 +120,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Subscribe<ISelectedNode>(SaveSelected);
         EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
-        EVent.Do.Subscribe<IHotKeyPressed>(FromHotKey);
     }
 
     public void RemoveEvents()
@@ -130,7 +128,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Unsubscribe<ISelectedNode>(SaveSelected);
         EVent.Do.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
-        EVent.Do.Unsubscribe<IHotKeyPressed>(FromHotKey);
     }
 
     public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
@@ -176,25 +173,10 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
 
     private void FindStartPosition() 
         => _startOnThisNode = transform.GetComponentsInChildren<UINode>().First();
-
-    private void FromHotKey(IHotKeyPressed args)
-    {
-        if (ReferenceEquals(args.MyBranch, this))
-        {
-            MoveToThisBranch();
-        }
-    }
     
     public void DoNotTween() => _tweenOnChange = false;
 
     public void DontSetBranchAsActive() => _canActivateBranch = false;
-    
-    public void MoveToBranchWithoutTween()
-    {
-        //BranchBase.SetBlockRaycast(BlockRaycast.Yes);
-        //_tweenOnChange = false;
-        MoveToThisBranch();
-    }
     
     public void MoveToThisBranch(IBranch newParentBranch = null)
     {
@@ -243,6 +225,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     
     public void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null)
     {
+        Debug.Log(this);
         if(!CanvasIsEnabled) return;
         
         if (WhenToMove == WhenToMove.AfterEndOfTween)

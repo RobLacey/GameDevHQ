@@ -89,6 +89,6 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
 
     public void MoveToNextPopUp()
     {
-        _popUpController.NextPopUp().MoveToBranchWithoutTween();
+        _popUpController.NextPopUp().MoveToThisBranch();
     }
 }

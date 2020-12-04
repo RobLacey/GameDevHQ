@@ -1,11 +1,23 @@
-﻿public interface INodeBase
+﻿using System;
+using UnityEngine.EventSystems;
+
+public interface INodeBase
 {
-    bool PointerOverNode { get; set; }
     void Start();
     void OnEnable();
     void OnDisable();
-    void DeactivateNode();
-    void OnEnter(bool isDragEvent);
-    void OnExit(bool isDragEvent);
-    void OnSelected(bool isDragEvent);
+    void DeactivateNodeByType();
+    UINavigation Navigation { set; }
+
+    void SetNodeAsActive();
+    void SetNotHighlighted();
+    void SetAsHighlighted();
+    void ThisNodeIsHighLighted();
+    void SelectedAction(bool isDragEvent);
+    void ClearNodeCompletely();
+    void DoMoveToNextNode(MoveDirection moveDirection);
+    void DoNonMouseMove(MoveDirection moveDirection);
+
+    void EnableNode();
+    void DisableNode();
 }

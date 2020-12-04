@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public interface IMoveBackInHistory
 {
@@ -103,15 +104,19 @@ public class MoveBackInHistory : IMoveBackInHistory
         }
 
         void WithTween() => lastNode.MyBranch.MoveToThisBranch();
-        void NoTween() => lastNode.MyBranch.MoveToBranchWithoutTween();
+        void NoTween()
+        {
+            lastNode.MyBranch.DoNotTween();
+            lastNode.MyBranch.MoveToThisBranch();
+        }
     }
 
     public INode BackToHomeProcess()
     {
         CheckForExceptionsBackHome();
-        _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, CallBack);
-         var lastSelected = _history.First();
+        var lastSelected = _history.First();
         lastSelected.DeactivateNode();
+        _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, CallBack);
         return lastSelected;
 
         void CallBack() => BackHomeCallBack(_history);

@@ -39,7 +39,6 @@ public interface IBranch : IParameters
 
     void NavigateToChildBranch(IBranch moveToo);
     void MoveToThisBranch(IBranch newParentBranch = null);
-    void MoveToBranchWithoutTween();
     void DontSetBranchAsActive();
     void SetHighlightedNode();
     void DoNotTween();

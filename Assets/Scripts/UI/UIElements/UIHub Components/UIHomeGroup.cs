@@ -79,7 +79,7 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
                 break;
         }
         _lastActiveHomeBranch = _homeGroup[_index];
-        _homeGroup[_index].MoveToBranchWithoutTween();
+        _homeGroup[_index].MoveToThisBranch();
     }
 
     private void SetActiveHomeBranch(IActiveBranch args)
@@ -119,7 +119,7 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
         {
             _homeGroup[_index].DontSetBranchAsActive();
         }
-        _homeGroup[_index].MoveToBranchWithoutTween();
+        _homeGroup[_index].MoveToThisBranch();
     }
 
 }

@@ -37,7 +37,12 @@ public class NavigationSettings :INavigationSettings
     public bool RightLeftNav() 
         => _setNavigation == NavigationType.RightAndLeft || _setNavigation == NavigationType.AllDirections;
 
-    public IBranch ChildBranch => _childBranch;
+    public IBranch ChildBranch
+    {
+        get => _childBranch;
+        set => _childBranch = (UIBranch) value;
+    }
+
     public NavigationType NavType => _setNavigation;
     public UINode Up => _up;
     public UINode Down => _down;
@@ -47,9 +52,6 @@ public class NavigationSettings :INavigationSettings
 
     public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
-        if (uiNodeEvents.ReturnMasterNode.IsToggleGroup || uiNodeEvents.ReturnMasterNode.IsToggleNotLinked)
-            _childBranch = null;
-        
         if ((functions & Setting.NavigationAndOnClick) != 0)
         {
             Instance = new UINavigation(this, uiNodeEvents);

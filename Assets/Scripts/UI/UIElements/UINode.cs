@@ -1,15 +1,12 @@
 ﻿using UnityEngine;
-using System;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(RectTransform))]
 
-public partial class UINode : MonoBehaviour, INode, IEventUser,
-                              IHighlightedNode, ISelectedNode, IPointerEnterHandler, IPointerDownHandler,
-                              IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler,
-                              IEventDispatcher
+public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPointerDownHandler,
+                              IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
 {
     [Header("Main Settings")]
     [HorizontalLine(1, color: EColor.Blue, order = 1)]
@@ -62,141 +59,54 @@ public partial class UINode : MonoBehaviour, INode, IEventUser,
     [SerializeField] 
     [Space(5f)] [BoxGroup("Functions")] [Label("Event Settings")] [ShowIf("NeedEvents")]  
     private EventSettings _events;
-    // [ContextMenuItem("TestCase", "Test")]
-    // [SerializeField] private Vector3 _test;
-    // [ColorUsage(false)]
-    // [SerializeField]
-    // private Color colorNoAlpha;
-    //
-    // [ColorUsage(true, true, 0.0f, 0.5f, 0.0f, 0.5f)]
-    // [SerializeField]
-    // private Color colorHdr;
-    //
-    // [Header("Text Attributes")]
-    // [TextArea]
-    // [Tooltip("A string using the TextArea attribute")]
-    // [SerializeField]
-    // private string descriptionTextArea;
-    // [Multiline]
-    // [Tooltip("A string using the MultiLine attribute")]
-    // [SerializeField]
-    // private string descriptionMultiLine;
-    // private void Test()
-    // {
-    //     _test = GetComponent<RectTransform>().anchoredPosition3D;
-    // }
 
     //Variables
-    private bool _inMenu, _allowKeys, _childIsMoving, _setUpFinished;
-    private INode _lastHighlighted;
+    private bool _childIsMoving, _setUpFinished;
     private IUiEvents _uiNodeEvents;
-    private IDisabledNode _disabledNode;
     private INodeBase _nodeBase;
     private readonly List<NodeFunctionBase> _activeFunctions = new List<NodeFunctionBase>();
-
-    //Events
-    private Action<IHighlightedNode> DoHighlighted { get; set; }
-    private Action<ISelectedNode> DoSelected { get; set; }
+    public List<INode> ToggleGroupMembers { get; } = new List<INode>();
+    public int HasAGroupStartPoint { get; private set; }
 
     //Properties & Enums
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
-    public bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
-    public bool DontStoreTheseNodeTypesInHistory => IsToggleGroup || IsToggleNotLinked || HasChildBranch is null;
+    private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
     private bool IsCancelOrBack => _buttonFunction == ButtonFunction.CancelOrBack;
-    public bool IsSelected { get; private set; }
+    public bool CanStoreNodeInHistory => IsToggleGroup || IsToggleNotLinked || HasChildBranch is null;
     public ToggleData ToggleData => _toggleData;
     public IBranch MyBranch { get; private set; }
-    public IBranch HasChildBranch => _navigation.ChildBranch;
+    public IBranch HasChildBranch
+    {
+        get => _navigation.ChildBranch;
+        private set => _navigation.ChildBranch = value;
+    }
+
     public EscapeKey EscapeKeyType => _escapeKeyFunction;
     public GameObject ReturnGameObject => gameObject;
-    public INode Highlighted => this;
-    public INode Selected => this;
-    public UINavigation Navigation => _navigation.Instance;
     public bool CloseHooverOnExit => _closeHoverOnExit;
     public IsActive ReturnStartAsSelected => _startAsSelected;
     public IsActive SetStartAsSelected { set => _startAsSelected = value; }
 
     public IUiEvents UINodeEvents => _uiNodeEvents;
-
-    private void SaveInMenuOrInGame(IInMenu args)
-    {
-        _inMenu = args.InTheMenu;
-        if (SetUpFinished()) return;
-        
-        if (!_inMenu)
-        {
-            SetNotHighlighted();
-        }
-        else if (ReferenceEquals(_lastHighlighted, this) && _allowKeys) //TODO Check this works
-        {
-            SetNodeAsActive();
-        }
-    }
-
-    private bool SetUpFinished()
-    {
-        if (_setUpFinished) return false;
-        _setUpFinished = true;
-        return true;
-    }
-
-    private void SaveAllowKeys(IAllowKeys args)
-    {
-        _allowKeys = args.CanAllowKeys;
-        if(!_allowKeys && ReferenceEquals(_lastHighlighted, this)) //TODO Check this works
-        {
-            SetNotHighlighted();
-        }    
-    }
-
-    private void SaveHighlighted(IHighlightedNode args) 
-    {
-        if (_lastHighlighted is null) _lastHighlighted = args.Highlighted;
-        UnHighlightThisNode(args);        
-        _lastHighlighted = args.Highlighted;
-    }
-
-    private void UnHighlightThisNode(IHighlightedNode args)
-    {
-        if(!_allowKeys) return;
-        if (_lastHighlighted == this && args.Highlighted != this)
-        {
-            SetNotHighlighted();
-        }
-    }
     
-    // ReSharper disable once UnusedMember.Global - Assigned in editor to Disable Object
-    public void DisableNode()
-    {
-        _disabledNode.IsDisabled = true;
-        _uiNodeEvents.DoIsDisabled(_disabledNode.IsDisabled);
-    }
-    // ReSharper disable once UnusedMember.Global - Assigned in editor to Enable Object
-    public void EnableNode()
-    {
-        _disabledNode.IsDisabled = false;
-        _uiNodeEvents.DoIsDisabled(_disabledNode.IsDisabled);
-    }
-
     //Main
     private void Awake()
     {
         MyBranch = GetComponentInParent<IBranch>();
         _uiNodeEvents = new UiEvents(gameObject.GetInstanceID(), this);
+        if (IsToggleGroup || IsToggleNotLinked)
+            HasChildBranch = null;
     }
 
     private void OnEnable() 
     {
-        FetchEvents();
         StartNodeFactory();
         SetUpUiFunctions();
-        ObserveEvents();
         _nodeBase.OnEnable();
     }
 
     private void OnDisable()
     {
-        RemoveEvents();
         foreach (var nodeFunctionBase in _activeFunctions)
         {
             nodeFunctionBase.OnDisable();
@@ -204,18 +114,35 @@ public partial class UINode : MonoBehaviour, INode, IEventUser,
         _nodeBase.OnDisable();
     }
 
-    private void Start() => _nodeBase.Start();
-
-    public void FetchEvents()
+    private void Start()
     {
-        DoHighlighted = EVent.Do.Fetch<IHighlightedNode>();
-        DoSelected = EVent.Do.Fetch<ISelectedNode>();
+        SetUpToggleGroup();
+         _nodeBase.Start();
+    }
+
+    private void SetUpToggleGroup()
+    {
+        if (!IsToggleGroup) return;
+        
+        foreach (var node in MyBranch.ThisGroupsUiNodes)
+        {
+            if (!node.IsToggleGroup) continue;
+            if (ToggleData.ReturnToggleId != node.ToggleData.ReturnToggleId) continue;
+            ToggleGroupMembers.Add(node);
+            CheckIfIsStartNode(node);
+        }
+    }
+    
+    private void CheckIfIsStartNode(IToggles node)
+    {
+        if (node.ReturnStartAsSelected == IsActive.Yes)
+            HasAGroupStartPoint++;
     }
 
     private void StartNodeFactory()
     {
-        _disabledNode = new DisabledNode(this);
         _nodeBase = NodeFactory.Factory(_buttonFunction, this);
+        _nodeBase.Navigation = _navigation.Instance;
     }
 
     private void SetUpUiFunctions()
@@ -231,121 +158,34 @@ public partial class UINode : MonoBehaviour, INode, IEventUser,
         _activeFunctions.Add(_audio.SetUp(_uiNodeEvents, _enabledFunctions));
     }
 
-    public void ObserveEvents()
+    public void SetNodeAsActive() => _nodeBase.SetNodeAsActive();
+
+    public void DeactivateNode()
     {
-        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
-        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Subscribe<IInMenu>(SaveInMenuOrInGame);
-        EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
-    }
-
-    public void RemoveEvents()
-    {
-        EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
-        EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
-        EVent.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
-    }
-
-    public void SetNodeAsActive()
-    {
-        if (_disabledNode.NodeIsDisabled()) return;
-        
-        ThisNodeIsHighLighted();
-        if (_allowKeys && _inMenu)
-        {
-            _nodeBase.OnEnter(false);
-        }
-        else
-        {
-            _nodeBase.OnExit(false);
-        }
-    }
-
-    public void DoPress() => _uiNodeEvents.DoIsPressed();
-
-    public void DeactivateNode() => _nodeBase.DeactivateNode();
-
-    public void SetAsHighlighted() 
-    {
-        if (_disabledNode.IsDisabled) return;
-        ThisNodeIsHighLighted();
-        _nodeBase.OnEnter(false);
-       // _uiNodeEvents.DoWhenPointerOver(_nodeBase.PointerOverNode);
-    }
-
-    public void SetNotHighlighted()
-    {
-        _nodeBase.PointerOverNode = false;
-        _nodeBase.OnExit(false);
-        //_uiNodeEvents.DoWhenPointerOver(_nodeBase.PointerOverNode);
-    }
-
-    public void SetNodeAsSelected_NoEffects()
-    {
-        _uiNodeEvents.DoMuteAudio();
-        SetSelectedStatus(true, SetNotHighlighted);
-    }
-
-    public void SetNodeAsNotSelected_NoEffects()
-    {
-        _uiNodeEvents.DoMuteAudio();
-        SetSelectedStatus(false, SetNotHighlighted);
-    }
-
-    public void SetSelectedStatus(bool isSelected, Action endAction)
-    {
-        IsSelected = isSelected;
-        _uiNodeEvents.DoIsSelected(IsSelected);
-        endAction.Invoke();
+        if(IsToggleNotLinked|| IsToggleGroup) return;
+        _nodeBase.DeactivateNodeByType();
     }
     
-    public void ThisNodeIsSelected() => DoSelected?.Invoke(this);
+    public void ClearNode()
+    {
+        if(IsToggleNotLinked || IsToggleGroup) return;
+        _nodeBase.ClearNodeCompletely();
+    }
+    
+    // Use To Disable Node from external scripts
+    public void DisableNode() => _nodeBase.DisableNode();
 
-    public void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this);
+    public void EnableNode() => _nodeBase.EnableNode();
+
+    public void ThisNodeIsHighLighted() => _nodeBase.ThisNodeIsHighLighted();
     
     //Input Interfaces
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        ThisNodeIsHighLighted();
-        _nodeBase.OnEnter(IsDragEvent(eventData));
-    }
-    public void OnPointerExit(PointerEventData eventData) => _nodeBase.OnExit(IsDragEvent(eventData));
-    public void OnPointerDown(PointerEventData eventData) => PressedActions(IsDragEvent(eventData));
-    public void OnSubmit(BaseEventData eventData) => PressedActions(false);
-    public void OnMove(AxisEventData eventData) => DoMoveToNextNode(eventData.moveDir);
-    
+    public void OnPointerEnter(PointerEventData eventData) => _nodeBase.SetAsHighlighted();
+    public void OnPointerExit(PointerEventData eventData) => _nodeBase.SetNotHighlighted();
+    public void OnPointerDown(PointerEventData eventData) => _nodeBase.SelectedAction(IsDragEvent(eventData));
+    public void OnSubmit(BaseEventData eventData) => _nodeBase.SelectedAction(false);
+    public void OnMove(AxisEventData eventData) => _nodeBase.DoMoveToNextNode(eventData.moveDir);
     public void OnPointerUp(PointerEventData eventData) { }
     private static bool IsDragEvent(PointerEventData eventData) => eventData.pointerDrag;
-    
-    private void PressedActions(bool isDragEvent)
-    {
-        if (_disabledNode.IsDisabled) return;
-        if (_allowKeys) _nodeBase.PointerOverNode = false;
-        _nodeBase.OnSelected(isDragEvent);
-    }
-
-    private void DoMoveToNextNode(MoveDirection moveDirection) => _uiNodeEvents.DoOnMove(moveDirection);
-
-    public void CheckIfMoveAllowed(MoveDirection moveDirection)
-    {
-        if(!MyBranch.CanvasIsEnabled)return;
-        
-        if (_disabledNode.IsDisabled)
-        {
-            DoMoveToNextNode(moveDirection);
-        }
-        else
-        {
-            _nodeBase.OnEnter(false);
-        }
-    }
-
-    private void HotKeyPressed(IHotKeyPressed args)
-    {
-        if (args.ParentNode != this) return;
-        ThisNodeIsSelected();
-        ThisNodeIsHighLighted();
-        SetNodeAsSelected_NoEffects();
-    }
+    public void DoNonMouseMove(MoveDirection moveDirection) => _nodeBase.DoNonMouseMove(moveDirection);
 }

@@ -1,10 +1,11 @@
-﻿public interface IHoverToActivate : INodeBase { }
+﻿using UnityEngine;
+
+public interface IHoverToActivate : INodeBase { }
 
 
 public class HoverToActivate : NodeBase, IHoverToActivate
 {
     private bool _allowKeys;
-    private bool _closedChildBranch;
     
     public HoverToActivate(INode node) : base(node) => _uiNode = node;
 
@@ -26,23 +27,12 @@ public class HoverToActivate : NodeBase, IHoverToActivate
 
     private void SaveAllowKeys(IAllowKeys newNode) => _allowKeys = newNode.CanAllowKeys;
 
-    public override void OnEnter(bool isDragEvent)
+    protected override void OnEnter(bool isDragEvent)
     {
-        if (_closedChildBranch)
+        Debug.Log("******** I am here!!!*********");
+        if (!_allowKeys && IsSelected)
         {
-            PointerOverNode = true;
-            _closedChildBranch = false;
-            return;
-        }
-        NodeIsActive();
-    }
-
-    private void NodeIsActive()
-    {
-        if (!_allowKeys && _uiNode.IsSelected)
-        {
-            _uiNode.UINodeEvents.DoWhenPointerOver(PointerOverNode);
-           // _uiNode.SetAsHighlighted();
+            _uiEvents.DoWhenPointerOver(PointerOverNode);
         }
         else
         {
@@ -50,23 +40,25 @@ public class HoverToActivate : NodeBase, IHoverToActivate
         }
     }
 
-    public override void OnExit(bool isDragEvent)
+    protected override void OnExit(bool isDragEvent)
     {
         PointerOverNode = false;
         
-        if (_uiNode.CloseHooverOnExit)
+        if (_uiNode.CloseHooverOnExit && NoActiveChild())
         {
-            TurnNodeOnOff();
+            CloseHoverOverProcess();
         }
-        _uiNode.UINodeEvents.DoWhenPointerOver(PointerOverNode);
-        //_uiNode.SetNotHighlighted();
+        _uiEvents.DoWhenPointerOver(PointerOverNode);
     }
 
-    public override void OnSelected(bool isDragEvent) => TurnNodeOnOff();
+    private bool NoActiveChild()
+    {
+        return _uiNode.HasChildBranch is null || !_uiNode.HasChildBranch.CanvasIsEnabled;
+    }
 
     protected override void TurnNodeOnOff()
     {
-        if (_uiNode.IsSelected)
+        if (IsSelected)
         {
             Deactivate();
         }
@@ -75,23 +67,20 @@ public class HoverToActivate : NodeBase, IHoverToActivate
             PointerOverNode = false;
             Activate();
         }
-        _uiHistoryTrack.SetSelected(_uiNode);
+        ThisNodeIsSelected();
     }
 
-    private void Activate() 
+    protected override void Activate() 
     {
-        _uiNode.ThisNodeIsHighLighted();
-        _uiNode.SetSelectedStatus(true, _uiNode.DoPress);
-        _uiNode.ThisNodeIsSelected();
+        ThisNodeIsHighLighted();
+        SetSelectedStatus(true, DoPressOnNode);
     }
-
-    private void Deactivate() => _uiNode.SetSelectedStatus(false, _uiNode.DoPress);
     
-    public override void DeactivateNode()
+    public override void DeactivateNodeByType()
     {
-        if (!_uiNode.IsSelected) return;
+        if (!IsSelected) return;
          Deactivate();
-         _uiNode.SetNotHighlighted();
+         SetNotHighlighted();
     }
     
     private void CancelHoverOver(ICancelHoverOver args) => CloseHoverOverProcess();
@@ -101,7 +90,6 @@ public class HoverToActivate : NodeBase, IHoverToActivate
     private void CloseHoverOverProcess()
     {
         if (!_uiNode.HasChildBranch.CanvasIsEnabled) return;
-        _closedChildBranch = true;
         TurnNodeOnOff();
     }
 }

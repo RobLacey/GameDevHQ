@@ -2,21 +2,22 @@
 
 public class DisabledNode : IDisabledNode
 {
-    public DisabledNode(UINode uiNode)
+    public DisabledNode(INode uiNode, NodeBase nodeBase)
     {
-        _uiNode = uiNode;
+        ToThisDisabledNode = uiNode;
+        _nodeBase = nodeBase;
         ThisIsDisabled = EVent.Do.Fetch<IDisabledNode>();
     }
 
-    private readonly UINode _uiNode;
     private bool _isDisabled;
+    private readonly NodeBase _nodeBase;
 
     //Events
     private Action<IDisabledNode> ThisIsDisabled { get; }
 
     //Properties
-    public INode ThisNodeIsDisabled => _uiNode;
-    
+    public INode ToThisDisabledNode { get; }
+
     //Main
     public bool IsDisabled
     {
@@ -27,14 +28,14 @@ public class DisabledNode : IDisabledNode
             if (!_isDisabled) return;
             
             ThisIsDisabled?.Invoke(this);
-            _uiNode.SetSelectedStatus(false, _uiNode.DoPress);
+            _nodeBase.SetSelectedStatus(false, _nodeBase.DoPressOnNode);
         }
     }
 
-    public bool NodeIsDisabled()
+    public bool IsThisNodeIsDisabled()
     {
         if (!IsDisabled) return false;
-        _uiNode.Navigation.MoveToNextFreeNode();
+        _nodeBase.Navigation.MoveToNextFreeNode();
         return true;
     }
 

@@ -18,7 +18,7 @@ public static class NodeFactory
             }
             case ButtonFunction.ToggleNotLinked:
             {
-                return ieJect.WithParams<IToggleNotLinked>(node);
+                return ieJect.WithParams<IStandard>(node);
             }
             case ButtonFunction.HoverToActivate:
             {

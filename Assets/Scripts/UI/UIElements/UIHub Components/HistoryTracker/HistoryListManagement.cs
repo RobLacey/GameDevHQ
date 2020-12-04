@@ -83,7 +83,7 @@ public class HistoryListManagement : IHistoryManagement
 
         _historyTracker.AddNodeToTestRunner(node);
 
-        void EndOfTweenActions() => node.MyBranch.MoveToBranchWithoutTween();
+        void EndOfTweenActions() => node.MyBranch.MoveToThisBranch();
     }
     
     public void ClearAllHistory()
@@ -123,7 +123,7 @@ public class HistoryListManagement : IHistoryManagement
         _history.Clear();
     }
 
-    private void ResetNode(INode currentNode, INode firstInHistory)
+    private static void ResetNode(INode currentNode, INode firstInHistory)
     {
         if (currentNode == firstInHistory)
         {
@@ -131,8 +131,7 @@ public class HistoryListManagement : IHistoryManagement
         }
         else
         {
-            currentNode.SetNodeAsNotSelected_NoEffects();
-            currentNode.SetNotHighlighted();
+            currentNode.ClearNode();
         }
     }
 

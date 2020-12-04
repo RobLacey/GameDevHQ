@@ -3,10 +3,16 @@
 public interface ICancelOrBack : INodeBase { }
 
 
-public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBack, IEventDispatcher
+public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBack
 {
+    public CancelOrBackButton(INode node) : base(node)
+    {
+        MyBranch = node.MyBranch;
+        _isPopUp = MyBranch.IsAPopUpBranch();
+        EscapeKeyType = node.EscapeKeyType;
+    }
+
     private readonly bool _isPopUp;
-    
     public EscapeKey EscapeKeyType { get; }
 
     //Events
@@ -14,20 +20,13 @@ public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBac
     private Action<ICancelPopUp> CancelPopUp { get; set; }
     private Action<ICancelHoverOver> CancelHoverOver { get; set; }
 
-    public override void Start() => FetchEvents();
-
-    public void FetchEvents()
+    //Main
+    public override void FetchEvents()
     {
+        base.FetchEvents();
         CancelButtonActive = EVent.Do.Fetch<ICancelButtonActivated>();
         CancelPopUp= EVent.Do.Fetch<ICancelPopUp>();
         CancelHoverOver= EVent.Do.Fetch<ICancelHoverOver>();
-    }
-
-    public CancelOrBackButton(INode node) : base(node)
-    {
-        MyBranch = node.MyBranch;
-        _isPopUp = MyBranch.IsAPopUpBranch();
-        EscapeKeyType = node.EscapeKeyType;
     }
 
     protected override void TurnNodeOnOff()
@@ -45,7 +44,5 @@ public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBac
             CancelButtonActive?.Invoke(this);
         }
     }
-
-    public override void DeactivateNode() { }
 }
 

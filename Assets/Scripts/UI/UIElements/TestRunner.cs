@@ -32,7 +32,7 @@ public class TestRunner : MonoBehaviour, IEventUser
     }
     
     private void SaveLastHighlighted(IHighlightedNode args) => _lastHighlighted = (UINode)args.Highlighted;
-    private void SaveLastSelected(ISelectedNode args) => _lastSelected = (UINode)args.Selected;
+    private void SaveLastSelected(ISelectedNode args) => _lastSelected = (UINode)args.UINode;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = (UIBranch) args.ActiveBranch.ThisBranch;
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;

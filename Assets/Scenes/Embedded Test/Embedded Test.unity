@@ -10370,7 +10370,8 @@ PrefabInstance:
         type: 3}
       propertyPath: _scheme
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 11400000, guid: 288aa10055ca42443a0371953c985365,
+        type: 2}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10647,7 +10648,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 205}
+  m_AnchoredPosition: {x: 0, y: -234}
   m_SizeDelta: {x: 400, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &504002778
@@ -10665,7 +10666,7 @@ MonoBehaviour:
   _branchType: 1
   _timer: 1
   _screenType: 0
-  _stayVisible: 1
+  _stayVisible: 0
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 0
@@ -10706,7 +10707,7 @@ MonoBehaviour:
       _goToEndPosition: 0
       _tweenStartPosition: {x: 0, y: 205, z: 0}
       _tweenMiddlePosition: {x: 0, y: -234, z: 0}
-      _tweenTargetPosition: {x: 0, y: 205, z: 0}
+      _tweenTargetPosition: {x: 0, y: -234, z: 0}
     _scaleSettings:
       _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
@@ -13051,6 +13052,12 @@ PrefabInstance:
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenStartPosition.x
       value: 1875
       objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _scheme
+      value: 
+      objectReference: {fileID: 11400000, guid: f69f7852915b576489b1831ac78a2df1,
+        type: 2}
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: m_Enabled
@@ -30101,7 +30108,7 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
+  _closeHoverOnExit: 1
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -32077,7 +32084,7 @@ MonoBehaviour:
     _tabBranch: {fileID: 0}
   _closeHoverOnExit: 0
   _startAsSelected: 0
-  _enabledFunctions: 67
+  _enabledFunctions: 323
   _navigation:
     _childBranch: {fileID: 1712214354}
     _setNavigation: 1
@@ -33537,6 +33544,12 @@ PrefabInstance:
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenTargetPosition.x
       value: -1904
       objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _scheme
+      value: 
+      objectReference: {fileID: 11400000, guid: f69f7852915b576489b1831ac78a2df1,
+        type: 2}
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: m_Enabled
@@ -40894,6 +40907,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _stayVisible
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _moveType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}

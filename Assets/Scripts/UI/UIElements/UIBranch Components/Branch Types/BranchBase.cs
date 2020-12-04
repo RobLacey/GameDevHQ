@@ -138,7 +138,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
 
     protected void CanGoToFullscreen()
     {
-        if (MyScreenType != ScreenType.FullScreen) return;
+        if (MyScreenType != ScreenType.FullScreen || !OnHomeScreen) return;
         InvokeDoClearScreen();
         InvokeOnHomeScreen(false);
     }

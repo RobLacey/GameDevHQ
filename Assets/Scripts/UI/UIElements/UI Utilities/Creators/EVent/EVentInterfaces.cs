@@ -45,7 +45,7 @@ public interface IHighlightedNode
 
 public interface ISelectedNode
 {
-    INode Selected { get; }
+    INode UINode { get; }
 }
 
 public interface IActiveBranch
@@ -108,9 +108,9 @@ public interface IHotKeyPressed
 
 public interface IDisabledNode
 {
-    INode ThisNodeIsDisabled { get; }
+    INode ToThisDisabledNode { get; }
     bool IsDisabled { get; set; }
-    bool NodeIsDisabled();
+    bool IsThisNodeIsDisabled();
 }
 
 public interface ISceneChange { }
