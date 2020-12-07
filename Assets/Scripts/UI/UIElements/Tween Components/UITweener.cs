@@ -27,7 +27,7 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
     [SerializeField] 
     [ShowIf("UserEvents")] [BoxGroup("Tween Events")] [Label("Expand...")] 
     private TweenEvents _tweenEvents;
-
+    
     //Variables
     private int _counter, _effectCounter;
     private List<ITweenBase> _activeTweens;

@@ -41,6 +41,7 @@ public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
         EVent.Do.Subscribe<ICancelPressed>(CancelPressed);
         EVent.Do.Subscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
         EVent.Do.Subscribe<IGameIsPaused>(SaveGameIsPaused);
+        EVent.Do.Subscribe<ICancelHoverOver>(CancelHooverOver);
     }
 
     public void RemoveEvents()
@@ -49,6 +50,8 @@ public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
         EVent.Do.Unsubscribe<ICancelPressed>(CancelPressed);
         EVent.Do.Unsubscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
         EVent.Do.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
+        EVent.Do.Subscribe<ICancelHoverOver>(CancelHooverOver);
+
     }
 
     public void UseEServLocator() => _uiHistoryTrack = EServ.Locator.Get<IHistoryTrack>(this);
@@ -60,6 +63,11 @@ public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
     }
 
     private void CancelOrBackButtonPressed(ICancelButtonActivated args)
+    {
+        ProcessCancelType(args.EscapeKeyType);
+    }
+
+    private void CancelHooverOver(ICancelHoverOver args)
     {
         ProcessCancelType(args.EscapeKeyType);
     }

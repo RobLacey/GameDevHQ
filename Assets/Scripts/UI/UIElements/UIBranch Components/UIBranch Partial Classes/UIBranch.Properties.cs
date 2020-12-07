@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// This partial class holds all the classes properties as UIBranch is an important link between higher and lower parts of the system
 /// </summary>
-public partial class UIBranch
+public partial class UIBranch : ICancelHoverOver
 {
     public bool IsAPopUpBranch()
     {
@@ -31,7 +31,7 @@ public partial class UIBranch
     public IBranch ActiveBranch => this;
 
 
-    public EscapeKey EscapeKeySetting
+    public EscapeKey EscapeKeyType
     {
         get => _escapeKeyFunction;
         set => _escapeKeyFunction = value;

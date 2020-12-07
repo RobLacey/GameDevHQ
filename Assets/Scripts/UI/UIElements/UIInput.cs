@@ -68,7 +68,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private void SaveAllowKeys (IAllowKeys args) => _allowKeys = args.CanAllowKeys;
     public SwitchType SwitchType { get; private set; }
     public InputScheme ReturnScheme => _inputScheme;
-    public EscapeKey EscapeKeySettings => _activeBranch.EscapeKeySetting;
+    public EscapeKey EscapeKeySettings => _activeBranch.EscapeKeyType;
     private bool NothingSelectedAction => _inputScheme.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
 
     //Main

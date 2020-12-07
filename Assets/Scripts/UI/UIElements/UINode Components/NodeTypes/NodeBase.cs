@@ -2,12 +2,14 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelectedNode, IHighlightedNode
+public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelectedNode, 
+                                 IHighlightedNode
+                                 
 {
     protected NodeBase(INode node)
     {
         _uiNode = node;
-        _uiEvents = _uiNode.UINodeEvents;
+        _uiFunctionEvents = _uiNode.UINodeEvents;
         MyBranch = _uiNode.MyBranch;
     }
     
@@ -18,7 +20,10 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     private bool _inMenu;
     private bool _hasFinishedSetUp;
     private INode _lastHighlighted;
-    protected readonly IUiEvents _uiEvents;
+    protected readonly IUiEvents _uiFunctionEvents;
+    protected Transform _originalParentTransform;
+    protected Transform _myTransform;
+    protected Transform _myChildsTransform;
 
     //Events
     private Action<IHighlightedNode> DoHighlighted { get; set; }
@@ -29,9 +34,10 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     public IBranch MyBranch { get; protected set; }
     private bool IsDisabled => _disabledNode.IsDisabled;
     public UINavigation Navigation { get; set; }
-    protected bool IsSelected { get; set; }
+    protected bool IsSelected { get; private set; }
     public INode Highlighted => _uiNode;
     public INode UINode => _uiNode;
+
 
     //Set / Getters
     private void SaveHighlighted(IHighlightedNode args) 
@@ -80,7 +86,6 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         return true;
     }
 
-    public virtual void Start() => _disabledNode = new DisabledNode(_uiNode, this);
 
     public void OnEnable()
     {
@@ -89,7 +94,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     }
     
     public void OnDisable() => RemoveEvents();
-    
+
     public virtual void FetchEvents()
     {
         DoHighlighted = EVent.Do.Fetch<IHighlightedNode>();
@@ -102,6 +107,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         EVent.Do.Subscribe<IInMenu>(SaveInMenuOrInGame);
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
+        EVent.Do.Subscribe<ICancelHoverOver>(OnCancelHooverOver);
     }
 
     public virtual void RemoveEvents()
@@ -110,6 +116,16 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         EVent.Do.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
         EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
+        EVent.Do.Unsubscribe<ICancelHoverOver>(OnCancelHooverOver);
+    }
+
+    public virtual void Start()
+    {
+        _disabledNode = new DisabledNode(_uiNode, this);
+        if(_uiNode.HasChildBranch is null) return;
+        _myTransform = _uiNode.MyBranch.ThisBranchesGameObject.transform;
+        _originalParentTransform = _uiNode.HasChildBranch.MyParentBranch.ThisBranchesGameObject.transform;
+        _myChildsTransform = _uiNode.HasChildBranch.ThisBranchesGameObject.transform;
     }
 
     public virtual void DeactivateNodeByType()
@@ -127,14 +143,14 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     public void EnableNode()
     {
         _disabledNode.IsDisabled = false;
-        _uiEvents.DoIsDisabled(_disabledNode.IsDisabled);
+        _uiFunctionEvents.DoIsDisabled(_disabledNode.IsDisabled);
     }
 
     // ReSharper disable once UnusedMember.Global - Assigned in editor to Disable Object
     public void DisableNode()
     {
         _disabledNode.IsDisabled = true;
-        _uiEvents.DoIsDisabled(_disabledNode.IsDisabled);
+        _uiFunctionEvents.DoIsDisabled(_disabledNode.IsDisabled);
     }
 
     public void SetNodeAsActive()
@@ -152,34 +168,34 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
             SetNotHighlighted();
         }
     }
-    
-    public void SetAsHighlighted() 
+
+    private void SetAsHighlighted() 
     {
         if (IsDisabled) return;
         ThisNodeIsHighLighted();
-        OnEnter(false);
-        _uiEvents.DoWhenPointerOver(PointerOverNode);
+        PointerOverNode = true;
+        _uiFunctionEvents.DoWhenPointerOver(PointerOverNode);
     }
 
-    public void SetNotHighlighted()
+    protected void SetNotHighlighted()
     {
-        OnExit(false);
-        _uiEvents.DoWhenPointerOver(PointerOverNode);
+        PointerOverNode = false;
+        _uiFunctionEvents.DoWhenPointerOver(PointerOverNode);
     }
 
     protected void ThisNodeIsSelected() => DoSelected?.Invoke(this);
 
     public void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this);
     
-    public void DoPressOnNode() => _uiEvents.DoIsPressed();
+    public void DoPressOnNode() => _uiFunctionEvents.DoIsPressed();
 
     public void SetSelectedStatus(bool isSelected, Action endAction)
     {
         IsSelected = isSelected;
-        _uiEvents.DoIsSelected(IsSelected);
+        _uiFunctionEvents.DoIsSelected(IsSelected);
         endAction.Invoke();
     }
-    
+
     public void SelectedAction(bool isDragEvent)
     {
         if (IsDisabled) return;
@@ -187,31 +203,39 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         OnSelected(isDragEvent);
     }
 
+    protected virtual void OnSelected(bool isDragEvent)
+    {
+        if(isDragEvent) return;
+        TurnNodeOnOff();
+    }
+
     protected void SetNodeAsSelected_NoEffects()
     {
-        _uiEvents.DoMuteAudio();
+        _uiFunctionEvents.DoMuteAudio();
         SetSelectedStatus(true, SetNotHighlighted);
     }
 
     protected void SetNodeAsNotSelected_NoEffects()
     {
-        _uiEvents.DoMuteAudio();
+        _uiFunctionEvents.DoMuteAudio();
         SetSelectedStatus(false, SetNotHighlighted);
     }
 
-    protected virtual void OnEnter(bool isDragEvent)
+    public virtual void OnEnter(bool isDragEvent)
     {
         if(isDragEvent) return;
         PointerOverNode = true;
+        SetAsHighlighted();
     }
 
-    protected virtual void OnExit(bool isDragEvent)
+    public virtual void OnExit(bool isDragEvent)
     {
         if(isDragEvent) return;
         PointerOverNode = false;
+        SetNotHighlighted();
     }
-    
-    public void DoMoveToNextNode(MoveDirection moveDirection) => _uiEvents.DoOnMove(moveDirection);
+
+    public void DoMoveToNextNode(MoveDirection moveDirection) => _uiFunctionEvents.DoOnMove(moveDirection);
 
     public void DoNonMouseMove(MoveDirection moveDirection)
     {
@@ -227,12 +251,6 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         }
     }
 
-    private void OnSelected(bool isDragEvent)
-    {
-        if(isDragEvent) return;
-        TurnNodeOnOff();
-    }
-
     protected virtual void TurnNodeOnOff()
     {
         if (IsSelected)
@@ -243,7 +261,6 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         {
             Activate();
         }
-        Debug.Log(_uiNode);
         ThisNodeIsSelected();
     }
 
@@ -258,4 +275,15 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         SetNodeAsSelected_NoEffects();
         args.MyBranch.MoveToThisBranch();
     }
+
+    protected  virtual void OnCancelHooverOver(ICancelHoverOver args)
+    {
+        //Tidy up UIBranch hoover exit and Branch Factory
+        //Fix hot key race condition
+        //Turning off when going to Parent
+        //Apply to correct branch types and Node types
+        //Sort out where it can be shown
+        //Check on and off work
+    }
+
 }

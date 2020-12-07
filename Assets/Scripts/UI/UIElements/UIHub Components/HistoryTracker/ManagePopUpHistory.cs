@@ -70,7 +70,7 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
 
     public void HandlePopUps(IBranch popUpToCancel)
     {
-        if(popUpToCancel.EscapeKeySetting == EscapeKey.None) return;
+        if(popUpToCancel.EscapeKeyType == EscapeKey.None) return;
         _popUpController.RemoveNextPopUp(popUpToCancel);
         popUpToCancel.StartBranchExitProcess(OutTweenType.Cancel, RemovedPopUpCallback);
     }

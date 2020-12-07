@@ -83,7 +83,10 @@ public class HistoryListManagement : IHistoryManagement
 
         _historyTracker.AddNodeToTestRunner(node);
 
-        void EndOfTweenActions() => node.MyBranch.MoveToThisBranch();
+        void EndOfTweenActions()
+        {
+            node.MyBranch.MoveToThisBranch();
+        }
     }
     
     public void ClearAllHistory()

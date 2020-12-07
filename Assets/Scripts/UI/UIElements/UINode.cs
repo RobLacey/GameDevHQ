@@ -19,9 +19,12 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")]
     private ToggleData _toggleData;
-    [SerializeField] 
-    [ShowIf(EConditionOperator.Or, "IsHoverToActivate")] 
-    private bool _closeHoverOnExit;
+    // [SerializeField] 
+    // //[ShowIf(EConditionOperator.Or, "IsHoverToActivate")] 
+    // private bool _openHoverOnEnter;
+    // [SerializeField] 
+    // //[ShowIf(EConditionOperator.Or, "IsHoverToActivate")] 
+    // private bool _closeHoverOnExit;
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, "IsToggleGroup")] 
     private IsActive _startAsSelected = IsActive.No;
@@ -83,7 +86,8 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     public EscapeKey EscapeKeyType => _escapeKeyFunction;
     public GameObject ReturnGameObject => gameObject;
-    public bool CloseHooverOnExit => _closeHoverOnExit;
+    // public bool OpenHooverOnEnter => _openHoverOnEnter;
+    // public bool CloseHooverOnExit => _closeHoverOnExit;
     public IsActive ReturnStartAsSelected => _startAsSelected;
     public IsActive SetStartAsSelected { set => _startAsSelected = value; }
 
@@ -180,8 +184,8 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public void ThisNodeIsHighLighted() => _nodeBase.ThisNodeIsHighLighted();
     
     //Input Interfaces
-    public void OnPointerEnter(PointerEventData eventData) => _nodeBase.SetAsHighlighted();
-    public void OnPointerExit(PointerEventData eventData) => _nodeBase.SetNotHighlighted();
+    public void OnPointerEnter(PointerEventData eventData) => _nodeBase.OnEnter(IsDragEvent(eventData));
+    public void OnPointerExit(PointerEventData eventData) => _nodeBase.OnExit(IsDragEvent(eventData));
     public void OnPointerDown(PointerEventData eventData) => _nodeBase.SelectedAction(IsDragEvent(eventData));
     public void OnSubmit(BaseEventData eventData) => _nodeBase.SelectedAction(false);
     public void OnMove(AxisEventData eventData) => _nodeBase.DoMoveToNextNode(eventData.moveDir);

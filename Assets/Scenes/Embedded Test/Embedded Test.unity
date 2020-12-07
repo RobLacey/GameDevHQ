@@ -881,16 +881,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f5dfd11c59dde44c933280df0ae6aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buttonFunction: 2
+  _buttonFunction: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
-    _childBranch: {fileID: 504002778}
+    _childBranch: {fileID: 375905088}
     _setNavigation: 1
     _up: {fileID: 1694247286}
     _down: {fileID: 948469796}
@@ -1050,7 +1049,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1579058405}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1137,7 +1136,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1579058405}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2071,7 +2070,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 246213780}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -2355,7 +2353,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -2443,7 +2440,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -3194,7 +3190,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 1
   _enabledFunctions: 67
   _navigation:
@@ -4485,6 +4480,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 1
+  _openHoverOnEnter: 0
+  _closeHoverOnExit: 0
   _timer: 1
   _screenType: 0
   _stayVisible: 1
@@ -4684,6 +4681,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 0
+  _openHoverOnEnter: 0
+  _closeHoverOnExit: 0
   _timer: 1
   _screenType: 0
   _stayVisible: 1
@@ -6033,7 +6032,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1579058405}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -8561,6 +8560,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1579058405}
+  - {fileID: 504002777}
   m_Father: {fileID: 1358621079}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8582,6 +8582,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 0
+  _openHoverOnEnter: 1
+  _closeHoverOnExit: 1
   _timer: 1
   _screenType: 0
   _stayVisible: 0
@@ -9488,7 +9490,7 @@ PrefabInstance:
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: _buttonFunction
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
@@ -10643,12 +10645,12 @@ RectTransform:
   - {fileID: 75400625}
   - {fileID: 948469795}
   - {fileID: 1879167843}
-  m_Father: {fileID: 1579058405}
-  m_RootOrder: 0
+  m_Father: {fileID: 413526948}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -234}
+  m_AnchoredPosition: {x: 0, y: -251}
   m_SizeDelta: {x: 400, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &504002778
@@ -10664,6 +10666,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 1
+  _openHoverOnEnter: 0
+  _closeHoverOnExit: 1
   _timer: 1
   _screenType: 0
   _stayVisible: 0
@@ -10671,7 +10675,7 @@ MonoBehaviour:
   _tweenOnHome: 1
   _saveExitSelection: 0
   _moveType: 1
-  _escapeKeyFunction: 4
+  _escapeKeyFunction: 1
   _startOnThisNode: {fileID: 0}
   _whenPausePressed:
     m_PersistentCalls:
@@ -10707,7 +10711,7 @@ MonoBehaviour:
       _goToEndPosition: 0
       _tweenStartPosition: {x: 0, y: 205, z: 0}
       _tweenMiddlePosition: {x: 0, y: -234, z: 0}
-      _tweenTargetPosition: {x: 0, y: -234, z: 0}
+      _tweenTargetPosition: {x: 0, y: -251, z: 0}
     _scaleSettings:
       _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
@@ -10773,19 +10777,19 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 504002776}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 2
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
-  m_OverrideSorting: 0
+  m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!114 &507342741 stripped
 MonoBehaviour:
@@ -12794,6 +12798,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 2
+  _openHoverOnEnter: 0
+  _closeHoverOnExit: 0
   _timer: 2
   _screenType: 1
   _stayVisible: 1
@@ -17972,7 +17978,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -20204,7 +20209,7 @@ PrefabInstance:
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: _buttonFunction
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
@@ -20722,16 +20727,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f5dfd11c59dde44c933280df0ae6aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buttonFunction: 2
+  _buttonFunction: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
-    _childBranch: {fileID: 504002778}
+    _childBranch: {fileID: 477428662}
     _setNavigation: 1
     _up: {fileID: 75400626}
     _down: {fileID: 1879167844}
@@ -23308,6 +23312,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 1
+  _openHoverOnEnter: 0
+  _closeHoverOnExit: 0
   _timer: 1
   _screenType: 0
   _stayVisible: 1
@@ -23797,7 +23803,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -23911,7 +23916,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 1064311445}
-  _closeHoverOnExit: 0
   _startAsSelected: 1
   _enabledFunctions: 67
   _navigation:
@@ -25085,6 +25089,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 1
+  _openHoverOnEnter: 0
+  _closeHoverOnExit: 0
   _timer: 1
   _screenType: 0
   _stayVisible: 1
@@ -26435,6 +26441,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1172980945}
+  - {fileID: 1712214353}
   m_Father: {fileID: 2136615579}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -26456,6 +26463,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 0
+  _openHoverOnEnter: 0
+  _closeHoverOnExit: 0
   _timer: 1
   _screenType: 0
   _stayVisible: 0
@@ -28423,6 +28432,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 3
+  _openHoverOnEnter: 0
+  _closeHoverOnExit: 0
   _timer: 6
   _screenType: 0
   _stayVisible: 1
@@ -30079,7 +30090,6 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 504002777}
   - {fileID: 91925147}
   - {fileID: 309287634}
   - {fileID: 103150096}
@@ -30103,12 +30113,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f5dfd11c59dde44c933280df0ae6aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buttonFunction: 3
+  _buttonFunction: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 1
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -32082,7 +32091,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 323
   _navigation:
@@ -32200,12 +32208,12 @@ RectTransform:
   - {fileID: 1938995623}
   - {fileID: 764705164}
   - {fileID: 812312425}
-  m_Father: {fileID: 2136615579}
+  m_Father: {fileID: 1396258918}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -464, y: -125}
+  m_AnchoredPosition: {x: -1204, y: -278}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1712214354
@@ -32221,6 +32229,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 1
+  _openHoverOnEnter: 0
+  _closeHoverOnExit: 0
   _timer: 1
   _screenType: 0
   _stayVisible: 1
@@ -32310,14 +32320,14 @@ Canvas:
   m_RenderMode: 2
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!224 &1718475484 stripped
 RectTransform:
@@ -32933,6 +32943,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 5
+  _openHoverOnEnter: 0
+  _closeHoverOnExit: 0
   _timer: 1
   _screenType: 1
   _stayVisible: 1
@@ -33085,7 +33097,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 1
   _enabledFunctions: 67
   _navigation:
@@ -34707,7 +34718,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -36489,7 +36499,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 1248739661}
-  _closeHoverOnExit: 0
   _startAsSelected: 1
   _enabledFunctions: 67
   _navigation:
@@ -36604,6 +36613,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 3
+  _openHoverOnEnter: 0
+  _closeHoverOnExit: 0
   _timer: 5
   _screenType: 0
   _stayVisible: 1
@@ -36750,7 +36761,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 195
   _navigation:
@@ -40214,7 +40224,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1396258918}
-  - {fileID: 1712214353}
   m_Father: {fileID: 819564431}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -40422,7 +40431,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -42084,7 +42092,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 67
   _navigation:
@@ -42451,7 +42458,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 327
   _navigation:
@@ -42699,7 +42705,6 @@ MonoBehaviour:
   _toggleData:
     _toggleGroupId: 0
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
   _startAsSelected: 0
   _enabledFunctions: 327
   _navigation:

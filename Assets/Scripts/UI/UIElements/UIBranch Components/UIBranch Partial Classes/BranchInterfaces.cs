@@ -20,7 +20,7 @@ public interface IBranch : IParameters
     Canvas MyCanvas { get; } 
     CanvasGroup MyCanvasGroup { get; }
     ScreenType ScreenType { get; set; }
-    EscapeKey EscapeKeySetting { get; set; }
+    EscapeKey EscapeKeyType { get; set; }
     WhenToMove WhenToMove { set; }
     bool CanvasIsEnabled { get; }
     bool CanStoreAndRestoreOptionalPoUp { get; }
@@ -35,6 +35,10 @@ public interface IBranch : IParameters
     INode[] ThisGroupsUiNodes { get; }
     INode LastSelected { get; }
     GameObject ThisBranchesGameObject { get; }
+    
+    bool OpenHooverOnEnter { get; }
+    bool CloseHooverOnExit { get; set; }
+    bool PointerOverBranch { get; }
 
 
     void NavigateToChildBranch(IBranch moveToo);

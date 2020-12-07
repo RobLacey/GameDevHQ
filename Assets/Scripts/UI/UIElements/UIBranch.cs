@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 
 [RequireComponent(typeof(Canvas))]
@@ -13,10 +14,18 @@ using UnityEngine.Events;
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
-public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch, IBranch, IEventDispatcher
+public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch, IBranch, IEventDispatcher,
+                                IPointerEnterHandler, IPointerExitHandler, ICancelHoverOver
 {
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
+    [SerializeField] 
+    //[ShowIf(EConditionOperator.Or, "IsHoverToActivate")] 
+    private bool _openHoverOnEnter;
+    [SerializeField] 
+    //[HideIf(EConditionOperator.Or, "IsHomeScreenBranch")] 
+    private bool _closeHoverOnExit;
+
     [SerializeField] 
     [ShowIf("IsTimedPopUp")] private float _timer = 1f;
     [SerializeField] 
@@ -55,6 +64,15 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private int _groupIndex;
     private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
     private bool _activePopUp, _isTabBranch;
+    
+    public bool OpenHooverOnEnter => _openHoverOnEnter;
+    public bool CloseHooverOnExit
+    {
+        get => _closeHoverOnExit;
+        set => _closeHoverOnExit = value;
+    }
+
+    public bool PointerOverBranch { get; private set; }
 
     //Enum
     private enum StoreAndRestorePopUps { StoreAndRestore, Reset }
@@ -78,6 +96,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     public event Action OnStartPopUp; 
     private Action OnFinishTweenCallBack { get; set; }
     private  Action<IActiveBranch> SetActiveBranch { get; set; }
+    private  Action<ICancelHoverOver> CancelHooverOver { get; set; }
 
     //InternalClasses
     [Serializable]
@@ -112,7 +131,11 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         BranchBase.OnDisable();
     }
     
-    public void FetchEvents() => SetActiveBranch = EVent.Do.Fetch<IActiveBranch>();
+    public void FetchEvents()
+    {
+        SetActiveBranch = EVent.Do.Fetch<IActiveBranch>();
+        CancelHooverOver = EVent.Do.Fetch<ICancelHoverOver>();
+    }
 
     public void ObserveEvents()
     {
@@ -225,7 +248,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     
     public void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null)
     {
-        Debug.Log(this);
         if(!CanvasIsEnabled) return;
         
         if (WhenToMove == WhenToMove.AfterEndOfTween)
@@ -279,6 +301,19 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         BranchBase.SetBlockRaycast(BlockRaycast.Yes);
         _branchEvents?.OnBranchEnter.Invoke();
         _canActivateBranch = true;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData) => PointerOverBranch = true;
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        PointerOverBranch = false;
+        if(CloseHooverOnExit && !MyParentBranch.PointerOverBranch)
+        {
+            Debug.Log(this);
+            EscapeKeyType = EscapeKey.BackToHome;
+            CancelHooverOver?.Invoke(this);
+        }    
     }
 }
 

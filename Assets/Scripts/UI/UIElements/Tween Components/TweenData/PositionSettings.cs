@@ -126,7 +126,7 @@ public class PositionSettings
             MiddleTween = false;
         }
     }
-
+    //TODO Not Used
     public void ClearPositionTween()
     {
         _grabStartPosition = false;
@@ -137,3 +137,4 @@ public class PositionSettings
         _tweenTargetPosition = Vector3.zero;
     }
 }
+

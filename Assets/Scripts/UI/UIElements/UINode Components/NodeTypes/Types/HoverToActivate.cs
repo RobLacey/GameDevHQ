@@ -27,12 +27,14 @@ public class HoverToActivate : NodeBase, IHoverToActivate
 
     private void SaveAllowKeys(IAllowKeys newNode) => _allowKeys = newNode.CanAllowKeys;
 
-    protected override void OnEnter(bool isDragEvent)
+    public override void OnEnter(bool isDragEvent)
     {
-        Debug.Log("******** I am here!!!*********");
+        base.OnEnter(isDragEvent);
+
+        Debug.Log(MyBranch);
         if (!_allowKeys && IsSelected)
         {
-            _uiEvents.DoWhenPointerOver(PointerOverNode);
+            _uiFunctionEvents.DoWhenPointerOver(PointerOverNode);
         }
         else
         {
@@ -40,15 +42,15 @@ public class HoverToActivate : NodeBase, IHoverToActivate
         }
     }
 
-    protected override void OnExit(bool isDragEvent)
+    public override void OnExit(bool isDragEvent)
     {
-        PointerOverNode = false;
+        base.OnExit(isDragEvent);
         
-        if (_uiNode.CloseHooverOnExit && NoActiveChild())
+        if (MyBranch.CloseHooverOnExit && NoActiveChild())
         {
             CloseHoverOverProcess();
         }
-        _uiEvents.DoWhenPointerOver(PointerOverNode);
+        _uiFunctionEvents.DoWhenPointerOver(PointerOverNode);
     }
 
     private bool NoActiveChild()
@@ -64,7 +66,6 @@ public class HoverToActivate : NodeBase, IHoverToActivate
         }
         else
         {
-            PointerOverNode = false;
             Activate();
         }
         ThisNodeIsSelected();

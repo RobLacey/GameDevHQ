@@ -58,7 +58,8 @@
     private static void CreateHomeScreenBranch(IBranch branch)
     {
         branch.ScreenType = ScreenType.Normal;
-        branch.EscapeKeySetting = EscapeKey.None;
+        branch.EscapeKeyType = EscapeKey.None;
+        //branch.CloseHooverOnExit = false;
     }
 
     private static void CreateStandardBranch(IBranch branch)
@@ -68,7 +69,7 @@
 
     private static void CreateResolvePopUp(IBranch branch)
     {
-        branch.EscapeKeySetting = EscapeKey.BackOneLevel;
+        branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.TweenOnHome = DoTween.DoNothing;
         branch.SetStayOn(IsActive.No);
     }
@@ -76,7 +77,7 @@
     private static void CreateOptionalPopUp(IBranch branch)
     {
         branch.ScreenType = ScreenType.Normal;
-        branch.EscapeKeySetting = EscapeKey.BackOneLevel;
+        branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.SetStayOn(IsActive.No);
     }
     
@@ -90,13 +91,13 @@
 
     private static void CreatePauseMenu(IBranch branch)
     {
-        branch.EscapeKeySetting = EscapeKey.BackOneLevel;
+        branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.TweenOnHome = DoTween.DoNothing;
     }
     
     private static void CreateInternal(IBranch branch)
     {
         branch.TweenOnHome = DoTween.DoNothing;
-        branch.EscapeKeySetting = EscapeKey.BackOneLevel;
+        branch.EscapeKeyType = EscapeKey.BackOneLevel;
     }
 }

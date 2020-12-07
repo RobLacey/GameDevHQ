@@ -6,7 +6,8 @@ using UnityEngine;
 public interface INode : IToggles, IParameters
 {
     EscapeKey EscapeKeyType { get; }
-    bool CloseHooverOnExit { get; }
+    // bool OpenHooverOnEnter { get; }
+    // bool CloseHooverOnExit { get; }
     IBranch MyBranch { get; }
     IBranch HasChildBranch { get; }
     bool CanStoreNodeInHistory { get; }

@@ -13,7 +13,11 @@ public class StandardBranch : BranchBase, IStandardBranch
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
+        if (_myBranch.CanvasIsEnabled)
+            _myBranch.DoNotTween();
+        
         SetCanvas(ActiveCanvas.Yes);
+        
         CanGoToFullscreen();
         _myBranch.SetHighlightedNode();
         SetNewParentBranch(newParentController);

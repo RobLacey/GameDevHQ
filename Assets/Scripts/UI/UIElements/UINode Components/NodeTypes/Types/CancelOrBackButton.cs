@@ -3,16 +3,18 @@
 public interface ICancelOrBack : INodeBase { }
 
 
-public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBack
+public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBack, ICancelHoverOver
 {
     public CancelOrBackButton(INode node) : base(node)
     {
         MyBranch = node.MyBranch;
         _isPopUp = MyBranch.IsAPopUpBranch();
+        _closeOnExit = node.MyBranch.CloseHooverOnExit;
         EscapeKeyType = node.EscapeKeyType;
     }
 
     private readonly bool _isPopUp;
+    private readonly bool _closeOnExit;
     public EscapeKey EscapeKeyType { get; }
 
     //Events
@@ -31,7 +33,7 @@ public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBac
 
     protected override void TurnNodeOnOff()
     {
-        if (EscapeKeyType == EscapeKey.HoverClose)
+        if (_closeOnExit)
         {
             CancelHoverOver?.Invoke(this);
         }
