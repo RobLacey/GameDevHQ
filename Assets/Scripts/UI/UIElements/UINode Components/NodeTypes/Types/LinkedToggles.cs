@@ -12,13 +12,20 @@ public class LinkedToggles : NodeBase, ILinkedToggles
         var toggleData = node.ToggleData;
         _tabBranch = toggleData.ReturnTabBranch;
         _hasATabBranch = _tabBranch != null;
+        _allNodes = _uiNode.MyBranch.ThisGroupsUiNodes.ToList();
+        _myToggleGroupId = toggleData.ReturnToggleId;
+        _startAsSelected = toggleData.StartAsSelected == IsActive.Yes;
         SelectedToggle += SaveSelectedNode;
     }
 
-    private List<INode> _toggleGroupMembers = new List<INode>();
+    //Variables
+    private readonly List<INode> _allNodes;
+    private readonly List<INode> _toggleGroupMembers = new List<INode>();
     private readonly UIBranch _tabBranch;
     private readonly bool _hasATabBranch;
     private int _hasAGroupStartPoint;
+    private readonly ToggleGroup _myToggleGroupId;
+    private bool _startAsSelected;
 
     //Events
     private static event Action<INode, Action> SelectedToggle;
@@ -29,7 +36,7 @@ public class LinkedToggles : NodeBase, ILinkedToggles
         base.Start();
         SetUpToggleGroup();
         SetUpTabBranch();
-        if (_uiNode.ReturnStartAsSelected == IsActive.No)
+        if (!_startAsSelected)
         {
            SetAsNotActive();
         }
@@ -38,21 +45,35 @@ public class LinkedToggles : NodeBase, ILinkedToggles
             SetNodeAsSelected_NoEffects();
             TurnOnTab();
         }
-    }
 
+        _childTransformChanged = false;
+    }
+    
     private void SetUpToggleGroup()
     {
-        _toggleGroupMembers = _uiNode.ToggleGroupMembers;
-        _hasAGroupStartPoint = _uiNode.HasAGroupStartPoint;
-        CheckForStartPosition();
+        foreach (var node in _allNodes.Where(node => node.IsToggleGroup)
+                                      .Where(node => _myToggleGroupId == node.ToggleData.ReturnToggleId))
+        {
+            _toggleGroupMembers.Add(node);
+            CheckForStartPosition(node);
+        }
+
+        AssignStartIfNonExists();
         _toggleGroupMembers.Remove(_uiNode);
     }
 
-    private void CheckForStartPosition()
+    private void AssignStartIfNonExists()
     {
-        if (_hasAGroupStartPoint == 0)
+        if (_hasAGroupStartPoint != 0) return;
+        _toggleGroupMembers.First().ToggleData.SetStartAsSelected();
+        _startAsSelected = true;
+    }
+
+    private void CheckForStartPosition(INode node)
+    {
+        if (node.ToggleData.StartAsSelected == IsActive.Yes)
         {
-            _toggleGroupMembers.First().SetStartAsSelected = IsActive.Yes;
+            _hasAGroupStartPoint++;
         }        
         else if (_hasAGroupStartPoint > 1)
         {
@@ -65,7 +86,18 @@ public class LinkedToggles : NodeBase, ILinkedToggles
         if (_hasATabBranch)
             _tabBranch.BranchBase.SetUpAsTabBranch();
     }
-
+    
+    public override void OnEnter(bool isDragEvent)
+    {
+        base.OnEnter(isDragEvent);
+        if(_uiNode.AutoOpenCloseOverride == IsActive.Yes) return;
+        
+        if (MyBranch.CanAutoOpen() && !IsSelected)
+        {
+            TurnNodeOnOff();
+        }
+    }
+    
     private void SaveSelectedNode(INode newNode, Action callback)
     {
         if (!_toggleGroupMembers.Contains(newNode)) return;

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public static class NodeFactory
 {
@@ -10,26 +11,43 @@ public static class NodeFactory
         {
             case ButtonFunction.Standard:
             {
-                return ieJect.WithParams<IStandard>(node);
+                return CreateStandard(node);
             }
             case ButtonFunction.ToggleGroup:
             {
-                return ieJect.WithParams<ILinkedToggles>(node);
+                return CreateLinkedToggles(node);
             }
             case ButtonFunction.ToggleNotLinked:
             {
-                return ieJect.WithParams<IStandard>(node);
-            }
-            case ButtonFunction.HoverToActivate:
-            {
-                return ieJect.WithParams<IHoverToActivate>(node);
+                return CreateTogglesNotLinked(node);
             }
             case ButtonFunction.CancelOrBack:
             {
-                return ieJect.WithParams<ICancelOrBack>(node);
+                return CreateCancelOrBack(node);
             }
             default:
                 throw new Exception("No Node Type Found");
         }
+    }
+
+    private static INodeBase CreateStandard(INode node)
+    {
+        
+        return ieJect.WithParams<IStandard>(node);
+    }
+    private static INodeBase CreateLinkedToggles(INode node)
+    {
+        node.HasChildBranch = null;
+        return ieJect.WithParams<ILinkedToggles>(node);
+    }
+    private static INodeBase CreateTogglesNotLinked(INode node)
+    {
+        node.HasChildBranch = null;
+        return ieJect.WithParams<IToggleNotLinked>(node);
+    }
+    private static INodeBase CreateCancelOrBack(INode node)
+    {
+        node.HasChildBranch = null;
+        return ieJect.WithParams<ICancelOrBack>(node);
     }
 }

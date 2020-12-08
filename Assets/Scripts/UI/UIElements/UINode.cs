@@ -13,21 +13,16 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     [SerializeField] 
     [ValidateInput("SetChildBranch")] [Label("Button/Toggle Function")] 
     private ButtonFunction _buttonFunction;
+    [SerializeField]
+    [ShowIf("CanAutoOpenClose")] [Label("Auto Open/Close Override")]
+    private IsActive _autoOpenCloseOverride = IsActive.No;
     [SerializeField] 
     [ShowIf("IsCancelOrBack")] 
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")]
     private ToggleData _toggleData;
-    // [SerializeField] 
-    // //[ShowIf(EConditionOperator.Or, "IsHoverToActivate")] 
-    // private bool _openHoverOnEnter;
-    // [SerializeField] 
-    // //[ShowIf(EConditionOperator.Or, "IsHoverToActivate")] 
-    // private bool _closeHoverOnExit;
-    [SerializeField] 
-    [ShowIf(EConditionOperator.Or, "IsToggleGroup")] 
-    private IsActive _startAsSelected = IsActive.No;
+    
     [SerializeField] 
     [Space(5f)] [BoxGroup("Functions")] [Label("UI Functions To Use")]  
     private Setting _enabledFunctions;
@@ -68,10 +63,8 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     private IUiEvents _uiNodeEvents;
     private INodeBase _nodeBase;
     private readonly List<NodeFunctionBase> _activeFunctions = new List<NodeFunctionBase>();
-    public List<INode> ToggleGroupMembers { get; } = new List<INode>();
-    public int HasAGroupStartPoint { get; private set; }
 
-    //Properties & Enums
+    //Properties
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
     private bool IsCancelOrBack => _buttonFunction == ButtonFunction.CancelOrBack;
@@ -81,16 +74,12 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public IBranch HasChildBranch
     {
         get => _navigation.ChildBranch;
-        private set => _navigation.ChildBranch = value;
+        set => _navigation.ChildBranch = value;
     }
 
     public EscapeKey EscapeKeyType => _escapeKeyFunction;
     public GameObject ReturnGameObject => gameObject;
-    // public bool OpenHooverOnEnter => _openHoverOnEnter;
-    // public bool CloseHooverOnExit => _closeHoverOnExit;
-    public IsActive ReturnStartAsSelected => _startAsSelected;
-    public IsActive SetStartAsSelected { set => _startAsSelected = value; }
-
+    public IsActive AutoOpenCloseOverride => _autoOpenCloseOverride;
     public IUiEvents UINodeEvents => _uiNodeEvents;
     
     //Main
@@ -102,52 +91,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
             HasChildBranch = null;
     }
 
-    private void OnEnable() 
-    {
-        StartNodeFactory();
-        SetUpUiFunctions();
-        _nodeBase.OnEnable();
-    }
-
-    private void OnDisable()
-    {
-        foreach (var nodeFunctionBase in _activeFunctions)
-        {
-            nodeFunctionBase.OnDisable();
-        }
-        _nodeBase.OnDisable();
-    }
-
-    private void Start()
-    {
-        SetUpToggleGroup();
-         _nodeBase.Start();
-    }
-
-    private void SetUpToggleGroup()
-    {
-        if (!IsToggleGroup) return;
-        
-        foreach (var node in MyBranch.ThisGroupsUiNodes)
-        {
-            if (!node.IsToggleGroup) continue;
-            if (ToggleData.ReturnToggleId != node.ToggleData.ReturnToggleId) continue;
-            ToggleGroupMembers.Add(node);
-            CheckIfIsStartNode(node);
-        }
-    }
-    
-    private void CheckIfIsStartNode(IToggles node)
-    {
-        if (node.ReturnStartAsSelected == IsActive.Yes)
-            HasAGroupStartPoint++;
-    }
-
-    private void StartNodeFactory()
-    {
-        _nodeBase = NodeFactory.Factory(_buttonFunction, this);
-        _nodeBase.Navigation = _navigation.Instance;
-    }
+    private void OnEnable() => SetUpUiFunctions();
 
     private void SetUpUiFunctions()
     {
@@ -162,7 +106,30 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
         _activeFunctions.Add(_audio.SetUp(_uiNodeEvents, _enabledFunctions));
     }
 
+    private void OnDisable()
+    {
+        foreach (var nodeFunctionBase in _activeFunctions)
+        {
+            nodeFunctionBase.OnDisable();
+        }
+        _nodeBase.OnDisable();
+    }
+
+    private void Start()
+    {
+        StartNodeFactory();
+        _nodeBase.OnEnable();
+        _nodeBase.Start();
+    }
+
+    private void StartNodeFactory()
+    {
+        _nodeBase = NodeFactory.Factory(_buttonFunction, this);
+        _nodeBase.Navigation = _navigation.Instance;
+    }
+
     public void SetNodeAsActive() => _nodeBase.SetNodeAsActive();
+    public void SetAsHotKeyParent() => _nodeBase.HotKeyPressed();
 
     public void DeactivateNode()
     {
@@ -188,7 +155,16 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public void OnPointerExit(PointerEventData eventData) => _nodeBase.OnExit(IsDragEvent(eventData));
     public void OnPointerDown(PointerEventData eventData) => _nodeBase.SelectedAction(IsDragEvent(eventData));
     public void OnSubmit(BaseEventData eventData) => _nodeBase.SelectedAction(false);
-    public void OnMove(AxisEventData eventData) => _nodeBase.DoMoveToNextNode(eventData.moveDir);
+    public void OnMove(AxisEventData eventData)
+    {
+        MyBranch.PointerOverBranch = true;
+        Debug.Log($"{MyBranch} : {MyBranch.PointerOverBranch}");
+        
+        //Add Pointer when starts
+        //Remove when switched group when keys allowed
+        
+        _nodeBase.DoMoveToNextNode(eventData.moveDir);
+    }
     public void OnPointerUp(PointerEventData eventData) { }
     private static bool IsDragEvent(PointerEventData eventData) => eventData.pointerDrag;
     public void DoNonMouseMove(MoveDirection moveDirection) => _nodeBase.DoNonMouseMove(moveDirection);

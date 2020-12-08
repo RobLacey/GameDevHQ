@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// This partial class holds all the classes properties as UIBranch is an important link between higher and lower parts of the system
 /// </summary>
-public partial class UIBranch : ICancelHoverOver
+public partial class UIBranch
 {
     public bool IsAPopUpBranch()
     {
@@ -74,5 +74,7 @@ public partial class UIBranch : ICancelHoverOver
         _stayVisible = IsActive.No;
         return true;
     }
+    private bool IsStandardBranch() => _branchType == BranchType.Standard;
+
 
 }

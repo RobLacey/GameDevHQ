@@ -34,7 +34,7 @@ public class ToolTipSettings : ITooltipSettings
 
     public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
-        if ((functions & Setting.TooplTip) != 0)
+        if ((functions & Setting.ToolTip) != 0)
         {
             return new UITooltip(this, uiNodeEvents);
         }

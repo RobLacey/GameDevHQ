@@ -158,7 +158,6 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
                                          .ActiveBranch(_activeBranch)
                                          .BackToHomeProcess();
     }
-    public void DoCancelHoverToActivate() => CancelHoverToActivate?.Invoke(this);
 
     private void SwitchGroupPressed(ISwitchGroupPressed args)
     {
@@ -175,21 +174,16 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
     
     private void SetFromHotkey(IHotKeyPressed args)
     {
-        DontSetHomeGroupParentAsActive(args);
+        HotKeyReturnsToHomeScreen(args.MyBranch.ScreenType);
         
-        HistoryListManagement.IgnoreHotKeyParent(args.ParentNode)
-                             .CurrentHistory(_history)
+        HistoryListManagement.CurrentHistory(_history)
                              .ClearAllHistory();
-
-        AddNodeToTestRunner(args.ParentNode);
-        
-        _history.Add(args.ParentNode);
         _lastSelected = args.ParentNode;
     }
 
-    private void DontSetHomeGroupParentAsActive(IHotKeyPressed args)
+    private void HotKeyReturnsToHomeScreen(ScreenType hotKeyScreenType)
     {
-        if (args.MyBranch.ScreenType != ScreenType.FullScreen && !_onHomeScreen)
+        if (hotKeyScreenType != ScreenType.FullScreen && !_onHomeScreen)
         {
             BackToHomeScreen(ActivateNodeOnReturnHome.No);
         }

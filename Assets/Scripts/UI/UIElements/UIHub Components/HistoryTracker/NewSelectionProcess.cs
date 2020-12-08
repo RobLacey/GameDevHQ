@@ -88,6 +88,9 @@ public class NewSelectionProcess : INewSelectionProcess
         SetLastSelectedWhenNoHistory();
     }
 
+    private void SetLastSelectedWhenNoHistory() 
+        => _lastSelected = _history.Count > 0 ? _history.Last() : _newNode;
+
     private void DoesntContainNewNode()
     {
         if (!_historyTracker.IsPaused)
@@ -99,12 +102,11 @@ public class NewSelectionProcess : INewSelectionProcess
         _lastSelected = _newNode;
     }
 
-    private void SetLastSelectedWhenNoHistory() 
-        => _lastSelected = _history.Count > 0 ? _history.Last() : _newNode;
-
     private void SelectedNodeInDifferentBranch()
     {
-        if (_lastSelected.HasChildBranch != _newNode.MyBranch) 
-            _historyManagement.CurrentHistory(_history).ClearHistoryStopAtInternalBranch();
+        bool IfNewBranchIsNotAnInternalBranch() => _lastSelected.HasChildBranch != _newNode.MyBranch;
+
+        if (IfNewBranchIsNotAnInternalBranch()) 
+            _historyManagement.CurrentHistory(_history).ClearHistoryWithStopPointCheck(_newNode);
     }
 }

@@ -6,10 +6,9 @@ using UnityEngine;
 public interface INode : IToggles, IParameters
 {
     EscapeKey EscapeKeyType { get; }
-    // bool OpenHooverOnEnter { get; }
-    // bool CloseHooverOnExit { get; }
+    void SetAsHotKeyParent();
     IBranch MyBranch { get; }
-    IBranch HasChildBranch { get; }
+    IBranch HasChildBranch { get; set; }
     bool CanStoreNodeInHistory { get; }
     GameObject ReturnGameObject { get; }
     void SetNodeAsActive();
@@ -17,16 +16,17 @@ public interface INode : IToggles, IParameters
     void ThisNodeIsHighLighted();
     IUiEvents UINodeEvents { get; }
     void ClearNode();
+    IsActive AutoOpenCloseOverride { get; }
 }
 
 public interface IToggles
 {
     ToggleData ToggleData { get; }
     bool IsToggleGroup { get; }
-    int HasAGroupStartPoint { get; }
-    List<INode> ToggleGroupMembers { get; }
-    IsActive ReturnStartAsSelected { get; }
-    IsActive SetStartAsSelected { set; }
+    // int HasAGroupStartPoint { get; }
+    // List<INode> ToggleGroupMembers { get; }
+    // IsActive ReturnStartAsSelected { get; }
+    // IsActive SetStartAsSelected { set; }
 
 }
         

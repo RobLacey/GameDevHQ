@@ -10,8 +10,7 @@ public interface IHistoryManagement
     IHistoryManagement CurrentHistory(List<INode> history);
     void Run();
     void ClearAllHistory();
-    void ClearHistoryStopAtInternalBranch();
-    IHistoryManagement IgnoreHotKeyParent(INode node);
+    void ClearHistoryWithStopPointCheck(INode stopAtThisNode);
 }
 
 public class HistoryListManagement : IHistoryManagement
@@ -23,18 +22,13 @@ public class HistoryListManagement : IHistoryManagement
 
     //Variables
     private readonly IHistoryTrack _historyTracker;
-    private INode _targetNode, _hotKeyParent;
+    private INode _targetNode;
     private bool _hasHistory;
     private List<INode> _history = new List<INode>();
 
     public IHistoryManagement CloseToThisPoint(INode node)
     {
         _targetNode = node;
-        return this;
-    }
-    public IHistoryManagement IgnoreHotKeyParent(INode node)
-    {
-        _hotKeyParent = node;
         return this;
     }
     
@@ -92,38 +86,47 @@ public class HistoryListManagement : IHistoryManagement
     public void ClearAllHistory()
     {
         CheckForMissingHistory();
-        HistoryProcessed(false);
-        _hotKeyParent = null;
+        HistoryProcessed();
     }
     
-    public void ClearHistoryStopAtInternalBranch()
+    public void ClearHistoryWithStopPointCheck(INode stopAtThisNode)
     {
         CheckForMissingHistory();
-        HistoryProcessed(stopAtInternalBranch: true);
-        _hotKeyParent = null;
+        HistoryProcessed(stopAtThisNode);
     }
 
-    private void HistoryProcessed(bool stopAtInternalBranch)
+    private void HistoryProcessed(INode stopAtThisNode = null)
     {
         if (_history.Count == 0) return;
         
         var firstInHistory = _history.First();
         _history.Reverse();
-        ResetAndClearHistoryList(stopAtInternalBranch, firstInHistory);
+        ResetAndClearHistoryList(firstInHistory, stopAtThisNode);
     }
 
-    private void ResetAndClearHistoryList(bool stopAtInternalBranch, INode firstInHistory)
+    private void ResetAndClearHistoryList(INode firstInHistory, INode stopAtThisNode)
     {
         foreach (var currentNode in _history)
         {
-            if (SkipIfNodeIsHotKeysParent(currentNode)) continue;
-            
             currentNode.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
             ResetNode(currentNode, firstInHistory);
-            if (IfNodeIsInternalBranch(currentNode, stopAtInternalBranch, _history)) return;
+            
+            if(stopAtThisNode is null) continue;
+            if (CheckIfAtStopPoint(stopAtThisNode, currentNode)) return;
         }
         _historyTracker.AddNodeToTestRunner(null);
         _history.Clear();
+    }
+
+    private bool CheckIfAtStopPoint(INode stopAtThisNode, INode currentNode)
+    {
+        if (currentNode.MyBranch != stopAtThisNode.MyBranch) return false;
+        
+        currentNode.DeactivateNode();
+        _historyTracker.AddNodeToTestRunner(currentNode);
+        _history.Remove(currentNode);
+        return true;
+
     }
 
     private static void ResetNode(INode currentNode, INode firstInHistory)
@@ -136,19 +139,5 @@ public class HistoryListManagement : IHistoryManagement
         {
             currentNode.ClearNode();
         }
-    }
-
-    private bool SkipIfNodeIsHotKeysParent(INode uiNode) 
-        => !(_hotKeyParent is null) && uiNode == _hotKeyParent;
-
-    private bool IfNodeIsInternalBranch(INode uiNode, bool stopAtInternalBranch, List<INode> history)
-    {
-        if (!uiNode.HasChildBranch.IsInternalBranch() || !stopAtInternalBranch) return false;
-
-        _historyTracker.AddNodeToTestRunner(uiNode);
-
-        history.Remove(uiNode);
-        history.Reverse();
-        return true;
     }
 }

@@ -59,7 +59,6 @@
     {
         branch.ScreenType = ScreenType.Normal;
         branch.EscapeKeyType = EscapeKey.None;
-        //branch.CloseHooverOnExit = false;
     }
 
     private static void CreateStandardBranch(IBranch branch)
@@ -79,6 +78,7 @@
         branch.ScreenType = ScreenType.Normal;
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.SetStayOn(IsActive.No);
+        branch.AutoOpenClose = AutoOpenClose.No;
     }
     
     private static void CreateTimedPopUp(IBranch branch)
@@ -87,6 +87,7 @@
         branch.TweenOnHome = DoTween.DoNothing;
         branch.WhenToMove = WhenToMove.Immediately;
         branch.SetStayOn(IsActive.No);
+        branch.AutoOpenClose = AutoOpenClose.No;
     }
 
     private static void CreatePauseMenu(IBranch branch)

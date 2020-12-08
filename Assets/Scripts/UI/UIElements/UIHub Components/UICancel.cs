@@ -51,7 +51,6 @@ public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
         EVent.Do.Unsubscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
         EVent.Do.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
         EVent.Do.Subscribe<ICancelHoverOver>(CancelHooverOver);
-
     }
 
     public void UseEServLocator() => _uiHistoryTrack = EServ.Locator.Get<IHistoryTrack>(this);
@@ -69,6 +68,7 @@ public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
 
     private void CancelHooverOver(ICancelHoverOver args)
     {
+        Debug.Log($"CancelHooverOver : {args.EscapeKeyType}");
         ProcessCancelType(args.EscapeKeyType);
     }
 
@@ -88,11 +88,6 @@ public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
                 break;
             case EscapeKey.GlobalSetting:
                 break;
-            case EscapeKey.HoverClose:
-                StartCancelProcess(DoHover);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(escapeKey), escapeKey, null);
         }
     }
 
@@ -100,5 +95,4 @@ public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
         => _uiHistoryTrack.CheckForPopUpsWhenCancelPressed(endOfCancelAction);
     private void BackOneLevel() => _uiHistoryTrack.BackOneLevel();
     private void BackToHome() => _uiHistoryTrack.BackToHome();
-    private void DoHover() => _uiHistoryTrack.DoCancelHoverToActivate();
 }

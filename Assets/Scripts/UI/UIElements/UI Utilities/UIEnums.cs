@@ -7,23 +7,16 @@ public enum IsActive
     Yes, No
 }
 
-public enum PunchShakeTween 
-{ 
-    NoTween, Punch, Shake 
-}
-
 public enum TweenStyle 
 { 
     NoTween, In, Out, InAndOut 
 }
 
-public enum EffectType { In, Out, Both }
-
 public enum ToggleGroup { TG1, TG2, TG3, TG4, TG5 }
 
-public enum EscapeKey { None, BackOneLevel, BackToHome, GlobalSetting, HoverClose }
+public enum EscapeKey { None, BackOneLevel, BackToHome, GlobalSetting }
 
-public enum ButtonFunction { Standard, ToggleGroup, ToggleNotLinked, HoverToActivate, CancelOrBack }
+public enum ButtonFunction { Standard, ToggleGroup, ToggleNotLinked, CancelOrBack }
 
 [Flags]
 public enum Setting
@@ -36,7 +29,7 @@ public enum Setting
     SwapImageOrText = 1 << 4,
     Accessories = 1 << 5,
     Audio = 1 << 6,
-    TooplTip = 1 << 7,
+    ToolTip = 1 << 7,
     Events = 1 << 8
 }
 
@@ -103,5 +96,6 @@ public enum ActivateNodeOnReturnHome { Yes, No }
 
 public enum DoTween { Tween, DoNothing }
 
+public enum AutoOpenClose { No, Open, Close, Both }
 
 

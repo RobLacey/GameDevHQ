@@ -10,8 +10,6 @@ public interface INodeBase
     UINavigation Navigation { set; }
 
     void SetNodeAsActive();
-   // void SetNotHighlighted();
-   // void SetAsHighlighted();
     void OnEnter(bool isDragEvent);
     void OnExit(bool isDragEvent);
     void ThisNodeIsHighLighted();
@@ -22,4 +20,5 @@ public interface INodeBase
 
     void EnableNode();
     void DisableNode();
+    void HotKeyPressed();
 }

@@ -6,7 +6,7 @@ public interface IStartPopUp
     void StartPopUp();
 }
 
-public interface IBranch : IParameters
+public interface IBranch : IParameters, IAutoOpenClose
 {
     bool IsPauseMenuBranch();
     bool IsAPopUpBranch();
@@ -35,10 +35,7 @@ public interface IBranch : IParameters
     INode[] ThisGroupsUiNodes { get; }
     INode LastSelected { get; }
     GameObject ThisBranchesGameObject { get; }
-    
-    bool OpenHooverOnEnter { get; }
-    bool CloseHooverOnExit { get; set; }
-    bool PointerOverBranch { get; }
+
 
 
     void NavigateToChildBranch(IBranch moveToo);
@@ -47,4 +44,12 @@ public interface IBranch : IParameters
     void SetHighlightedNode();
     void DoNotTween();
     void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null);
+}
+
+public interface IAutoOpenClose
+{
+    AutoOpenClose AutoOpenClose { get; set; }
+    bool CanAutoClose();
+    bool CanAutoOpen();
+    bool PointerOverBranch { get; set; }
 }

@@ -20,12 +20,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
     [SerializeField] 
-    //[ShowIf(EConditionOperator.Or, "IsHoverToActivate")] 
-    private bool _openHoverOnEnter;
-    [SerializeField] 
-    //[HideIf(EConditionOperator.Or, "IsHomeScreenBranch")] 
-    private bool _closeHoverOnExit;
-
+    [HideIf(EConditionOperator.Or, "IsOptional", "IsTimedPopUp")] [Label("Auto Open/Close")]
+    private AutoOpenClose _autoOpenClose = AutoOpenClose.No;
     [SerializeField] 
     [ShowIf("IsTimedPopUp")] private float _timer = 1f;
     [SerializeField] 
@@ -45,7 +41,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [SerializeField] 
     [Label("Move To Next Branch...")] private WhenToMove _moveType = WhenToMove.Immediately;
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "IsAPopUpBranch", "IsHomeScreenBranch", "IsPauseMenuBranch", "IsInternalBranch")]
+    [ShowIf(EConditionOperator.Or, "IsStandardBranch")]
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField]
     [ValidateInput("IsEmpty", "If left Blank it will auto-assign the first UINode in hierarchy/Group")]
@@ -65,19 +61,21 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
     private bool _activePopUp, _isTabBranch;
     
-    public bool OpenHooverOnEnter => _openHoverOnEnter;
-    public bool CloseHooverOnExit
+    //Properties
+    public AutoOpenClose AutoOpenClose
     {
-        get => _closeHoverOnExit;
-        set => _closeHoverOnExit = value;
+        get => _autoOpenClose;
+        set => _autoOpenClose = value;
     }
 
-    public bool PointerOverBranch { get; private set; }
+    public bool PointerOverBranch { get; set; }
 
     //Enum
     private enum StoreAndRestorePopUps { StoreAndRestore, Reset }
     
-    //Properties
+    //Set / Getters
+    public bool CanAutoClose() => AutoOpenClose == AutoOpenClose.Both || AutoOpenClose == AutoOpenClose.Close;
+    public bool CanAutoOpen() => AutoOpenClose == AutoOpenClose.Both || AutoOpenClose == AutoOpenClose.Open;
     private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveHighlighted(IHighlightedNode args)
     {
@@ -91,6 +89,16 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
                                  .DefaultReturn(LastSelected)
                                  .RunOn(ThisGroupsUiNodes);
     }    
+    /// <summary>
+    /// Call To to start any PopUps through I StartPopUp
+    /// </summary>
+
+    public void StartPopUp() => OnStartPopUp?.Invoke();
+    public void DoNotTween() => _tweenOnChange = false;
+    public void DontSetBranchAsActive() => _canActivateBranch = false;
+    public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
+
+
     
     //Delegates & Events
     public event Action OnStartPopUp; 
@@ -106,6 +114,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         public UnityEvent OnBranchExit;
     }
 
+    //Main
     private void Awake()
     {
         ThisGroupsUiNodes = SetBranchesChildNodes.GetChildNodes(this);
@@ -115,61 +124,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         MyCanvas = GetComponent<Canvas>();
         MyParentBranch = this;
         SetStartPositions();
-    }
-
-    private void OnEnable()
-    {
-        FetchEvents();
-        ObserveEvents();
-        BranchBase = BranchFactory.Factory.PassThisBranch(this).CreateType(_branchType);
-        BranchBase.OnEnable();
-    }
-
-    private void OnDisable()
-    {
-        RemoveEvents();
-        BranchBase.OnDisable();
-    }
-    
-    public void FetchEvents()
-    {
-        SetActiveBranch = EVent.Do.Fetch<IActiveBranch>();
-        CancelHooverOver = EVent.Do.Fetch<ICancelHoverOver>();
-    }
-
-    public void ObserveEvents()
-    {
-        EVent.Do.Subscribe<ISwitchGroupPressed>(SwitchBranchGroup);
-        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Subscribe<ISelectedNode>(SaveSelected);
-        EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
-    }
-
-    public void RemoveEvents()
-    {
-        EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchBranchGroup);
-        EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Unsubscribe<ISelectedNode>(SaveSelected);
-        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
-    }
-
-    public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
-
-    private void Start() => SetNodesChildrenToThisBranch();
-    
-    /// <summary>
-    /// Call To to start any PopUps through I StartPopUp
-    /// </summary>
-    // ReSharper disable once UnusedMember.Global
-    public void StartPopUp() => OnStartPopUp?.Invoke();
-
-    private void SetNodesChildrenToThisBranch()
-    {
-        foreach (var node in ThisGroupsUiNodes)
-        {
-            if (node.HasChildBranch is null) continue;
-            node.HasChildBranch.MyParentBranch = this;
-        }
+        SetNodesChildrenToThisBranch();
     }
 
     private void SetStartPositions()
@@ -192,14 +147,55 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         {
             FindStartPosition();
         }
+        
+        void FindStartPosition() 
+            => _startOnThisNode = transform.GetComponentsInChildren<UINode>().First();
     }
 
-    private void FindStartPosition() 
-        => _startOnThisNode = transform.GetComponentsInChildren<UINode>().First();
-    
-    public void DoNotTween() => _tweenOnChange = false;
+    private void SetNodesChildrenToThisBranch()
+    {
+        foreach (var node in ThisGroupsUiNodes)
+        {
+            if (node.HasChildBranch is null) continue;
+            node.HasChildBranch.MyParentBranch = this;
+        }
+    }
 
-    public void DontSetBranchAsActive() => _canActivateBranch = false;
+    private void OnEnable()
+    {
+        FetchEvents();
+        ObserveEvents();
+        BranchBase = BranchFactory.Factory.PassThisBranch(this).CreateType(_branchType);
+        BranchBase.OnEnable();
+    }
+
+    private void OnDisable()
+    {
+        RemoveEvents();
+        BranchBase.OnDisable();
+    }
+
+    public void FetchEvents()
+    {
+        SetActiveBranch = EVent.Do.Fetch<IActiveBranch>();
+        CancelHooverOver = EVent.Do.Fetch<ICancelHoverOver>();
+    }
+
+    public void ObserveEvents()
+    {
+        EVent.Do.Subscribe<ISwitchGroupPressed>(SwitchBranchGroup);
+        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Subscribe<ISelectedNode>(SaveSelected);
+        EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
+    }
+
+    public void RemoveEvents()
+    {
+        EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchBranchGroup);
+        EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Unsubscribe<ISelectedNode>(SaveSelected);
+        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
+    }
     
     public void MoveToThisBranch(IBranch newParentBranch = null)
     {
@@ -308,12 +304,10 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     public void OnPointerExit(PointerEventData eventData)
     {
         PointerOverBranch = false;
-        if(CloseHooverOnExit && !MyParentBranch.PointerOverBranch)
-        {
-            Debug.Log(this);
-            EscapeKeyType = EscapeKey.BackToHome;
-            CancelHooverOver?.Invoke(this);
-        }    
+        if (!CanAutoClose() || MyParentBranch.PointerOverBranch) return;
+        
+        EscapeKeyType = EscapeKey.BackToHome;
+        CancelHooverOver?.Invoke(this);
     }
 }
 

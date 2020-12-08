@@ -108,5 +108,11 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
         _parentNode = branch.LastSelected;
     }
     
-    private void StartThisHotKeyBranch() => HotKeyPressed?.Invoke(this);
+    private void StartThisHotKeyBranch()
+    {
+        HotKeyPressed?.Invoke(this);
+        _parentNode.SetAsHotKeyParent();
+        MyBranch.MoveToThisBranch();
+        Debug.Log("HotKey");
+    }
 }

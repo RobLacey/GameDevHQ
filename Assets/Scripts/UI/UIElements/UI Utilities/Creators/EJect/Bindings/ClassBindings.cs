@@ -31,7 +31,7 @@
         _eJectMaster.Bind<Standard>().To<IStandard>().WithParameters();
         _eJectMaster.Bind<CancelOrBackButton>().To<ICancelOrBack>().WithParameters();
         _eJectMaster.Bind<LinkedToggles>().To<ILinkedToggles>().WithParameters();
-        _eJectMaster.Bind<HoverToActivate>().To<IHoverToActivate>().WithParameters();
+        _eJectMaster.Bind<ToggleNotLinked>().To<IToggleNotLinked>().WithParameters();
         
         //Branch Types
         _eJectMaster.Bind<HomeScreenBranch>().To<IHomeScreenBranch>().WithParameters();

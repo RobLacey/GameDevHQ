@@ -7,7 +7,6 @@ public interface IHistoryTrack : IParameters, IIsAService
     bool IsPaused { get; }
     bool NoHistory { get; }
     IHistoryManagement HistoryListManagement { get; }
-    void DoCancelHoverToActivate();
     void BackToHome();
     void BackOneLevel();
     void MoveToLastBranchInHistory();

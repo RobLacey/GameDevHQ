@@ -4,7 +4,6 @@ using UnityEngine.EventSystems;
 
 public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelectedNode, 
                                  IHighlightedNode
-                                 
 {
     protected NodeBase(INode node)
     {
@@ -16,21 +15,17 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     //Variables
     protected INode _uiNode;
     private IDisabledNode _disabledNode;
-    private bool _allowKeys;
-    private bool _inMenu;
-    private bool _hasFinishedSetUp;
+    private bool _inMenu, _hasFinishedSetUp, _allowKeys;
+    protected bool _childTransformChanged;
     private INode _lastHighlighted;
-    protected readonly IUiEvents _uiFunctionEvents;
-    protected Transform _originalParentTransform;
-    protected Transform _myTransform;
-    protected Transform _myChildsTransform;
+    private readonly IUiEvents _uiFunctionEvents;
 
     //Events
     private Action<IHighlightedNode> DoHighlighted { get; set; }
     private Action<ISelectedNode> DoSelected { get; set; }
 
     //Properties
-    protected bool PointerOverNode { get; set; }
+    private bool PointerOverNode { get; set; }
     public IBranch MyBranch { get; protected set; }
     private bool IsDisabled => _disabledNode.IsDisabled;
     public UINavigation Navigation { get; set; }
@@ -106,8 +101,6 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<IInMenu>(SaveInMenuOrInGame);
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
-        EVent.Do.Subscribe<ICancelHoverOver>(OnCancelHooverOver);
     }
 
     public virtual void RemoveEvents()
@@ -115,17 +108,12 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
         EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
-        EVent.Do.Unsubscribe<ICancelHoverOver>(OnCancelHooverOver);
     }
 
     public virtual void Start()
     {
         _disabledNode = new DisabledNode(_uiNode, this);
         if(_uiNode.HasChildBranch is null) return;
-        _myTransform = _uiNode.MyBranch.ThisBranchesGameObject.transform;
-        _originalParentTransform = _uiNode.HasChildBranch.MyParentBranch.ThisBranchesGameObject.transform;
-        _myChildsTransform = _uiNode.HasChildBranch.ThisBranchesGameObject.transform;
     }
 
     public virtual void DeactivateNodeByType()
@@ -189,7 +177,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     
     public void DoPressOnNode() => _uiFunctionEvents.DoIsPressed();
 
-    public void SetSelectedStatus(bool isSelected, Action endAction)
+    public virtual void SetSelectedStatus(bool isSelected, Action endAction)
     {
         IsSelected = isSelected;
         _uiFunctionEvents.DoIsSelected(IsSelected);
@@ -203,7 +191,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         OnSelected(isDragEvent);
     }
 
-    protected virtual void OnSelected(bool isDragEvent)
+    private void OnSelected(bool isDragEvent)
     {
         if(isDragEvent) return;
         TurnNodeOnOff();
@@ -212,13 +200,15 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     protected void SetNodeAsSelected_NoEffects()
     {
         _uiFunctionEvents.DoMuteAudio();
-        SetSelectedStatus(true, SetNotHighlighted);
+        SetSelectedStatus(true, DoPressOnNode);
+        SetNotHighlighted();
     }
 
     protected void SetNodeAsNotSelected_NoEffects()
     {
         _uiFunctionEvents.DoMuteAudio();
-        SetSelectedStatus(false, SetNotHighlighted);
+        SetSelectedStatus(false, DoPressOnNode);
+        SetNotHighlighted();
     }
 
     public virtual void OnEnter(bool isDragEvent)
@@ -268,22 +258,10 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
 
     protected void Deactivate() => SetSelectedStatus(false, DoPressOnNode);
 
-    private void HotKeyPressed(IHotKeyPressed args)
+    public void HotKeyPressed()
     {
-        if (!ReferenceEquals(args.ParentNode, _uiNode) || _disabledNode.IsDisabled) return;
         ThisNodeIsHighLighted();
+        ThisNodeIsSelected();
         SetNodeAsSelected_NoEffects();
-        args.MyBranch.MoveToThisBranch();
     }
-
-    protected  virtual void OnCancelHooverOver(ICancelHoverOver args)
-    {
-        //Tidy up UIBranch hoover exit and Branch Factory
-        //Fix hot key race condition
-        //Turning off when going to Parent
-        //Apply to correct branch types and Node types
-        //Sort out where it can be shown
-        //Check on and off work
-    }
-
 }
