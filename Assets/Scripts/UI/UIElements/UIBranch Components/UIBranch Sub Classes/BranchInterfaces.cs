@@ -6,7 +6,7 @@ public interface IStartPopUp
     void StartPopUp();
 }
 
-public interface IBranch : IParameters, IAutoOpenClose
+public interface IBranch : IParameters, IAutoOpenCloseData
 {
     bool IsPauseMenuBranch();
     bool IsAPopUpBranch();
@@ -35,8 +35,8 @@ public interface IBranch : IParameters, IAutoOpenClose
     INode[] ThisGroupsUiNodes { get; }
     INode LastSelected { get; }
     GameObject ThisBranchesGameObject { get; }
-
-
+    bool PointerOverBranch { get;}
+    IAutoOpenClose AutoOpenCloseClass { get; }
 
     void NavigateToChildBranch(IBranch moveToo);
     void MoveToThisBranch(IBranch newParentBranch = null);
@@ -48,8 +48,17 @@ public interface IBranch : IParameters, IAutoOpenClose
 
 public interface IAutoOpenClose
 {
-    AutoOpenClose AutoOpenClose { get; set; }
     bool CanAutoClose();
     bool CanAutoOpen();
-    bool PointerOverBranch { get; set; }
+    void OnPointerEnter();
+    void OnPointerExit();
+    bool PointerOverBranch { get;}
+    IBranch ChildNodeHasOpenChild { set; }
 }
+
+public interface IAutoOpenCloseData : IParameters
+{
+    IBranch ThisBranch { get; }
+    AutoOpenClose AutoOpenClose { get; set; }
+}
+

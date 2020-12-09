@@ -45,8 +45,6 @@ public class LinkedToggles : NodeBase, ILinkedToggles
             SetNodeAsSelected_NoEffects();
             TurnOnTab();
         }
-
-        _childTransformChanged = false;
     }
     
     private void SetUpToggleGroup()
@@ -87,12 +85,12 @@ public class LinkedToggles : NodeBase, ILinkedToggles
             _tabBranch.BranchBase.SetUpAsTabBranch();
     }
     
-    public override void OnEnter(bool isDragEvent)
+    public override void OnEnter()
     {
-        base.OnEnter(isDragEvent);
+        base.OnEnter();
         if(_uiNode.AutoOpenCloseOverride == IsActive.Yes) return;
         
-        if (MyBranch.CanAutoOpen() && !IsSelected)
+        if (MyBranch.AutoOpenCloseClass.CanAutoOpen() && !IsSelected)
         {
             TurnNodeOnOff();
         }

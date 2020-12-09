@@ -20,13 +20,9 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
     [Expandable] 
     private TweenScheme _scheme;
     
-    [Header("Event Settings")] [HorizontalLine(1, EColor.Blue , order = 3)]
-    [SerializeField] 
-    private IsActive _addTweenEventTriggers = IsActive.No;
+    [Header("Events")] [HorizontalLine(1, EColor.Blue , order = 3)]
     
-    [SerializeField] 
-    [ShowIf("UserEvents")] [BoxGroup("Tween Events")] [Label("Expand...")] 
-    private TweenEvents _tweenEvents;
+    [SerializeField] private TweenEvents _tweenEvents;
     
     //Variables
     private int _counter, _effectCounter;
@@ -40,9 +36,6 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
     private Action FinishedTweenCallback{ get; set; }
     private Action<IEndTween> EndTweenEffect { get; set; }
     private TweenTrigger CurrentUserEvent{ get; set; }
-
-    //Editor
-    private bool UserEvents =>  _addTweenEventTriggers == IsActive.Yes;
     
     public void Awake()
     {
@@ -83,14 +76,12 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
 
     public void ActivateTweens(Action callBack)
     {
-        if(UserEvents)
-            _tweenEvents.InTweenEvent_Start?.Invoke();
+        _tweenEvents.InTweenEvent_Start?.Invoke();
         StartProcessingTweens(TweenType.In, callBack, _tweenEvents.InTweenEvent_End);
     }
     public void DeactivateTweens(Action callBack)
     {
-        if(UserEvents)
-            _tweenEvents.OutTweenEvent_Start?.Invoke();
+        _tweenEvents.OutTweenEvent_Start?.Invoke();
         StartProcessingTweens(TweenType.Out, callBack, _tweenEvents.OutTweenEvent_End);
     }
     private void StartProcessingTweens(TweenType tweenType, Action callBack, TweenTrigger userEvent)
@@ -133,8 +124,7 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
     {
         _effectCounter--;
         if (_effectCounter > 0) return;
-        if(UserEvents)
-            CurrentUserEvent?.Invoke();
+        CurrentUserEvent?.Invoke();
         FinishedTweenCallback?.Invoke();
     }
     

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-
 
 public interface IHistoryManagement
 {
@@ -74,7 +72,6 @@ public class HistoryListManagement : IHistoryManagement
         _history.Remove(node);
         node.HasChildBranch.LastSelected.DeactivateNode();
         node.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel, EndOfTweenActions);
-
         _historyTracker.AddNodeToTestRunner(node);
 
         void EndOfTweenActions()
@@ -86,40 +83,41 @@ public class HistoryListManagement : IHistoryManagement
     public void ClearAllHistory()
     {
         CheckForMissingHistory();
-        HistoryProcessed();
+        if (_history.Count == 0) return;
+        ResetAndClearHistoryList();
     }
     
     public void ClearHistoryWithStopPointCheck(INode stopAtThisNode)
     {
         CheckForMissingHistory();
-        HistoryProcessed(stopAtThisNode);
+        if (_history.Count == 0) return;
+        ResetAndClearHistoryList(stopAtThisNode);
     }
 
-    private void HistoryProcessed(INode stopAtThisNode = null)
+    private void ResetAndClearHistoryList(INode stopAtThisNode = null)
     {
-        if (_history.Count == 0) return;
-        
         var firstInHistory = _history.First();
         _history.Reverse();
-        ResetAndClearHistoryList(firstInHistory, stopAtThisNode);
-    }
-
-    private void ResetAndClearHistoryList(INode firstInHistory, INode stopAtThisNode)
-    {
+        
         foreach (var currentNode in _history)
         {
-            currentNode.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
-            ResetNode(currentNode, firstInHistory);
-            
-            if(stopAtThisNode is null) continue;
+            ExitNode(currentNode, firstInHistory);
             if (CheckIfAtStopPoint(stopAtThisNode, currentNode)) return;
         }
+        
         _historyTracker.AddNodeToTestRunner(null);
         _history.Clear();
     }
 
+    private static void ExitNode(INode currentNode, INode firstInHistory)
+    {
+        currentNode.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
+        ResetNode(currentNode, firstInHistory);
+    }
+
     private bool CheckIfAtStopPoint(INode stopAtThisNode, INode currentNode)
     {
+        if (stopAtThisNode is null) return false;
         if (currentNode.MyBranch != stopAtThisNode.MyBranch) return false;
         
         currentNode.DeactivateNode();

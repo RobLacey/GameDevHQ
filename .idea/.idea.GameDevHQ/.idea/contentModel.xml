@@ -411,7 +411,8 @@
                   <e p="ScreenData.cs" t="Include" />
                   <e p="SetBranchesChildNodes.cs" t="Include" />
                 </e>
-                <e p="UIBranch Partial Classes" t="Include">
+                <e p="UIBranch Sub Classes" t="Include">
+                  <e p="AutoOpenCloseController.cs" t="Include" />
                   <e p="BranchInterfaces.cs" t="Include" />
                   <e p="UIBranch.Properties.cs" t="Include" />
                 </e>
@@ -485,6 +486,7 @@
                   <e p="Types" t="Include">
                     <e p="CancelOrBackButton.cs" t="Include" />
                     <e p="Disable.cs" t="Include" />
+                    <e p="IDisableData.cs" t="Include" />
                     <e p="LinkedToggles.cs" t="Include" />
                     <e p="Standard.cs" t="Include" />
                     <e p="ToggleData.cs" t="Include" />

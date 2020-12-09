@@ -27,11 +27,12 @@
         _eJectMaster.Bind<ShakeTween>().To<IShakeTween>();
         _eJectMaster.Bind<TweenInspector>().To<ITweenInspector>();
         
-        //Node Types
+        //NodeBase Types
         _eJectMaster.Bind<Standard>().To<IStandard>().WithParameters();
         _eJectMaster.Bind<CancelOrBackButton>().To<ICancelOrBack>().WithParameters();
         _eJectMaster.Bind<LinkedToggles>().To<ILinkedToggles>().WithParameters();
         _eJectMaster.Bind<ToggleNotLinked>().To<IToggleNotLinked>().WithParameters();
+        _eJectMaster.Bind<DisabledNode>().To<IDisabledNode>().WithParameters();
         
         //Branch Types
         _eJectMaster.Bind<HomeScreenBranch>().To<IHomeScreenBranch>().WithParameters();
@@ -66,5 +67,9 @@
         //Input Classes
         _eJectMaster.Bind<MenuAndGameSwitching>().To<IMenuAndGameSwitching>().WithParameters();
         _eJectMaster.Bind<ChangeControl>().To<IChangeControl>().WithParameters();
+        
+        //AutoOpenClose
+        _eJectMaster.Bind<AutoOpenCloseController>().To<IAutoOpenClose>().WithParameters();
+
     }
 }

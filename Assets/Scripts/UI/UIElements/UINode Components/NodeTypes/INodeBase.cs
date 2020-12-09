@@ -10,10 +10,10 @@ public interface INodeBase
     UINavigation Navigation { set; }
 
     void SetNodeAsActive();
-    void OnEnter(bool isDragEvent);
-    void OnExit(bool isDragEvent);
+    void OnEnter();
+    void OnExit();
     void ThisNodeIsHighLighted();
-    void SelectedAction(bool isDragEvent);
+    void SelectedAction();
     void ClearNodeCompletely();
     void DoMoveToNextNode(MoveDirection moveDirection);
     void DoNonMouseMove(MoveDirection moveDirection);

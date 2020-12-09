@@ -1,7 +1,4 @@
 ﻿
-using System;
-using UnityEngine;
-
 public interface IStandard : INodeBase { }
 
 public class Standard : NodeBase, IStandard
@@ -9,83 +6,68 @@ public class Standard : NodeBase, IStandard
     public Standard(INode uiNode) : base(uiNode) => _uiNode = uiNode;
 
     private bool _isToggle;
-    private Transform _myTransform, _originalParentTransform, _myChildTransform;
+    private bool _justCancelled;
+    private bool _canAutoOpen;
+    private bool _canAutoClose;
 
+    public override void Start()
+    {
+        base.Start();
+        _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
+        _canAutoClose = MyBranch.AutoOpenCloseClass.CanAutoClose();
+    }
 
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EVent.Do.Subscribe<ICancelHoverOver>(OnCancelHooverOver);
+        if(_canAutoClose)
+            EVent.Do.Subscribe<ISwitchGroupPressed>(ClearJustCancelledFlag);
     }
 
     public override void RemoveEvents()
     {
         base.RemoveEvents();
-        EVent.Do.Unsubscribe<ICancelHoverOver>(OnCancelHooverOver);
+        if(_canAutoClose)
+            EVent.Do.Unsubscribe<ISwitchGroupPressed>(ClearJustCancelledFlag);
     }
 
-    public override void Start()
-    {
-        base.Start();
-        CacheParentingTransforms();
-    }
-    
-    private void CacheParentingTransforms()
-    {
-        if (MyBranch.AutoOpenClose == AutoOpenClose.No) return;
-        _myTransform = _uiNode.MyBranch.ThisBranchesGameObject.transform;
-        _originalParentTransform = _uiNode.HasChildBranch.ThisBranchesGameObject.transform.parent;
-        _myChildTransform = _uiNode.HasChildBranch.ThisBranchesGameObject.transform;
-    }
+    private void ClearJustCancelledFlag(ISwitchGroupPressed args) => _justCancelled = false;
 
-    public override void OnEnter(bool isDragEvent)
+    public override void OnEnter()
     {
-        base.OnEnter(isDragEvent);
+        base.OnEnter();
         if(_uiNode.AutoOpenCloseOverride == IsActive.Yes) return;
+
+        if (CheckIfHasJustBeenCancelled()) return;
         
-        if (MyBranch.CanAutoOpen() && !IsSelected)
+        if (_canAutoOpen && !IsSelected)
         {
+            MyBranch.AutoOpenCloseClass.ChildNodeHasOpenChild = _uiNode.HasChildBranch;
             TurnNodeOnOff();
         }
     }
 
-    private void OnCancelHooverOver(ICancelHoverOver args)
+    private bool CheckIfHasJustBeenCancelled()
     {
-        if(_childTransformChanged)
-            ParentChildToThisBranch();
+        if (!_justCancelled) return false;
+        
+        _justCancelled = false;
+        return true;
     }
 
     public override void DeactivateNodeByType()
     {
         if (!IsSelected) return;
         Deactivate();
-        SetNotHighlighted();
-    }
-
-    public override void SetSelectedStatus(bool isSelected, Action endAction)
-    {
-        base.SetSelectedStatus(isSelected, endAction);
-        ParentChildToThisBranch();
-    }
-
-    private void ParentChildToThisBranch()
-    {
-        if(_uiNode.AutoOpenCloseOverride == IsActive.Yes || !MyBranch.CanAutoOpen()) return;
         
-        if (IsSelected)
+        if (_canAutoClose && _allowKeys)
         {
-            SetParentToThis(true, _myTransform);
+            _justCancelled = true;
+            SetAsHighlighted();
         }
         else
         {
-            SetParentToThis(false, _originalParentTransform);
+            OnExit();
         }
     }
-
-    private void SetParentToThis(bool transformChanged, Transform newChildParent)
-    {
-        _childTransformChanged = transformChanged;
-        _myChildTransform.parent = newChildParent;
-    }
-
 }

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(RectTransform))]
 
 public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPointerDownHandler,
-                              IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler
+                              IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler, IEventUser
 {
     [Header("Main Settings")]
     [HorizontalLine(1, color: EColor.Blue, order = 1)]
@@ -63,6 +63,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     private IUiEvents _uiNodeEvents;
     private INodeBase _nodeBase;
     private readonly List<NodeFunctionBase> _activeFunctions = new List<NodeFunctionBase>();
+    private bool _canStart;
 
     //Properties
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
@@ -81,6 +82,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public GameObject ReturnGameObject => gameObject;
     public IsActive AutoOpenCloseOverride => _autoOpenCloseOverride;
     public IUiEvents UINodeEvents => _uiNodeEvents;
+    private void CanStart(IOnStart args) => _canStart = true;
     
     //Main
     private void Awake()
@@ -89,7 +91,13 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
         _uiNodeEvents = new UiEvents(gameObject.GetInstanceID(), this);
         if (IsToggleGroup || IsToggleNotLinked)
             HasChildBranch = null;
+        ObserveEvents();
     }
+    
+    public void ObserveEvents() => EVent.Do.Subscribe<IOnStart>(CanStart);
+
+    public void RemoveEvents() => EVent.Do.Unsubscribe<IOnStart>(CanStart);
+
 
     private void OnEnable() => SetUpUiFunctions();
 
@@ -113,6 +121,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
             nodeFunctionBase.OnDisable();
         }
         _nodeBase.OnDisable();
+        RemoveEvents();
     }
 
     private void Start()
@@ -151,14 +160,14 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public void ThisNodeIsHighLighted() => _nodeBase.ThisNodeIsHighLighted();
     
     //Input Interfaces
-    public void OnPointerEnter(PointerEventData eventData) => _nodeBase.OnEnter(IsDragEvent(eventData));
-    public void OnPointerExit(PointerEventData eventData) => _nodeBase.OnExit(IsDragEvent(eventData));
-    public void OnPointerDown(PointerEventData eventData) => _nodeBase.SelectedAction(IsDragEvent(eventData));
-    public void OnSubmit(BaseEventData eventData) => _nodeBase.SelectedAction(false);
+    public void OnPointerEnter(PointerEventData eventData) => _nodeBase.OnEnter();
+    public void OnPointerExit(PointerEventData eventData) => _nodeBase.OnExit();
+    public void OnPointerDown(PointerEventData eventData) => _nodeBase.SelectedAction();
+    public void OnSubmit(BaseEventData eventData) => _nodeBase.SelectedAction();
     public void OnMove(AxisEventData eventData)
     {
-        MyBranch.PointerOverBranch = true;
-        Debug.Log($"{MyBranch} : {MyBranch.PointerOverBranch}");
+        if(!_canStart) return;
+        //MyBranch.PointerOverBranch = true;
         
         //Add Pointer when starts
         //Remove when switched group when keys allowed
@@ -166,6 +175,13 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
         _nodeBase.DoMoveToNextNode(eventData.moveDir);
     }
     public void OnPointerUp(PointerEventData eventData) { }
-    private static bool IsDragEvent(PointerEventData eventData) => eventData.pointerDrag;
+
     public void DoNonMouseMove(MoveDirection moveDirection) => _nodeBase.DoNonMouseMove(moveDirection);
+
+    /// <summary>
+    /// Needed maybe for when sliders and scroll bar are used
+    /// </summary>
+    /// <param name="eventData"></param>
+    /// <returns></returns>
+    private static bool IsDragEvent(PointerEventData eventData) => eventData.pointerDrag;
 }

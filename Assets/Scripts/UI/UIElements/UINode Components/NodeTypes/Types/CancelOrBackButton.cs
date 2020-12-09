@@ -9,7 +9,7 @@ public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBac
     {
         MyBranch = node.MyBranch;
         _isPopUp = MyBranch.IsAPopUpBranch();
-        _closeOnExit = node.MyBranch.CanAutoClose();
+        _closeOnExit = node.MyBranch.AutoOpenCloseClass.CanAutoClose();
         EscapeKeyType = node.EscapeKeyType;
     }
 

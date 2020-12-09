@@ -73,6 +73,8 @@ public class MoveBackInHistory : IMoveBackInHistory
     public INode BackOneLevelProcess()
     {
         CheckForExceptionsOneLevel();
+        if (_history.Count == 0) return null;
+        
         var lastNode = _history.Last();
         
         if (IsHomeScreenBranch(lastNode))
@@ -115,11 +117,12 @@ public class MoveBackInHistory : IMoveBackInHistory
     {
         CheckForExceptionsBackHome();
         var lastSelected = _history.First();
-        lastSelected.DeactivateNode();
+        StopNodeFlash();
         _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, CallBack);
         return lastSelected;
 
         void CallBack() => BackHomeCallBack(_history);
+        void StopNodeFlash() => lastSelected.DeactivateNode();
     }
 
     private void BackHomeCallBack(List<INode> history)

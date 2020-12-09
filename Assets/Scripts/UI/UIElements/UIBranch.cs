@@ -15,11 +15,12 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(UITweener))]
 
 public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch, IBranch, IEventDispatcher,
-                                IPointerEnterHandler, IPointerExitHandler, ICancelHoverOver
+                                IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
-    [SerializeField] 
+    [SerializeField]
+    [Header("Settings")] [HorizontalLine(1f, EColor.Blue, order = 1)]
     [HideIf(EConditionOperator.Or, "IsOptional", "IsTimedPopUp")] [Label("Auto Open/Close")]
     private AutoOpenClose _autoOpenClose = AutoOpenClose.No;
     [SerializeField] 
@@ -51,31 +52,31 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [ShowIf("IsPauseMenuBranch")] private UnityEvent _whenPausePressed;
     [SerializeField]
     [HideIf(EConditionOperator.Or, "IsAPopUpBranch", "IsHomeScreenBranch")] 
-    [Label("Branch Group List (Leave blank if NO groups needed)")]
+    [Label("Branch Group List (Leave blank if NO groups needed)")] 
     [ReorderableList] private List<GroupList> _groupsList;
-    [SerializeField] private BranchEvents _branchEvents;
+    [SerializeField] 
+    [Header("Events")][HorizontalLine(1f, EColor.Blue, order = 1)] 
+    private BranchEvents _branchEvents;
 
     //Variables
     private UITweener _uiTweener;
     private int _groupIndex;
     private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
     private bool _activePopUp, _isTabBranch;
-    
+
     //Properties
     public AutoOpenClose AutoOpenClose
     {
         get => _autoOpenClose;
         set => _autoOpenClose = value;
     }
-
-    public bool PointerOverBranch { get; set; }
+    public IAutoOpenClose AutoOpenCloseClass { get; private set; }
+    public bool PointerOverBranch => AutoOpenCloseClass.PointerOverBranch;
 
     //Enum
     private enum StoreAndRestorePopUps { StoreAndRestore, Reset }
     
     //Set / Getters
-    public bool CanAutoClose() => AutoOpenClose == AutoOpenClose.Both || AutoOpenClose == AutoOpenClose.Close;
-    public bool CanAutoOpen() => AutoOpenClose == AutoOpenClose.Both || AutoOpenClose == AutoOpenClose.Open;
     private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveHighlighted(IHighlightedNode args)
     {
@@ -92,19 +93,15 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     /// <summary>
     /// Call To to start any PopUps through I StartPopUp
     /// </summary>
-
     public void StartPopUp() => OnStartPopUp?.Invoke();
     public void DoNotTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
     public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
 
-
-    
     //Delegates & Events
     public event Action OnStartPopUp; 
     private Action OnFinishTweenCallBack { get; set; }
     private  Action<IActiveBranch> SetActiveBranch { get; set; }
-    private  Action<ICancelHoverOver> CancelHooverOver { get; set; }
 
     //InternalClasses
     [Serializable]
@@ -125,6 +122,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         MyParentBranch = this;
         SetStartPositions();
         SetNodesChildrenToThisBranch();
+        AutoOpenCloseClass = EJect.Class.WithParams<IAutoOpenClose>(this);
     }
 
     private void SetStartPositions()
@@ -175,11 +173,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         BranchBase.OnDisable();
     }
 
-    public void FetchEvents()
-    {
-        SetActiveBranch = EVent.Do.Fetch<IActiveBranch>();
-        CancelHooverOver = EVent.Do.Fetch<ICancelHoverOver>();
-    }
+    public void FetchEvents() => SetActiveBranch = EVent.Do.Fetch<IActiveBranch>();
 
     public void ObserveEvents()
     {
@@ -299,15 +293,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         _canActivateBranch = true;
     }
 
-    public void OnPointerEnter(PointerEventData eventData) => PointerOverBranch = true;
+    public void OnPointerEnter(PointerEventData eventData) => AutoOpenCloseClass.OnPointerEnter();
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        PointerOverBranch = false;
-        if (!CanAutoClose() || MyParentBranch.PointerOverBranch) return;
-        
-        EscapeKeyType = EscapeKey.BackToHome;
-        CancelHooverOver?.Invoke(this);
-    }
+    public void OnPointerExit(PointerEventData eventData) => AutoOpenCloseClass.OnPointerExit();
 }
 

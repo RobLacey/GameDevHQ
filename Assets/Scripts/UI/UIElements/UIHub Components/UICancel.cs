@@ -61,16 +61,9 @@ public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
         ProcessCancelType(args.EscapeKeySettings);
     }
 
-    private void CancelOrBackButtonPressed(ICancelButtonActivated args)
-    {
-        ProcessCancelType(args.EscapeKeyType);
-    }
+    private void CancelOrBackButtonPressed(ICancelButtonActivated args) => ProcessCancelType(args.EscapeKeyType);
 
-    private void CancelHooverOver(ICancelHoverOver args)
-    {
-        Debug.Log($"CancelHooverOver : {args.EscapeKeyType}");
-        ProcessCancelType(args.EscapeKeyType);
-    }
+    private void CancelHooverOver(ICancelHoverOver args) => ProcessCancelType(args.EscapeKeyType);
 
     private void ProcessCancelType(EscapeKey escapeKey)
     {
