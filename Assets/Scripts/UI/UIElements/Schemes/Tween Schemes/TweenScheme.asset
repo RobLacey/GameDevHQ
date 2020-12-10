@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _positionTween: 0
   _rotationTween: 0
-  _fadeTween: 0
+  _fadeTween: 1
   _scaleTween: 0
   _punchTween: 1
   _shakeTween: 0
@@ -46,7 +46,7 @@ MonoBehaviour:
     _randomness: 45
     _fadeOut: 1
   _punchData:
-    _atEndOfTweens: 1
+    _atEndOfTweens: 0
     _strength: {x: 0.1, y: 0.1, z: 0}
     _duration: 0.3
     _elasticity: 0.5

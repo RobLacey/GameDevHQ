@@ -27,6 +27,10 @@
         _eJectMaster.Bind<ShakeTween>().To<IShakeTween>();
         _eJectMaster.Bind<TweenInspector>().To<ITweenInspector>();
         
+        //ToolTips
+        _eJectMaster.Bind<ToolTipFade>().To<IToolTipFade>().WithParameters();
+        _eJectMaster.Bind<GetScreenPosition>().To<IGetScreenPosition>().WithParameters();
+        
         //NodeBase Types
         _eJectMaster.Bind<Standard>().To<IStandard>().WithParameters();
         _eJectMaster.Bind<CancelOrBackButton>().To<ICancelOrBack>().WithParameters();
@@ -70,6 +74,7 @@
         
         //AutoOpenClose
         _eJectMaster.Bind<AutoOpenCloseController>().To<IAutoOpenClose>().WithParameters();
+        _eJectMaster.Bind<DelayTimer>().To<IDelayTimer>();
 
     }
 }

@@ -1,21 +1,24 @@
 ﻿
+using UnityEngine;
+
 public interface IStandard : INodeBase { }
 
 public class Standard : NodeBase, IStandard
 {
-    public Standard(INode uiNode) : base(uiNode) => _uiNode = uiNode;
+    public Standard(INode uiNode) : base(uiNode)
+    {
+        _uiNode = uiNode;
+        _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
+        _canAutoClose = MyBranch.AutoOpenCloseClass.CanAutoClose();
+        _autoOpenDelay = _uiNode.AutoOpenDelay;
+    }
 
     private bool _isToggle;
     private bool _justCancelled;
-    private bool _canAutoOpen;
-    private bool _canAutoClose;
-
-    public override void Start()
-    {
-        base.Start();
-        _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
-        _canAutoClose = MyBranch.AutoOpenCloseClass.CanAutoClose();
-    }
+    private readonly bool _canAutoOpen;
+    private readonly bool _canAutoClose;
+    private readonly IDelayTimer _delayTimer = EJect.Class.NoParams<IDelayTimer>();
+    private readonly float _autoOpenDelay;
 
     public override void ObserveEvents()
     {
@@ -42,9 +45,24 @@ public class Standard : NodeBase, IStandard
         
         if (_canAutoOpen && !IsSelected)
         {
-            MyBranch.AutoOpenCloseClass.ChildNodeHasOpenChild = _uiNode.HasChildBranch;
-            TurnNodeOnOff();
+            _delayTimer.SetDelay(_autoOpenDelay)
+                       .StartTimer(StartAutoOpen);
         }
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        if (_canAutoOpen)
+        {
+            _delayTimer.StopTimer();
+        }
+    }
+
+    private void StartAutoOpen()
+    {
+        MyBranch.AutoOpenCloseClass.ChildNodeHasOpenChild = _uiNode.HasChildBranch;
+        TurnNodeOnOff();
     }
 
     private bool CheckIfHasJustBeenCancelled()

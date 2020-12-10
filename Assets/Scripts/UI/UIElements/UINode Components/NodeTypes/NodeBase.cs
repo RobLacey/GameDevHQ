@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelectedNode, 
@@ -43,19 +44,14 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
 
     private void UnHighlightThisNode(IHighlightedNode args)
     {
-        if(!_allowKeys) return;
-        if (_lastHighlighted == _uiNode && args.Highlighted != _uiNode)
-        {
+        if (_allowKeys && _lastHighlighted == _uiNode && args.Highlighted != _uiNode)
             OnExit();
-        }
     }
     private void SaveAllowKeys(IAllowKeys args)
     {
         _allowKeys = args.CanAllowKeys;
         if(!_allowKeys && ReferenceEquals(_lastHighlighted, _uiNode))
-        {
             OnExit();
-        }    
     }
     
     private void SaveInMenuOrInGame(IInMenu args)
@@ -174,9 +170,9 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
 
     public void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this);
 
-    public void DoPressOnNode() => _uiFunctionEvents.DoIsPressed();
+    protected void DoPressOnNode() => _uiFunctionEvents.DoIsPressed();
 
-    public void SetSelectedStatus(bool isSelected, Action endAction)
+    protected void SetSelectedStatus(bool isSelected, Action endAction)
     {
         IsSelected = isSelected;
         _uiFunctionEvents.DoIsSelected(IsSelected);
@@ -206,7 +202,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
 
     public virtual void OnEnter() => SetAsHighlighted();
 
-    public void OnExit() => SetNotHighlighted();
+    public virtual void OnExit() => SetNotHighlighted();
 
     public void DoMoveToNextNode(MoveDirection moveDirection) => _uiFunctionEvents.DoOnMove(moveDirection);
 

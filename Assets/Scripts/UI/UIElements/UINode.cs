@@ -16,6 +16,9 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     [SerializeField]
     [ShowIf("CanAutoOpenClose")] [Label("Auto Open/Close Override")]
     private IsActive _autoOpenCloseOverride = IsActive.No;
+    [SerializeField]
+    [ShowIf("CanAutoOpenClose")] [Label("Auto Open/Close Override")]
+    private float _autoOpenDelay;
     [SerializeField] 
     [ShowIf("IsCancelOrBack")] 
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
@@ -81,7 +84,10 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public EscapeKey EscapeKeyType => _escapeKeyFunction;
     public GameObject ReturnGameObject => gameObject;
     public IsActive AutoOpenCloseOverride => _autoOpenCloseOverride;
+    public float AutoOpenDelay => _autoOpenDelay;
     public IUiEvents UINodeEvents => _uiNodeEvents;
+    
+    //Setting / Getters
     private void CanStart(IOnStart args) => _canStart = true;
     
     //Main
@@ -97,7 +103,6 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public void ObserveEvents() => EVent.Do.Subscribe<IOnStart>(CanStart);
 
     public void RemoveEvents() => EVent.Do.Unsubscribe<IOnStart>(CanStart);
-
 
     private void OnEnable() => SetUpUiFunctions();
 
@@ -126,9 +131,18 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     private void Start()
     {
+        SetChildParentBranch();        
         StartNodeFactory();
         _nodeBase.OnEnable();
         _nodeBase.Start();
+    }
+
+    private void SetChildParentBranch()
+    {
+        if (!(HasChildBranch is null))
+        {
+            HasChildBranch.MyParentBranch = MyBranch;
+        }
     }
 
     private void StartNodeFactory()
@@ -167,11 +181,6 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public void OnMove(AxisEventData eventData)
     {
         if(!_canStart) return;
-        //MyBranch.PointerOverBranch = true;
-        
-        //Add Pointer when starts
-        //Remove when switched group when keys allowed
-        
         _nodeBase.DoMoveToNextNode(eventData.moveDir);
     }
     public void OnPointerUp(PointerEventData eventData) { }

@@ -65,11 +65,12 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
 
     private void HotKeyActivation()
     {    
+
         if(!_hasParentNode)
         {
             GetParentNode();
         }
-
+        
         if (_activeBranch.IsHomeScreenBranch())
         {
             StartThisHotKeyBranch();
@@ -113,6 +114,5 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
         HotKeyPressed?.Invoke(this);
         _parentNode.SetAsHotKeyParent();
         MyBranch.MoveToThisBranch();
-        Debug.Log("HotKey");
     }
 }

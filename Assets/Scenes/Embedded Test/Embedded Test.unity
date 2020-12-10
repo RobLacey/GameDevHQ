@@ -883,6 +883,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 0
   _autoOpenCloseOverride: 0
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -2068,6 +2069,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 1
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -2353,6 +2355,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 0
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 2
   _toggleData:
     _toggleGroupId: 0
@@ -2441,6 +2444,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 1
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -3192,10 +3196,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 1
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
-    _startAsSelected: 1
+    _startAsSelected: 0
     _tabBranch: {fileID: 0}
   _enabledFunctions: 67
   _navigation:
@@ -4539,6 +4544,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 0
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 2
   _toggleData:
     _toggleGroupId: 0
@@ -18241,6 +18247,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 0
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -21001,6 +21008,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 0
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -24081,6 +24089,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 0
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -24195,6 +24204,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 1
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -30391,6 +30401,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 0
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -32365,6 +32376,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 0
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -33640,6 +33652,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 1
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -35262,6 +35275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 2
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -37306,6 +37320,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 1
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -37567,6 +37582,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 0
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -41239,6 +41255,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 2
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 2
   _toggleData:
     _toggleGroupId: 0
@@ -42901,6 +42918,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 2
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 2
   _toggleData:
     _toggleGroupId: 0
@@ -43268,6 +43286,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 2
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
@@ -43516,6 +43535,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 2
   _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0

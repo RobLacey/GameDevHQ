@@ -8,11 +8,11 @@ public interface IBucketCreator
     Transform CreateBucket();
 }
 
-public class BucketCreator : IBucketCreator, IIsAService
+public class BucketCreator : IBucketCreator
 {
     private Transform _parent;
     private string _name;
-    private Transform _bucket;
+    private static Transform bucket;
 
     public IBucketCreator SetParent(Transform parent)
     {
@@ -28,18 +28,14 @@ public class BucketCreator : IBucketCreator, IIsAService
 
     public Transform CreateBucket()
     {
-        if (GameObject.Find(_name)) return _bucket;
+        //if (GameObject.Find(_name)) return bucket;
+        if (!(bucket is null)) return bucket;
         var newBucket = new GameObject();
         newBucket.transform.parent = _parent;
         newBucket.AddComponent<RectTransform>();
         newBucket.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
         newBucket.name = _name;
-        _bucket = newBucket.transform;
+        bucket = newBucket.transform;
         return newBucket.transform;
-    }
-
-    public void OnDisable()
-    {
-        ;
     }
 }

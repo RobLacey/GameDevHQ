@@ -25,3 +25,5 @@ MonoBehaviour:
   _screenSafeZone: 10
   _displayTooltipDelay: 1
   _buildDelay: 1
+  _fadeInTweenTime: 0.5
+  _fadeOutTweenTime: 0.5

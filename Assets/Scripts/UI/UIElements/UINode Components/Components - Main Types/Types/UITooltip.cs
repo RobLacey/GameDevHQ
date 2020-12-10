@@ -1,45 +1,57 @@
 ﻿using System;
 using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UITooltip : NodeFunctionBase,  IEServUser
+
+public interface IToolTipData: IParameters
+{
+    RectTransform MainCanvas { get; }
+    Camera UiCamera { get; }
+    LayoutGroup[] ListOfTooltips { get; }
+    int CurrentToolTipIndex { get; }
+    RectTransform[] ToolTipsRects { get; }
+    Vector3[] MyCorners { get; }
+    ToolTipScheme Scheme { get; }
+}
+
+public class UITooltip : NodeFunctionBase, IToolTipData
 {
     public UITooltip(ToolTipSettings settings, IUiEvents uiEvents)
     {
-        _mainCanvas = settings.MainCanvas;
-        _uiCamera = settings.UiCamera;
-        _scheme = settings.Scheme;
-        _listOfTooltips = settings.ToolTips;
+        MainCanvas = settings.MainCanvas;
+        UiCamera = settings.UiCamera;
+        Scheme = settings.Scheme;
+        ListOfTooltips = settings.ToolTips;
         CanActivate = true;
         OnAwake(uiEvents);
     }
 
     //Variables
-    private readonly RectTransform _mainCanvas;
-    private readonly Camera _uiCamera;
-    private readonly ToolTipScheme _scheme;
-    private readonly LayoutGroup[] _listOfTooltips;
     private Vector2 _tooltipPos;
-    private RectTransform[] _tooltipsRects;
-    private RectTransform _parentRectTransform;
-    private Transform _bucketPosition;
     private Canvas[] _cachedCanvas;
-    private readonly Vector3[] _myCorners = new Vector3[4];
     private Coroutine _coroutineStart, _coroutineActivate, _coroutineBuild;
-    private bool _allowKeys, _setCorners;
-    private ToolTipsCalcs _calculation;
-    private int _index;
+    private bool _allowKeys;
     private float _buildDelay;
-    private IBucketCreator _bucketCreator;
+    private IToolTipFade _toolTipFade;
+    private IGetScreenPosition _getScreenPosition;
 
-    //Enums & Properties
-    private Vector2 KeyboardPadding => new Vector2(_scheme.KeyboardXPadding, _scheme.KeyboardYPadding);
-    private Vector2 MousePadding => new Vector2(_scheme.MouseXPadding, _scheme.MouseYPadding);
+    //Properties
+    public ToolTipScheme Scheme { get; }
+    public RectTransform MainCanvas { get; }
+    public Camera UiCamera { get; }
+    public int CurrentToolTipIndex { get; private set; }
+    public LayoutGroup[] ListOfTooltips { get; }
+    public RectTransform[] ToolTipsRects { get; private set; }
+    public Vector3[] MyCorners { get; } = new Vector3[4];
+
+
+    //Set / Getters
     protected override bool CanBeHighlighted() => false;
     protected override bool CanBePressed() => false;
     private protected override void ProcessPress() { }
-    protected override bool FunctionNotActive() => !CanActivate || _listOfTooltips.Length == 0 || _scheme is null;
+    protected override bool FunctionNotActive() => !CanActivate || ListOfTooltips.Length == 0 || Scheme is null;
     private protected override void ProcessDisabled()
     {
         if(FunctionNotActive()) return;
@@ -53,7 +65,32 @@ public class UITooltip : NodeFunctionBase,  IEServUser
     {
         base.OnAwake(uiEvents);
         SetUp(uiEvents.ReturnMasterNode.GetComponent<RectTransform>());
-        UseEServLocator();
+        SetUToolTipContainerObject();
+        _toolTipFade = EJect.Class.WithParams<IToolTipFade>(this);
+        _getScreenPosition = EJect.Class.WithParams<IGetScreenPosition>(this);
+    }
+
+    private void SetUp(RectTransform parentRectTransform)
+    {
+        if (FunctionNotActive()) return;
+        SetUpTooltips();
+        SetCorners(parentRectTransform);
+        CheckSetUpForError();
+    }
+
+    private void SetCorners(RectTransform parentRectTransform) => parentRectTransform.GetWorldCorners(MyCorners);
+
+    private void SetUToolTipContainerObject()
+    {
+        var bucketPosition = EJect.Class.NoParams<IBucketCreator>()
+                                  .SetName("ToolTip Holder")
+                                  .SetParent(MainCanvas.transform)
+                                  .CreateBucket();
+        
+        foreach (var tooltip in ToolTipsRects)
+        {
+            tooltip.SetParent(bucketPosition);
+        }
     }
 
     public override void ObserveEvents()
@@ -67,18 +104,6 @@ public class UITooltip : NodeFunctionBase,  IEServUser
         base.RemoveEvents();
         EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
-
-    private void SetUp(RectTransform rectTransform)
-    {
-        if (FunctionNotActive()) return;
-        _parentRectTransform = rectTransform;
-        _calculation = new ToolTipsCalcs(_mainCanvas, _scheme.ScreenSafeZone);
-        SetUpTooltips();
-        CheckSetUpForError();
-    }
-    
-    public void UseEServLocator() => _bucketCreator = EServ.Locator.Get<IBucketCreator>(this);
-
 
     protected override void SavePointerStatus(bool pointerOver)
     {
@@ -99,135 +124,82 @@ public class UITooltip : NodeFunctionBase,  IEServUser
 
     private void CheckSetUpForError()
     {
-        if (_listOfTooltips.Length == 0)
+        if (ListOfTooltips.Length == 0)
             throw new Exception("No tooltips set");
     }
 
     private void SetUpTooltips()
     {
-        if (_listOfTooltips.Length > 1)
-            _buildDelay = _scheme.BuildDelay;
+        if (ListOfTooltips.Length > 1)
+            _buildDelay = Scheme.BuildDelay;
         
-        _tooltipsRects = new RectTransform[_listOfTooltips.Length];
-        _cachedCanvas = new Canvas[_listOfTooltips.Length];
+        ToolTipsRects = new RectTransform[ListOfTooltips.Length];
+        _cachedCanvas = new Canvas[ListOfTooltips.Length];
 
-        for (int index = 0; index < _listOfTooltips.Length; index++)
+        for (int index = 0; index < ListOfTooltips.Length; index++)
         {
-            _tooltipsRects[index] = _listOfTooltips[index].GetComponent<RectTransform>();
-            _cachedCanvas[index] = _listOfTooltips[index].GetComponent<Canvas>();
+            ToolTipsRects[index] = ListOfTooltips[index].GetComponent<RectTransform>();
+            _cachedCanvas[index] = ListOfTooltips[index].GetComponent<Canvas>();
             _cachedCanvas[index].enabled = false;
         }
     }
-
-    public void HideToolTip()
+    
+    private void HideToolTip()
     {
         if (!CanActivate) return;
         StaticCoroutine.StopCoroutines(_coroutineStart);
         StaticCoroutine.StopCoroutines(_coroutineBuild);
         StaticCoroutine.StopCoroutines(_coroutineActivate);
-        _cachedCanvas[_index].enabled = false;
+        _cachedCanvas[CurrentToolTipIndex].enabled = false;
     }
     
     private IEnumerator StartToolTip()
     {
-        SetCorners();
-        SetBucket();
-        yield return new WaitForSeconds(_scheme.StartDelay);
+        yield return new WaitForSeconds(Scheme.StartDelay);
         _coroutineBuild = StaticCoroutine.StartCoroutine(ToolTipBuild());
         _coroutineActivate = StaticCoroutine.StartCoroutine(ActivateTooltip(_allowKeys));
     }
 
-    private void SetCorners()
-    {
-        if(_setCorners) return;
-        _setCorners = true;
-        _parentRectTransform.GetWorldCorners(_myCorners);
-    }
-
-    private void SetBucket()
-    {
-        if(!(_bucketPosition is null)) return;
-        _bucketPosition = _bucketCreator.CreateBucket();
-    }
-
     private IEnumerator ToolTipBuild()
     {
-        for (int toolTipIndex = 0; toolTipIndex < _listOfTooltips.Length; toolTipIndex++)
+        for (int toolTipIndex = 0; toolTipIndex < ListOfTooltips.Length; toolTipIndex++)
         {
-            _index = toolTipIndex;
             yield return new WaitForSeconds(_buildDelay);
-            _cachedCanvas[_index].enabled = false;
+            
+            if(toolTipIndex > 0)
+            {
+                yield return FadeLastToolTipOut(toolTipIndex - 1).WaitForCompletion();
+                _cachedCanvas[toolTipIndex - 1].enabled = false;
+            }
+            CurrentToolTipIndex = toolTipIndex;
+            _cachedCanvas[toolTipIndex].enabled = true;
+            yield return FadeNextToolTipIn(toolTipIndex).WaitForCompletion();
         }
         yield return null;
     }
 
+    private Tween FadeLastToolTipOut(int toolTipIndex)
+    {
+        var iD = ToolTipsRects[toolTipIndex].GetInstanceID();
+        return _toolTipFade.SetTweenTime(Scheme.FadeOutTime)
+                           .StartFadeOut(iD);
+    }
+    
+    private Tween FadeNextToolTipIn(int toolTipIndex)
+    {
+        var iD = ToolTipsRects[toolTipIndex].GetInstanceID();
+        return _toolTipFade.SetTweenTime(Scheme.FadeInTime)
+                           .StartFadeIn(iD);
+    }
 
     private IEnumerator ActivateTooltip(bool isKeyboard)
     {
         while (_pointerOver)
         {
-            GetToolTipsScreenPosition(isKeyboard, _scheme.ToolTipType);
-            SetExactPosition(!isKeyboard ? _scheme.ToolTipPosition : _scheme.KeyboardPosition);
-            _tooltipsRects[_index].SetParent(_bucketPosition);
-            _cachedCanvas[_index].enabled = true;
+            _getScreenPosition.SetExactPosition(isKeyboard);
             yield return null;
         }
         yield return null;
     }
-
-    private void GetToolTipsScreenPosition(bool isKeyboard, TooltipType toolTipType)
-    {
-        switch (toolTipType)
-        {
-            case TooltipType.Follow when isKeyboard:
-                SetKeyboardTooltipPosition();
-                break;
-            case TooltipType.Follow:
-                SetMouseToolTipPosition();
-                break;
-            case TooltipType.Fixed:
-                SetFixedToolTipPosition();
-                break;
-        }
-    }
-
-    private void SetFixedToolTipPosition() => _tooltipPos = ReturnScreenPosition(_scheme.GroupFixedPosition.position);
-
-    private void SetMouseToolTipPosition() => _tooltipPos = ReturnScreenPosition(Input.mousePosition) + MousePadding;
-
-    private void SetKeyboardTooltipPosition()
-    {
-        var position = Vector3.zero;
-        switch (_scheme.PositionToUse)
-        {
-            case UseSide.ToTheRightOf:
-                position = _myCorners[3] + ((_myCorners[2] - _myCorners[3]) / 2);
-                break;
-            case UseSide.ToTheLeftOf:
-                position = _myCorners[1] + ((_myCorners[0] - _myCorners[1]) / 2);
-                break;
-            case UseSide.GameObjectAsPosition:
-                position = _scheme.FixedPosition.position;
-                break;
-        }
-        _tooltipPos = ReturnScreenPosition(position) + KeyboardPadding;
-    }
-    
-    
-    private Vector2 ReturnScreenPosition(Vector3 screenPosition)
-    {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle
-            (_mainCanvas, screenPosition, _uiCamera, out var toolTipPos);
-        return toolTipPos;
-    }
-
-    private void SetExactPosition(ToolTipAnchor toolTipAnchor)
-    {
-        var size = new Vector2( _listOfTooltips[_index].preferredWidth
-                                        , _listOfTooltips[_index].preferredHeight);
-
-        (_tooltipsRects[_index].anchoredPosition, _tooltipsRects[_index].pivot)
-            = _calculation.CalculatePosition(_tooltipPos, size, toolTipAnchor);
-    }
-
 }
+

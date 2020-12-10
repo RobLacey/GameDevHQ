@@ -48,6 +48,8 @@ public interface IBranch : IParameters, IAutoOpenCloseData
 
 public interface IAutoOpenClose
 {
+    void OnEnable();
+    void OnDisable();
     bool CanAutoClose();
     bool CanAutoOpen();
     void OnPointerEnter();

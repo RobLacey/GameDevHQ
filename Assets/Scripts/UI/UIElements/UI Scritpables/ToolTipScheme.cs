@@ -36,6 +36,13 @@ public class ToolTipScheme : ScriptableObject
     [Range(0.1f, 5f)] private float _displayTooltipDelay = 1f;
     [SerializeField] 
     [Range(0.1f, 5f)] private float _buildDelay = 1f;
+    
+    [Header("FadeTween Settings")]
+    [SerializeField] 
+    private float _fadeInTweenTime;
+    [SerializeField] 
+    private float _fadeOutTweenTime;
+
 
     public TooltipType ToolTipType => _tooltipType;
     public ToolTipAnchor ToolTipPosition => _toolTipPosition;
@@ -50,6 +57,8 @@ public class ToolTipScheme : ScriptableObject
     public float ScreenSafeZone => _screenSafeZone;
     public float StartDelay => _displayTooltipDelay;
     public float BuildDelay => _buildDelay;
+    public float FadeInTime => _fadeInTweenTime;
+    public float FadeOutTime => _fadeOutTweenTime;
 
     public bool Fixed() => _tooltipType == TooltipType.Fixed;
     public bool FollowMouse() => _tooltipType == TooltipType.Follow;

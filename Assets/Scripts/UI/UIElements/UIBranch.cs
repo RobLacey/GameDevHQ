@@ -165,10 +165,12 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         ObserveEvents();
         BranchBase = BranchFactory.Factory.PassThisBranch(this).CreateType(_branchType);
         BranchBase.OnEnable();
+        AutoOpenCloseClass.OnEnable();
     }
 
     private void OnDisable()
     {
+        AutoOpenCloseClass.OnDisable();
         RemoveEvents();
         BranchBase.OnDisable();
     }
@@ -204,7 +206,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         {
             InTweenCallback();
         }
-
+        
         _tweenOnChange = true;
     }
     

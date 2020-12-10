@@ -76,7 +76,6 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         _historyTrack.OnEnable();
         _homeGroup.OnEnable();
         ObserveEvents();
-        SetUpBucketCreatorService();
     }
 
     private void OnDisable()
@@ -113,15 +112,6 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         EVent.Do.Unsubscribe<IHighlightedNode>(SetLastHighlighted);
         EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
         EVent.Do.Unsubscribe<IAllowKeys>(SwitchedToKeys);
-    }
-
-    private void SetUpBucketCreatorService()
-    {
-        var bucket = EJect.Class.NoParams<IBucketCreator>();
-        bucket.SetName("ToolTip Holder")
-              .SetParent(transform)
-              .CreateBucket();
-        EServ.Locator.AddNew(bucket);
     }
 
     private void Start() => StartCoroutine(StartUIDelay());
@@ -221,6 +211,9 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         return newTree;
     }
 
+    /// <summary>
+    /// Used by UnityEvent in Inspector
+    /// </summary>
     public void LoadNextScene()
     {
         StartCoroutine(StartOut());

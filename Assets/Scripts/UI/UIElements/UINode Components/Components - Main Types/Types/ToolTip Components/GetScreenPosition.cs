@@ -2,9 +2,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ScreenPosition
+public interface IGetScreenPosition
 {
-    public ScreenPosition(IToolTipData uiTooltip)
+    void SetExactPosition(bool isKeyboard);
+}
+
+public class GetScreenPosition : IGetScreenPosition
+{
+    public GetScreenPosition(IToolTipData uiTooltip)
     {
         _tooltip = uiTooltip;
         _scheme = _tooltip.Scheme;
@@ -93,3 +98,4 @@ public class ScreenPosition
     }
 
 }
+

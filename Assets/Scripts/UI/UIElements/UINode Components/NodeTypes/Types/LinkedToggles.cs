@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public interface ILinkedToggles : INodeBase { }
 
@@ -15,17 +14,24 @@ public class LinkedToggles : NodeBase, ILinkedToggles
         _allNodes = _uiNode.MyBranch.ThisGroupsUiNodes.ToList();
         _myToggleGroupId = toggleData.ReturnToggleId;
         _startAsSelected = toggleData.StartAsSelected == IsActive.Yes;
+        
         SelectedToggle += SaveSelectedNode;
+        
+        _autoOpenDelay = _uiNode.AutoOpenDelay;
+        _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
+        _delayTimer = EJect.Class.NoParams<IDelayTimer>();
     }
 
     //Variables
     private readonly List<INode> _allNodes;
     private readonly List<INode> _toggleGroupMembers = new List<INode>();
     private readonly UIBranch _tabBranch;
-    private readonly bool _hasATabBranch;
+    private readonly bool _hasATabBranch, _canAutoOpen;
     private int _hasAGroupStartPoint;
     private readonly ToggleGroup _myToggleGroupId;
     private bool _startAsSelected;
+    private readonly float _autoOpenDelay;
+    private readonly IDelayTimer _delayTimer;
 
     //Events
     private static event Action<INode, Action> SelectedToggle;
@@ -62,8 +68,13 @@ public class LinkedToggles : NodeBase, ILinkedToggles
 
     private void AssignStartIfNonExists()
     {
-        if (_hasAGroupStartPoint != 0) return;
-        _toggleGroupMembers.First().ToggleData.SetStartAsSelected();
+        if (_hasAGroupStartPoint != 0 || _toggleGroupMembers.First() != _uiNode) return;
+        SetStartAsSelected();
+    }
+
+    private void SetStartAsSelected()
+    {
+        _uiNode.ToggleData.SetStartAsSelected();
         _startAsSelected = true;
     }
 
@@ -90,9 +101,21 @@ public class LinkedToggles : NodeBase, ILinkedToggles
         base.OnEnter();
         if(_uiNode.AutoOpenCloseOverride == IsActive.Yes) return;
         
-        if (MyBranch.AutoOpenCloseClass.CanAutoOpen() && !IsSelected)
+        if (_canAutoOpen && !IsSelected)
         {
-            TurnNodeOnOff();
+            _delayTimer.SetDelay(_autoOpenDelay)
+                       .StartTimer(StartAutoOpen);
+        }
+    }
+    
+    private void StartAutoOpen() => TurnNodeOnOff();
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        if (_canAutoOpen)
+        {
+            _delayTimer.StopTimer();
         }
     }
     

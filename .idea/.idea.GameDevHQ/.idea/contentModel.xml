@@ -378,6 +378,7 @@
                     <e p="UiEventCaller.cs" t="Include" />
                   </e>
                 </e>
+                <e p="DelayTimer.cs" t="Include" />
                 <e p="Factorys" t="Include">
                   <e p="BranchFactory.cs" t="Include" />
                   <e p="NodeFactory.cs" t="Include" />
@@ -467,6 +468,8 @@
                       <e p="UISizeAndPosition_EditorScripts.cs" t="Include" />
                     </e>
                     <e p="ToolTip Components" t="Include">
+                      <e p="GetScreenPosition.cs" t="Include" />
+                      <e p="ToolTipFade.cs" t="Include" />
                       <e p="ToolTipsCalcs.cs" t="Include" />
                     </e>
                     <e p="UIAccessories.cs" t="Include" />

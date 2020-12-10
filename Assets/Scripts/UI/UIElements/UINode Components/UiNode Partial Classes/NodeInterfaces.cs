@@ -17,6 +17,7 @@ public interface INode : IToggles, IParameters
     IUiEvents UINodeEvents { get; }
     void ClearNode();
     IsActive AutoOpenCloseOverride { get; }
+    float AutoOpenDelay { get; }
 }
 
 public interface IToggles
