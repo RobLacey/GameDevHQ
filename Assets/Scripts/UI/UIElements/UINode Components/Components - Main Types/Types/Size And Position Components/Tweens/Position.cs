@@ -28,7 +28,7 @@ public class Position : BasePositionAndScale, IPosition
 
     private void DoPositionTween (Vector3 targetPos, int loop, float time, TweenCallback callback = null)
     {
-        _tweenData.MyRect.DOAnchorPos3D(targetPos, time, _scheme.Snapping)
+        _tweenData.MyRect.DOAnchorPos3D(targetPos, time)
                .SetId(_id)
                .SetLoops(loop, LoopType.Yoyo)
                .SetEase(_scheme.Ease)

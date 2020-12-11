@@ -27,7 +27,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     private ToggleData _toggleData;
     
     [SerializeField] 
-    [Space(5f)] [BoxGroup("Functions")] [Label("UI Functions To Use")]  
+    [BoxGroup("Functions")] [Label("UI Functions To Use")] [HorizontalLine(1, color: EColor.Blue, order = 1)]
     private Setting _enabledFunctions;
     [SerializeField] 
     [Space(15f)] [BoxGroup("Functions")] [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")]  
@@ -69,6 +69,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     private bool _canStart;
 
     //Properties
+    public RectTransform MainCanvas => FindObjectOfType<UIHub>().GetComponent<RectTransform>();
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
     private bool IsCancelOrBack => _buttonFunction == ButtonFunction.CancelOrBack;
@@ -154,18 +155,10 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public void SetNodeAsActive() => _nodeBase.SetNodeAsActive();
     public void SetAsHotKeyParent() => _nodeBase.HotKeyPressed();
 
-    public void DeactivateNode()
-    {
-        if(IsToggleNotLinked|| IsToggleGroup) return;
-        _nodeBase.DeactivateNodeByType();
-    }
-    
-    public void ClearNode()
-    {
-        if(IsToggleNotLinked || IsToggleGroup) return;
-        _nodeBase.ClearNodeCompletely();
-    }
-    
+    public void DeactivateNode() => _nodeBase.DeactivateNodeByType();
+
+    public void ClearNode() => _nodeBase.ClearNodeCompletely();
+
     // Use To Disable Node from external scripts
     public void DisableNode() => _nodeBase.DisableNode();
 

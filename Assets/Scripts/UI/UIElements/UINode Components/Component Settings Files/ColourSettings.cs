@@ -3,7 +3,7 @@ using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.UI;
 
-public interface IComponentSettings
+public interface IComponentSettings: IParameters
 {
     NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions);
 }

@@ -24,21 +24,21 @@ public interface IBranch : IParameters, IAutoOpenCloseData
     WhenToMove WhenToMove { set; }
     bool CanvasIsEnabled { get; }
     bool CanStoreAndRestoreOptionalPoUp { get; }
-    void SetStayOn(IsActive setting);
-    IsActive GetStayOn();
     DoTween TweenOnHome { get; set; }
     IBranch ThisBranch { get; }
     IBranchBase BranchBase { get; }
     IBranch MyParentBranch { get; set; }
     float Timer { get; }
-    IBranch[] FindAllBranches();
     INode[] ThisGroupsUiNodes { get; }
     INode LastSelected { get; }
     GameObject ThisBranchesGameObject { get; }
     bool PointerOverBranch { get;}
     IAutoOpenClose AutoOpenCloseClass { get; }
-
-    void NavigateToChildBranch(IBranch moveToo);
+    IsActive BlockOtherNode { get; set; }
+    IsActive SetStayOn { get; set; }
+    
+    IBranch[] FindAllBranches();
+    IsActive GetStayOn();
     void MoveToThisBranch(IBranch newParentBranch = null);
     void DontSetBranchAsActive();
     void SetHighlightedNode();

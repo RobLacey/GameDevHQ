@@ -22,5 +22,4 @@ MonoBehaviour:
   _elasticity: 0.5
   _shakeRandomness: 45
   _fadeOut: 1
-  _snapping: 0
   _ease: 7

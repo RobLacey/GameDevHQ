@@ -78,7 +78,20 @@ public class UINavigation : NodeFunctionBase
         if(FunctionNotActive() || !CanBePressed() || _childBranch is null) return;
 
         if (!_isSelected) return;
-        _myBranch.NavigateToChildBranch(_childBranch);
+        NavigateToChildBranch(_childBranch);
+    }
+
+    private void NavigateToChildBranch(IBranch moveToo)
+    {
+        if (moveToo.IsInternalBranch())
+        {
+            ToChildBranchProcess();
+        }
+        else
+        {
+            _myBranch.StartBranchExitProcess(OutTweenType.MoveToChild, ToChildBranchProcess);
+        }
+        void ToChildBranchProcess() => moveToo.MoveToThisBranch(_myBranch);
     }
     
     public void MoveToNextFreeNode()

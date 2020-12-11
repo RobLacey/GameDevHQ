@@ -50,7 +50,6 @@ public class ShakeTween : TweenBase, IShakeTween
     {
         if (_scheme.ShakeData.EndTween)
         {
-            Debug.Log("No Shake");
             callback?.Invoke();
             return null;
         } 

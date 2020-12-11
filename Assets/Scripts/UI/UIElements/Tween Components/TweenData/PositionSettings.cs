@@ -47,48 +47,18 @@ public class PositionSettings
     private bool MiddleTween { get; set; }
     
     
-    public void SetRectTransform(RectTransform rectTransform) => _element = rectTransform;
+    public void SetRectTransform(RectTransform rectTransform) 
+        => _element = rectTransform;
 
-    private void GrabStartPos()
-    {
-        if (_grabStartPosition)
-        {
-            Debug.Log("Start value changed");
-            _tweenStartPosition = _element.anchoredPosition3D;
-        }
-        else
-        {
-            Debug.Log("Start value reset");
-            _tweenStartPosition = Vector3.zero;
-        }
-    }
-    private void GrabMidPos()
-    {
-        if (_grabMidPosition)
-        {
-            Debug.Log("Mid value changed");
-            _tweenMiddlePosition = _element.anchoredPosition3D;
-        }
-        else
-        {
-            Debug.Log("Mid value reset");
-            _tweenMiddlePosition = Vector3.zero;
-        }
-
-    }
-    private void GrabEndPos()
-    {
-        if (_grabEndPosition)
-        {
-            Debug.Log("End value changed");
-            _tweenTargetPosition = _element.anchoredPosition3D;
-        }
-        else
-        {
-            Debug.Log("End value reset");
-            _tweenTargetPosition = Vector3.zero;
-        }
-    }
+    private void GrabStartPos() 
+        => _tweenStartPosition = _grabStartPosition ? _element.anchoredPosition3D : Vector3.zero;
+    
+    private void GrabMidPos() 
+        => _tweenMiddlePosition = _grabMidPosition ? _element.anchoredPosition3D : Vector3.zero;
+    
+    private void GrabEndPos() 
+        => _tweenTargetPosition = _grabEndPosition ? _element.anchoredPosition3D : Vector3.zero;
+    
 
     private void GotToStart()
     {
@@ -108,27 +78,15 @@ public class PositionSettings
     
     public void SetUpTween(TweenStyle tween)
     {
-        if (tween != TweenStyle.NoTween)
-        {
-            PositionTween = true;
-        }
-        else
-        {
-            PositionTween = false;
-        }
-
-        if (tween == TweenStyle.InAndOut)
-        {
-            MiddleTween = true;
-        }
-        else
-        {
-            MiddleTween = false;
-        }
+        PositionTween = tween != TweenStyle.NoTween;
+        MiddleTween = tween == TweenStyle.InAndOut;
+        ClearPositionTween();
     }
     //TODO Not Used
     public void ClearPositionTween()
     {
+        if(PositionTween) return;
+        
         _grabStartPosition = false;
         _grabMidPosition = false;
         _grabEndPosition = false;

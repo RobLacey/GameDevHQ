@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public interface ITooltipSettings : IComponentSettings
 {
-    RectTransform MainCanvas { get; }
+    IUiEvents UiNodeEvents { get; }
     Camera UiCamera { get; }
     ToolTipScheme Scheme { get; }
     LayoutGroup[] ToolTips { get; }
@@ -16,8 +16,6 @@ public class ToolTipSettings : ITooltipSettings
 {
     [Header("General Settings")]
     [SerializeField] 
-    private RectTransform _mainCanvas;
-    [SerializeField] 
     private Camera _uiCamera;
     [SerializeField] 
     [AllowNesting] [ValidateInput("IsNull", "Add a Tooltip Scheme")] private ToolTipScheme _scheme;
@@ -27,16 +25,18 @@ public class ToolTipSettings : ITooltipSettings
     //Editor Scripts
     private bool IsNull(ToolTipScheme scheme) => scheme;
 
-    public RectTransform MainCanvas => _mainCanvas;
     public Camera UiCamera => _uiCamera;
     public ToolTipScheme Scheme => _scheme;
     public LayoutGroup[] ToolTips => _listOfTooltips;
+    public IUiEvents UiNodeEvents { get; private set; }
 
     public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
+        UiNodeEvents = uiNodeEvents;
+        
         if ((functions & Setting.ToolTip) != 0)
         {
-            return new UITooltip(this, uiNodeEvents);
+            return new UITooltip(this);
         }
         return new NullFunction();
     }

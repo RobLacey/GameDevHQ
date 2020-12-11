@@ -8,11 +8,11 @@ public class ShakeData
     [SerializeField]
     [InfoBox("DOESN'T use Global Tween Time.")]
     private IsActive _atEndOfTweens = IsActive.No;
-    [SerializeField] Vector3 _strength = new Vector3(0.2f, 0.2f, 0.2f);
-    [SerializeField] [Range(0, 2)] float _duration = 0.5f;
-    [SerializeField] [Range(1, 10)] int _vibrato = 10;
-    [SerializeField] [Range(0, 90)] float _randomness = 45f;
-    [SerializeField] bool _fadeOut = true;
+    [SerializeField] private Vector3 _strength = new Vector3(0.2f, 0.2f, 0.2f);
+    [SerializeField] [Range(0, 2)] private float _duration = 0.5f;
+    [SerializeField] [Range(1, 10)] private int _vibrato = 10;
+    [SerializeField] [Range(0, 90)] private float _randomness = 45f;
+    [SerializeField] private bool _fadeOut = true;
 
     public Vector3 Strength => _strength;
 

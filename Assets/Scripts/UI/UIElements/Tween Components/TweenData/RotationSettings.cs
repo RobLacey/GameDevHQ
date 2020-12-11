@@ -23,7 +23,6 @@ public class RotationSettings
 
     public void SetUpTween(TweenStyle rotationTween)
     {
-        //Debug.Log(rotationTween);
         if (rotationTween != TweenStyle.NoTween)
         {
             RotationTween = true;
@@ -31,32 +30,27 @@ public class RotationSettings
         else
         {
             RotationTween = false;
+             _rotateFrom = Vector3.zero;
+            _rotateMidPoint = Vector3.zero;
+             _rotateToo = Vector3.zero;
         }
 
         if (rotationTween == TweenStyle.InAndOut)
         {
-            // _rotateFrom = Vector3.zero;
-            // _rotateMidPoint = Vector3.zero;
-            // _rotateToo = Vector3.zero;
+            _rotateMidPoint = _element.localRotation.eulerAngles;
             MidRotation = true;
         }
         else
         {
             if (rotationTween == TweenStyle.In)
             {
-                // _rotateFrom = Vector3.zero;
-                // _rotateMidPoint = Vector3.zero;
-                // _rotateToo = _element.localScale;
+                 _rotateToo = _element.localRotation.eulerAngles;
             }
             else
             {
-                // _rotateFrom = _element.localScale;
-                // _rotateMidPoint = Vector3.zero;
-                // _rotateToo = Vector3.zero;
+                 _rotateFrom = _element.localRotation.eulerAngles;
             }
             MidRotation = false;
         }
-
     }
-
 }

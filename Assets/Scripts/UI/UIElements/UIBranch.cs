@@ -17,19 +17,27 @@ using UnityEngine.EventSystems;
 public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch, IBranch, IEventDispatcher,
                                 IPointerEnterHandler, IPointerExitHandler
 {
+    [Header("Settings")] [HorizontalLine(1f, EColor.Blue, order = 1)]
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
     [SerializeField]
-    [Header("Settings")] [HorizontalLine(1f, EColor.Blue, order = 1)]
-    [HideIf(EConditionOperator.Or, "IsOptional", "IsTimedPopUp")] [Label("Auto Open/Close")]
+    [Label("Move To Next Branch...")] private WhenToMove _moveType = WhenToMove.Immediately;
+    [SerializeField]
+    [Label("Start On (Optional)")] 
+    private UINode _startOnThisNode;
+    [SerializeField] 
+    [HideIf("IsAPopUpEditor")] [Label("Auto Open/Close")]
     private AutoOpenClose _autoOpenClose = AutoOpenClose.No;
+    [SerializeField] 
+    [ShowIf("IsStandardBranch")]
+    private IsActive _blockOtherNodes = IsActive.No;
     [SerializeField] 
     [ShowIf("IsTimedPopUp")] private float _timer = 1f;
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "IsOptional", "IsTimedPopUp", "IsHomeScreenBranch")]
     private ScreenType _screenType = ScreenType.FullScreen;
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "IsAPopUpBranch", "IsFullScreen")] 
+    [HideIf(EConditionOperator.Or, "IsAPopUpEditor", "IsFullScreen")] 
     private IsActive _stayVisible = IsActive.No;
     [SerializeField] 
     [ShowIf("IsOptional")] private StoreAndRestorePopUps _storeOrResetOptional = StoreAndRestorePopUps.Reset;
@@ -38,21 +46,14 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [Label("On Return To Home Screen")]
     private DoTween _tweenOnHome = DoTween.Tween;
     [SerializeField] 
-    [Label("Save Position On Exit")] [HideIf("IsAPopUpBranch")] private IsActive _saveExitSelection = IsActive.Yes;
-    [SerializeField] 
-    [Label("Move To Next Branch...")] private WhenToMove _moveType = WhenToMove.Immediately;
+    [Label("Save Position On Exit")] [HideIf("IsAPopUpEditor")] 
+    private IsActive _saveExitSelection = IsActive.Yes;
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, "IsStandardBranch")]
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField]
-    [ValidateInput("IsEmpty", "If left Blank it will auto-assign the first UINode in hierarchy/Group")]
-    private UINode _startOnThisNode;
-    [SerializeField] 
-    // ReSharper disable once NotAccessedField.Local
-    [ShowIf("IsPauseMenuBranch")] private UnityEvent _whenPausePressed;
-    [SerializeField]
-    [HideIf(EConditionOperator.Or, "IsAPopUpBranch", "IsHomeScreenBranch")] 
-    [Label("Branch Group List (Leave blank if NO groups needed)")] 
+    [HideIf(EConditionOperator.Or, "IsAPopUpEditor", "IsHomeScreenBranch")] 
+    [Label("Branch Groups List (Leave blank if NO groups needed)")] 
     [ReorderableList] private List<GroupList> _groupsList;
     [SerializeField] 
     [Header("Events")][HorizontalLine(1f, EColor.Blue, order = 1)] 
@@ -72,10 +73,12 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     }
     public IAutoOpenClose AutoOpenCloseClass { get; private set; }
     public bool PointerOverBranch => AutoOpenCloseClass.PointerOverBranch;
+    public IsActive BlockOtherNode
+    {
+        get => _blockOtherNodes;
+        set => _blockOtherNodes = value;
+    }
 
-    //Enum
-    private enum StoreAndRestorePopUps { StoreAndRestore, Reset }
-    
     //Set / Getters
     private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveHighlighted(IHighlightedNode args)
@@ -225,19 +228,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         LastHighlighted = DefaultStartOnThisNode;
     }
 
-    public void NavigateToChildBranch(IBranch moveToo)
-    {
-        if (moveToo.IsInternalBranch())
-        {
-            ToChildBranchProcess();
-        }
-        else
-        {
-            StartBranchExitProcess(OutTweenType.MoveToChild, ToChildBranchProcess);
-        }
-        void ToChildBranchProcess() => moveToo.MoveToThisBranch(newParentBranch: this);
-    }
-    
     public void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null)
     {
         if(!CanvasIsEnabled) return;

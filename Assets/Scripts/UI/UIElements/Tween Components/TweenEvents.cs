@@ -6,21 +6,21 @@ using UnityEngine.Events;
 public class TweenEvents
 {
     [SerializeField] 
-    private TweenTrigger _inTweenEvent_Start;
+    private TweenTrigger _inTweenEventStart;
     [SerializeField] 
-    private TweenTrigger _inTweenEvent_End;
+    private TweenTrigger _inTweenEventEnd;
     [SerializeField] 
-    private TweenTrigger _outTweenEvent_Start;
+    private TweenTrigger _outTweenEventStart;
     [SerializeField] 
-    private TweenTrigger _outTweenEvent_End;
+    private TweenTrigger _outTweenEventEnd;
 
-    public TweenTrigger InTweenEvent_Start => _inTweenEvent_Start;
+    public TweenTrigger InTweenEventStart => _inTweenEventStart;
 
-    public TweenTrigger InTweenEvent_End => _inTweenEvent_End;
+    public TweenTrigger InTweenEventEnd => _inTweenEventEnd;
 
-    public TweenTrigger OutTweenEvent_Start => _outTweenEvent_Start;
+    public TweenTrigger OutTweenEventStart => _outTweenEventStart;
 
-    public TweenTrigger OutTweenEvent_End => _outTweenEvent_End;
+    public TweenTrigger OutTweenEventEnd => _outTweenEventEnd;
 }
 
 //Classes

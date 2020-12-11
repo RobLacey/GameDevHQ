@@ -882,7 +882,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonFunction: 0
-  _autoOpenCloseOverride: 0
+  _autoOpenCloseOverride: 1
   _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
@@ -924,7 +924,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -2110,7 +2109,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -2396,7 +2394,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -2485,7 +2482,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -3237,7 +3233,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -4585,7 +4580,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -4738,19 +4732,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 1
+  _moveType: 0
+  _startOnThisNode: {fileID: 0}
   _autoOpenClose: 0
+  _blockOtherNodes: 1
   _timer: 1
   _screenType: 0
   _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
-  _moveType: 0
   _escapeKeyFunction: 3
-  _startOnThisNode: {fileID: 0}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -4774,16 +4766,16 @@ MonoBehaviour:
   _buildObjectsList: []
   _scheme: {fileID: 0}
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &246213782
@@ -4937,19 +4929,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 0
+  _moveType: 0
+  _startOnThisNode: {fileID: 0}
   _autoOpenClose: 0
+  _blockOtherNodes: 1
   _timer: 1
   _screenType: 0
   _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
-  _moveType: 0
   _escapeKeyFunction: 0
-  _startOnThisNode: {fileID: 0}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -4973,16 +4963,16 @@ MonoBehaviour:
   _buildObjectsList: []
   _scheme: {fileID: 0}
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &274292517
@@ -8836,19 +8826,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 0
+  _moveType: 1
+  _startOnThisNode: {fileID: 1579058406}
   _autoOpenClose: 3
+  _blockOtherNodes: 1
   _timer: 1
   _screenType: 0
   _stayVisible: 0
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 0
-  _moveType: 1
   _escapeKeyFunction: 3
-  _startOnThisNode: {fileID: 1579058406}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -8872,16 +8860,16 @@ MonoBehaviour:
   _buildObjectsList: []
   _scheme: {fileID: 0}
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &413526951
@@ -10493,17 +10481,17 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._fullSize.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._fullSize.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._fullSize.z
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -10518,47 +10506,47 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._grabMidPosition
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenMiddlePosition.x
-      value: -122
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenMiddlePosition.y
-      value: -385
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._grabStartPosition
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenStartPosition.x
-      value: -567
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenStartPosition.y
-      value: -385
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._grabEndPosition
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenTargetPosition.x
-      value: 1782
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenTargetPosition.y
-      value: -385
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -10593,17 +10581,17 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._startScale.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._startScale.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._startScale.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -10613,12 +10601,12 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._rotateFrom.y
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._rotateToo.y
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -10626,6 +10614,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 288aa10055ca42443a0371953c985365,
         type: 2}
+    - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._rotateFrom.x
+      value: -0
+      objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10902,7 +10895,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -230}
+  m_AnchoredPosition: {x: 0, y: 174}
   m_SizeDelta: {x: 400, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &504002778
@@ -10918,19 +10911,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 1
+  _moveType: 1
+  _startOnThisNode: {fileID: 0}
   _autoOpenClose: 3
+  _blockOtherNodes: 1
   _timer: 1
   _screenType: 0
   _stayVisible: 0
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 0
-  _moveType: 1
   _escapeKeyFunction: 1
-  _startOnThisNode: {fileID: 0}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -10955,20 +10946,20 @@ MonoBehaviour:
   - _element: {fileID: 504002777}
     _positionSettings:
       _grabStartPosition: 1
-      _grabMidPosition: 1
+      _grabMidPosition: 0
       _grabEndPosition: 1
       _goToStartPosition: 0
       _goToMidPosition: 0
       _goToEndPosition: 0
-      _tweenStartPosition: {x: 0, y: 205, z: 0}
-      _tweenMiddlePosition: {x: 0, y: -234, z: 0}
+      _tweenStartPosition: {x: 0, y: 174, z: 0}
+      _tweenMiddlePosition: {x: 0, y: 0, z: 0}
       _tweenTargetPosition: {x: 0, y: -230, z: 0}
     _scaleSettings:
       _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
       _endScale: {x: 0, y: 0, z: 0}
     _rotationSettings:
-      _rotateFrom: {x: 0, y: 0, z: 0}
+      _rotateFrom: {x: -0, y: 0, z: 0}
       _rotateMidPoint: {x: 0, y: 0, z: 0}
       _rotateToo: {x: 0, y: 0, z: 0}
     _buildNextAfterDelay: 0
@@ -10979,16 +10970,16 @@ MonoBehaviour:
     _shakeStartScale: {x: 0, y: 0, z: 0}
   _scheme: {fileID: 11400000, guid: aa2c3cdcc08266244b7de45ed4e8fd11, type: 2}
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &504002780
@@ -12017,7 +12008,7 @@ PrefabInstance:
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _enabledFunctions
-      value: 231
+      value: 487
       objectReference: {fileID: 0}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
@@ -13047,20 +13038,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 2
+  _branchType: 3
+  _moveType: 1
+  _startOnThisNode: {fileID: 0}
   _autoOpenClose: 0
+  _blockOtherNodes: 1
   _timer: 2
-  _screenType: 1
+  _screenType: 0
   _stayVisible: 1
   _storeOrResetOptional: 0
   _tweenOnHome: 0
   _saveExitSelection: 0
-  _moveType: 1
   _escapeKeyFunction: 1
-  _startOnThisNode: {fileID: 0}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -13109,16 +13098,16 @@ MonoBehaviour:
     _shakeStartScale: {x: 0, y: 0, z: 0}
   _scheme: {fileID: 0}
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &620683492
@@ -13312,6 +13301,26 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: f69f7852915b576489b1831ac78a2df1,
         type: 2}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._startScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._startScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._startScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._rotateFrom.x
+      value: -0
+      objectReference: {fileID: 0}
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: m_Enabled
@@ -14214,6 +14223,22 @@ PrefabInstance:
       propertyPath: _escapeKeyFunction
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _branchType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _blockOtherNodes
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _scheme
+      value: 
+      objectReference: {fileID: 11400000, guid: 8fea8e1c9b239f844a1a2a32b874deff,
+        type: 2}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.size
@@ -14242,22 +14267,22 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _tweenEvents._inTweenEvent_End.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _tweenEvents._outTweenEvent_End.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _tweenEvents._inTweenEvent_Start.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _tweenEvents._outTweenEvent_Start.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -14517,17 +14542,17 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._fullSize.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._fullSize.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._fullSize.z
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -14542,47 +14567,47 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._grabMidPosition
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenMiddlePosition.x
-      value: -122
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenMiddlePosition.y
-      value: -385
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._grabEndPosition
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenTargetPosition.x
-      value: 1788
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenTargetPosition.y
-      value: -385
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._grabStartPosition
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenStartPosition.x
-      value: -590
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._positionSettings._tweenStartPosition.y
-      value: -385
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -14617,17 +14642,17 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._startScale.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._startScale.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._startScale.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -14642,17 +14667,17 @@ PrefabInstance:
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._rotateFrom.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._rotateFrom.y
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._rotateToo.y
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -14923,17 +14948,17 @@ PrefabInstance:
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -18288,7 +18313,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -21049,7 +21073,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -23603,19 +23626,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 1
+  _moveType: 0
+  _startOnThisNode: {fileID: 0}
   _autoOpenClose: 0
+  _blockOtherNodes: 1
   _timer: 1
   _screenType: 0
   _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
-  _moveType: 0
   _escapeKeyFunction: 3
-  _startOnThisNode: {fileID: 0}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -23639,16 +23660,16 @@ MonoBehaviour:
   _buildObjectsList: []
   _scheme: {fileID: 0}
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1064311447
@@ -24130,7 +24151,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -24245,7 +24265,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -25382,19 +25401,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 1
+  _moveType: 0
+  _startOnThisNode: {fileID: 0}
   _autoOpenClose: 0
+  _blockOtherNodes: 1
   _timer: 1
   _screenType: 0
   _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
-  _moveType: 0
   _escapeKeyFunction: 3
-  _startOnThisNode: {fileID: 0}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -25418,16 +25435,16 @@ MonoBehaviour:
   _buildObjectsList: []
   _scheme: {fileID: 0}
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1248739663
@@ -26754,19 +26771,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 0
+  _moveType: 0
+  _startOnThisNode: {fileID: 0}
   _autoOpenClose: 0
+  _blockOtherNodes: 1
   _timer: 1
   _screenType: 0
   _stayVisible: 0
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
-  _moveType: 0
   _escapeKeyFunction: 3
-  _startOnThisNode: {fileID: 0}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -26790,16 +26805,16 @@ MonoBehaviour:
   _buildObjectsList: []
   _scheme: {fileID: 0}
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1396258921
@@ -28721,19 +28736,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 3
+  _moveType: 1
+  _startOnThisNode: {fileID: 0}
   _autoOpenClose: 0
+  _blockOtherNodes: 1
   _timer: 6
   _screenType: 0
   _stayVisible: 1
   _storeOrResetOptional: 0
   _tweenOnHome: 0
   _saveExitSelection: 0
-  _moveType: 1
   _escapeKeyFunction: 1
-  _startOnThisNode: {fileID: 0}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -28782,16 +28795,16 @@ MonoBehaviour:
     _shakeStartScale: {x: 0, y: 0, z: 0}
   _scheme: {fileID: 0}
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1478859611
@@ -30442,7 +30455,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -32417,7 +32429,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -32519,19 +32530,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 1
+  _moveType: 0
+  _startOnThisNode: {fileID: 0}
   _autoOpenClose: 3
+  _blockOtherNodes: 1
   _timer: 1
   _screenType: 0
   _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 1
-  _moveType: 0
   _escapeKeyFunction: 1
-  _startOnThisNode: {fileID: 0}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -32555,16 +32564,16 @@ MonoBehaviour:
   _buildObjectsList: []
   _scheme: {fileID: 0}
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1712214356
@@ -32603,7 +32612,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1712214352}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 2
   m_Camera: {fileID: 0}
@@ -33503,19 +33512,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 5
+  _moveType: 1
+  _startOnThisNode: {fileID: 0}
   _autoOpenClose: 0
+  _blockOtherNodes: 1
   _timer: 1
   _screenType: 1
   _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
-  _moveType: 1
   _escapeKeyFunction: 1
-  _startOnThisNode: {fileID: 0}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -33564,16 +33571,16 @@ MonoBehaviour:
     _shakeStartScale: {x: 0, y: 0, z: 0}
   _scheme: {fileID: 0}
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1743252785
@@ -33693,7 +33700,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -34121,6 +34127,26 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: f69f7852915b576489b1831ac78a2df1,
         type: 2}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._startScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._startScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._scaleSettings._startScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 997165033627275138, guid: 8e09348a0583a7e4b875cd1513db467b,
+        type: 3}
+      propertyPath: _buildObjectsList.Array.data[0]._rotationSettings._rotateFrom.x
+      value: -0
+      objectReference: {fileID: 0}
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: m_Enabled
@@ -35273,17 +35299,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f5dfd11c59dde44c933280df0ae6aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buttonFunction: 2
-  _autoOpenCloseOverride: 1
+  _buttonFunction: 0
+  _autoOpenCloseOverride: 0
   _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
-  _enabledFunctions: 67
+  _enabledFunctions: 323
   _navigation:
-    _childBranch: {fileID: 504002778}
+    _childBranch: {fileID: 0}
     _setNavigation: 1
     _up: {fileID: 948469796}
     _down: {fileID: 0}
@@ -35316,7 +35342,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -35331,7 +35356,19 @@ MonoBehaviour:
     _selectClickEvents:
       _onButtonClickEvent:
         m_PersistentCalls:
-          m_Calls: []
+          m_Calls:
+          - m_Target: {fileID: 537329691}
+            m_TargetAssemblyTypeName: UIHub, Assembly-CSharp
+            m_MethodName: LoadNextScene
+            m_Mode: 1
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
       _onDisable:
         m_PersistentCalls:
           m_Calls: []
@@ -37361,7 +37398,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -37439,19 +37475,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 3
+  _moveType: 1
+  _startOnThisNode: {fileID: 0}
   _autoOpenClose: 0
+  _blockOtherNodes: 1
   _timer: 5
   _screenType: 0
   _stayVisible: 1
   _storeOrResetOptional: 0
   _tweenOnHome: 0
   _saveExitSelection: 0
-  _moveType: 1
   _escapeKeyFunction: 1
-  _startOnThisNode: {fileID: 0}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -37500,16 +37534,16 @@ MonoBehaviour:
     _shakeStartScale: {x: 0, y: 0, z: 0}
   _scheme: {fileID: 0}
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &2018220713
@@ -37623,7 +37657,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 819564431}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 11400000, guid: 1d75a1f59e9599344bd34614897019fd, type: 2}
     _listOfTooltips:
@@ -41296,7 +41329,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -42958,7 +42990,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -43328,7 +43359,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -43577,7 +43607,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []

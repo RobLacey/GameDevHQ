@@ -59,6 +59,7 @@
     {
         branch.ScreenType = ScreenType.Normal;
         branch.EscapeKeyType = EscapeKey.None;
+        branch.BlockOtherNode = IsActive.No;
     }
 
     private static void CreateStandardBranch(IBranch branch)
@@ -70,15 +71,17 @@
     {
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.TweenOnHome = DoTween.DoNothing;
-        branch.SetStayOn(IsActive.No);
+        branch.SetStayOn = IsActive.No;
+        branch.BlockOtherNode = IsActive.No;
     }
 
     private static void CreateOptionalPopUp(IBranch branch)
     {
         branch.ScreenType = ScreenType.Normal;
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
-        branch.SetStayOn(IsActive.No);
+        branch.SetStayOn = IsActive.No;
         branch.AutoOpenClose = AutoOpenClose.No;
+        branch.BlockOtherNode = IsActive.No;
     }
     
     private static void CreateTimedPopUp(IBranch branch)
@@ -86,19 +89,22 @@
         branch.ScreenType = ScreenType.Normal;
         branch.TweenOnHome = DoTween.DoNothing;
         branch.WhenToMove = WhenToMove.Immediately;
-        branch.SetStayOn(IsActive.No);
+        branch.SetStayOn = IsActive.No;
         branch.AutoOpenClose = AutoOpenClose.No;
+        branch.BlockOtherNode = IsActive.No;
     }
 
     private static void CreatePauseMenu(IBranch branch)
     {
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.TweenOnHome = DoTween.DoNothing;
+        branch.BlockOtherNode = IsActive.No;
     }
     
     private static void CreateInternal(IBranch branch)
     {
         branch.TweenOnHome = DoTween.DoNothing;
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
+        branch.BlockOtherNode = IsActive.No;
     }
 }

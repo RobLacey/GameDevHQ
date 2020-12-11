@@ -9,16 +9,17 @@ public interface IFadeTween: ITweenBase { }
 public class FadeTween : TweenBase, IFadeTween
 {
     private float _targetAlpha;
-    private bool _firstTime = true;
-    
-    protected override Tween DoTweenProcess(BuildTweenData item, TweenCallback callback)
+
+    public override void SetUpTweens(List<BuildTweenData> buildObjectsList, 
+                                     TweenScheme tweenScheme, 
+                                     Action<BuildTweenData> effectCall)
     {
-        return item.MyCanvasGroup.DOFade(_targetAlpha, _tweenTime)
-                            .SetId($"{_tweenName}{item.Element.GetInstanceID()}")
-                            .SetEase(_tweenEase)
-                            .SetAutoKill(true)
-                            .Play()
-                            .OnComplete(callback);
+        base.SetUpTweens(buildObjectsList, tweenScheme, effectCall);
+
+        foreach (var item in _buildList)
+        {
+            item.MyCanvasGroup.alpha = 0;
+        }
     }
 
     public override void StartTween(TweenType tweenType, TweenCallback tweenCallback)
@@ -39,7 +40,15 @@ public class FadeTween : TweenBase, IFadeTween
             SetUpCanvasGroup(alphaPreset:1);
         }
     }
-    
+
+    private void SetUpCanvasGroup(float alphaPreset)
+    {
+        foreach (var item in _buildList)
+        {
+            item.MyCanvasGroup.alpha = alphaPreset;
+        }
+    }
+
     protected override void DoInTween()
     {
         _tweenEase = _scheme.FadeData.EaseIn;
@@ -58,29 +67,24 @@ public class FadeTween : TweenBase, IFadeTween
     {
         if (_tweenStyle == TweenStyle.In || _tweenStyle == TweenStyle.InAndOut)
         {
-            SetUpCanvasGroup(alphaPreset: 0);
             _targetAlpha = 1;
         }
         else
         {
-            SetUpCanvasGroup(alphaPreset: 1);
             _targetAlpha = 0;
         }
-        _firstTime = false;
     }
 
-    private void SetUpCanvasGroup(float alphaPreset)
-    {
-        foreach (var item in _listToUse)
-        {
-            if (_firstTime)
-                item.MyCanvasGroup.alpha = alphaPreset;
-        }
-    }
+    protected override void OutTweenTargetSettings() => _targetAlpha = 0;
 
-    protected override void OutTweenTargetSettings()
+    protected override Tween DoTweenProcess(BuildTweenData item, TweenCallback callback)
     {
-        _targetAlpha = 0;
+        return item.MyCanvasGroup.DOFade(_targetAlpha, _tweenTime)
+                   .SetId($"{_tweenName}{item.Element.GetInstanceID()}")
+                   .SetEase(_tweenEase)
+                   .SetAutoKill(true)
+                   .Play()
+                   .OnComplete(callback);
     }
 
     public void Print()

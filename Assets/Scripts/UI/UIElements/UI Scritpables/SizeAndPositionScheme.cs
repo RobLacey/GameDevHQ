@@ -16,7 +16,6 @@ public class SizeAndPositionScheme : ScriptableObject
     [SerializeField] [ShowIf("IsPunch")] [Range(0f, 1f)]  private float _elasticity = 0.5f;
     [SerializeField] [ShowIf("IsShake")] [Range(0f, 90f)]  private float _shakeRandomness = 45f;
     [SerializeField] [ShowIf("IsShake")] private bool _fadeOut = true;
-    [SerializeField] [ShowIf("PositionSettings")] private bool _snapping;
     [SerializeField] [ShowIf("ShowEase")] private Ease _ease;
 
     private Choose ChangeSizeOn => _changeSizeOn;
@@ -30,7 +29,6 @@ public class SizeAndPositionScheme : ScriptableObject
     public float Elasticity => _elasticity;
     public float Randomness => _shakeRandomness;
     public bool FadeOut => _fadeOut;
-    public bool Snapping => _snapping;
     public bool CanBeSelectedAndHighlight => ChangeSizeOn == Choose.HighlightedAndSelected;
     public bool CanBeSelected => ChangeSizeOn == Choose.Selected;
     public bool IsPressed => ChangeSizeOn == Choose.Pressed;

@@ -859,12 +859,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonFunction: 0
+  _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
+    _startAsSelected: 1
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
-  _startAsSelected: 1
   _enabledFunctions: 323
   _navigation:
     _childBranch: {fileID: 0}
@@ -900,7 +901,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -918,7 +918,7 @@ MonoBehaviour:
           m_Calls:
           - m_Target: {fileID: 107165964}
             m_TargetAssemblyTypeName: UIHub, Assembly-CSharp
-            m_MethodName: 
+            m_MethodName: LoadNextScene
             m_Mode: 1
             m_Arguments:
               m_ObjectArgument: {fileID: 0}
@@ -1089,18 +1089,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 0
+  _moveType: 1
+  _startOnThisNode: {fileID: 1824789349}
+  _autoOpenClose: 0
+  _blockOtherNodes: 1
   _timer: 1
   _screenType: 1
   _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
-  _moveType: 1
   _escapeKeyFunction: 3
-  _startOnThisNode: {fileID: 1824789349}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -1134,11 +1133,11 @@ MonoBehaviour:
       _tweenMiddlePosition: {x: 0, y: 0, z: 0}
       _tweenTargetPosition: {x: 0, y: 0, z: 0}
     _scaleSettings:
-      _startScale: {x: 0, y: 0, z: 0}
+      _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
       _endScale: {x: 0, y: 0, z: 0}
     _rotationSettings:
-      _rotateFrom: {x: 0, y: 0, z: 0}
+      _rotateFrom: {x: -0, y: 0, z: 0}
       _rotateMidPoint: {x: 0, y: 0, z: 0}
       _rotateToo: {x: 0, y: 0, z: 0}
     _buildNextAfterDelay: 0
@@ -1159,11 +1158,11 @@ MonoBehaviour:
       _tweenMiddlePosition: {x: 0, y: -155, z: 0}
       _tweenTargetPosition: {x: 0, y: -155, z: 0}
     _scaleSettings:
-      _startScale: {x: 0, y: 0, z: 0}
+      _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
       _endScale: {x: 0, y: 0, z: 0}
     _rotationSettings:
-      _rotateFrom: {x: 0, y: 0, z: 0}
+      _rotateFrom: {x: -0, y: 0, z: 0}
       _rotateMidPoint: {x: 0, y: 0, z: 0}
       _rotateToo: {x: 0, y: 0, z: 0}
     _buildNextAfterDelay: 0
@@ -1173,18 +1172,17 @@ MonoBehaviour:
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
   _scheme: {fileID: 11400000, guid: 72bc307c7786930419633fff10224ebe, type: 2}
-  _addTweenEventTriggers: 1
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1174381630
@@ -1442,18 +1440,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branchType: 1
+  _moveType: 1
+  _startOnThisNode: {fileID: 1025689154}
+  _autoOpenClose: 0
+  _blockOtherNodes: 1
   _timer: 1
   _screenType: 1
   _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 0
-  _moveType: 1
   _escapeKeyFunction: 3
-  _startOnThisNode: {fileID: 1025689154}
-  _whenPausePressed:
-    m_PersistentCalls:
-      m_Calls: []
   _groupsList: []
   _branchEvents:
     OnBranchEnter:
@@ -1508,11 +1505,11 @@ MonoBehaviour:
       _tweenMiddlePosition: {x: 557, y: 307, z: 0}
       _tweenTargetPosition: {x: -1208, y: 307, z: 0}
     _scaleSettings:
-      _startScale: {x: 0, y: 0, z: 0}
+      _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
       _endScale: {x: 0, y: 0, z: 0}
     _rotationSettings:
-      _rotateFrom: {x: 0, y: 0, z: 0}
+      _rotateFrom: {x: -0, y: 0, z: 0}
       _rotateMidPoint: {x: 0, y: 0, z: 0}
       _rotateToo: {x: 0, y: 0, z: 0}
     _buildNextAfterDelay: 0
@@ -1533,11 +1530,11 @@ MonoBehaviour:
       _tweenMiddlePosition: {x: 557, y: 152, z: 0}
       _tweenTargetPosition: {x: 1207, y: 152, z: 0}
     _scaleSettings:
-      _startScale: {x: 0, y: 0, z: 0}
+      _startScale: {x: 1, y: 1, z: 1}
       _fullSize: {x: 0, y: 0, z: 0}
       _endScale: {x: 0, y: 0, z: 0}
     _rotationSettings:
-      _rotateFrom: {x: 0, y: 0, z: 0}
+      _rotateFrom: {x: -0, y: 0, z: 0}
       _rotateMidPoint: {x: 0, y: 0, z: 0}
       _rotateToo: {x: 0, y: 0, z: 0}
     _buildNextAfterDelay: 0
@@ -1547,18 +1544,17 @@ MonoBehaviour:
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
   _scheme: {fileID: 11400000, guid: f1021bbe8db4ed3478998b7e35ed8227, type: 2}
-  _addTweenEventTriggers: 1
   _tweenEvents:
-    _inTweenEvent_Start:
+    _inTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _inTweenEvent_End:
+    _inTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_Start:
+    _outTweenEventStart:
       m_PersistentCalls:
         m_Calls: []
-    _outTweenEvent_End:
+    _outTweenEventEnd:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1323153081
@@ -1698,12 +1694,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonFunction: 0
+  _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
+    _startAsSelected: 1
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
-  _startAsSelected: 1
   _enabledFunctions: 323
   _navigation:
     _childBranch: {fileID: 1323153078}
@@ -1739,7 +1736,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -1878,12 +1874,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonFunction: 0
+  _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
+    _startAsSelected: 1
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
-  _startAsSelected: 1
   _enabledFunctions: 323
   _navigation:
     _childBranch: {fileID: 1323153078}
@@ -1919,7 +1916,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -2100,12 +2096,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonFunction: 0
+  _autoOpenCloseOverride: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
+    _startAsSelected: 1
     _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
-  _startAsSelected: 1
   _enabledFunctions: 323
   _navigation:
     _childBranch: {fileID: 0}
@@ -2141,7 +2138,6 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
@@ -2159,7 +2155,7 @@ MonoBehaviour:
           m_Calls:
           - m_Target: {fileID: 107165964}
             m_TargetAssemblyTypeName: UIHub, Assembly-CSharp
-            m_MethodName: 
+            m_MethodName: LoadNextScene
             m_Mode: 1
             m_Arguments:
               m_ObjectArgument: {fileID: 0}

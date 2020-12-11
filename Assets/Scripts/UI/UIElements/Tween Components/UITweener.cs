@@ -12,17 +12,18 @@ public interface IEndTween
 
 public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
 {
+    
     [SerializeField] 
     [ReorderableList] [Label("List Of Objects To Tween")]
     private List<BuildTweenData> _buildObjectsList = new List<BuildTweenData>();
     
     [SerializeField] 
-    [Expandable] 
+    [BoxGroup("Tween Settings")] [HorizontalLine(1, EColor.Blue , order = 2)]
     private TweenScheme _scheme;
     
-    [Header("Events")] [HorizontalLine(1, EColor.Blue , order = 3)]
-    
-    [SerializeField] private TweenEvents _tweenEvents;
+    [SerializeField]
+    [BoxGroup("Events")] [HorizontalLine(1, EColor.Blue , order = 3)]
+    private TweenEvents _tweenEvents;
     
     //Variables
     private int _counter, _effectCounter;
@@ -76,13 +77,13 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
 
     public void ActivateTweens(Action callBack)
     {
-        _tweenEvents.InTweenEvent_Start?.Invoke();
-        StartProcessingTweens(TweenType.In, callBack, _tweenEvents.InTweenEvent_End);
+        _tweenEvents.InTweenEventStart?.Invoke();
+        StartProcessingTweens(TweenType.In, callBack, _tweenEvents.InTweenEventEnd);
     }
     public void DeactivateTweens(Action callBack)
     {
-        _tweenEvents.OutTweenEvent_Start?.Invoke();
-        StartProcessingTweens(TweenType.Out, callBack, _tweenEvents.OutTweenEvent_End);
+        _tweenEvents.OutTweenEventStart?.Invoke();
+        StartProcessingTweens(TweenType.Out, callBack, _tweenEvents.OutTweenEventEnd);
     }
     private void StartProcessingTweens(TweenType tweenType, Action callBack, TweenTrigger userEvent)
     {

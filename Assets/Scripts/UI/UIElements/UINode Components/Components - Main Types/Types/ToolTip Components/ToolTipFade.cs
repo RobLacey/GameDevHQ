@@ -4,15 +4,15 @@ using UnityEngine;
 
 public interface IToolTipFade
 {
-    IStartFade SetTweenTime(float time);
+    IStartToolTipTween SetTweenTime(float time);
 }
-public interface IStartFade
+public interface IStartToolTipTween
 {
     Tween StartFadeIn(int instanceId);
     Tween StartFadeOut(int instanceId);
 }
 
-public class ToolTipFade : IToolTipFade, IStartFade
+public class ToolTipFade : IToolTipFade, IStartToolTipTween
 {
     private readonly Dictionary<int, CanvasGroup> _toolTipsCanvasGroups = new Dictionary<int, CanvasGroup>();
     private float _time;
@@ -40,7 +40,7 @@ public class ToolTipFade : IToolTipFade, IStartFade
         return hasCanvasGroup;
     }
 
-    public IStartFade SetTweenTime(float time)
+    public IStartToolTipTween SetTweenTime(float time)
     {
         _time = time;
         return this;

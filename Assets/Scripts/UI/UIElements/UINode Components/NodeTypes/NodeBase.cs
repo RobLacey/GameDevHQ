@@ -33,8 +33,19 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     public INode Highlighted => _uiNode;
     public INode UINode => _uiNode;
 
-
     //Set / Getters
+    private void ClearHighlight(ICancelPressed args)
+    {
+        if(_lastHighlighted == _uiNode && _allowKeys)
+            OnExit();
+    }
+    
+    private void ClearHighlight(ICancelButtonActivated args)
+    {
+        if(_lastHighlighted == _uiNode && _allowKeys)
+            OnExit();
+    }
+    
     private void SaveHighlighted(IHighlightedNode args) 
     {
         if (_lastHighlighted is null) _lastHighlighted = args.Highlighted;
@@ -96,6 +107,8 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<IInMenu>(SaveInMenuOrInGame);
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Subscribe<ICancelPressed>(ClearHighlight);
+        EVent.Do.Subscribe<ICancelButtonActivated>(ClearHighlight);
     }
 
     public virtual void RemoveEvents()
@@ -103,6 +116,8 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
         EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Subscribe<ICancelPressed>(ClearHighlight);
+        EVent.Do.Subscribe<ICancelButtonActivated>(ClearHighlight);
     }
 
     public virtual void Start()
@@ -111,10 +126,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         if(_uiNode.HasChildBranch is null) return;
     }
 
-    public virtual void DeactivateNodeByType()
-    {
-        //Do Nothing for most types
-    }
+    public virtual void DeactivateNodeByType() => OnExit();
 
     public void ClearNodeCompletely()
     {
@@ -148,6 +160,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         }
         else
         {
+            if(PointerOverNode) return;
             OnExit();
         }
     }

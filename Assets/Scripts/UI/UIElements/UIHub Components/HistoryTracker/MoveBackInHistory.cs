@@ -94,8 +94,6 @@ public class MoveBackInHistory : IMoveBackInHistory
 
     private static void DoMoveBackOneLevel(INode lastNode, IBranch activeBranch)
     {
-        lastNode.DeactivateNode();
-        
         if (lastNode.MyBranch.CanvasIsEnabled)
         {
             activeBranch.StartBranchExitProcess(OutTweenType.Cancel, NoTween);
@@ -106,8 +104,10 @@ public class MoveBackInHistory : IMoveBackInHistory
         }
 
         void WithTween() => lastNode.MyBranch.MoveToThisBranch();
+        
         void NoTween()
         {
+            lastNode.DeactivateNode();
             lastNode.MyBranch.DoNotTween();
             lastNode.MyBranch.MoveToThisBranch();
         }

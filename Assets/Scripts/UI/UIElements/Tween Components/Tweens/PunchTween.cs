@@ -51,7 +51,6 @@ public class PunchTween : TweenBase, IPunchTween
     {
         if (_scheme.PunchData.EndTween)
         {
-            Debug.Log("No pUnch");
             callback?.Invoke();
             return null;
         } 

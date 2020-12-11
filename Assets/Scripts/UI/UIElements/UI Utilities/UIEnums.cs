@@ -98,4 +98,7 @@ public enum DoTween { Tween, DoNothing }
 
 public enum AutoOpenClose { No, Open, Close, Both }
 
+public enum StoreAndRestorePopUps { StoreAndRestore, Reset }
+
+
 

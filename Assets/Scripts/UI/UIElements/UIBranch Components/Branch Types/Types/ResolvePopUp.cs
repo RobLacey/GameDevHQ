@@ -20,7 +20,6 @@ public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolveP
     private Action<IAddResolvePopUp> AddResolvePopUp { get; set; }
 
     //Main
-
     public override void FetchEvents()
     {
         base.FetchEvents();

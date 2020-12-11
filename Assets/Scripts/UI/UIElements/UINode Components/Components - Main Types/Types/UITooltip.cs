@@ -18,14 +18,14 @@ public interface IToolTipData: IParameters
 
 public class UITooltip : NodeFunctionBase, IToolTipData
 {
-    public UITooltip(ToolTipSettings settings, IUiEvents uiEvents)
+    public UITooltip(ITooltipSettings settings)
     {
-        MainCanvas = settings.MainCanvas;
+        MainCanvas = settings.UiNodeEvents.ReturnMasterNode.MainCanvas;
         UiCamera = settings.UiCamera;
         Scheme = settings.Scheme;
         ListOfTooltips = settings.ToolTips;
         CanActivate = true;
-        OnAwake(uiEvents);
+        OnAwake(settings.UiNodeEvents);
     }
 
     //Variables

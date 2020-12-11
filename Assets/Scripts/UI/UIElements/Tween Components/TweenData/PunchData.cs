@@ -8,10 +8,10 @@ public class PunchData
     [SerializeField] 
     [InfoBox("DOESN'T use Global Tween Time.")] 
     private IsActive _atEndOfTweens = IsActive.No;
-    [SerializeField]  Vector3 _strength = new Vector3(0.1f, 0.1f, 0f);
-    [SerializeField] [Range(0, 2)] float _duration = 0.5f;
-    [SerializeField] [Range(0, 1)] float _elasticity = 0.5f;
-    [SerializeField] [Range(1, 10)] int _vibrato = 5;
+    [SerializeField] private Vector3 _strength = new Vector3(0.1f, 0.1f, 0f);
+    [SerializeField] [Range(0, 2)] private float _duration = 0.5f;
+    [SerializeField] [Range(0, 1)] private float _elasticity = 0.5f;
+    [SerializeField] [Range(1, 10)] private int _vibrato = 5;
 
     public Vector3 Strength => _strength;
 

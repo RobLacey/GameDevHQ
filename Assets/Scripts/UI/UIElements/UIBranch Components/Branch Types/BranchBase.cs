@@ -119,14 +119,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
     public virtual void SetBlockRaycast(BlockRaycast active)
     {
         if(!_canStart) return;
-        if (active == BlockRaycast.Yes)
-        {
-            _myCanvasGroup.blocksRaycasts = _inMenu;
-        }
-        else
-        {
-            _myCanvasGroup.blocksRaycasts = false;
-        }
+        _myCanvasGroup.blocksRaycasts = active == BlockRaycast.Yes && _inMenu;
     }
 
     protected virtual void ClearBranchForFullscreen(IClearScreen args)

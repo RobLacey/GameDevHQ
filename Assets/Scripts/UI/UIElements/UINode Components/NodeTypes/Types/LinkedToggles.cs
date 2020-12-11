@@ -42,11 +42,7 @@ public class LinkedToggles : NodeBase, ILinkedToggles
         base.Start();
         SetUpToggleGroup();
         SetUpTabBranch();
-        if (!_startAsSelected)
-        {
-           SetAsNotActive();
-        }
-        else
+        if (_startAsSelected)
         {
             SetNodeAsSelected_NoEffects();
             TurnOnTab();

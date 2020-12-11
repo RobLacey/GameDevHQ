@@ -15,23 +15,24 @@ public class TweenScheme: ScriptableObject
     private TweenStyle _fadeTween = TweenStyle.NoTween;
     [SerializeField] 
     private TweenStyle _scaleTween = TweenStyle.NoTween;
-    [SerializeField] 
+    [SerializeField] [DisableIf("Shake")]
     private TweenStyle _punchTween = TweenStyle.NoTween;
-    [SerializeField] 
+    [SerializeField] [DisableIf("Punch")]
     private TweenStyle _shakeTween = TweenStyle.NoTween;
     
-    [Header("Tween Data", order = 1)] [HorizontalLine(1, EColor.Blue , order = 2)]
-    [SerializeField] /*[ShowIf("Position")]*/ 
+   [Header("Tween Data", order = 1)]
+   [HorizontalLine(1, EColor.Blue , order = 2)]
+    [SerializeField]  [ShowIf("Position")] 
     private TweenData _positionData;
-    [SerializeField] /*[ShowIf("Rotation")] */
+    [SerializeField]  [ShowIf("Rotation")] 
     private TweenData _rotationData;
-    [SerializeField] 
+    [SerializeField]  [ShowIf("Scale")] 
     private TweenData _scaleData;
-    [SerializeField] /*[ShowIf("Fade")] */
+    [SerializeField]  [ShowIf("Fade")] 
     private TweenData _fadeData;
-    [SerializeField] /*[ShowIf("Fade")] */
+    [SerializeField]  [ShowIf("Shake")] 
     private ShakeData _shakeData;
-    [SerializeField] /*[ShowIf("Fade")] */
+    [SerializeField]  [ShowIf("Punch")] 
     private PunchData _punchData;
 
 
