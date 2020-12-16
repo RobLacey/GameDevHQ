@@ -12,11 +12,7 @@ interface ICancel
 /// </summary>
 public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
 {
-    public UICancel(EscapeKey globalSetting)
-    {
-        _globalEscapeSetting = globalSetting;
-        OnEnable();
-    }
+    public UICancel(IHub settings) => _globalEscapeSetting = settings.Scheme.GlobalCancelAction;
 
     //Variables
     private readonly EscapeKey _globalEscapeSetting;
@@ -46,11 +42,11 @@ public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
 
     public void RemoveEvents()
     {
-        EVent.Do.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
-        EVent.Do.Unsubscribe<ICancelPressed>(CancelPressed);
+       // EVent.Do.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
+        //EVent.Do.Unsubscribe<ICancelPressed>(CancelPressed);
         EVent.Do.Unsubscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
         EVent.Do.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
-        EVent.Do.Subscribe<ICancelHoverOver>(CancelHooverOver);
+        EVent.Do.Unsubscribe<ICancelHoverOver>(CancelHooverOver);
     }
 
     public void UseEServLocator() => _uiHistoryTrack = EServ.Locator.Get<IHistoryTrack>(this);
@@ -84,8 +80,7 @@ public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
         }
     }
 
-    private void StartCancelProcess(Action endOfCancelAction) 
-        => _uiHistoryTrack.CheckForPopUpsWhenCancelPressed(endOfCancelAction);
+    private void StartCancelProcess(Action endOfCancelAction) => _uiHistoryTrack.CheckForPopUpsWhenCancelPressed(endOfCancelAction);
     private void BackOneLevel() => _uiHistoryTrack.BackOneLevel();
     private void BackToHome() => _uiHistoryTrack.BackToHome();
 }

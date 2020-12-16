@@ -26,7 +26,6 @@ public interface IBranch : IParameters, IAutoOpenCloseData
     bool CanStoreAndRestoreOptionalPoUp { get; }
     DoTween TweenOnHome { get; set; }
     IBranch ThisBranch { get; }
-    IBranchBase BranchBase { get; }
     IBranch MyParentBranch { get; set; }
     float Timer { get; }
     INode[] ThisGroupsUiNodes { get; }
@@ -44,6 +43,9 @@ public interface IBranch : IParameters, IAutoOpenCloseData
     void SetHighlightedNode();
     void DoNotTween();
     void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null);
+    void SetCanvas(ActiveCanvas activeCanvas);
+    void SetBlockRaycast(BlockRaycast blockRaycast);
+    void SetUpAsTabBranch();
 }
 
 public interface IAutoOpenClose

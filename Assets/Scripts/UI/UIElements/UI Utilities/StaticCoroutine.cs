@@ -30,7 +30,5 @@ public static class StaticCoroutine
         if (coroutine is null) return;
         Runner.StopCoroutine(coroutine);
     }
-    
-    
 }
 

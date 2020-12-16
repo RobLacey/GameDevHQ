@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 
 public interface IEVentSub : IEVentBase { }
 
 
-public class EVentSub : EVentBaseClass<EVentSub>, IEVentSub  
+public class EVentSub : EVentBaseClass<EVentSub>, IEVentSub 
 {
-    public override Hashtable EVentsList { get; set; } = new Hashtable();
     public override Action<T> Fetch<T>()
     {
         Debug.Log("Fetch");

@@ -61,13 +61,11 @@ public class UIInvertColours : NodeFunctionBase
         if (FunctionNotActive() || !CanBePressed()) return;
         if (_isSelected)
         {
-        Debug.Log("INVERT");
             ChangeToInvertedColour();
         }
         else
         { 
             if(CanBeHighlighted()) return;
-        Debug.Log("rEVERT");
             SetToStartingColour();
         }
     }

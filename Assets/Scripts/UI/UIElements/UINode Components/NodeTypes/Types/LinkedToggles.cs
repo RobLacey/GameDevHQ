@@ -89,7 +89,7 @@ public class LinkedToggles : NodeBase, ILinkedToggles
     private void SetUpTabBranch()
     {
         if (_hasATabBranch)
-            _tabBranch.BranchBase.SetUpAsTabBranch();
+            _tabBranch.SetUpAsTabBranch();
     }
     
     public override void OnEnter()

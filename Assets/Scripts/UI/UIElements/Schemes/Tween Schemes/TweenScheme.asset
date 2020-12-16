@@ -18,6 +18,9 @@ MonoBehaviour:
   _scaleTween: 0
   _punchTween: 1
   _shakeTween: 0
+  _useGlobalTime: 1
+  _globalInTime: 1
+  _globalOutTime: 1
   _positionData:
     _inTime: 0.3
     _outTime: 0.3
@@ -34,8 +37,8 @@ MonoBehaviour:
     _easeIn: 1
     _easeOut: 1
   _fadeData:
-    _inTime: 0.3
-    _outTime: 0.3
+    _inTime: 1
+    _outTime: 1
     _easeIn: 1
     _easeOut: 1
   _shakeData:
@@ -51,6 +54,3 @@ MonoBehaviour:
     _duration: 0.3
     _elasticity: 0.5
     _vibrato: 5
-  _useGlobalTime: 1
-  _globalInTime: 1
-  _globalOutTime: 1

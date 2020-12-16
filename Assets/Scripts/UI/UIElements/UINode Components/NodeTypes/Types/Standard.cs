@@ -30,8 +30,8 @@ public class Standard : NodeBase, IStandard
     public override void RemoveEvents()
     {
         base.RemoveEvents();
-        if(_canAutoClose)
-            EVent.Do.Unsubscribe<ISwitchGroupPressed>(ClearJustCancelledFlag);
+       // if(_canAutoClose)
+           // EVent.Do.Unsubscribe<ISwitchGroupPressed>(ClearJustCancelledFlag);
     }
 
     private void ClearJustCancelledFlag(ISwitchGroupPressed args) => _justCancelled = false;

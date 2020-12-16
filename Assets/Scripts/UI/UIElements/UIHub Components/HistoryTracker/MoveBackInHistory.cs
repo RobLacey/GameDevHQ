@@ -24,7 +24,7 @@ public class MoveBackInHistory : IMoveBackInHistory
     private readonly IHistoryTrack _historyTracker;
     private readonly IHistoryManagement _historyListManagement;
     private IBranch _activeBranch;
-    private List<INode> _history;
+    private List<INode> _history = new List<INode>();
     private bool _onHomeScreen, _hasHistory, _hasOnHome, _hasActiveBranch;
 
     //Main
@@ -81,7 +81,7 @@ public class MoveBackInHistory : IMoveBackInHistory
         {
             return BackToHomeProcess();
         }
-
+        
         _historyTracker.AddNodeToTestRunner(lastNode);
 
         _history.Remove(lastNode);
@@ -100,11 +100,13 @@ public class MoveBackInHistory : IMoveBackInHistory
         }
         else
         {
+            if(activeBranch.AutoOpenClose == AutoOpenClose.No) 
+                lastNode.DeactivateNode();
             activeBranch.StartBranchExitProcess(OutTweenType.Cancel, WithTween );
         }
 
         void WithTween() => lastNode.MyBranch.MoveToThisBranch();
-        
+
         void NoTween()
         {
             lastNode.DeactivateNode();

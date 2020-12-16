@@ -358,6 +358,7 @@
                     <e p="Bindings" t="Include">
                       <e p="EventBindings.cs" t="Include" />
                       <e p="EVentBindingsSub.cs" t="Include" />
+                      <e p="IEVentBindings.cs" t="Include" />
                     </e>
                     <e p="CustomEvent.cs" t="Include" />
                     <e p="EVentBaseClass.cs" t="Include" />
@@ -367,6 +368,7 @@
                     </e>
                     <e p="EventInterfaces.cs" t="Include" />
                     <e p="EVentMaster.cs" t="Include" />
+                    <e p="IEVentBase.cs" t="Include" />
                   </e>
                   <e p="EventLocator - Old Version" t="Include">
                     <e p="CustomEvent.cs" t="Include" />
@@ -416,6 +418,7 @@
                   <e p="AutoOpenCloseController.cs" t="Include" />
                   <e p="BranchInterfaces.cs" t="Include" />
                   <e p="UIBranch.Properties.cs" t="Include" />
+                  <e p="UIBranchEvents.cs" t="Include" />
                 </e>
               </e>
               <e p="UIBranch.cs" t="Include" />

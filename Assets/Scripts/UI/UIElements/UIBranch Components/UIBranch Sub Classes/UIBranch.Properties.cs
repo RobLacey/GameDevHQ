@@ -1,4 +1,5 @@
-﻿using NaughtyAttributes;
+﻿using System.Linq;
+using NaughtyAttributes;
 using UnityEngine;
 
 /// <summary>
@@ -6,6 +7,7 @@ using UnityEngine;
 /// </summary>
 public partial class UIBranch
 {
+    //Set / Getters
     public bool IsAPopUpBranch()
     {
         return _branchType == BranchType.OptionalPopUp
@@ -14,8 +16,15 @@ public partial class UIBranch
     public bool IsPauseMenuBranch() => _branchType == BranchType.PauseMenu;
     public bool IsInternalBranch() => _branchType == BranchType.Internal;
     public bool IsHomeScreenBranch() => _branchType == BranchType.HomeScreen;
-    public BranchType ReturnBranchType => _branchType;
+    public void DoNotTween() => _tweenOnChange = false;
+    public void DontSetBranchAsActive() => _canActivateBranch = false;
+    public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
     public bool IsTimedPopUp() => _branchType == BranchType.TimedPopUp;
+    public IsActive GetStayOn() => _stayVisible;
+
+    
+   //Properties
+    public BranchType ReturnBranchType => _branchType;
     public bool CanvasIsEnabled => MyCanvas.enabled;
     public bool CanStoreAndRestoreOptionalPoUp => _storeOrResetOptional == StoreAndRestorePopUps.StoreAndRestore;
     public INode DefaultStartOnThisNode => _startOnThisNode;
@@ -24,7 +33,6 @@ public partial class UIBranch
     public INode[] ThisGroupsUiNodes { get; private set; }
     public Canvas MyCanvas { get; private set; } 
     public CanvasGroup MyCanvasGroup { get; private set; }
-    public IBranchBase BranchBase { get; private set; }
     public IBranch MyParentBranch { get; set; }
     public IBranch ThisBranch => this;
     public GameObject ThisBranchesGameObject => gameObject;
@@ -60,9 +68,7 @@ public partial class UIBranch
         get => _stayVisible;
         set => _stayVisible = value;
     }
-
-    public IsActive GetStayOn() => _stayVisible;
-
+    
     public float Timer => _timer;
 
     //Editor Properties

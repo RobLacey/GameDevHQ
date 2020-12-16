@@ -93,13 +93,13 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
 
     public virtual void RemoveEvents()
     {
-        EVent.Do.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
-        EVent.Do.Unsubscribe<IGameIsPaused>(SaveIfGamePaused);
-        EVent.Do.Unsubscribe<ISetUpStartBranches>(SetUpBranchesOnStart);
-        EVent.Do.Unsubscribe<IOnStart>(SaveOnStart);
-        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
-        EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
-        EVent.Do.Unsubscribe<IClearScreen>(ClearBranchForFullscreen);
+        // EVent.Do.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
+         EVent.Do.Unsubscribe<IGameIsPaused>(SaveIfGamePaused);
+         EVent.Do.Unsubscribe<ISetUpStartBranches>(SetUpBranchesOnStart);
+         EVent.Do.Unsubscribe<IOnStart>(SaveOnStart);
+         EVent.Do.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
+         EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
+         EVent.Do.Unsubscribe<IClearScreen>(ClearBranchForFullscreen);
     }
 
     public void UseEServLocator() => _historyTrack = EServ.Locator.Get<IHistoryTrack>(this);
@@ -132,6 +132,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
     protected void CanGoToFullscreen()
     {
         if (MyScreenType != ScreenType.FullScreen || !OnHomeScreen) return;
+        _screenData.WasOnHomeScreen = true;
         InvokeDoClearScreen();
         InvokeOnHomeScreen(false);
     }
@@ -139,7 +140,6 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
     public void ActivateStoredPosition()
     {
         _screenData.RestoreScreen();
-        
         if (_screenData.WasOnHomeScreen)
             InvokeOnHomeScreen(true);
     }

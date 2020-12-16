@@ -1,4 +1,5 @@
-﻿using UnityEngine.UI;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class UIImageTextToggle : NodeFunctionBase
 {
@@ -42,7 +43,8 @@ public class UIImageTextToggle : NodeFunctionBase
     public override void RemoveEvents()
     {
         base.RemoveEvents();
-        EVent.Do.Unsubscribe<IAllowKeys>(OnControlsChanged);
+        Debug.Log("Remove");
+        //EVent.Do.Unsubscribe<IAllowKeys>(OnControlsChanged);
     }
 
     private bool CacheAndCheckForStartingUIElements()

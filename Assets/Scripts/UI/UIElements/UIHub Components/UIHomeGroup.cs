@@ -53,8 +53,8 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
 
     public void RemoveEvents()
     {
-        EVent.Do.Unsubscribe<IReturnToHome>(ActivateHomeGroupBranch);
-        EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchHomeGroups);
+       // EVent.Do.Unsubscribe<IReturnToHome>(ActivateHomeGroupBranch);
+       // EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchHomeGroups);
         EVent.Do.Unsubscribe<IActiveBranch>(SetActiveHomeBranch);
         EVent.Do.Unsubscribe<IGameIsPaused>(GameIsPaused);
         EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);

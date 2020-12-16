@@ -63,7 +63,7 @@ public class TestRunner : MonoBehaviour, IEventUser
         EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
         EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
         EVent.Do.Unsubscribe<ITestList>(ManageHistory);
-        EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
+        //EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
 
     private void ManageHistory(ITestList args)

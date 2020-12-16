@@ -57,7 +57,7 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispat
         EVent.Do.Unsubscribe<IMenuGameSwitchingPressed>(CheckForActivation);
         EVent.Do.Unsubscribe<IGameIsPaused>(WhenTheGameIsPaused);
         EVent.Do.Unsubscribe<IOnStart>(StartUp);
-        EVent.Do.Unsubscribe<INoPopUps>(SaveNoPopUps);
+        //EVent.Do.Unsubscribe<INoPopUps>(SaveNoPopUps);
     }
 
     private void CheckForActivation(IMenuGameSwitchingPressed arg)

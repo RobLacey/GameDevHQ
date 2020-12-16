@@ -57,7 +57,7 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
 
     public void RemoveEvents()
     {
-        EVent.Do.Unsubscribe<IChangeControlsPressed>(ChangeControlType);
+        //EVent.Do.Unsubscribe<IChangeControlsPressed>(ChangeControlType);
         EVent.Do.Unsubscribe<IOnStart>(StartGame);
     }
 

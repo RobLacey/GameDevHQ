@@ -1,17 +1,21 @@
-﻿public class EVentBindingsSub : BindBase
+﻿using System.Collections;
+
+public class EVentBindingsSub : IEVentBindings
 {
     public EVentBindingsSub()
     {
-        //_eVentMaster = new EVentMaster();
         BindAllObjects();
     }
 
-    protected sealed override void BindAllObjects()
+    public Hashtable Events { get; } = new Hashtable();
+
+    public void BindAllObjects()
     {
-        if (CheckIfAlreadyBound()) return;
-
-        //Node
-
+        
     }
 
+    public void CreateEvent<TType>()
+    {
+        
+    }
 }

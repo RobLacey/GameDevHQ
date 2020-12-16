@@ -102,7 +102,8 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     public override void RemoveEvents()
     {
         base.RemoveEvents();
-        EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
+        Debug.Log("Remove");
+        //EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
 
     protected override void SavePointerStatus(bool pointerOver)

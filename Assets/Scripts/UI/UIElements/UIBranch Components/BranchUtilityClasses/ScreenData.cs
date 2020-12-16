@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public interface IScreenData
 {
     void OnEnable();
     void OnDisable();
-    bool WasOnHomeScreen { get; }
+    bool WasOnHomeScreen { get; set; }
     void RestoreScreen();
     void StoreClearScreenData(IBranch[] allBranches, IBranch thisBranch, BlockRaycast blockRaycast);
 }
@@ -23,7 +24,11 @@ public class ScreenData : IScreenData
     private readonly bool _isFullscreen;
 
     //Propertues
-    public bool WasOnHomeScreen => _wasOnHomeScreen;
+    public bool WasOnHomeScreen
+    {
+        get => _wasOnHomeScreen;
+        set => _wasOnHomeScreen = value;
+    }
 
     public void OnEnable() => EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
 
@@ -53,7 +58,7 @@ public class ScreenData : IScreenData
                 _clearedBranches.Add(branchToClear);
             
             if (blockRaycast) 
-                branchToClear.BranchBase.SetBlockRaycast(BlockRaycast.No);
+                branchToClear.SetBlockRaycast(BlockRaycast.No);
         }
 
         bool IsAPopUp(IBranch branchToClear) => branchToClear.IsAPopUpBranch() || branchToClear.IsTimedPopUp();
@@ -66,8 +71,8 @@ public class ScreenData : IScreenData
         foreach (var branch in _clearedBranches)
         {
             if(_isFullscreen)
-                branch.BranchBase.SetCanvas(ActiveCanvas.Yes);
-            branch.BranchBase.SetBlockRaycast(BlockRaycast.Yes);
+                branch.SetCanvas(ActiveCanvas.Yes);
+            branch.SetBlockRaycast(BlockRaycast.Yes);
         }
         _clearedBranches.Clear();
         _locked = false;

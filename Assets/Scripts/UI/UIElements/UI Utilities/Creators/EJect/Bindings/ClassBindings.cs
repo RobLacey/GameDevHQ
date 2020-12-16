@@ -12,11 +12,13 @@
 
         //Base
         _eJectMaster.Bind<EJect>().To<IEJect>();
+        _eJectMaster.Bind<EVent>().To<IEVent>();
         
         //Hub Classes
         _eJectMaster.Bind<UIAudioManager>().To<IAudioService>().WithParameters();
         _eJectMaster.Bind<UIHomeGroup>().To<IHomeGroup>().WithParameters();
-        _eJectMaster.Bind<HistoryTracker>().To<IHistoryTrack>().WithParameters();
+        _eJectMaster.Bind<HistoryTracker>().To<IHistoryTrack>();
+        _eJectMaster.Bind<UICancel>().To<ICancel>().WithParameters();
 
         //Tweens
         _eJectMaster.Bind<PositionTween>().To<IPositionTween>();

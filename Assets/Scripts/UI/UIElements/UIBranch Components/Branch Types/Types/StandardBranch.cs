@@ -1,4 +1,6 @@
-﻿public interface IStandardBranch : IBranchBase { }
+﻿using UnityEngine;
+
+public interface IStandardBranch : IBranchBase { }
 
 public class StandardBranch : BranchBase, IStandardBranch
 {
@@ -21,7 +23,7 @@ public class StandardBranch : BranchBase, IStandardBranch
         if (_myBranch.CanvasIsEnabled)
             _myBranch.DoNotTween();
         
-        if(_myBranch.BlockOtherNode == IsActive.Yes)
+        if(_myBranch.BlockOtherNode == IsActive.Yes || _myBranch.ScreenType == ScreenType.FullScreen)
             _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.Yes);
 
         SetCanvas(ActiveCanvas.Yes);

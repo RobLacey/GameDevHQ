@@ -4745,10 +4745,10 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _groupsList: []
   _branchEvents:
-    OnBranchEnter:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchExit:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &246213781
@@ -4862,7 +4862,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 819564431}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -4942,10 +4942,10 @@ MonoBehaviour:
   _escapeKeyFunction: 0
   _groupsList: []
   _branchEvents:
-    OnBranchEnter:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchExit:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &274292516
@@ -8839,10 +8839,10 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _groupsList: []
   _branchEvents:
-    OnBranchEnter:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchExit:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &413526950
@@ -10765,7 +10765,7 @@ RectTransform:
   m_Children:
   - {fileID: 1478859608}
   m_Father: {fileID: 819564431}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -10924,10 +10924,10 @@ MonoBehaviour:
   _escapeKeyFunction: 1
   _groupsList: []
   _branchEvents:
-    OnBranchEnter:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchExit:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &504002779
@@ -13052,10 +13052,10 @@ MonoBehaviour:
   _escapeKeyFunction: 1
   _groupsList: []
   _branchEvents:
-    OnBranchEnter:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchExit:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &620683491
@@ -22370,12 +22370,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2018220710}
-  m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_Father: {fileID: 819564431}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 960, y: 540}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1019678440
@@ -22863,7 +22863,7 @@ RectTransform:
   - {fileID: 1743252782}
   - {fileID: 791398384}
   m_Father: {fileID: 819564431}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -23639,10 +23639,10 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _groupsList: []
   _branchEvents:
-    OnBranchEnter:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchExit:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1064311446
@@ -25414,10 +25414,10 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _groupsList: []
   _branchEvents:
-    OnBranchEnter:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchExit:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1248739662
@@ -26784,10 +26784,10 @@ MonoBehaviour:
   _escapeKeyFunction: 3
   _groupsList: []
   _branchEvents:
-    OnBranchEnter:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchExit:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1396258920
@@ -28749,10 +28749,10 @@ MonoBehaviour:
   _escapeKeyFunction: 1
   _groupsList: []
   _branchEvents:
-    OnBranchEnter:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchExit:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1478859610
@@ -32543,10 +32543,10 @@ MonoBehaviour:
   _escapeKeyFunction: 1
   _groupsList: []
   _branchEvents:
-    OnBranchEnter:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchExit:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1712214355
@@ -33525,10 +33525,10 @@ MonoBehaviour:
   _escapeKeyFunction: 1
   _groupsList: []
   _branchEvents:
-    OnBranchEnter:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchExit:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &1743252784
@@ -37488,10 +37488,10 @@ MonoBehaviour:
   _escapeKeyFunction: 1
   _groupsList: []
   _branchEvents:
-    OnBranchEnter:
+    _onBranchEnter:
       m_PersistentCalls:
         m_Calls: []
-    OnBranchExit:
+    _onBranchExit:
       m_PersistentCalls:
         m_Calls: []
 --- !u!114 &2018220712

@@ -65,7 +65,9 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
 
     private void HotKeyActivation()
     {    
-
+        Debug.Log($"{_activeBranch} : {_myBranch}");
+        if(ReferenceEquals(_activeBranch, _myBranch)) return;
+        
         if(!_hasParentNode)
         {
             GetParentNode();
@@ -77,7 +79,7 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
         }
         else
         {
-            _activeBranch.StartBranchExitProcess(OutTweenType.Cancel,StartThisHotKeyBranch);
+            _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, StartThisHotKeyBranch);
         }
     }
 
@@ -113,6 +115,6 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
     {
         HotKeyPressed?.Invoke(this);
         _parentNode.SetAsHotKeyParent();
-        MyBranch.MoveToThisBranch();
+        _myBranch.MoveToThisBranch();
     }
 }

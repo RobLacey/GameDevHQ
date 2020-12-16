@@ -1,21 +1,21 @@
-﻿public interface IReturnToHome
+﻿public interface IReturnToHome // This one is test
 {
     ActivateNodeOnReturnHome ActivateOnReturnHome { get; }
 } 
-public interface IPausePressed { }
+public interface IPausePressed { } // This one is test
 
-public interface ICancelPressed 
+public interface ICancelPressed // This one is test
 {
     EscapeKey EscapeKeySettings { get; }
 }
 
-public interface ISwitchGroupPressed
+public interface ISwitchGroupPressed // This one is test
 {
     SwitchType SwitchType { get; }
 }
-public interface IChangeControlsPressed { }
+public interface IChangeControlsPressed { } // This one is test
 
-public interface IAllowKeys
+public interface IAllowKeys // This one is test
 {
     bool CanAllowKeys { get; }
 } 
@@ -78,28 +78,28 @@ public interface IInMenu
     bool InTheMenu { get; }
 }
 
-public interface INoResolvePopUp
+public interface INoResolvePopUp // This one is test
 {
     bool ActiveResolvePopUps { get; }
 }
 
-public interface INoPopUps 
+public interface INoPopUps // This one is test
 {
     bool NoActivePopUps { get; }
 }
 
-public interface IRemoveOptionalPopUp 
+public interface IRemoveOptionalPopUp // This one is test
 {
     IBranch ThisPopUp { get; }
 }
 
 
-public interface IAddOptionalPopUp
+public interface IAddOptionalPopUp // This one is test
 {
     IBranch ThisPopUp { get; }
 }
 
-public interface IAddResolvePopUp
+public interface IAddResolvePopUp // This one is test
 {
     IBranch ThisPopUp { get; }
 }

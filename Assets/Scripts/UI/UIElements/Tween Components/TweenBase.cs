@@ -118,6 +118,7 @@ public abstract class TweenBase : IEventUser
     {
         if (tweenType == TweenType.In)
         {
+            RewindTweens();
             DoInTween();
         }
         else

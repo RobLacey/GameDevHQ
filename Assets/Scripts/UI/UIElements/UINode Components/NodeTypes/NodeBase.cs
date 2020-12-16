@@ -19,6 +19,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     protected bool _allowKeys;
     private INode _lastHighlighted;
     private readonly IUiEvents _uiFunctionEvents;
+    private bool _fromHotKey;
 
     //Events
     private Action<IHighlightedNode> DoHighlighted { get; set; }
@@ -34,12 +35,6 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     public INode UINode => _uiNode;
 
     //Set / Getters
-    private void ClearHighlight(ICancelPressed args)
-    {
-        if(_lastHighlighted == _uiNode && _allowKeys)
-            OnExit();
-    }
-    
     private void ClearHighlight(ICancelButtonActivated args)
     {
         if(_lastHighlighted == _uiNode && _allowKeys)
@@ -107,16 +102,14 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<IInMenu>(SaveInMenuOrInGame);
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Subscribe<ICancelPressed>(ClearHighlight);
         EVent.Do.Subscribe<ICancelButtonActivated>(ClearHighlight);
     }
 
     public virtual void RemoveEvents()
     {
-        EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
+       // EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
         EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Subscribe<ICancelPressed>(ClearHighlight);
         EVent.Do.Subscribe<ICancelButtonActivated>(ClearHighlight);
     }
 
@@ -185,13 +178,6 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
 
     protected void DoPressOnNode() => _uiFunctionEvents.DoIsPressed();
 
-    protected void SetSelectedStatus(bool isSelected, Action endAction)
-    {
-        IsSelected = isSelected;
-        _uiFunctionEvents.DoIsSelected(IsSelected);
-        endAction.Invoke();
-    }
-
     public void SelectedAction()
     {
         if (IsDisabled) return;
@@ -199,10 +185,26 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         TurnNodeOnOff();
     }
 
+    protected void SetSelectedStatus(bool isSelected, Action endAction)
+    {
+        IsSelected = isSelected;
+        _uiFunctionEvents.DoIsSelected(IsSelected);
+        endAction?.Invoke();
+    }
+
     protected void SetNodeAsSelected_NoEffects()
     {
         _uiFunctionEvents.DoMuteAudio();
-        SetSelectedStatus(true, DoPressOnNode);
+        if (_fromHotKey)
+        {
+            SetSelectedStatus(true, null);
+            _fromHotKey = false;
+        }
+        else
+        {
+            SetSelectedStatus(true, DoPressOnNode);
+        }
+
         OnExit();
     }
 
@@ -252,6 +254,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
 
     public void HotKeyPressed()
     {
+        _fromHotKey = true;
         ThisNodeIsHighLighted();
         ThisNodeIsSelected();
         SetNodeAsSelected_NoEffects();

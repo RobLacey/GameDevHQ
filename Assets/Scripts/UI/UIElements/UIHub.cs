@@ -41,10 +41,11 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
     private INode _lastHighlighted;
     private bool _inMenu, _startingInGame;
     private InputScheme _inputScheme;
-    private EVentBindings _eVentBindings = new EVentBindings();
+    private EVentBindings _eVentBindings = new EVentBindings(new EVent());
     private IHistoryTrack _historyTrack;
     private IAudioService _audioService;
     private IHomeGroup _homeGroup;
+    private ICancel _cancelHandler;
 
     //Properties
     private void SaveInMenu(IInMenu args)
@@ -63,18 +64,20 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
        var uIInput = GetComponent<IInput>();
         _inputScheme = uIInput.ReturnScheme;
         _startingInGame = uIInput.StartInGame();
-        _historyTrack = EJect.Class.WithParams<IHistoryTrack>(this);
+        _historyTrack = EJect.Class.NoParams<IHistoryTrack>();
+        _cancelHandler = EJect.Class.WithParams<ICancel>(this);
         _audioService = EJect.Class.WithParams<IAudioService>(this);
         _homeGroup = EJect.Class.WithParams<IHomeGroup>(this);
-        UseEServLocator();
     }
 
 
     private void OnEnable()
     {
+        UseEServLocator();
         FetchEvents();
         _historyTrack.OnEnable();
         _homeGroup.OnEnable();
+        _cancelHandler.OnEnable();
         ObserveEvents();
     }
 
@@ -83,6 +86,7 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         _historyTrack.OnDisable();
         _homeGroup.OnDisable();
         _audioService.OnDisable();
+        _cancelHandler.OnDisable();
         RemoveEvents();
     }
 
@@ -111,7 +115,7 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
     {
         EVent.Do.Unsubscribe<IHighlightedNode>(SetLastHighlighted);
         EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
-        EVent.Do.Unsubscribe<IAllowKeys>(SwitchedToKeys);
+       // EVent.Do.Unsubscribe<IAllowKeys>(SwitchedToKeys);
     }
 
     private void Start() => StartCoroutine(StartUIDelay());

@@ -42,7 +42,8 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
 
     public void ObserveEvents() => EVent.Do.Subscribe<INoPopUps>(ActivePopUps);
 
-    public void RemoveEvents() => EVent.Do.Unsubscribe<INoPopUps>(ActivePopUps);
+    public void RemoveEvents() { }
+    // public void RemoveEvents() => EVent.Do.Unsubscribe<INoPopUps>(ActivePopUps);
 
     public IManagePopUpHistory IsGamePaused(bool isPaused)
     {

@@ -24,8 +24,8 @@ public class EServMaster
 
     public void AddNew<T>(T newService)
     {
-        SetUpForNewScene();        
-
+        SetUpForNewScene(); 
+        
         if(_services.ContainsKey(typeof(T)) && !_locked)
             RemoveService<T>();
         
@@ -43,9 +43,9 @@ public class EServMaster
     private void SetUpForNewScene()
     {
         if (_started) return;
-        _started = true;
         EVent.Do.Subscribe<ISceneChange>(OnSceneEnd);
         Application.quitting += OnAppExit;
+        _started = true;
     }
 
     public T Get<T>(IEServUser ieServUser)
@@ -56,6 +56,7 @@ public class EServMaster
             {
                 _waitingForServicesStore.Add(typeof(T), new List<IEServUser>());
             }
+            
             _waitingForServicesStore[typeof(T)].Add(ieServUser);
         }
 

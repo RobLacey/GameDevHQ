@@ -145,8 +145,8 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         EVent.Do.Unsubscribe<IOnStart>(SaveOnStart);
         EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
         EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
-        EVent.Do.Unsubscribe<INoPopUps>(SaveNoActivePopUps);
-        EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
+       // EVent.Do.Unsubscribe<INoPopUps>(SaveNoActivePopUps);
+       // EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
 
     private void Update()

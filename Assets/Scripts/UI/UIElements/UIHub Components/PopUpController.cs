@@ -56,9 +56,9 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
 
     public void RemoveEvents()
     {
-        EVent.Do.Unsubscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional);
-        EVent.Do.Unsubscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen);
-        EVent.Do.Unsubscribe<IAddResolvePopUp>(AddActivePopUps_Resolve);
+        //EVent.Do.Unsubscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional);
+        //EVent.Do.Unsubscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen);
+        //EVent.Do.Unsubscribe<IAddResolvePopUp>(AddActivePopUps_Resolve);
     }
 
     public IBranch NextPopUp()

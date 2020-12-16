@@ -8,17 +8,16 @@ public interface ITestList //TODO Remove
     INode AddNode { get; }
 }
 
-public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser, 
+public class HistoryTracker : IHistoryTrack, IEventUser, 
                               IReturnToHome, ITestList, ICancelHoverOverButton, IEventDispatcher
 {
-    public HistoryTracker(IHub hub)
+    public HistoryTracker()
     {
-        _globalCancelAction = hub.Scheme.GlobalCancelAction;
-        UseEServLocator();
         HistoryListManagement = EJect.Class.WithParams<IHistoryManagement>(this);
         SelectionProcess = EJect.Class.WithParams<INewSelectionProcess> (this);
-        MoveBackInHistory = EJect.Class.WithParams<IMoveBackInHistory>(this); 
+        MoveBackInHistory = EJect.Class.WithParams<IMoveBackInHistory>(this);
         PopUpHistory = EJect.Class.WithParams<IManagePopUpHistory>(this);
+        
     }
 
     //Variables
@@ -27,9 +26,8 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
     private bool _canStart, _isPaused;
     private bool _onHomeScreen = true, _noPopUps = true;
     private IBranch _activeBranch;
-    private readonly EscapeKey _globalCancelAction;
     private ICancel _cancel;
-    
+
     //Properties
     private IManagePopUpHistory PopUpHistory { get; }
     private IMoveBackInHistory MoveBackInHistory { get; }
@@ -63,14 +61,12 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
     {
         FetchEvents();
         ObserveEvents();
-        _cancel.OnEnable();
         PopUpHistory.OnEnable();
     }
 
     public void OnDisable()
     {
         RemoveEvents();
-        _cancel.OnDisable();
         PopUpHistory.OnDisable();
     }
     
@@ -103,19 +99,13 @@ public class HistoryTracker : IHistoryTrack, IEventUser, IEServUser,
         EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
         EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomScreen);
         EVent.Do.Unsubscribe<IGameIsPaused>(SaveIsGamePaused);
-        EVent.Do.Unsubscribe<INoPopUps>(NoPopUps);
+       // EVent.Do.Unsubscribe<INoPopUps>(NoPopUps);
         EVent.Do.Unsubscribe<IHotKeyPressed>(SetFromHotkey);
         EVent.Do.Unsubscribe<IDisabledNode>(CloseNodesAfterDisabledNode);
-        EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchGroupPressed);
+       // EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchGroupPressed);
         EVent.Do.Unsubscribe<IInMenu>(SwitchToGame);
         EVent.Do.Unsubscribe<ICancelPopUp>(CancelPopUpFromButton);
         EVent.Do.Unsubscribe<ISelectedNode>(SetSelected);
-    }
-
-    public void UseEServLocator()
-    {
-        _cancel = new UICancel(_globalCancelAction);
-        EServ.Locator.AddNew(_cancel);
     }
 
     private void SetCanStart(IOnStart onStart) => _canStart = true;

@@ -82,6 +82,7 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
     }
     public void DeactivateTweens(Action callBack)
     {
+        StopAllCoroutines();
         _tweenEvents.OutTweenEventStart?.Invoke();
         StartProcessingTweens(TweenType.Out, callBack, _tweenEvents.OutTweenEventEnd);
     }

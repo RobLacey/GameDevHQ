@@ -20,24 +20,9 @@ public class TweenScheme: ScriptableObject
     [SerializeField] [DisableIf("Punch")]
     private TweenStyle _shakeTween = TweenStyle.NoTween;
     
-   [Header("Tween Data", order = 1)]
-   [HorizontalLine(1, EColor.Blue , order = 2)]
-    [SerializeField]  [ShowIf("Position")] 
-    private TweenData _positionData;
-    [SerializeField]  [ShowIf("Rotation")] 
-    private TweenData _rotationData;
-    [SerializeField]  [ShowIf("Scale")] 
-    private TweenData _scaleData;
-    [SerializeField]  [ShowIf("Fade")] 
-    private TweenData _fadeData;
-    [SerializeField]  [ShowIf("Shake")] 
-    private ShakeData _shakeData;
-    [SerializeField]  [ShowIf("Punch")] 
-    private PunchData _punchData;
-
-
-
-    [Header("Time Settings", order = 1)] [HorizontalLine(1, EColor.Blue , order = 4)]
+    [Header("Tween Data", order = 1)] 
+    [HorizontalLine(1, EColor.Blue , order = 2)]
+    
     [SerializeField]
     private IsActive _useGlobalTime = IsActive.No;
     [SerializeField] 
@@ -46,6 +31,25 @@ public class TweenScheme: ScriptableObject
     [SerializeField] 
     [ShowIf("GlobalTime")]
     private float _globalOutTime = 1;
+    
+    [SerializeField] 
+    [EnableIf("Position")] 
+    private TweenData _positionData;
+    [SerializeField]  
+    [EnableIf("Rotation")] 
+    private TweenData _rotationData;
+    [SerializeField]  
+    [EnableIf("Scale")] 
+    private TweenData _scaleData;
+    [SerializeField]  
+    [EnableIf("Fade")] 
+    private TweenData _fadeData;
+    [SerializeField]  
+    [EnableIf("Shake")] 
+    private ShakeData _shakeData;
+    [SerializeField]  
+    [EnableIf("Punch")] 
+    private PunchData _punchData;
 
     //Events
     private Action _onChange;

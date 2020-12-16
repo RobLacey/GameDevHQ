@@ -1,63 +1,78 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
-public class EVentBindings : BindBase
+public class EVentBindings : IEVentBindings
 {
-    private Hashtable _events = new Hashtable();
-
-    public EVentBindings()
+    private bool _autoRemoveEVent;
+    
+    public EVentBindings(ISetNewEVent setNewEVentHandler)
     {
         BindAllObjects();
-        EVent.Do.EVentsList = _events;
+        setNewEVentHandler.SetUpEVentHandler((IEVentBase) setNewEVentHandler, Events);
+    }
+    
+    public Hashtable Events { get; } = new Hashtable();
+
+    /// <summary>
+    /// Means on scene change all EVents are automatically unsubscribed
+    /// </summary>
+    /// <returns></returns>
+    private EVentBindings AutoRemove()
+    {
+        _autoRemoveEVent = true;
+        return this;
+    }
+    
+    public void CreateEvent<TType>()
+    {
+        Events.Add(typeof(TType), _autoRemoveEVent ? new CustomEVent<TType>().AutoRemove() 
+                                                   : new CustomEVent<TType>());
+        _autoRemoveEVent = false;
     }
 
-    private void CreateEvent<TType>() => _events.Add(typeof(TType), new CustomEVent<TType>());
-    
-    protected sealed override void BindAllObjects()
+    public void BindAllObjects()
     {
-        if (CheckIfAlreadyBound()) return;
-
         //PopUps
-        CreateEvent<IRemoveOptionalPopUp>();//
-        CreateEvent<IAddOptionalPopUp>();//
-        CreateEvent<IAddResolvePopUp>();//
-        CreateEvent<INoResolvePopUp>();//
-        CreateEvent<INoPopUps>();//
+        AutoRemove().CreateEvent<IRemoveOptionalPopUp>();
+        AutoRemove().CreateEvent<IAddOptionalPopUp>();
+        AutoRemove().CreateEvent<IAddResolvePopUp>();
+        AutoRemove().CreateEvent<INoResolvePopUp>();
+        AutoRemove().CreateEvent<INoPopUps>();
         
         //History
-        CreateEvent<IReturnToHome>();//
-        CreateEvent<IOnHomeScreen>();//
-        CreateEvent<IOnStart>();//
-        CreateEvent<IGameIsPaused>();//
-        CreateEvent<IInMenu>();//
-        CreateEvent<ISceneChange>();
+        AutoRemove().CreateEvent<IReturnToHome>();
+        CreateEvent<IOnHomeScreen>();
+        CreateEvent<IOnStart>();
+        CreateEvent<IGameIsPaused>();
+        CreateEvent<IInMenu>();
+        CreateEvent<ISceneChange>();// Doesn't Clear until exit
         
         //Input
-        CreateEvent<IPausePressed>();
-        CreateEvent<ISwitchGroupPressed>();//
-        CreateEvent<IHotKeyPressed>();//
-        CreateEvent<IMenuGameSwitchingPressed>();//
+        AutoRemove().CreateEvent<IPausePressed>();
+        AutoRemove().CreateEvent<ISwitchGroupPressed>();
+        CreateEvent<IHotKeyPressed>();
+        CreateEvent<IMenuGameSwitchingPressed>();
         
         //ChangeControl
-        CreateEvent<IAllowKeys>();//
-        CreateEvent<IChangeControlsPressed>();//
+        AutoRemove().CreateEvent<IAllowKeys>();
+        AutoRemove().CreateEvent<IChangeControlsPressed>();
         
         //Cancel
         CreateEvent<ICancelHoverOverButton>();
-        CreateEvent<ICancelPressed>();//
-        CreateEvent<ICancelButtonActivated>();//
-        CreateEvent<ICancelPopUp>();//
+        AutoRemove().CreateEvent<ICancelPressed>();
+        CreateEvent<ICancelButtonActivated>();
+        CreateEvent<ICancelPopUp>();
         CreateEvent<ICancelHoverOver>();
         
         // //Node
-        CreateEvent<IHighlightedNode>();//
-        CreateEvent<ISelectedNode>();//
-        CreateEvent<IDisabledNode>();//
+        CreateEvent<IHighlightedNode>();
+        CreateEvent<ISelectedNode>();
+        CreateEvent<IDisabledNode>();
         
         //Branch
-        CreateEvent<IActiveBranch>();//
-        CreateEvent<IClearScreen>();//
-        CreateEvent<ISetUpStartBranches>();//
+        CreateEvent<IActiveBranch>();
+        CreateEvent<IClearScreen>();
+        CreateEvent<ISetUpStartBranches>();
         CreateEvent<IEndTween>();
         
         //Test
