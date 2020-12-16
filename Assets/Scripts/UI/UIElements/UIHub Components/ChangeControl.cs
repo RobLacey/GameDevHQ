@@ -8,7 +8,6 @@ using UnityEngine;
 public interface IChangeControl : IEventUser
 {
     void OnEnable();
-    void OnDisable();
 }
 
 public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispatcher
@@ -41,11 +40,6 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
         FetchEvents();
         ObserveEvents();
     }
-
-    public void OnDisable()
-    {
-        RemoveEvents();
-    }
     
     public void FetchEvents() => AllowKeys = EVent.Do.Fetch<IAllowKeys>();
 
@@ -53,12 +47,6 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
     {
         EVent.Do.Subscribe<IChangeControlsPressed>(ChangeControlType);
         EVent.Do.Subscribe<IOnStart>(StartGame);
-    }
-
-    public void RemoveEvents()
-    {
-        //EVent.Do.Unsubscribe<IChangeControlsPressed>(ChangeControlType);
-        EVent.Do.Unsubscribe<IOnStart>(StartGame);
     }
 
     private void StartGame(IOnStart onStart)

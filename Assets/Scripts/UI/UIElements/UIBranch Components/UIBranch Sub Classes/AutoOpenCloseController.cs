@@ -39,14 +39,9 @@ public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelH
         ObserveEvents();
     }
 
-    public void OnDisable() => RemoveEvents();
-
     public void FetchEvents() => CancelHooverOver = EVent.Do.Fetch<ICancelHoverOver>();
 
     public void ObserveEvents() => EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
-
-    public void RemoveEvents() => EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
-
 
     public void OnPointerExit()
     {

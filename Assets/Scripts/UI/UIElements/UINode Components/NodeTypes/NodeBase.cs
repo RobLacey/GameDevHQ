@@ -89,8 +89,6 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         ObserveEvents();
     }
     
-    public void OnDisable() => RemoveEvents();
-
     public virtual void FetchEvents()
     {
         DoHighlighted = EVent.Do.Fetch<IHighlightedNode>();
@@ -102,14 +100,6 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<IInMenu>(SaveInMenuOrInGame);
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Subscribe<ICancelButtonActivated>(ClearHighlight);
-    }
-
-    public virtual void RemoveEvents()
-    {
-       // EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
-        EVent.Do.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
-        EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Subscribe<ICancelButtonActivated>(ClearHighlight);
     }
 

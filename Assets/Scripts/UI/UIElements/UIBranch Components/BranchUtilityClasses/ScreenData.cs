@@ -4,7 +4,6 @@ using UnityEngine;
 public interface IScreenData
 {
     void OnEnable();
-    void OnDisable();
     bool WasOnHomeScreen { get; set; }
     void RestoreScreen();
     void StoreClearScreenData(IBranch[] allBranches, IBranch thisBranch, BlockRaycast blockRaycast);
@@ -31,8 +30,6 @@ public class ScreenData : IScreenData
     }
 
     public void OnEnable() => EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
-
-    public void OnDisable() => EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
 
     //Main
 

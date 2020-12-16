@@ -333,6 +333,7 @@
                 </e>
                 <e p="Attributes.cs" t="Include" />
                 <e p="BucketCreator.cs" t="Include" />
+                <e p="CreateNewObjects.cs" t="Include" />
                 <e p="Creators" t="Include">
                   <e p="BindBase.cs" t="Include" />
                   <e p="EJect" t="Include">
@@ -399,6 +400,7 @@
                 <e p="Branch Types" t="Include">
                   <e p="BranchBase.cs" t="Include" />
                   <e p="Types" t="Include">
+                    <e p="ControlBar.cs" t="Include" />
                     <e p="HomeScreenBranch.cs" t="Include" />
                     <e p="OptionalPopUp.cs" t="Include" />
                     <e p="PauseMenu.cs" t="Include" />

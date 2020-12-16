@@ -3,7 +3,6 @@
 public interface IHistoryTrack : IParameters, IIsAService
 {
     void OnEnable();
-    void OnDisable();
     bool IsPaused { get; }
     bool NoHistory { get; }
     IHistoryManagement HistoryListManagement { get; }

@@ -4,13 +4,12 @@ using UnityEngine;
 interface ICancel
 {
     void OnEnable();
-    void OnDisable();
 }
 
 /// <summary>
 /// Class handles all UI cancel behaviour from cancel type to context sensitive cases
 /// </summary>
-public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
+public class UICancel : ICancel, IEServUser, IEventUser
 {
     public UICancel(IHub settings) => _globalEscapeSetting = settings.Scheme.GlobalCancelAction;
 
@@ -29,8 +28,6 @@ public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
         ObserveEvents();
     }
 
-    public void OnDisable() => RemoveEvents();
-
     public void ObserveEvents()
     {
         EVent.Do.Subscribe<INoResolvePopUp>(SaveResolvePopUps);
@@ -38,15 +35,6 @@ public class UICancel : ICancel, IEServUser, IEventUser, IIsAService
         EVent.Do.Subscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
         EVent.Do.Subscribe<IGameIsPaused>(SaveGameIsPaused);
         EVent.Do.Subscribe<ICancelHoverOver>(CancelHooverOver);
-    }
-
-    public void RemoveEvents()
-    {
-       // EVent.Do.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
-        //EVent.Do.Unsubscribe<ICancelPressed>(CancelPressed);
-        EVent.Do.Unsubscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
-        EVent.Do.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
-        EVent.Do.Unsubscribe<ICancelHoverOver>(CancelHooverOver);
     }
 
     public void UseEServLocator() => _uiHistoryTrack = EServ.Locator.Get<IHistoryTrack>(this);

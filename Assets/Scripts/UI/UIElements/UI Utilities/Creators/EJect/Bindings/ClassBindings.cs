@@ -39,6 +39,7 @@
         _eJectMaster.Bind<LinkedToggles>().To<ILinkedToggles>().WithParameters();
         _eJectMaster.Bind<ToggleNotLinked>().To<IToggleNotLinked>().WithParameters();
         _eJectMaster.Bind<DisabledNode>().To<IDisabledNode>().WithParameters();
+        _eJectMaster.Bind<ControlBar>().To<IControlBar>().WithParameters();
         
         //Branch Types
         _eJectMaster.Bind<HomeScreenBranch>().To<IHomeScreenBranch>().WithParameters();

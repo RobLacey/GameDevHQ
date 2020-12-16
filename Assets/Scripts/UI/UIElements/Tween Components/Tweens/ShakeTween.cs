@@ -15,12 +15,6 @@ public class ShakeTween : TweenBase, IShakeTween
         EVent.Do.Subscribe<IEndTween>(EndTweenEffect);
     }
 
-    public override void RemoveEvents()
-    {
-        base.RemoveEvents();
-        EVent.Do.Unsubscribe<IEndTween>(EndTweenEffect);
-    }
-
     public override void SetUpTweens(List<BuildTweenData> buildObjectsList, TweenScheme tweenScheme, 
                                     Action<BuildTweenData> effectCall)
     {

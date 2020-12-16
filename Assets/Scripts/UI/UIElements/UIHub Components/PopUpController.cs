@@ -4,7 +4,6 @@ using System.Collections.Generic;
 public interface IPopUpController
 {
     void OnEnable();
-    void OnDisable();
     IBranch NextPopUp();
     void RemoveNextPopUp(IBranch popUpToRemove);
 }
@@ -35,11 +34,6 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
         FetchEvents();
         ObserveEvents();
     }
-
-    public void OnDisable()
-    {
-        RemoveEvents();
-    }
     
     public void FetchEvents()
     {
@@ -52,13 +46,6 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
         EVent.Do.Subscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional);
         EVent.Do.Subscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen);
         EVent.Do.Subscribe<IAddResolvePopUp>(AddActivePopUps_Resolve);
-    }
-
-    public void RemoveEvents()
-    {
-        //EVent.Do.Unsubscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional);
-        //EVent.Do.Unsubscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen);
-        //EVent.Do.Unsubscribe<IAddResolvePopUp>(AddActivePopUps_Resolve);
     }
 
     public IBranch NextPopUp()

@@ -11,7 +11,6 @@ public interface IEventDispatcher
 public interface IEventUser
 {
     void ObserveEvents();
-    void RemoveEvents();
 }
 
 public static class EventLocator

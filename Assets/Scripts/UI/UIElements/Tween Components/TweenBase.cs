@@ -38,8 +38,6 @@ public abstract class TweenBase : IEventUser
 
     public virtual void ObserveEvents() { }
 
-    public virtual void RemoveEvents() { }
-
     public virtual void SetUpTweens(List<BuildTweenData> buildObjectsList,
                                     TweenScheme tweenScheme,
                                     Action<BuildTweenData> effectCall)

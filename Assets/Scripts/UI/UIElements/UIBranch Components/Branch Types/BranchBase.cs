@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 public interface IBranchBase : IParameters
 {
     void OnEnable();
-    void OnDisable();
     void SetUpAsTabBranch();
     void SetUpBranch(IBranch newParentController = null);
     void SetCanvas(ActiveCanvas active);
@@ -68,12 +67,6 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
         _screenData.OnEnable();
     }
     
-    public void OnDisable()
-    {
-        RemoveEvents();
-        _screenData.OnDisable();
-    }
-
     public virtual void FetchEvents()
     {
         SetIsOnHomeScreen = EVent.Do.Fetch<IOnHomeScreen>();
@@ -91,17 +84,6 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
         EVent.Do.Subscribe<IClearScreen>(ClearBranchForFullscreen);
     }
 
-    public virtual void RemoveEvents()
-    {
-        // EVent.Do.Unsubscribe<INoResolvePopUp>(SaveResolvePopUps);
-         EVent.Do.Unsubscribe<IGameIsPaused>(SaveIfGamePaused);
-         EVent.Do.Unsubscribe<ISetUpStartBranches>(SetUpBranchesOnStart);
-         EVent.Do.Unsubscribe<IOnStart>(SaveOnStart);
-         EVent.Do.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
-         EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
-         EVent.Do.Unsubscribe<IClearScreen>(ClearBranchForFullscreen);
-    }
-
     public void UseEServLocator() => _historyTrack = EServ.Locator.Get<IHistoryTrack>(this);
 
     public void SetUpAsTabBranch() => _isTabBranch = true;
@@ -114,11 +96,12 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
 
     public abstract void SetUpBranch(IBranch newParentController = null);
     
-    public void SetCanvas(ActiveCanvas active) => _myCanvas.enabled = active == ActiveCanvas.Yes;
+    public virtual void SetCanvas(ActiveCanvas active) => _myCanvas.enabled = active == ActiveCanvas.Yes;
 
     public virtual void SetBlockRaycast(BlockRaycast active)
     {
         if(!_canStart) return;
+        Debug.Log(_myBranch + " : " + active);
         _myCanvasGroup.blocksRaycasts = active == BlockRaycast.Yes && _inMenu;
     }
 

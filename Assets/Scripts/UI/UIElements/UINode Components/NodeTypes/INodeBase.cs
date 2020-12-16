@@ -5,7 +5,6 @@ public interface INodeBase
 {
     void Start();
     void OnEnable();
-    void OnDisable();
     void DeactivateNodeByType();
     UINavigation Navigation { set; }
 

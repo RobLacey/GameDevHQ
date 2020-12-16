@@ -44,8 +44,6 @@ public class TestRunner : MonoBehaviour, IEventUser
 
     private void OnEnable() => ObserveEvents();
 
-    private void OnDisable() => RemoveEvents();
-
     public void ObserveEvents()
     {
         EVent.Do.Subscribe<IHighlightedNode>(SaveLastHighlighted);
@@ -54,16 +52,6 @@ public class TestRunner : MonoBehaviour, IEventUser
         EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
         EVent.Do.Subscribe<ITestList>(ManageHistory);
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
-    }
-
-    public void RemoveEvents()
-    {
-        EVent.Do.Unsubscribe<IHighlightedNode>(SaveLastHighlighted);
-        EVent.Do.Unsubscribe<ISelectedNode>(SaveLastSelected);
-        EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
-        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
-        EVent.Do.Unsubscribe<ITestList>(ManageHistory);
-        //EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
 
     private void ManageHistory(ITestList args)

@@ -67,7 +67,8 @@ public enum EventType
 public enum ScreenType { Normal, FullScreen }
 
 public enum StartInMenu { InMenu, InGameControl }
-public enum BranchType { HomeScreen, Standard, ResolvePopUp, OptionalPopUp, TimedPopUp, PauseMenu, Internal }
+public enum BranchType { HomeScreen, Standard, ResolvePopUp, OptionalPopUp, 
+                         TimedPopUp, PauseMenu, Internal, ControlBar }
 
 public enum WhenToMove { Immediately, AfterEndOfTween }
 public enum PauseOptionsOnEscape { EnterPauseOrEscapeMenu, DoNothing }

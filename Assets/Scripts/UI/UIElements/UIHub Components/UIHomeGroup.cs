@@ -5,7 +5,6 @@ using UnityEngine;
 public interface IHomeGroup
 {
     void OnEnable();
-    void OnDisable();
 }
 
 /// <summary>
@@ -20,8 +19,9 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
 
         foreach (var branch in _homeGroup)
         {
-            if(!branch.IsHomeScreenBranch())
-                throw new Exception($"{branch.ThisBranchesGameObject.name} isn't a Home Screen branch");
+            if(!branch.IsHomeScreenBranch() && !branch.IsControlBar())
+                throw new Exception(
+                    $"{branch.ThisBranchesGameObject.name} isn't a Home Screen or Control Bar branch");
         }
     }
 
@@ -39,8 +39,8 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     
     public void OnEnable() => ObserveEvents();
-
-    public void OnDisable() => RemoveEvents();
+    
+    public void OnDisable() { }
 
     public void ObserveEvents()
     {
@@ -51,15 +51,6 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
         EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
     }
 
-    public void RemoveEvents()
-    {
-       // EVent.Do.Unsubscribe<IReturnToHome>(ActivateHomeGroupBranch);
-       // EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchHomeGroups);
-        EVent.Do.Unsubscribe<IActiveBranch>(SetActiveHomeBranch);
-        EVent.Do.Unsubscribe<IGameIsPaused>(GameIsPaused);
-        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
-    }
-    
     private void SwitchHomeGroups(ISwitchGroupPressed args)
     {
         if (!_onHomeScreen) return;
@@ -121,5 +112,4 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
         }
         _homeGroup[_index].MoveToThisBranch();
     }
-
 }

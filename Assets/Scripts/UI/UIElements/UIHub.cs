@@ -32,6 +32,13 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
     [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")]
     private List<UIBranch> _homeBranches;
 
+    //Editor
+    [Button("Add a New Tree Structure")]
+    private void MakeFolder() 
+        => new CreateNewObjects().CreateMainFolder(transform)
+                                 .CreateBranch()
+                                 .CreateNode();
+    
     //Events
     private Action<IOnStart> OnStart { get; set; }
     private Action<ISetUpStartBranches> SetUpBranchesAtStart { get; set; }
@@ -81,14 +88,7 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         ObserveEvents();
     }
 
-    private void OnDisable()
-    {
-        _historyTrack.OnDisable();
-        _homeGroup.OnDisable();
-        _audioService.OnDisable();
-        _cancelHandler.OnDisable();
-        RemoveEvents();
-    }
+    private void OnDisable() => _audioService.OnDisable();
 
     public void FetchEvents()
     {
@@ -109,13 +109,6 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         EVent.Do.Subscribe<IHighlightedNode>(SetLastHighlighted);
         EVent.Do.Subscribe<IInMenu>(SaveInMenu);
         EVent.Do.Subscribe<IAllowKeys>(SwitchedToKeys);
-    }
-
-    public void RemoveEvents()
-    {
-        EVent.Do.Unsubscribe<IHighlightedNode>(SetLastHighlighted);
-        EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
-       // EVent.Do.Unsubscribe<IAllowKeys>(SwitchedToKeys);
     }
 
     private void Start() => StartCoroutine(StartUIDelay());
@@ -180,41 +173,6 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
     private static void SetEventSystem(GameObject newGameObject) 
         => EventSystem.current.SetSelectedGameObject(newGameObject);
     
-    [Button("Add a New Branch")]
-    // ReSharper disable once UnusedMember.Local
-    private void MakeFolder()
-    {
-        var newTree = CreateMainFolder();
-        var newBranch = CreateNewBranch(newTree);
-        CreateFirstNode(newBranch);
-    }
-
-    private static void CreateFirstNode(GameObject newBranch)
-    {
-        var newNode = new GameObject();
-        newNode.transform.parent = newBranch.transform;
-        newNode.name = "New Node";
-        newNode.AddComponent<UINode>();
-    }
-
-    private static GameObject CreateNewBranch(GameObject newTree)
-    {
-        var newBranch = new GameObject();
-        newBranch.transform.parent = newTree.transform;
-        newBranch.name = "New Branch";
-        newBranch.AddComponent<UIBranch>();
-        return newBranch;
-    }
-
-    private GameObject CreateMainFolder()
-    {
-        var newTree = new GameObject();
-        newTree.transform.parent = transform;
-        newTree.name = "New Tree Folder";
-        newTree.AddComponent<RectTransform>();
-        return newTree;
-    }
-
     /// <summary>
     /// Used by UnityEvent in Inspector
     /// </summary>

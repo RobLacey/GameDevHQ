@@ -1,9 +1,7 @@
 ﻿using System.Collections;
-using UnityEngine;
 
 public class EVentBindings : IEVentBindings
 {
-    private bool _autoRemoveEVent;
     
     public EVentBindings(ISetNewEVent setNewEVentHandler)
     {
@@ -11,25 +9,10 @@ public class EVentBindings : IEVentBindings
         setNewEVentHandler.SetUpEVentHandler((IEVentBase) setNewEVentHandler, Events);
     }
     
+    //Variables
+    private bool _autoRemoveEVent;
     public Hashtable Events { get; } = new Hashtable();
-
-    /// <summary>
-    /// Means on scene change all EVents are automatically unsubscribed
-    /// </summary>
-    /// <returns></returns>
-    private EVentBindings AutoRemove()
-    {
-        _autoRemoveEVent = true;
-        return this;
-    }
     
-    public void CreateEvent<TType>()
-    {
-        Events.Add(typeof(TType), _autoRemoveEVent ? new CustomEVent<TType>().AutoRemove() 
-                                                   : new CustomEVent<TType>());
-        _autoRemoveEVent = false;
-    }
-
     public void BindAllObjects()
     {
         //PopUps
@@ -41,42 +24,59 @@ public class EVentBindings : IEVentBindings
         
         //History
         AutoRemove().CreateEvent<IReturnToHome>();
-        CreateEvent<IOnHomeScreen>();
-        CreateEvent<IOnStart>();
-        CreateEvent<IGameIsPaused>();
-        CreateEvent<IInMenu>();
-        CreateEvent<ISceneChange>();// Doesn't Clear until exit
+        AutoRemove().CreateEvent<IOnHomeScreen>();
+        AutoRemove().CreateEvent<IOnStart>();
+        AutoRemove().CreateEvent<IGameIsPaused>();
+        AutoRemove().CreateEvent<IInMenu>();
+        AutoRemove().CreateEvent<ISceneChange>();// Doesn't Clear until exit
         
         //Input
         AutoRemove().CreateEvent<IPausePressed>();
         AutoRemove().CreateEvent<ISwitchGroupPressed>();
-        CreateEvent<IHotKeyPressed>();
-        CreateEvent<IMenuGameSwitchingPressed>();
+        AutoRemove().CreateEvent<IHotKeyPressed>();
+        AutoRemove().CreateEvent<IMenuGameSwitchingPressed>();
         
         //ChangeControl
         AutoRemove().CreateEvent<IAllowKeys>();
         AutoRemove().CreateEvent<IChangeControlsPressed>();
         
         //Cancel
-        CreateEvent<ICancelHoverOverButton>();
+        AutoRemove().CreateEvent<ICancelHoverOverButton>();
         AutoRemove().CreateEvent<ICancelPressed>();
-        CreateEvent<ICancelButtonActivated>();
-        CreateEvent<ICancelPopUp>();
-        CreateEvent<ICancelHoverOver>();
+        AutoRemove().CreateEvent<ICancelButtonActivated>();
+        AutoRemove().CreateEvent<ICancelPopUp>();
+        AutoRemove().CreateEvent<ICancelHoverOver>();
         
         // //Node
-        CreateEvent<IHighlightedNode>();
-        CreateEvent<ISelectedNode>();
-        CreateEvent<IDisabledNode>();
+        AutoRemove().CreateEvent<IHighlightedNode>();
+        AutoRemove().CreateEvent<ISelectedNode>();
+        AutoRemove().CreateEvent<IDisabledNode>();
         
         //Branch
-        CreateEvent<IActiveBranch>();
-        CreateEvent<IClearScreen>();
-        CreateEvent<ISetUpStartBranches>();
-        CreateEvent<IEndTween>();
+        AutoRemove().CreateEvent<IActiveBranch>();
+        AutoRemove().CreateEvent<IClearScreen>();
+        AutoRemove().CreateEvent<ISetUpStartBranches>();
+        AutoRemove().CreateEvent<IEndTween>();
         
         //Test
-        CreateEvent<ITestList>();
+        AutoRemove().CreateEvent<ITestList>();
     }
+    
+    public void CreateEvent<TType>()
+    {
+        Events.Add(typeof(TType), _autoRemoveEVent ? new CustomEVent<TType>().AutoRemove() 
+                                                   : new CustomEVent<TType>());
+        _autoRemoveEVent = false;
+    }
+    
+    /// <summary>
+    /// Means on scene change all EVents are automatically unsubscribed
+    /// </summary>
+    /// <returns></returns>
 
+    private EVentBindings AutoRemove()
+    {
+        _autoRemoveEVent = true;
+        return this;
+    }
 }

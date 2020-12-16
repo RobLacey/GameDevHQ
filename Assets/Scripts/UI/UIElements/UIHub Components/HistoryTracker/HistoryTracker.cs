@@ -63,20 +63,15 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         ObserveEvents();
         PopUpHistory.OnEnable();
     }
-
-    public void OnDisable()
-    {
-        RemoveEvents();
-        PopUpHistory.OnDisable();
-    }
     
+    public void OnDisable() { }
+   
     public void FetchEvents()
     {
         ReturnHome = EVent.Do.Fetch<IReturnToHome>();
         CancelHoverToActivate = EVent.Do.Fetch<ICancelHoverOverButton>();
         DoAddANode = EVent.Do.Fetch<ITestList>();
     }
-
 
     public void ObserveEvents()
     {
@@ -91,21 +86,6 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         EVent.Do.Subscribe<IInMenu>(SwitchToGame);
         EVent.Do.Subscribe<ICancelPopUp>(CancelPopUpFromButton);
         EVent.Do.Subscribe<ISelectedNode>(SetSelected);
-    }
-
-    public void RemoveEvents()
-    {
-        EVent.Do.Unsubscribe<IOnStart>(SetCanStart);
-        EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
-        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomScreen);
-        EVent.Do.Unsubscribe<IGameIsPaused>(SaveIsGamePaused);
-       // EVent.Do.Unsubscribe<INoPopUps>(NoPopUps);
-        EVent.Do.Unsubscribe<IHotKeyPressed>(SetFromHotkey);
-        EVent.Do.Unsubscribe<IDisabledNode>(CloseNodesAfterDisabledNode);
-       // EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchGroupPressed);
-        EVent.Do.Unsubscribe<IInMenu>(SwitchToGame);
-        EVent.Do.Unsubscribe<ICancelPopUp>(CancelPopUpFromButton);
-        EVent.Do.Unsubscribe<ISelectedNode>(SetSelected);
     }
 
     private void SetCanStart(IOnStart onStart) => _canStart = true;

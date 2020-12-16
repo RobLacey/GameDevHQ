@@ -13,6 +13,8 @@ public partial class UIBranch
         return _branchType == BranchType.OptionalPopUp
                || _branchType == BranchType.ResolvePopUp;
     }
+
+    public bool IsControlBar() => _branchType == BranchType.ControlBar;
     public bool IsPauseMenuBranch() => _branchType == BranchType.PauseMenu;
     public bool IsInternalBranch() => _branchType == BranchType.Internal;
     public bool IsHomeScreenBranch() => _branchType == BranchType.HomeScreen;

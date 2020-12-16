@@ -8,6 +8,7 @@ public interface IStartPopUp
 
 public interface IBranch : IParameters, IAutoOpenCloseData
 {
+    bool IsControlBar();
     bool IsPauseMenuBranch();
     bool IsAPopUpBranch();
     bool IsInternalBranch();
@@ -51,7 +52,6 @@ public interface IBranch : IParameters, IAutoOpenCloseData
 public interface IAutoOpenClose
 {
     void OnEnable();
-    void OnDisable();
     bool CanAutoClose();
     bool CanAutoOpen();
     void OnPointerEnter();

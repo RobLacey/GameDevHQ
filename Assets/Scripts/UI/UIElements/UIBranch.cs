@@ -25,7 +25,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [Label("Start On (Optional)")] 
     private UINode _startOnThisNode;
     [SerializeField] 
-    [HideIf("IsAPopUpEditor")] [Label("Auto Open/Close")]
+    [HideIf(EConditionOperator.Or, "IsControlBar", "IsAPopUpEditor")] [Label("Auto Open/Close")]
     private AutoOpenClose _autoOpenClose = AutoOpenClose.No;
     [SerializeField] 
     [ShowIf("IsStandardBranch")]
@@ -33,10 +33,10 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [SerializeField] 
     [ShowIf("IsTimedPopUp")] private float _timer = 1f;
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "IsOptional", "IsTimedPopUp", "IsHomeScreenBranch")]
+    [HideIf(EConditionOperator.Or, "IsOptional", "IsTimedPopUp", "IsHomeScreenBranch", "IsControlBar")]
     private ScreenType _screenType = ScreenType.FullScreen;
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "IsAPopUpEditor", "IsFullScreen")] 
+    [HideIf(EConditionOperator.Or, "IsAPopUpEditor", "IsFullScreen", "IsControlBar")] 
     private IsActive _stayVisible = IsActive.No;
     [SerializeField] 
     [ShowIf("IsOptional")] private StoreAndRestorePopUps _storeOrResetOptional = StoreAndRestorePopUps.Reset;
@@ -57,6 +57,13 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [SerializeField] 
     [Header("Events")][HorizontalLine(1f, EColor.Blue, order = 1)] 
     private BranchEvents _branchEvents;
+
+    [Button("Create Node")]
+    private void CreateNode() => new CreateNewObjects().CreateNode(transform);
+
+    [Button("Create Branch")]
+    private void CreateBranch() => new CreateNewObjects().CreateBranch(transform.parent)
+                                                         .CreateNode();
 
     //Variables
     private UITweener _uiTweener;
@@ -160,13 +167,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         AutoOpenCloseClass.OnEnable();
     }
 
-    private void OnDisable()
-    {
-        AutoOpenCloseClass.OnDisable();
-        RemoveEvents();
-        _branchTypeClass.OnDisable();
-    }
-
     public void FetchEvents() => SetActiveBranch = EVent.Do.Fetch<IActiveBranch>();
 
     public void ObserveEvents()
@@ -177,17 +177,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
     }
 
-    public void RemoveEvents()
-    {
-       // EVent.Do.Unsubscribe<ISwitchGroupPressed>(SwitchBranchGroup);
-        EVent.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Unsubscribe<ISelectedNode>(SaveSelected);
-        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
-    }
-    
     public void MoveToThisBranch(IBranch newParentBranch = null)
     {
-        Debug.Log(this);
         _branchTypeClass.SetUpBranch(newParentBranch);
         if (_canActivateBranch) SetAsActiveBranch();
         

@@ -89,14 +89,6 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         ObserveEvents();
     }
 
-    private void OnDisable()
-    {
-        ShutDownHotKeys();
-        _changeControl.OnDisable();
-        _menuToGameSwitching.OnDisable();
-        RemoveEvents();
-    }
-
     public void UseEServLocator() => _historyTrack = EServ.Locator.Get<IHistoryTrack>(this);
 
     private void SetUpHotKeys()
@@ -109,15 +101,6 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         }
     }
     
-    private void ShutDownHotKeys()
-    {
-        if (_hotKeySettings.Count == 0) return;
-        foreach (var hotKey in _hotKeySettings)
-        {
-            hotKey.OnDisable();
-        }
-    }
-
     public void FetchEvents()
     {
         OnPausedPressed = EVent.Do.Fetch<IPausePressed>();
@@ -136,17 +119,6 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         EVent.Do.Subscribe<IInMenu>(SaveInMenu);
         EVent.Do.Subscribe<INoPopUps>(SaveNoActivePopUps);
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
-    }
-
-    public void RemoveEvents()
-    {
-        EVent.Do.Unsubscribe<IGameIsPaused>(SaveGameIsPaused);
-        EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
-        EVent.Do.Unsubscribe<IOnStart>(SaveOnStart);
-        EVent.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
-        EVent.Do.Unsubscribe<IInMenu>(SaveInMenu);
-       // EVent.Do.Unsubscribe<INoPopUps>(SaveNoActivePopUps);
-       // EVent.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
     }
 
     private void Update()

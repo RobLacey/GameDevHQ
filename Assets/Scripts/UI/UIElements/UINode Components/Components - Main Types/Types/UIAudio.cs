@@ -35,12 +35,6 @@ public class UIAudio : NodeFunctionBase, IEServUser
         EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
     }
 
-    public override void RemoveEvents()
-    {
-        base.RemoveEvents();
-        EVent.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
-    }
-
     protected override bool CanBeHighlighted() => !UsingScheme() ? false : _audioScheme.HighlightedClip;
 
     protected override bool CanBePressed() => !UsingScheme() ? false : _audioScheme.SelectedClip;

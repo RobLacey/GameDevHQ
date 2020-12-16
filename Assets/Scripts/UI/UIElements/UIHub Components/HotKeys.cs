@@ -37,14 +37,10 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
         ObserveEvents();
     }
 
-    public void OnDisable() => RemoveEvents();
-
     public void FetchEvents() => HotKeyPressed = EVent.Do.Fetch<IHotKeyPressed>();
 
     public void ObserveEvents() => EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
     
-    public void RemoveEvents()  => EVent.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
-
     private void IsAllowedType()
     {
         if (_myBranch.IsAPopUpBranch())

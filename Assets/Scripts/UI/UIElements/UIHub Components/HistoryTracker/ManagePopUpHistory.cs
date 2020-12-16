@@ -4,7 +4,6 @@ using UnityEngine;
 public interface IManagePopUpHistory
 {
     void OnEnable();
-    void OnDisable();
     IManagePopUpHistory IsGamePaused(bool isPaused);
     IManagePopUpHistory NoPopUpAction(Action noPopUpAction);
     void DoPopUpCheckAndHandle();
@@ -34,16 +33,7 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
         _popUpController.OnEnable();
     }
 
-    public void OnDisable()
-    {
-        RemoveEvents();
-        _popUpController.OnDisable();
-    }
-
     public void ObserveEvents() => EVent.Do.Subscribe<INoPopUps>(ActivePopUps);
-
-    public void RemoveEvents() { }
-    // public void RemoveEvents() => EVent.Do.Unsubscribe<INoPopUps>(ActivePopUps);
 
     public IManagePopUpHistory IsGamePaused(bool isPaused)
     {

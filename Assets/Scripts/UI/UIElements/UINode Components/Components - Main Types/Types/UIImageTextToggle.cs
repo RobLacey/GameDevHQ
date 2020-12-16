@@ -40,13 +40,6 @@ public class UIImageTextToggle : NodeFunctionBase
         EVent.Do.Subscribe<IAllowKeys>(OnControlsChanged);
     }
 
-    public override void RemoveEvents()
-    {
-        base.RemoveEvents();
-        Debug.Log("Remove");
-        //EVent.Do.Unsubscribe<IAllowKeys>(OnControlsChanged);
-    }
-
     private bool CacheAndCheckForStartingUIElements()
     {
         if (_textToSwap)

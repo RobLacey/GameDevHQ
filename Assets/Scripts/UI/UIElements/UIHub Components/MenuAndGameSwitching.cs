@@ -5,7 +5,6 @@ using UnityEngine;
 public interface IMenuAndGameSwitching : IEventUser
 {
     void OnEnable();
-    void OnDisable();
 }
 
 public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispatcher
@@ -40,8 +39,6 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispat
         ObserveEvents();
     }
 
-    public void OnDisable() => RemoveEvents();
-
     public void FetchEvents() => IsInMenu = EVent.Do.Fetch<IInMenu>();
 
     public void ObserveEvents()
@@ -50,14 +47,6 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispat
         EVent.Do.Subscribe<IGameIsPaused>(WhenTheGameIsPaused);
         EVent.Do.Subscribe<IOnStart>(StartUp);
         EVent.Do.Subscribe<INoPopUps>(SaveNoPopUps);
-    }
-
-    public void RemoveEvents()
-    {
-        EVent.Do.Unsubscribe<IMenuGameSwitchingPressed>(CheckForActivation);
-        EVent.Do.Unsubscribe<IGameIsPaused>(WhenTheGameIsPaused);
-        EVent.Do.Unsubscribe<IOnStart>(StartUp);
-        //EVent.Do.Unsubscribe<INoPopUps>(SaveNoPopUps);
     }
 
     private void CheckForActivation(IMenuGameSwitchingPressed arg)

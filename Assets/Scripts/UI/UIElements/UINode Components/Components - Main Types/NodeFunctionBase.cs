@@ -31,12 +31,9 @@ public abstract class NodeFunctionBase : IEventUser
         _uiEvents.IsPressed -= ProcessPress;
         _uiEvents.IsDisabled -= IsDisabled;
         _uiEvents.OnMove -= AxisMoveDirection;
-        RemoveEvents();
     }
 
     public virtual void ObserveEvents() { }
-
-    public virtual void RemoveEvents() { }
 
     protected abstract void SavePointerStatus(bool pointerOver);
 

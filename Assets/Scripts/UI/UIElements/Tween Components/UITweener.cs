@@ -62,15 +62,6 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
         }
     }
 
-    private void OnDisable()
-    {
-        if (_activeTweens is null) return;
-        foreach (var activeTween in _activeTweens)
-        {
-            activeTween.RemoveEvents();
-        }
-    }
-
     private void OnValidate() => _tweenInspector.CurrentScheme(_scheme)
                                                 .CurrentBuildList(_buildObjectsList)
                                                 .UpdateInspector();

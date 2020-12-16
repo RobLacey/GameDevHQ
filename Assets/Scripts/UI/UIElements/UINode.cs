@@ -103,8 +103,6 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     
     public void ObserveEvents() => EVent.Do.Subscribe<IOnStart>(CanStart);
 
-    public void RemoveEvents() => EVent.Do.Unsubscribe<IOnStart>(CanStart);
-
     private void OnEnable() => SetUpUiFunctions();
 
     private void SetUpUiFunctions()
@@ -126,8 +124,6 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
         {
             nodeFunctionBase.OnDisable();
         }
-        _nodeBase.OnDisable();
-        RemoveEvents();
     }
 
     private void Start()
