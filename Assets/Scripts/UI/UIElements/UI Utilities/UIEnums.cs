@@ -101,5 +101,6 @@ public enum AutoOpenClose { No, Open, Close, Both }
 
 public enum StoreAndRestorePopUps { StoreAndRestore, Reset }
 
+public enum OrderInCanvas { InFront, Behind, Manual, Default }
 
 

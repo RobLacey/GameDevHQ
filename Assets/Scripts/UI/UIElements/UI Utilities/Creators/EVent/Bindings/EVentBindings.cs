@@ -57,6 +57,7 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<IClearScreen>();
         AutoRemove().CreateEvent<ISetUpStartBranches>();
         AutoRemove().CreateEvent<IEndTween>();
+        AutoRemove().CreateEvent<IGetHomeBranches>();
         
         //Test
         AutoRemove().CreateEvent<ITestList>();

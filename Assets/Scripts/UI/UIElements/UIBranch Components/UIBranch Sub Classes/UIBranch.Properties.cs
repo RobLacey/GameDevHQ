@@ -14,7 +14,7 @@ public partial class UIBranch
                || _branchType == BranchType.ResolvePopUp;
     }
 
-    public bool IsControlBar() => _branchType == BranchType.ControlBar;
+    public bool IsControlBar() => _controlBar == IsActive.Yes;
     public bool IsPauseMenuBranch() => _branchType == BranchType.PauseMenu;
     public bool IsInternalBranch() => _branchType == BranchType.Internal;
     public bool IsHomeScreenBranch() => _branchType == BranchType.HomeScreen;
@@ -79,6 +79,7 @@ public partial class UIBranch
     public bool IsStored() =>
         _branchType == BranchType.OptionalPopUp && _storeOrResetOptional == StoreAndRestorePopUps.StoreAndRestore; 
 
+    public bool IsHomeAndNotControl() => _branchType == BranchType.HomeScreen && _controlBar == IsActive.No;
     public bool IsFullScreen()
     {
         if (_screenType != ScreenType.FullScreen) return false;

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _positionTween: 0
   _rotationTween: 0
-  _fadeTween: 3
-  _scaleTween: 0
+  _fadeTween: 0
+  _scaleTween: 3
   _punchTween: 1
   _shakeTween: 0
   _useGlobalTime: 1
@@ -32,13 +32,13 @@ MonoBehaviour:
     _easeIn: 1
     _easeOut: 1
   _scaleData:
-    _inTime: 0.1
-    _outTime: 0.1
+    _inTime: 1
+    _outTime: 1
     _easeIn: 1
     _easeOut: 1
   _fadeData:
-    _inTime: 0.2
-    _outTime: 0.2
+    _inTime: 0.5
+    _outTime: 0.5
     _easeIn: 1
     _easeOut: 1
   _shakeData:

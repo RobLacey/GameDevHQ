@@ -5,6 +5,45 @@ public static class BranchGroups
 {
     private static int groupIndex;
     private static int index;
+    
+    public static void AddControlBarToGroupList(List<GroupList> groupsList,
+                                                List<UIBranch> homeBranches,
+                                                IBranch myBranch)
+    {
+        if(myBranch.ScreenType != ScreenType.FullScreen) return;
+        
+        bool hasControlBar = homeBranches.Any(homeBranch => homeBranch.IsControlBar());
+        if(!hasControlBar) return;
+        
+        AddExistingNodesToGroupList(groupsList, myBranch);
+        AddControlBarAsNewGroup(groupsList, homeBranches);
+    }
+
+    private static void AddExistingNodesToGroupList(List<GroupList> groupsList, IBranch myBranch)
+    {
+        if (groupsList.Count == 0)
+            groupsList.Add(GroupList(myBranch));
+    }
+
+    private static void AddControlBarAsNewGroup(List<GroupList> groupsList, List<UIBranch> homeBranches)
+    {
+        foreach (var homeBranch in homeBranches.Where(homeBranch => homeBranch.IsControlBar()))
+        {
+            groupsList.Add(GroupList(homeBranch));
+            return;
+        }
+    }
+
+    private static GroupList GroupList(IBranch branch)
+    {
+        var newGroup = new GroupList
+        {
+            _startNode = (UINode) branch.DefaultStartOnThisNode,
+            _nodes = new UINode[branch.ThisGroupsUiNodes.Length]
+        };
+        newGroup._nodes = branch.ThisGroupsUiNodes.Cast<UINode>().ToArray();
+        return newGroup;
+    }
 
     public static int SetGroupIndex(INode defaultStartPosition, List<GroupList> branchGroupsList)
     {
@@ -12,7 +51,7 @@ public static class BranchGroups
         index = 0;
         foreach (var branchGroup in branchGroupsList)
         {
-            if (branchGroup._nodes.Any(node => ReferenceEquals(node, defaultStartPosition))) //TODO check this works
+            if (branchGroup._nodes.Any(node => ReferenceEquals(node, defaultStartPosition)))
             {
                 groupIndex = index;
                 return groupIndex;

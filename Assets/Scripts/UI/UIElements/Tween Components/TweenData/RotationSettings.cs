@@ -23,6 +23,8 @@ public class RotationSettings
 
     public void SetUpTween(TweenStyle rotationTween)
     {
+        if(_element is null) return;
+        
         if (rotationTween != TweenStyle.NoTween)
         {
             RotationTween = true;

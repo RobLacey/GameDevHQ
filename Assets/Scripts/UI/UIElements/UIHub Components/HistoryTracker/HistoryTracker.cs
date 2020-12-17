@@ -115,7 +115,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
 
     private void SwitchToGame(IInMenu args)
     {
-        if (args.InTheMenu && _canStart)
+        if (!args.InTheMenu && _canStart)
         {
             BackToHome();
         }

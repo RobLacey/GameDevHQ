@@ -23,14 +23,13 @@ public class StandardBranch : BranchBase, IStandardBranch
         if (_myBranch.CanvasIsEnabled)
             _myBranch.DoNotTween();
         
-        if(_myBranch.BlockOtherNode == IsActive.Yes || _myBranch.ScreenType == ScreenType.FullScreen)
-            _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.Yes);
-
         SetCanvas(ActiveCanvas.Yes);
-        
         CanGoToFullscreen();
         _myBranch.SetHighlightedNode();
         SetNewParentBranch(newParentController);
+        
+        if(_myBranch.BlockOtherNode == IsActive.Yes || _myBranch.ScreenType == ScreenType.FullScreen)
+            _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.Yes);
     }
 
     protected override void ClearBranchForFullscreen(IClearScreen args)

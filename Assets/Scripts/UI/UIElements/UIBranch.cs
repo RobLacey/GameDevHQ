@@ -4,8 +4,16 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
+using Unity.Mathematics;
 using UnityEngine.EventSystems;
 
+public interface ICanvasOrder
+{
+    OrderInCanvas CanvasOrder { get; }
+    int ManualCanvasOrder { get; }
+    Canvas MyCanvas { get; }
+    GameObject ThisBranchesGameObject { get; }
+}
 
 [RequireComponent(typeof(Canvas))]
 [RequireComponent(typeof(CanvasGroup))]
@@ -13,12 +21,30 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(GraphicRaycaster))]
 [RequireComponent(typeof(UITweener))]
 
+
 public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch, IBranch, IEventDispatcher,
-                                IPointerEnterHandler, IPointerExitHandler
+                                IPointerEnterHandler, IPointerExitHandler, IGetHomeBranches
 {
     [Header("Settings")] [HorizontalLine(1f, EColor.Blue, order = 1)]
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
+    [SerializeField] 
+    [ShowIf(EConditionOperator.Or, "IsHomeScreenBranch")] [Label("Is Control Bar")]
+    private IsActive _controlBar = IsActive.No;
+    
+    [SerializeField] 
+    [ShowIf("ManualOrder")] [OnValueChanged("SetUpCanvasOrder")] 
+    private int _orderInCanvas;
+    [SerializeField] [HideIf("IsHomeScreenBranch")] [OnValueChanged("SetUpCanvasOrder")] 
+    private OrderInCanvas _canvasOrderSetting = OrderInCanvas.Default;
+
+    private void SetUpCanvasOrder()
+    {
+        CanvasOrderCalculator.SetUpCanvasOrderAtStart(this);
+    }
+
+    private bool ManualOrder => _canvasOrderSetting == OrderInCanvas.Manual;
+    
     [SerializeField]
     [Label("Move To Next Branch...")] private WhenToMove _moveType = WhenToMove.Immediately;
     [SerializeField]
@@ -41,7 +67,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [SerializeField] 
     [ShowIf("IsOptional")] private StoreAndRestorePopUps _storeOrResetOptional = StoreAndRestorePopUps.Reset;
     [SerializeField] 
-    [ShowIf(EConditionOperator.Or, "IsHomeScreenBranch", "IsStored")] 
+    [ShowIf(EConditionOperator.Or, "IsHomeAndNotControl", "IsStored")] 
     [Label("On Return To Home Screen")]
     private DoTween _tweenOnHome = DoTween.Tween;
     [SerializeField] 
@@ -64,7 +90,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [Button("Create Branch")]
     private void CreateBranch() => new CreateNewObjects().CreateBranch(transform.parent)
                                                          .CreateNode();
-
+    
     //Variables
     private UITweener _uiTweener;
     private int _groupIndex;
@@ -85,6 +111,10 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         get => _blockOtherNodes;
         set => _blockOtherNodes = value;
     }
+
+    public List<UIBranch> HomeBranches { private get; set; }
+    public OrderInCanvas CanvasOrder => _canvasOrderSetting;
+    public int ManualCanvasOrder => _orderInCanvas;
 
     //Set / Getters
     private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
@@ -109,6 +139,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     public event Action OnStartPopUp; 
     private Action TweenFinishedCallBack { get; set; }
     private  Action<IActiveBranch> SetActiveBranch { get; set; }
+    private  Action<IGetHomeBranches> GetHomeBranches { get; set; }
 
     //Main
     private void Awake()
@@ -145,9 +176,17 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
             FindStartPosition();
         }
         
-        void FindStartPosition() 
-            => _startOnThisNode = transform.GetComponentsInChildren<UINode>().First();
     }
+
+    private void FindStartPosition()
+    {
+        var childNodes = transform.GetComponentsInChildren<UINode>();
+        
+        if (childNodes.Length == 0)
+            throw new Exception($"No child Nodes in {this}");
+        
+        _startOnThisNode = transform.GetComponentsInChildren<UINode>().First();
+    }    
 
     private void SetNodesChildrenToThisBranch()
     {
@@ -167,7 +206,11 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         AutoOpenCloseClass.OnEnable();
     }
 
-    public void FetchEvents() => SetActiveBranch = EVent.Do.Fetch<IActiveBranch>();
+    public void FetchEvents()
+    {
+        SetActiveBranch = EVent.Do.Fetch<IActiveBranch>();
+        GetHomeBranches = EVent.Do.Fetch<IGetHomeBranches>();
+    }
 
     public void ObserveEvents()
     {
@@ -177,9 +220,18 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
     }
 
+    private void Start() => CheckForControlBar();
+
+    private void CheckForControlBar()
+    {
+        GetHomeBranches?.Invoke(this);
+        BranchGroups.AddControlBarToGroupList(_groupsList, HomeBranches, this);
+    }
+
     public void MoveToThisBranch(IBranch newParentBranch = null)
     {
         _branchTypeClass.SetUpBranch(newParentBranch);
+        
         if (_canActivateBranch) SetAsActiveBranch();
         
         if (_tweenOnChange)
@@ -202,6 +254,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     {
         if (_canActivateBranch)
             LastHighlighted.SetNodeAsActive();
+
+        CanvasOrderCalculator.ResetCanvasOrder(this, MyCanvas);
 
         _branchTypeClass.SetBlockRaycast(BlockRaycast.Yes);
         _branchEvents.OnBranchEnter();
@@ -243,7 +297,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         if(_stayVisible == IsActive.No || outTweenType == OutTweenType.Cancel)
             _branchTypeClass.SetCanvas(ActiveCanvas.No);
         
-        if(!IsPauseMenuBranch())
+        if(!IsPauseMenuBranch()) 
         {
             _branchTypeClass.ActivateStoredPosition();
         }        

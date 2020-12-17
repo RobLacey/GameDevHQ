@@ -6,7 +6,7 @@ public interface IStartPopUp
     void StartPopUp();
 }
 
-public interface IBranch : IParameters, IAutoOpenCloseData
+public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
 {
     bool IsControlBar();
     bool IsPauseMenuBranch();

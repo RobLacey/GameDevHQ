@@ -94,6 +94,8 @@ public class MoveBackInHistory : IMoveBackInHistory
 
     private static void DoMoveBackOneLevel(INode lastNode, IBranch activeBranch)
     {
+        CanvasOrderCalculator.SetCanvasOrder(activeBranch, lastNode.MyBranch);
+
         if (lastNode.MyBranch.CanvasIsEnabled)
         {
             activeBranch.StartBranchExitProcess(OutTweenType.Cancel, NoTween);
@@ -109,6 +111,7 @@ public class MoveBackInHistory : IMoveBackInHistory
 
         void NoTween()
         {
+            CanvasOrderCalculator.ResetCanvasOrder(activeBranch, activeBranch.MyCanvas);
             lastNode.DeactivateNode();
             lastNode.MyBranch.DoNotTween();
             lastNode.MyBranch.MoveToThisBranch();

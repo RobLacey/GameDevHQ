@@ -1,14 +1,15 @@
-﻿using UnityEngine;
-
+﻿
 public interface IHomeScreenBranch : IBranchBase { }
 
 public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 {
-    private bool _startBranch;
     public HomeScreenBranch(IBranch branch) : base(branch) { }
+    
+    private bool _startBranch;
     
     //Properties
     private bool CannotTweenOnHome => _myBranch.TweenOnHome == DoTween.DoNothing;
+    private bool IsControlBar => _myBranch.IsControlBar();
     
     //Main
     protected override void SaveInMenu(IInMenu args)
@@ -73,7 +74,36 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
     public override void SetBlockRaycast(BlockRaycast active)
     {
         if(_resolvePopUps) return;
-        base.SetBlockRaycast(active);
+        if(!_gameIsPaused)
+        {
+            base.SetBlockRaycast(IsControlBar ? BlockRaycast.Yes: active);
+        }
+        else
+        {
+            base.SetBlockRaycast(active);
+        }
+    }
+    
+    public override void SetCanvas(ActiveCanvas active)
+    {
+        if(!_gameIsPaused)
+        {
+            base.SetCanvas(IsControlBar ? ActiveCanvas.Yes : active);
+        }
+        else
+        {
+            base.SetCanvas(active);
+        }
+    }
+
+    public override void ActivateStoredPosition()
+    {
+        if (MyScreenType != ScreenType.FullScreen && _myBranch.IsControlBar())
+        {
+            InvokeOnHomeScreen(true);
+            return;
+        }
+        base.ActivateStoredPosition();
     }
 }
 

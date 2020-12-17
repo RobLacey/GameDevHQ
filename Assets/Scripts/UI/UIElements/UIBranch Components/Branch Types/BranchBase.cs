@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public interface IBranchBase : IParameters
 {
@@ -101,7 +100,6 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
     public virtual void SetBlockRaycast(BlockRaycast active)
     {
         if(!_canStart) return;
-        Debug.Log(_myBranch + " : " + active);
         _myCanvasGroup.blocksRaycasts = active == BlockRaycast.Yes && _inMenu;
     }
 
@@ -115,12 +113,11 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
     protected void CanGoToFullscreen()
     {
         if (MyScreenType != ScreenType.FullScreen || !OnHomeScreen) return;
-        _screenData.WasOnHomeScreen = true;
         InvokeDoClearScreen();
         InvokeOnHomeScreen(false);
     }
     
-    public void ActivateStoredPosition()
+    public virtual void ActivateStoredPosition()
     {
         _screenData.RestoreScreen();
         if (_screenData.WasOnHomeScreen)

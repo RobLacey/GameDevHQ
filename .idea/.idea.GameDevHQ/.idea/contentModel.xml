@@ -400,7 +400,6 @@
                 <e p="Branch Types" t="Include">
                   <e p="BranchBase.cs" t="Include" />
                   <e p="Types" t="Include">
-                    <e p="ControlBar.cs" t="Include" />
                     <e p="HomeScreenBranch.cs" t="Include" />
                     <e p="OptionalPopUp.cs" t="Include" />
                     <e p="PauseMenu.cs" t="Include" />
@@ -411,6 +410,7 @@
                 </e>
                 <e p="BranchUtilityClasses" t="Include">
                   <e p="BranchGroups.cs" t="Include" />
+                  <e p="CanvasOrderCalculator.cs" t="Include" />
                   <e p="GroupList.cs" t="Include" />
                   <e p="NodeSearch.cs" t="Include" />
                   <e p="ScreenData.cs" t="Include" />

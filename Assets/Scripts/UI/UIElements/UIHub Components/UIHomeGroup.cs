@@ -19,7 +19,7 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
 
         foreach (var branch in _homeGroup)
         {
-            if(!branch.IsHomeScreenBranch() && !branch.IsControlBar())
+            if(!branch.IsHomeScreenBranch())
                 throw new Exception(
                     $"{branch.ThisBranchesGameObject.name} isn't a Home Screen or Control Bar branch");
         }

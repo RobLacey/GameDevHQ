@@ -27,6 +27,8 @@ public class ScaleSettings
 
     public void SetUpTween(TweenStyle scaleTween)
     {
+        if(_element is null) return;
+
         if (scaleTween != TweenStyle.NoTween)
         {
             DoScaleTween = true;

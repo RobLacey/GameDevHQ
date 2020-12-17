@@ -1,4 +1,7 @@
-﻿public interface IReturnToHome // This one is test
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+public interface IReturnToHome // This one is test
 {
     ActivateNodeOnReturnHome ActivateOnReturnHome { get; }
 } 
@@ -119,6 +122,16 @@ public interface IDisabledNode
 
 public interface ISceneChange { }
 
+public interface IEndTween
+{
+    RectTransform EndTweenRect { get; }
+    TweenScheme Scheme { get; }
+}
+
+public interface IGetHomeBranches
+{
+    List<UIBranch> HomeBranches { set; }
+}
 
 
 

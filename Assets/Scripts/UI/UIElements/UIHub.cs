@@ -55,15 +55,19 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
     private ICancel _cancelHandler;
 
     //Properties
+    public IBranch StartBranch => _homeBranches.First();
+    public GameObject ThisGameObject => gameObject;
+    public IBranch[] HomeBranches => _homeBranches.ToArray<IBranch>();
+    public InputScheme Scheme => _inputScheme;
+    
+    //Set / Getters
     private void SaveInMenu(IInMenu args)
     {
         _inMenu = args.InTheMenu;
         if(!_inMenu) SetEventSystem(null);
     }
-    public IBranch StartBranch => _homeBranches.First();
-    public GameObject ThisGameObject => gameObject;
-    public IBranch[] HomeBranches => _homeBranches.ToArray<IBranch>();
-    public InputScheme Scheme => _inputScheme;
+
+    private void ReturnHomeBranches(IGetHomeBranches args) => args.HomeBranches = _homeBranches;
 
     //Main
     private void Awake()
@@ -76,7 +80,6 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         _audioService = EJect.Class.WithParams<IAudioService>(this);
         _homeGroup = EJect.Class.WithParams<IHomeGroup>(this);
     }
-
 
     private void OnEnable()
     {
@@ -109,6 +112,7 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         EVent.Do.Subscribe<IHighlightedNode>(SetLastHighlighted);
         EVent.Do.Subscribe<IInMenu>(SaveInMenu);
         EVent.Do.Subscribe<IAllowKeys>(SwitchedToKeys);
+        EVent.Do.Subscribe<IGetHomeBranches>(ReturnHomeBranches);
     }
 
     private void Start() => StartCoroutine(StartUIDelay());

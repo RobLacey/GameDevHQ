@@ -50,11 +50,6 @@
                 CreateInternal(_branch);
                 return ieJect.WithParams<IStandardBranch>(_branch);
             }
-            case BranchType.ControlBar:
-            {
-                CreateControlBarBranch(_branch);
-                return ieJect.WithParams<IControlBar>(_branch);
-            }
         }
 
         return null;
@@ -65,6 +60,12 @@
         branch.ScreenType = ScreenType.Normal;
         branch.EscapeKeyType = EscapeKey.None;
         branch.BlockOtherNode = IsActive.No;
+
+        if (!branch.IsControlBar()) return;
+        
+        branch.SetStayOn = IsActive.No;
+        branch.AutoOpenClose = AutoOpenClose.No;
+        branch.TweenOnHome = DoTween.DoNothing;
     }
 
     private static void CreateStandardBranch(IBranch branch)
@@ -111,14 +112,5 @@
         branch.TweenOnHome = DoTween.DoNothing;
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.BlockOtherNode = IsActive.No;
-    }
-    private static void CreateControlBarBranch(IBranch branch)
-    {
-        branch.ScreenType = ScreenType.Normal;
-        branch.EscapeKeyType = EscapeKey.None;
-        branch.BlockOtherNode = IsActive.No;
-        branch.SetStayOn = IsActive.No;
-        branch.AutoOpenClose = AutoOpenClose.No;
-        branch.TweenOnHome = DoTween.DoNothing;
     }
 }

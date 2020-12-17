@@ -4,12 +4,6 @@ using System;
 using DG.Tweening;
 using NaughtyAttributes;
 
-public interface IEndTween
-{
-    RectTransform EndTweenRect { get; }
-    TweenScheme Scheme { get; }
-}
-
 public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
 {
     
