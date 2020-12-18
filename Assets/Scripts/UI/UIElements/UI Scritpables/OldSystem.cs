@@ -5,7 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "UIElements Schemes / New Input Scheme - Old", fileName = "Scheme - Old")]
 public class OldSystem : InputScheme
 {
-    [Header("Input Settings")] [HorizontalLine(1, color: EColor.Blue, order = 1)]
+    [Space(10f, order = 1)]
+    [Header("Input Settings", order = 2)] [HorizontalLine(1, color: EColor.Blue, order = 3)]
     [SerializeField] 
     [Label("Pause / Option Button")] [InputAxis]
     private string _pauseOptionButton;

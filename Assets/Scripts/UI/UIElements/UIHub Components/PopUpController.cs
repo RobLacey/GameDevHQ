@@ -23,6 +23,8 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
     public bool ActiveResolvePopUps => _activeResolvePopUps.Count > 0;
     private bool ActiveOptionalPopUps => _activeOptionalPopUps.Count > 0;
     public bool NoActivePopUps => _noPopUps;
+    public int ActiveResolvePopUpCount => _activeResolvePopUps.Count;
+    public int ActiveOptionalPopUpCount => _activeOptionalPopUps.Count;
     
     //Events
     private Action<INoResolvePopUp> NoResolvePopUps { get; set; }
@@ -128,7 +130,6 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
         popUpList.Add(newPopUp);
         _noPopUps = false;
         NoPopUps?.Invoke(this);
-        
     }
 
     private static void RemoveFromActivePopUpList(List<IBranch> popUpList, 

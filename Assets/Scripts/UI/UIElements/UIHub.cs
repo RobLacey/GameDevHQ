@@ -32,6 +32,10 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
     [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")]
     private List<UIBranch> _homeBranches;
 
+    [SerializeField] private int _pauseMenuCanvasOrder = 10;
+    [SerializeField] private int _toolTipCanvasOrder = 20;
+    [SerializeField] private int _popUpCanvasOrder = 5;
+
     //Editor
     [Button("Add a New Tree Structure")]
     private void MakeFolder() 
@@ -59,13 +63,22 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
     public GameObject ThisGameObject => gameObject;
     public IBranch[] HomeBranches => _homeBranches.ToArray<IBranch>();
     public InputScheme Scheme => _inputScheme;
-    
+
     //Set / Getters
     private void SaveInMenu(IInMenu args)
     {
         _inMenu = args.InTheMenu;
         if(!_inMenu) SetEventSystem(null);
     }
+
+    private void ReturnPauseCanvasOrder(IPauseCanvasOrder args) 
+        => args.PauseMenuCanvasOrder = _pauseMenuCanvasOrder;
+    
+    private void ReturnToolTipCanvasOrder(IToolTipCanvasOrder args) 
+        => args.ToolTipCanvasOrder = _toolTipCanvasOrder;
+    
+    private void ReturnPopUpCanvasOrder(IPopUpCanvasOrder args) 
+        => args.PopUpCanvasOrder = _popUpCanvasOrder;
 
     private void ReturnHomeBranches(IGetHomeBranches args) => args.HomeBranches = _homeBranches;
 
@@ -113,6 +126,9 @@ public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnSt
         EVent.Do.Subscribe<IInMenu>(SaveInMenu);
         EVent.Do.Subscribe<IAllowKeys>(SwitchedToKeys);
         EVent.Do.Subscribe<IGetHomeBranches>(ReturnHomeBranches);
+        EVent.Do.Subscribe<IPauseCanvasOrder>(ReturnPauseCanvasOrder);
+        EVent.Do.Subscribe<IToolTipCanvasOrder>(ReturnToolTipCanvasOrder);
+        EVent.Do.Subscribe<IPopUpCanvasOrder>(ReturnPopUpCanvasOrder);
     }
 
     private void Start() => StartCoroutine(StartUIDelay());

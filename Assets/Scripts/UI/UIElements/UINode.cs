@@ -132,6 +132,11 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
         StartNodeFactory();
         _nodeBase.OnEnable();
         _nodeBase.Start();
+        
+        foreach (var func in _activeFunctions)
+        {
+            func.Start();
+        }
     }
 
     private void SetChildParentBranch()

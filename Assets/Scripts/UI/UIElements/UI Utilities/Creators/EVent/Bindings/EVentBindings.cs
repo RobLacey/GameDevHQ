@@ -61,6 +61,11 @@ public class EVentBindings : IEVentBindings
         
         //Test
         AutoRemove().CreateEvent<ITestList>();
+        
+        //CanvasOrder
+        AutoRemove().CreateEvent<IPauseCanvasOrder>();
+        AutoRemove().CreateEvent<IToolTipCanvasOrder>();
+        AutoRemove().CreateEvent<IPopUpCanvasOrder>();
     }
     
     public void CreateEvent<TType>()

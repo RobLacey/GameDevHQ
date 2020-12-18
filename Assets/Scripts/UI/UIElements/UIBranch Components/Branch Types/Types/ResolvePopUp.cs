@@ -1,8 +1,9 @@
 ﻿using System;
+using UnityEngine;
 
 public interface IResolvePopUpBranch : IBranchBase { }
 
-public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolvePopUpBranch
+public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolvePopUpBranch, IPopUpCanvasOrder
 {
     public ResolvePopUp(IBranch branch) : base(branch)
     {
@@ -42,5 +43,16 @@ public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolveP
         SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
         AddResolvePopUp?.Invoke(this);
+    }
+
+    public int PopUpCanvasOrder { get; set; }
+    protected override void SetCanvasOrder()
+    {
+        
+    }
+
+    protected override int SetSortingOrder(Canvas currentCanvas, int index)
+    {
+        return 0;
     }
 }

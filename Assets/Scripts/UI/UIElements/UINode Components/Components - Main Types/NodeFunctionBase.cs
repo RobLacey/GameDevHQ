@@ -1,4 +1,5 @@
-﻿using UnityEngine.EventSystems;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public abstract class NodeFunctionBase : IEventUser
 {
@@ -34,6 +35,8 @@ public abstract class NodeFunctionBase : IEventUser
     }
 
     public virtual void ObserveEvents() { }
+
+    public virtual void Start() { }
 
     protected abstract void SavePointerStatus(bool pointerOver);
 

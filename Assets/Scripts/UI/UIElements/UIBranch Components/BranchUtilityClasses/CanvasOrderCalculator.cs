@@ -27,15 +27,6 @@ public class CanvasOrderCalculator
     {
         int oldBranchSortingOrder = oldBranch.MyCanvas.sortingOrder;
         
-        // if (oldBranch.CanvasOrder == default)
-        // {
-        //     oldBranchSortingOrder = 0;
-        // }
-        // else
-        // {
-        //     oldBranchSortingOrder = oldBranch.MyCanvas.sortingOrder;
-        // }
-        
         switch (newBranch.CanvasOrder)
         {
             case OrderInCanvas.InFront:
@@ -44,9 +35,9 @@ public class CanvasOrderCalculator
                 break;
             case OrderInCanvas.Behind:
                 newBranch.MyCanvas.sortingOrder = oldBranchSortingOrder - 1;
-                Debug.Log($"{newBranch} : {oldBranch} : {newBranch.MyCanvas.sortingOrder}");
                 break;
         }
+   //     Debug.Log($"{newBranch} : {newBranch.MyCanvas.sortingOrder} {oldBranch} : {oldBranch.MyCanvas.sortingOrder}");
     }
 
     public static void ResetCanvasOrder(ICanvasOrder branch, Canvas canvas)
@@ -68,5 +59,8 @@ public class CanvasOrderCalculator
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    //    Debug.Log($"{branch} : {canvas.sortingOrder}");
+
     }
+
 }

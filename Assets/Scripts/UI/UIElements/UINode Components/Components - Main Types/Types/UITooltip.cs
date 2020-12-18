@@ -16,7 +16,12 @@ public interface IToolTipData: IParameters
     ToolTipScheme Scheme { get; }
 }
 
-public class UITooltip : NodeFunctionBase, IToolTipData
+public interface IToolTipCanvasOrder
+{
+    int ToolTipCanvasOrder { set; }
+}
+
+public class UITooltip : NodeFunctionBase, IToolTipData, IToolTipCanvasOrder
 {
     public UITooltip(ITooltipSettings settings)
     {
@@ -30,7 +35,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
 
     //Variables
     private Vector2 _tooltipPos;
-    private Canvas[] _cachedCanvas;
+    private Canvas[] _cachedToolTipCanvasList;
     private Coroutine _coroutineStart, _coroutineActivate, _coroutineBuild;
     private bool _allowKeys;
     private float _buildDelay;
@@ -45,7 +50,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     public LayoutGroup[] ListOfTooltips { get; }
     public RectTransform[] ToolTipsRects { get; private set; }
     public Vector3[] MyCorners { get; } = new Vector3[4];
-
+    public int ToolTipCanvasOrder { private get; set; }
 
     //Set / Getters
     protected override bool CanBeHighlighted() => false;
@@ -99,6 +104,24 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
 
+    public override void Start()
+    {
+        base.Start();
+        SetToolTipCanvasOrder();
+    }
+
+    private void SetToolTipCanvasOrder()
+    {
+        EVent.Do.Fetch<IToolTipCanvasOrder>().Invoke(this);
+        foreach (var canvas in _cachedToolTipCanvasList)
+        {
+            canvas.enabled = true;
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = ToolTipCanvasOrder;
+            canvas.enabled = false;
+        }
+    }
+
     protected override void SavePointerStatus(bool pointerOver)
     {
         if(FunctionNotActive()) return;
@@ -128,13 +151,13 @@ public class UITooltip : NodeFunctionBase, IToolTipData
             _buildDelay = Scheme.BuildDelay;
         
         ToolTipsRects = new RectTransform[ListOfTooltips.Length];
-        _cachedCanvas = new Canvas[ListOfTooltips.Length];
+        _cachedToolTipCanvasList = new Canvas[ListOfTooltips.Length];
 
         for (int index = 0; index < ListOfTooltips.Length; index++)
         {
             ToolTipsRects[index] = ListOfTooltips[index].GetComponent<RectTransform>();
-            _cachedCanvas[index] = ListOfTooltips[index].GetComponent<Canvas>();
-            _cachedCanvas[index].enabled = false;
+            _cachedToolTipCanvasList[index] = ListOfTooltips[index].GetComponent<Canvas>();
+            _cachedToolTipCanvasList[index].enabled = false;
         }
     }
     
@@ -144,7 +167,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         StaticCoroutine.StopCoroutines(_coroutineStart);
         StaticCoroutine.StopCoroutines(_coroutineBuild);
         StaticCoroutine.StopCoroutines(_coroutineActivate);
-        _cachedCanvas[CurrentToolTipIndex].enabled = false;
+        _cachedToolTipCanvasList[CurrentToolTipIndex].enabled = false;
     }
     
     private IEnumerator StartToolTip()
@@ -163,10 +186,10 @@ public class UITooltip : NodeFunctionBase, IToolTipData
             if(toolTipIndex > 0)
             {
                 yield return FadeLastToolTipOut(toolTipIndex - 1).WaitForCompletion();
-                _cachedCanvas[toolTipIndex - 1].enabled = false;
+                _cachedToolTipCanvasList[toolTipIndex - 1].enabled = false;
             }
             CurrentToolTipIndex = toolTipIndex;
-            _cachedCanvas[toolTipIndex].enabled = true;
+            _cachedToolTipCanvasList[toolTipIndex].enabled = true;
             yield return FadeNextToolTipIn(toolTipIndex).WaitForCompletion();
         }
         yield return null;

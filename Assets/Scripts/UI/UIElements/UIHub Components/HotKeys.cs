@@ -61,9 +61,10 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
 
     private void HotKeyActivation()
     {    
-        Debug.Log($"{_activeBranch} : {_myBranch}");
         if(ReferenceEquals(_activeBranch, _myBranch)) return;
         
+        CanvasOrderCalculator.SetCanvasOrder(_activeBranch, MyBranch);
+
         if(!_hasParentNode)
         {
             GetParentNode();

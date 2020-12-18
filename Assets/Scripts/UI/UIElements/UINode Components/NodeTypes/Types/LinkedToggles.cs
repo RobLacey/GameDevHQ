@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public interface ILinkedToggles : INodeBase { }
 
@@ -8,29 +9,39 @@ public class LinkedToggles : NodeBase, ILinkedToggles
 {
     public LinkedToggles(INode node) : base(node)
     {
-        var toggleData = node.ToggleData;
-        _tabBranch = toggleData.ReturnTabBranch;
-        _hasATabBranch = _tabBranch != null;
-        _allNodes = _uiNode.MyBranch.ThisGroupsUiNodes.ToList();
-        _myToggleGroupId = toggleData.ReturnToggleId;
-        _startAsSelected = toggleData.StartAsSelected == IsActive.Yes;
-        
+        SetUpToggleData();
+        SetUpOtherVariables();
+        MyBranch.CanvasOrder = OrderInCanvas.InFront;
         SelectedToggle += SaveSelectedNode;
-        
-        _autoOpenDelay = _uiNode.AutoOpenDelay;
-        _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
         _delayTimer = EJect.Class.NoParams<IDelayTimer>();
     }
 
+    private void SetUpToggleData()
+    {
+        var toggleData = _uiNode.ToggleData;
+        _tabBranch = toggleData.ReturnTabBranch;
+        _myToggleGroupId = toggleData.ReturnToggleId;
+        _startAsSelected = toggleData.StartAsSelected == IsActive.Yes;
+    }
+
+    private void SetUpOtherVariables()
+    {
+        _hasATabBranch = _tabBranch != null;
+        _allNodes = _uiNode.MyBranch.ThisGroupsUiNodes.ToList();
+        _autoOpenDelay = _uiNode.AutoOpenDelay;
+        _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
+    }
+
     //Variables
-    private readonly List<INode> _allNodes;
+    private List<INode> _allNodes;
     private readonly List<INode> _toggleGroupMembers = new List<INode>();
-    private readonly UIBranch _tabBranch;
-    private readonly bool _hasATabBranch, _canAutoOpen;
+    private IBranch _tabBranch;
+    private bool _hasATabBranch;
+    private bool _canAutoOpen;
     private int _hasAGroupStartPoint;
-    private readonly ToggleGroup _myToggleGroupId;
+    private ToggleGroup _myToggleGroupId;
     private bool _startAsSelected;
-    private readonly float _autoOpenDelay;
+    private float _autoOpenDelay;
     private readonly IDelayTimer _delayTimer;
 
     //Events
@@ -140,6 +151,7 @@ public class LinkedToggles : NodeBase, ILinkedToggles
     {
         SetNodeAsNotSelected_NoEffects();
         if (!_hasATabBranch) return;
+       // CanvasOrderCalculator.SetCanvasOrder();
         _tabBranch.StartBranchExitProcess(OutTweenType.Cancel, callback);
     }
 

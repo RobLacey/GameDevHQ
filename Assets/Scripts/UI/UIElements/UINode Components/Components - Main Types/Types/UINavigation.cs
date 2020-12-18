@@ -98,7 +98,6 @@ public class UINavigation : NodeFunctionBase
         }
         void ToChildBranchProcess()
         {
-            CanvasOrderCalculator.ResetCanvasOrder(_activeBranch, _activeBranch.MyCanvas);
             moveToo.MoveToThisBranch(_myBranch);
         }
     }

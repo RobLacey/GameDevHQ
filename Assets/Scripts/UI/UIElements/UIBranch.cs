@@ -9,8 +9,8 @@ using UnityEngine.EventSystems;
 
 public interface ICanvasOrder
 {
-    OrderInCanvas CanvasOrder { get; }
-    int ManualCanvasOrder { get; }
+    OrderInCanvas CanvasOrder { get; set; }
+    int ManualCanvasOrder { get; set; }
     Canvas MyCanvas { get; }
     GameObject ThisBranchesGameObject { get; }
 }
@@ -113,8 +113,21 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     }
 
     public List<UIBranch> HomeBranches { private get; set; }
-    public OrderInCanvas CanvasOrder => _canvasOrderSetting;
-    public int ManualCanvasOrder => _orderInCanvas;
+    public OrderInCanvas CanvasOrder
+    {
+        get => _canvasOrderSetting;
+        set
+        {
+            _canvasOrderSetting = value;
+            SetUpCanvasOrder();
+        }
+    }
+
+    public int ManualCanvasOrder
+    {
+        get => _orderInCanvas;
+        set => _orderInCanvas = value;
+    }
 
     //Set / Getters
     private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
@@ -220,7 +233,11 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
     }
 
-    private void Start() => CheckForControlBar();
+    private void Start()
+    {
+        CheckForControlBar();
+        _branchTypeClass.OnStart();
+    }
 
     private void CheckForControlBar()
     {
@@ -254,8 +271,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     {
         if (_canActivateBranch)
             LastHighlighted.SetNodeAsActive();
-
-        CanvasOrderCalculator.ResetCanvasOrder(this, MyCanvas);
+        if(!IsAPopUpBranch() && !IsTimedPopUp())
+            CanvasOrderCalculator.ResetCanvasOrder(this, MyCanvas);
 
         _branchTypeClass.SetBlockRaycast(BlockRaycast.Yes);
         _branchEvents.OnBranchEnter();
@@ -302,6 +319,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
             _branchTypeClass.ActivateStoredPosition();
         }        
         TweenFinishedCallBack?.Invoke();
+        CanvasOrderCalculator.ResetCanvasOrder(this, MyCanvas);
     }
 
     private void SwitchBranchGroup(ISwitchGroupPressed args)

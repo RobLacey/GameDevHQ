@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Need To Make this a singleton or check thee is only one of these
@@ -6,12 +7,14 @@
 
 public interface IPauseBranch : IBranchBase { }
 
-public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch
+public interface IPauseCanvasOrder
 {
-    public PauseMenu(IBranch branch) : base(branch)
-    {
-        _allBranches = branch.FindAllBranches();
-    }
+    int PauseMenuCanvasOrder { set; }
+}
+
+public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch, IPauseCanvasOrder
+{
+    public PauseMenu(IBranch branch) : base(branch) => _allBranches = branch.FindAllBranches();
 
     //Variables
     private readonly IBranch[] _allBranches;
@@ -21,10 +24,10 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private bool WasInGame() => !_screenData.WasOnHomeScreen;
     public bool GameIsPaused => _gameIsPaused;
-    
+    public int PauseMenuCanvasOrder { private get; set; }
+
     //Events
     private Action<IGameIsPaused> OnGamePaused { get; set; }
-
 
     public override void FetchEvents()
     {
@@ -40,6 +43,18 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch
     }
 
     //Main
+    public override void OnStart()
+    {
+        base.OnStart();
+        SetUpCanvasOrder();
+    }
+
+    private void SetUpCanvasOrder()
+    {
+        EVent.Do.Fetch<IPauseCanvasOrder>()?.Invoke(this);
+        _myBranch.ManualCanvasOrder = PauseMenuCanvasOrder;
+        _myBranch.CanvasOrder = OrderInCanvas.Manual;
+    }
 
     private void StartPopUp(IPausePressed e) => StartPopUp();
 
@@ -92,5 +107,6 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch
         ActivateStoredPosition();
         _historyTrack.MoveToLastBranchInHistory();
     }
+
 }
 

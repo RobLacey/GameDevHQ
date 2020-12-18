@@ -111,7 +111,6 @@ public class MoveBackInHistory : IMoveBackInHistory
 
         void NoTween()
         {
-            CanvasOrderCalculator.ResetCanvasOrder(activeBranch, activeBranch.MyCanvas);
             lastNode.DeactivateNode();
             lastNode.MyBranch.DoNotTween();
             lastNode.MyBranch.MoveToThisBranch();

@@ -4,21 +4,26 @@ using UnityEngine;
 
 public abstract class InputScheme : ScriptableObject
 {
+    [Space(20f, order = 1)]
     [SerializeField] 
     protected ControlMethod _mainControlType = ControlMethod.MouseOnly;
+    
+    [Header("In Game System")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
     [SerializeField] 
-    [Header("In Game System")] [Space(10f)]
     protected InGameSystem _inGameMenuSystem = InGameSystem.Off;
     [SerializeField] 
     [EnableIf("InGameOn")]
     protected StartInMenu _startGameWhere = StartInMenu.InGameControl;
+    
+    [Header("Cancel / Back Settings")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
     [SerializeField] 
-    [Header("Cancel / Back Settings")] [Space(10f)] [Label("Nothing to Cancel Action")]
+    [Label("Nothing to Cancel Action")] 
     protected PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.DoNothing;
     [SerializeField]
     private PauseFunction _globalEscapeFunction;
+    [Header("Start Delay")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
     [SerializeField] 
-    [Header("Start Delay")] [Space(10f)] [Label("Delay UI Start By then..")]
+    [Label("Delay UI Start By then..")]
     protected float _delayUIStart;
     [SerializeField] [Label("..Enable Controls After..")]
     protected float _controlActivateDelay;

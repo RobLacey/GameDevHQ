@@ -89,6 +89,8 @@ public interface INoResolvePopUp // This one is test
 public interface INoPopUps // This one is test
 {
     bool NoActivePopUps { get; }
+    int ActiveResolvePopUpCount { get; }
+    int ActiveOptionalPopUpCount { get; }
 }
 
 public interface IRemoveOptionalPopUp // This one is test

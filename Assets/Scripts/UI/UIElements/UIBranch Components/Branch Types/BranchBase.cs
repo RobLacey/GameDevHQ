@@ -3,6 +3,7 @@ using UnityEngine;
 
 public interface IBranchBase : IParameters
 {
+    void OnStart();
     void OnEnable();
     void SetUpAsTabBranch();
     void SetUpBranch(IBranch newParentController = null);
@@ -14,6 +15,11 @@ public interface IBranchBase : IParameters
 public interface IBranchParams
 {
     ScreenType MyScreenType { get; }
+}
+
+public interface IPopUpCanvasOrder //Inherited in PopUp Branch Types
+{
+    int PopUpCanvasOrder { set; }
 }
 
 public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, IBranchBase, IBranchParams,
@@ -92,6 +98,8 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
         SetBlockRaycast(BlockRaycast.No);
         SetCanvas(ActiveCanvas.No);
     }
+    
+    public virtual void OnStart() { }
 
     public abstract void SetUpBranch(IBranch newParentController = null);
     
@@ -123,4 +131,9 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
         if (_screenData.WasOnHomeScreen)
             InvokeOnHomeScreen(true);
     }
+    
+    protected virtual void SetCanvasOrder() { }
+
+    protected virtual int SetSortingOrder(Canvas currentCanvas, int index) => 0;
+
 }

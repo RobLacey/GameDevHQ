@@ -4733,7 +4733,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 1
   _controlBar: 1
-  _orderInCanvas: 0
+  _orderInCanvas: 2
   _canvasOrderSetting: 3
   _moveType: 0
   _startOnThisNode: {fileID: 0}
@@ -4829,7 +4829,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!222 &254179350 stripped
 CanvasRenderer:
@@ -7858,9 +7858,24 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tooltip Just Text
       objectReference: {fileID: 0}
+    - target: {fileID: 8432195791943366036, guid: 1520ba3c28fb6824a8f5ecd400f5e649,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8432195791943366037, guid: 1520ba3c28fb6824a8f5ecd400f5e649,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8432195791943366038, guid: 1520ba3c28fb6824a8f5ecd400f5e649,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8432195791943366038, guid: 1520ba3c28fb6824a8f5ecd400f5e649,
+        type: 3}
+      propertyPath: m_OverrideSorting
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -8153,12 +8168,12 @@ PrefabInstance:
     - target: {fileID: 8432195791943366038, guid: 1520ba3c28fb6824a8f5ecd400f5e649,
         type: 3}
       propertyPath: m_OverrideSorting
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8432195791943366038, guid: 1520ba3c28fb6824a8f5ecd400f5e649,
         type: 3}
       propertyPath: m_SortingOrder
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1520ba3c28fb6824a8f5ecd400f5e649, type: 3}
@@ -9970,12 +9985,17 @@ PrefabInstance:
     - target: {fileID: 4726497964099142034, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4726497964099142034, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_OverrideSorting
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4726497964099142034, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -10021,6 +10041,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _stayOn
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _canvasOrderSetting
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -13060,15 +13085,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 3
+  _branchType: 4
   _controlBar: 1
   _orderInCanvas: 2
-  _canvasOrderSetting: 2
+  _canvasOrderSetting: 3
   _moveType: 1
   _startOnThisNode: {fileID: 0}
   _autoOpenClose: 0
   _blockOtherNodes: 1
-  _timer: 2
+  _timer: 4
   _screenType: 0
   _stayVisible: 1
   _storeOrResetOptional: 0
@@ -13171,19 +13196,19 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 620683488}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 2
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
-  m_OverrideSorting: 1
+  m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &623457423 stripped
 MonoBehaviour:
@@ -17688,6 +17713,16 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4726497964099142034, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: m_OverrideSorting
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4726497964099142034, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _saveExitSelection
@@ -17742,6 +17777,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _branchType
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _canvasOrderSetting
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -23821,7 +23861,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 1
   _controlBar: 1
-  _orderInCanvas: 0
+  _orderInCanvas: 2
   _canvasOrderSetting: 3
   _moveType: 0
   _startOnThisNode: {fileID: 0}
@@ -23917,7 +23957,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &1078371650 stripped
 MonoBehaviour:
@@ -24756,6 +24796,26 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7472274105214194845, guid: 889858f9542a04a41801cc9b56665611,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.9716981
+      objectReference: {fileID: 0}
+    - target: {fileID: 7472274105214194845, guid: 889858f9542a04a41801cc9b56665611,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.6539102
+      objectReference: {fileID: 0}
+    - target: {fileID: 7472274105214194845, guid: 889858f9542a04a41801cc9b56665611,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.2970096
+      objectReference: {fileID: 0}
+    - target: {fileID: 7472274105214194846, guid: 889858f9542a04a41801cc9b56665611,
+        type: 3}
+      propertyPath: m_Name
+      value: Background
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 889858f9542a04a41801cc9b56665611, type: 3}
@@ -24826,7 +24886,7 @@ PrefabInstance:
     - target: {fileID: 4726497964099142034, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_SortingOrder
-      value: -1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -24846,12 +24906,12 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasOrderSetting
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _moveType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -25635,7 +25695,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 1
   _controlBar: 1
-  _orderInCanvas: 0
+  _orderInCanvas: 2
   _canvasOrderSetting: 3
   _moveType: 0
   _startOnThisNode: {fileID: 0}
@@ -25731,7 +25791,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!224 &1267887509 stripped
 RectTransform:
@@ -28965,7 +29025,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -523, y: 0}
+  m_AnchoredPosition: {x: -940, y: 315}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1478859609
@@ -28980,7 +29040,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 3
+  _branchType: 4
   _controlBar: 1
   _orderInCanvas: 0
   _canvasOrderSetting: 3
@@ -28988,7 +29048,7 @@ MonoBehaviour:
   _startOnThisNode: {fileID: 0}
   _autoOpenClose: 0
   _blockOtherNodes: 1
-  _timer: 6
+  _timer: 4
   _screenType: 0
   _stayVisible: 1
   _storeOrResetOptional: 0
@@ -29091,7 +29151,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1478859607}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 2
   m_Camera: {fileID: 0}
@@ -29103,7 +29163,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_TargetDisplay: 0
 --- !u!114 &1483058234 stripped
 MonoBehaviour:
@@ -32868,7 +32928,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1712214352}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 2
   m_Camera: {fileID: 0}
@@ -33374,12 +33434,12 @@ PrefabInstance:
     - target: {fileID: 8432195791943366038, guid: 1520ba3c28fb6824a8f5ecd400f5e649,
         type: 3}
       propertyPath: m_OverrideSorting
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8432195791943366038, guid: 1520ba3c28fb6824a8f5ecd400f5e649,
         type: 3}
       propertyPath: m_SortingOrder
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1520ba3c28fb6824a8f5ecd400f5e649, type: 3}
@@ -36224,7 +36284,7 @@ PrefabInstance:
     - target: {fileID: 4726497964099142034, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_SortingOrder
-      value: -1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -36274,7 +36334,7 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _moveType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -36294,7 +36354,7 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasOrderSetting
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -37759,7 +37819,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -523, y: 0}
+  m_AnchoredPosition: {x: 154, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2018220711
@@ -37774,7 +37834,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 3
+  _branchType: 4
   _controlBar: 1
   _orderInCanvas: 0
   _canvasOrderSetting: 3
@@ -37782,7 +37842,7 @@ MonoBehaviour:
   _startOnThisNode: {fileID: 0}
   _autoOpenClose: 0
   _blockOtherNodes: 1
-  _timer: 5
+  _timer: 4
   _screenType: 0
   _stayVisible: 1
   _storeOrResetOptional: 0
@@ -37885,7 +37945,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2018220709}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 2
   m_Camera: {fileID: 0}
@@ -38749,7 +38809,7 @@ PrefabInstance:
     - target: {fileID: 4726497964099142034, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_SortingOrder
-      value: -1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -38774,12 +38834,12 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasOrderSetting
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _moveType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -43084,6 +43144,16 @@ PrefabInstance:
       propertyPath: _nextScene
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _toolTipCanvasOrder
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _pauseMenuCanvasOrder
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 4421614741907461036, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _onScreenAtStart
@@ -43244,17 +43314,17 @@ PrefabInstance:
         type: 3}
       propertyPath: _hotKeySettings.Array.data[0]._myBranch
       value: 
-      objectReference: {fileID: 616071579}
+      objectReference: {fileID: 1450462822}
     - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _hotKeySettings.Array.data[1]._myBranch
       value: 
-      objectReference: {fileID: 375905088}
+      objectReference: {fileID: 616071579}
     - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _hotKeySettings.Array.data[2]._myBranch
       value: 
-      objectReference: {fileID: 634434330}
+      objectReference: {fileID: 1096179286}
     - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _hotKeySettings.Array.data[3]._myBranch

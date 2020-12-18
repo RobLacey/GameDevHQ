@@ -1,8 +1,10 @@
 ﻿using System;
+using UnityEngine;
 
 public interface IOptionalPopUpBranch : IBranchBase { } 
 
-public class OptionalPopUpPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp, IAddOptionalPopUp, IOptionalPopUpBranch
+public class OptionalPopUpPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp, 
+                                  IAddOptionalPopUp, IOptionalPopUpBranch, IPopUpCanvasOrder
 {
     public OptionalPopUpPopUp(IBranch branch) : base(branch)
     {
@@ -107,5 +109,16 @@ public class OptionalPopUpPopUp : BranchBase, IStartPopUp, IRemoveOptionalPopUp,
         {
             RemoveOptionalPopUp?.Invoke(this);
         }
+    }
+
+    public int PopUpCanvasOrder { get; set; }
+    protected override void SetCanvasOrder()
+    {
+        
+    }
+
+    protected override int SetSortingOrder(Canvas currentCanvas, int index)
+    {
+        return 0;
     }
 }
