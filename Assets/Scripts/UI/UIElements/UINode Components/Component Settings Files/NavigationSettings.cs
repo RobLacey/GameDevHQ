@@ -16,17 +16,17 @@ public interface INavigationSettings : IComponentSettings
 public class NavigationSettings :INavigationSettings
 {
     [SerializeField] 
-    [AllowNesting] [Label("Move To When Clicked")] [HideIf("CantNavigate")] private UIBranch _childBranch;
+    [AllowNesting] [Label("Move To When Clicked")] [HideIf("CantNavigate")] private UIBranch _childBranch = default;
     [SerializeField] 
     private NavigationType _setNavigation = NavigationType.UpAndDown;
     [SerializeField] 
-    [AllowNesting] [ShowIf("UpDownNav")] private UINode _up;
+    [AllowNesting] [ShowIf("UpDownNav")] private UINode _up = default;
     [SerializeField] 
-    [AllowNesting] [ShowIf("UpDownNav")] private UINode _down;
+    [AllowNesting] [ShowIf("UpDownNav")] private UINode _down = default;
     [SerializeField] 
-    [AllowNesting] [ShowIf("RightLeftNav")] private UINode _left;
+    [AllowNesting] [ShowIf("RightLeftNav")] private UINode _left = default;
     [SerializeField] 
-    [AllowNesting] [ShowIf("RightLeftNav")] private UINode _right;
+    [AllowNesting] [ShowIf("RightLeftNav")] private UINode _right = default;
 
     //Editor Scripts
     public bool CantNavigate { get; set; }

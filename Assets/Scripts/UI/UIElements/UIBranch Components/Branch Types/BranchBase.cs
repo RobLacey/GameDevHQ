@@ -1,26 +1,6 @@
 ﻿using System;
 using UnityEngine;
 
-public interface IBranchBase : IParameters
-{
-    void OnStart();
-    void OnEnable();
-    void SetUpAsTabBranch();
-    void SetUpBranch(IBranch newParentController = null);
-    void SetCanvas(ActiveCanvas active);
-    void SetBlockRaycast(BlockRaycast active);
-    void ActivateStoredPosition();
-}
-
-public interface IBranchParams
-{
-    ScreenType MyScreenType { get; }
-}
-
-public interface IPopUpCanvasOrder //Inherited in PopUp Branch Types
-{
-    int PopUpCanvasOrder { set; }
-}
 
 public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, IBranchBase, IBranchParams,
                                    IEventDispatcher
@@ -34,9 +14,10 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
         _screenData = EJect.Class.WithParams<IScreenData>(this);
     }
     
+    //Variables
     protected readonly IBranch _myBranch;
     protected readonly IScreenData _screenData;
-    protected bool _inMenu, _canStart, _gameIsPaused, _resolvePopUps;
+    protected bool _inMenu, _canStart, _gameIsPaused, _activeResolvePopUps;
     protected IHistoryTrack _historyTrack;
     private readonly Canvas _myCanvas;
     private readonly CanvasGroup _myCanvasGroup;
@@ -52,9 +33,8 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
         OnHomeScreen = onHome;
         SetIsOnHomeScreen?.Invoke(this);
     }
-
     private void InvokeDoClearScreen() => DoClearScreen?.Invoke(this);
-    private void SaveResolvePopUps(INoResolvePopUp args) => _resolvePopUps = args.ActiveResolvePopUps;
+    private void SaveResolvePopUps(INoResolvePopUp args) => _activeResolvePopUps = args.ActiveResolvePopUps;
     private void SaveIfGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     protected virtual void SaveInMenu(IInMenu args) => _inMenu = args.InTheMenu;
     protected virtual void SaveIfOnHomeScreen(IOnHomeScreen args) => OnHomeScreen = args.OnHomeScreen;
@@ -131,9 +111,4 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
         if (_screenData.WasOnHomeScreen)
             InvokeOnHomeScreen(true);
     }
-    
-    protected virtual void SetCanvasOrder() { }
-
-    protected virtual int SetSortingOrder(Canvas currentCanvas, int index) => 0;
-
 }

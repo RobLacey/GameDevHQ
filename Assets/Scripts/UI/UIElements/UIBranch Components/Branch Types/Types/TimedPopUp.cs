@@ -4,39 +4,34 @@ using UnityEngine;
 
 public interface ITimedPopUpBranch : IBranchBase { }
 
-public class TimedPopUp : BranchBase, IStartPopUp, ITimedPopUpBranch, IPopUpCanvasOrder
+public class TimedPopUp : BranchBase, IStartPopUp, ITimedPopUpBranch, IAdjustCanvasOrder
 {
     public TimedPopUp(IBranch branch) : base(branch)
     {
         _myBranch.OnStartPopUp += StartPopUp;
+        SetUpCanvasOrder(branch);
+    }
 
-        EVent.Do.Fetch<IPopUpCanvasOrder>()?.Invoke(this);
-        branch.ManualCanvasOrder = PopUpCanvasOrder;
+    public void SetUpCanvasOrder(ICanvasOrder branch)
+    {
+        EVent.Do.Return<IAdjustCanvasOrder>(this);
+        branch.ManualCanvasOrder = CanvasOrderOffset;
         branch.CanvasOrder = OrderInCanvas.Manual;
-        timedPopUpCount = new List<Canvas>();
+        timedPopUps = new List<Canvas>();
     }
 
     //Variables
     private bool _running;
     private Coroutine _coroutine;
-    private int _optionalPopUpCount;
-    private static List<Canvas> timedPopUpCount;
+    private static List<Canvas> timedPopUps;
 
-    //Set / Getters
-    private void SavePopUpNumbers(INoPopUps args) 
-        => _optionalPopUpCount = args.ActiveOptionalPopUpCount;
-
-    public override void ObserveEvents()
-    {
-        base.ObserveEvents();
-        EVent.Do.Subscribe<INoPopUps>(SavePopUpNumbers);
-    }
-
-    public int PopUpCanvasOrder { protected get; set; }
-
+    //Properties
+    public int CanvasOrderOffset { protected get; set; }
+    public BranchType BranchType { get; } = BranchType.TimedPopUp;
+    
     public void StartPopUp()
     {
-        if (_gameIsPaused || !_canStart || _resolvePopUps) return;
+        if (_gameIsPaused || !_canStart || _activeResolvePopUps) return;
 
         SetIfRunningOrNot();
         _myBranch.DontSetBranchAsActive();
@@ -49,29 +44,12 @@ public class TimedPopUp : BranchBase, IStartPopUp, ITimedPopUpBranch, IPopUpCanv
         {
             SetCanvas(ActiveCanvas.Yes);
             _running = true;
-            SetCanvasOrder();
+            AdjustCanvasOrderAdded();
         }
         else
         {
             _myBranch.DoNotTween();
         }
-    }
-
-    protected override void SetCanvasOrder()
-    {
-        timedPopUpCount.Add(_myBranch.MyCanvas);
-        
-        for (var index = 0; index < timedPopUpCount.Count; index++)
-        {
-            var canvase = timedPopUpCount[index];
-            canvase.sortingOrder = SetSortingOrder(canvase, index);
-        }
-    }
-
-    protected override int SetSortingOrder(Canvas currentCanvas, int index)
-    {
-        currentCanvas.sortingOrder = PopUpCanvasOrder;
-        return PopUpCanvasOrder + _optionalPopUpCount + index;
     }
 
     public override void SetUpBranch(IBranch newParentController = null)
@@ -88,9 +66,20 @@ public class TimedPopUp : BranchBase, IStartPopUp, ITimedPopUpBranch, IPopUpCanv
     
     private void ExitTimedPopUp()
     {
-        timedPopUpCount.Remove(_myBranch.MyCanvas);
-        SetCanvasOrder();
+        AdjustCanvasOrderRemoved();
         _running = false;
         _myBranch.StartBranchExitProcess(OutTweenType.Cancel);
+    }
+    
+    public void AdjustCanvasOrderAdded()
+    {
+        timedPopUps.Add(_myBranch.MyCanvas);
+        CanvasOrderCalculator.ProcessActiveCanvasses(timedPopUps, CanvasOrderOffset);
+    }
+
+    public void AdjustCanvasOrderRemoved(ILastRemovedPopUp args = null)
+    {
+        timedPopUps.Remove(_myBranch.MyCanvas);
+        CanvasOrderCalculator.ProcessActiveCanvasses(timedPopUps, CanvasOrderOffset);
     }
 }

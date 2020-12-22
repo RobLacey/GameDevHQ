@@ -6,7 +6,7 @@ public class EnemyMovement : MonoBehaviour
 {
     [SerializeField] protected float _speed = default;
     [SerializeField] EventManager _Event_RemoveEnemyAsTarget;
-    [SerializeField] GlobalVariables _screenBounds;
+    [SerializeField] private GlobalVariables _screenBounds;
 
     bool _canMove = true;
     IEnemyWave _partofWave;

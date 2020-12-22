@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UIElements;
 using NaughtyAttributes;
 using UnityEngine.EventSystems;
 
@@ -17,48 +18,50 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     [ShowIf("CanAutoOpenClose")] [Label("Auto Open/Close Override")]
     private IsActive _autoOpenCloseOverride = IsActive.No;
     [SerializeField]
-    [ShowIf("CanAutoOpenClose")] [Label("Auto Open/Close Override")]
-    private float _autoOpenDelay;
+    [ShowIf("CanAutoOpenClose")] [Label("Auto Open/Close Delay")]
+    [Range(0, 1)]private float _autoOpenDelay = 0;
     [SerializeField] 
     [ShowIf("IsCancelOrBack")] 
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")]
     private ToggleData _toggleData;
-    
+    [Header("Tween Data", order = 2)] [Space(20, order = 1)]
+    [HorizontalLine(1, EColor.Blue , order = 3)]
+
     [SerializeField] 
-    [BoxGroup("Functions")] [Label("UI Functions To Use")] [HorizontalLine(1, color: EColor.Blue, order = 1)]
+    [Label("UI Functions To Use")]
     private Setting _enabledFunctions;
     [SerializeField] 
-    [Space(15f)] [BoxGroup("Functions")] [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")]  
+    [Space(15f)]  [Label("Navigation And On Click Calls")] [ShowIf("UseNavigation")]  
     private NavigationSettings _navigation;
     [SerializeField] 
-    [Space(5f)] [BoxGroup("Functions")] [Label("Colour Settings")] [ShowIf("NeedColour")]  
+    [Space(5f)]  [Label("Colour Settings")] [ShowIf("NeedColour")]  
     private ColourSettings _coloursTest;
     [SerializeField] 
-    [Space(5f)] [BoxGroup("Functions")] [Label("Invert Colour when Highlighted or Selected")] 
+    [Space(5f)]  [Label("Invert Colour when Highlighted or Selected")] 
     [ShowIf("NeedInvert")]  
     private InvertColoursSettings _invertColourCorrection;
     [SerializeField] 
-    [Space(5f)] [BoxGroup("Functions")] [Label("Swap Images or Text on Select or Highlight")] 
+    [Space(5f)]  [Label("Swap Images or Text on Select or Highlight")] 
     [ShowIf("NeedSwap")] 
     private SwapImageOrTextSettings _swapImageOrText;
     [SerializeField] 
-    [Space(5f)] [BoxGroup("Functions")] [Label("Size And Position Effect Settings")] 
+    [Space(5f)]  [Label("Size And Position Effect Settings")] 
     [ShowIf("NeedSize")]  
     private SizeAndPositionSettings _sizeAndPos;
     [SerializeField] 
-    [Space(5f)] [BoxGroup("Functions")] [Label("Accessories, Outline Or Shadow Settings")] 
+    [Space(5f)]  [Label("Accessories, Outline Or Shadow Settings")] 
     [ShowIf("NeedAccessories")]  
     private AccessoriesSettings _accessories;
     [SerializeField] 
-    [Space(5f)] [BoxGroup("Functions")] [Label("Audio Settings")] [ShowIf("NeedAudio")]  
+    [Space(5f)]  [Label("Audio Settings")] [ShowIf("NeedAudio")]  
     private AudioSettings _audio;
     [SerializeField] 
-    [Space(5f)] [BoxGroup("Functions")] [Label("Tooltip Settings")] [ShowIf("NeedTooltip")]  
+    [Space(5f)]  [Label("Tooltip Settings")] [ShowIf("NeedTooltip")]  
     private ToolTipSettings _tooltips;
     [SerializeField] 
-    [Space(5f)] [BoxGroup("Functions")] [Label("Event Settings")] [ShowIf("NeedEvents")]  
+    [Space(5f)]  [Label("Event Settings")] [ShowIf("NeedEvents")]  
     private EventSettings _events;
 
     //Variables

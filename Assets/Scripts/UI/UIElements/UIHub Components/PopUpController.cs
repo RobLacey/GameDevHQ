@@ -12,7 +12,8 @@ public interface IPopUpController
 /// This Class Looks after managing switching between PopUps
 /// </summary>
 ///
-public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, INoPopUps, IEventDispatcher
+public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, INoPopUps, 
+                               IEventDispatcher, ILastRemovedPopUp
 {
     //Variables
     private readonly List<IBranch> _activeResolvePopUps = new List<IBranch>();
@@ -23,12 +24,13 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
     public bool ActiveResolvePopUps => _activeResolvePopUps.Count > 0;
     private bool ActiveOptionalPopUps => _activeOptionalPopUps.Count > 0;
     public bool NoActivePopUps => _noPopUps;
-    public int ActiveResolvePopUpCount => _activeResolvePopUps.Count;
-    public int ActiveOptionalPopUpCount => _activeOptionalPopUps.Count;
-    
+    public IBranch LastOptionalPopUp { get; private set; }
+
+
     //Events
     private Action<INoResolvePopUp> NoResolvePopUps { get; set; }
     private Action<INoPopUps> NoPopUps { get; set; }
+    private Action<ILastRemovedPopUp> LastRemovedPopUp { get; set; }
     
     //Main
     public void OnEnable()
@@ -41,6 +43,7 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
     {
         NoResolvePopUps = EVent.Do.Fetch<INoResolvePopUp>();
         NoPopUps = EVent.Do.Fetch<INoPopUps>();
+        LastRemovedPopUp = EVent.Do.Fetch<ILastRemovedPopUp>();
     }
 
     public void ObserveEvents()
@@ -93,23 +96,11 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
 
     private void OnLeavingHomeScreen(IRemoveOptionalPopUp args)
     {
-        RemoveOptionalPopUp(args.ThisPopUp);
+        _activeOptionalPopUps.Remove(args.ThisPopUp);
         if (ActiveOptionalPopUps) return;
         
         _noPopUps = true;
         NoPopUps?.Invoke(this);
-    }
-
-    private void RemoveOptionalPopUp(IBranch popup)
-    {
-        foreach (var optionalPopUp in _activeOptionalPopUps)
-        {
-            if (optionalPopUp == popup)
-            {
-                _activeOptionalPopUps.Remove(popup);
-                break;
-            }
-        }
     }
     
     private void AddActivePopUps_Resolve(IAddResolvePopUp args)
@@ -132,12 +123,14 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
         NoPopUps?.Invoke(this);
     }
 
-    private static void RemoveFromActivePopUpList(List<IBranch> popUpList, 
+    private void RemoveFromActivePopUpList(List<IBranch> popUpList, 
                                                   Action<IBranch> finishRemovalFromList,
                                                   IBranch popUpToRemove)
     {
         if(!popUpList.Contains(popUpToRemove)) return;
         popUpList.Remove(popUpToRemove);
+        LastOptionalPopUp = popUpToRemove;
+        LastRemovedPopUp?.Invoke(this);
         finishRemovalFromList?.Invoke(popUpToRemove);
     }
 
@@ -154,4 +147,5 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
         _noPopUps = true;
         NoPopUps?.Invoke(this);
     }
+
 }

@@ -18,7 +18,6 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     
     event Action OnStartPopUp;
     INode DefaultStartOnThisNode { get; }
-    Canvas MyCanvas { get; } 
     CanvasGroup MyCanvasGroup { get; }
     ScreenType ScreenType { get; set; }
     EscapeKey EscapeKeyType { get; set; }
@@ -26,16 +25,12 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     bool CanvasIsEnabled { get; }
     bool CanStoreAndRestoreOptionalPoUp { get; }
     DoTween TweenOnHome { get; set; }
-    IBranch ThisBranch { get; }
     IBranch MyParentBranch { get; set; }
     float Timer { get; }
     INode[] ThisGroupsUiNodes { get; }
-    INode LastSelected { get; }
-    GameObject ThisBranchesGameObject { get; }
     bool PointerOverBranch { get;}
     IAutoOpenClose AutoOpenCloseClass { get; }
     IsActive BlockOtherNode { get; set; }
-    IsActive SetStayOn { get; set; }
     
     IBranch[] FindAllBranches();
     IsActive GetStayOn();
@@ -60,9 +55,19 @@ public interface IAutoOpenClose
     IBranch ChildNodeHasOpenChild { set; }
 }
 
-public interface IAutoOpenCloseData : IParameters
+public interface IAutoOpenCloseData
 {
     IBranch ThisBranch { get; }
     AutoOpenClose AutoOpenClose { get; set; }
+}
+
+public interface ICanvasOrder
+{
+    OrderInCanvas CanvasOrder { get; set; }
+    IsActive SetStayOn { get; set; }
+    INode LastSelected { get; }
+    int ManualCanvasOrder { get; set; }
+    Canvas MyCanvas { get; }
+    GameObject ThisBranchesGameObject { get; }
 }
 

@@ -9,41 +9,43 @@ public class OldSystem : InputScheme
     [Header("Input Settings", order = 2)] [HorizontalLine(1, color: EColor.Blue, order = 3)]
     [SerializeField] 
     [Label("Pause / Option Button")] [InputAxis]
-    private string _pauseOptionButton;
+    private string _pauseOptionButton = default;
     [SerializeField]
-    [InputAxis] private string _posSwitchButton;
+    [InputAxis] private string _posSwitchButton = default;
     [SerializeField] 
-    [InputAxis] private string _negSwitchButton;
+    [InputAxis] private string _negSwitchButton = default;
     [SerializeField] 
-    [InputAxis] private string _cancelButton;
+    [InputAxis] private string _cancelButton = default;
     [SerializeField] 
     [Label("Switch To/From Game Menus")] [InputAxis] 
-    private string _switchToMenusButton;
+    private string _switchToMenusButton = default;
     [SerializeField] 
-    [InputAxis] private string _hotKey1;
+    [InputAxis] private string _hotKey1 = default;
     [SerializeField] 
-    [InputAxis] private string _hotKey2;
+    [InputAxis] private string _hotKey2 = default;
     [SerializeField] 
-    [InputAxis] private string _hotKey3;
+    [InputAxis] private string _hotKey3 = default;
     [SerializeField] 
-    [InputAxis] private string _hotKey4;
+    [InputAxis] private string _hotKey4 = default;
     [SerializeField] 
-    [InputAxis] private string _hotKey5;
+    [InputAxis] private string _hotKey5 = default;
     [SerializeField] 
-    [InputAxis] private string _hotKey6;
+    [InputAxis] private string _hotKey6 = default;
     [SerializeField] 
-    [InputAxis] private string _hotKey7;
+    [InputAxis] private string _hotKey7 = default;
     [SerializeField] 
-    [InputAxis] private string _hotKey8;
+    [InputAxis] private string _hotKey8 = default;
     [SerializeField] 
-    [InputAxis] private string _hotKey9;
+    [InputAxis] private string _hotKey9 = default;
     [SerializeField] 
-    [InputAxis] private string _hotKey0;
+    [InputAxis] private string _hotKey0 = default;
     
     //Variables
     private bool _hasPauseAxis, _hasPosSwitchAxis, _hasNegSwitchAxis, _hasCancelAxis, _hasSwitchToMenusButton
         , _hasHotKey1, _hasHotKey2, _hasHotKey3, _hasHotKey4, _hasHotKey5;
-    
+
+    private bool _hasHotKey6, _hasHotKey7, _hasHotKey8, _hasHotKey9, _hasHotKey0;
+
     //Properties and Setter/Getters
     protected override string PauseButton => _pauseOptionButton;
     protected override string PositiveSwitch => _posSwitchButton;
@@ -70,6 +72,11 @@ public class OldSystem : InputScheme
         _hasHotKey3 = _hotKey3 != string.Empty;
         _hasHotKey4 = _hotKey4 != string.Empty;
         _hasHotKey5 = _hotKey5 != string.Empty;
+        _hasHotKey6 = _hotKey6 != string.Empty;
+        _hasHotKey7 = _hotKey7 != string.Empty;
+        _hasHotKey8 = _hotKey8 != string.Empty;
+        _hasHotKey9 = _hotKey9 != string.Empty;
+        _hasHotKey0 = _hotKey0 != string.Empty;
     }
 
     public override bool PressPause() => _hasPauseAxis && Input.GetButtonDown(PauseButton);
@@ -93,6 +100,16 @@ public class OldSystem : InputScheme
                 return _hasHotKey4 & Input.GetButtonDown(_hotKey4);
             case HotKey.HotKey5:
                 return _hasHotKey5 & Input.GetButtonDown(_hotKey5);
+            case HotKey.HotKey6:
+                return _hasHotKey6 & Input.GetButtonDown(_hotKey6);
+            case HotKey.HotKey7:
+                return _hasHotKey7 & Input.GetButtonDown(_hotKey7);
+            case HotKey.HotKey8:
+                return _hasHotKey8 & Input.GetButtonDown(_hotKey8);
+            case HotKey.HotKey9:
+                return _hasHotKey9 & Input.GetButtonDown(_hotKey9);
+            case HotKey.HotKey0:
+                return _hasHotKey0 & Input.GetButtonDown(_hotKey0);
             default:
                 throw new ArgumentOutOfRangeException(nameof(hotKey), hotKey, null);
         }

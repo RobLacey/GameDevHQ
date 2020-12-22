@@ -73,7 +73,7 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 
     public override void SetBlockRaycast(BlockRaycast active)
     {
-        if(_resolvePopUps) return;
+        if(_activeResolvePopUps) return;
         if(!_gameIsPaused)
         {
             base.SetBlockRaycast(IsControlBar ? BlockRaycast.Yes: active);

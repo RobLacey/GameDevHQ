@@ -1,26 +1,37 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IResolvePopUpBranch : IBranchBase { }
 
-public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolvePopUpBranch, IPopUpCanvasOrder
+public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolvePopUpBranch, IAdjustCanvasOrder
 {
     public ResolvePopUp(IBranch branch) : base(branch)
     {
         _allBranches = branch.FindAllBranches();
         _myBranch.OnStartPopUp += StartPopUp;
+        SetUpCanvasOrder(branch);
     }    
 
     //Variables
     private readonly IBranch[] _allBranches;
-
+    private static List<Canvas> resolvePopUps;
+    
     //Properties
     public IBranch ThisPopUp => _myBranch;
+    public int CanvasOrderOffset { get; set; }
+    public BranchType BranchType { get; } = BranchType.ResolvePopUp;
 
     //Events
     private Action<IAddResolvePopUp> AddResolvePopUp { get; set; }
 
     //Main
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EVent.Do.Subscribe<ILastRemovedPopUp>(AdjustCanvasOrderRemoved);
+    }
+
     public override void FetchEvents()
     {
         base.FetchEvents();
@@ -33,7 +44,10 @@ public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolveP
         if (_gameIsPaused) return; //TODO add to buffer goes here for when paused. trigger from SaveOnHome?
 
         if (!_myBranch.CanvasIsEnabled)
+        {
             _myBranch.MoveToThisBranch();
+            AdjustCanvasOrderAdded();
+        }    
     }
     
     public override void SetUpBranch(IBranch newParentController = null)
@@ -45,14 +59,23 @@ public class ResolvePopUp : BranchBase, IStartPopUp, IAddResolvePopUp, IResolveP
         AddResolvePopUp?.Invoke(this);
     }
 
-    public int PopUpCanvasOrder { get; set; }
-    protected override void SetCanvasOrder()
+    public void SetUpCanvasOrder(ICanvasOrder branch)
     {
-        
+        EVent.Do.Return<IAdjustCanvasOrder>(this);
+        branch.ManualCanvasOrder = CanvasOrderOffset;
+        branch.CanvasOrder = OrderInCanvas.Manual;
+        resolvePopUps = new List<Canvas>();
     }
 
-    protected override int SetSortingOrder(Canvas currentCanvas, int index)
+    public void AdjustCanvasOrderAdded()
     {
-        return 0;
+        resolvePopUps.Add(_myBranch.MyCanvas);
+        CanvasOrderCalculator.ProcessActiveCanvasses(resolvePopUps, CanvasOrderOffset);
+    }
+    
+    public void AdjustCanvasOrderRemoved(ILastRemovedPopUp args)
+    {
+        resolvePopUps.Remove(args.LastOptionalPopUp.MyCanvas);
+        CanvasOrderCalculator.ProcessActiveCanvasses(resolvePopUps, CanvasOrderOffset);
     }
 }

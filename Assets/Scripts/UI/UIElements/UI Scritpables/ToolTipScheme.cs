@@ -9,25 +9,29 @@ public class ToolTipScheme : ScriptableObject
     
     [Header("Mouse & Global Fixed Position Settings", order = 2)]
     [SerializeField] 
-    [AllowNesting] [Label("Tooltip Position")] private ToolTipAnchor _toolTipPosition;
+    [AllowNesting] [Label("Tooltip Position")] private ToolTipAnchor _toolTipPosition = default;
     [SerializeField] 
-    [AllowNesting] [ShowIf("Fixed")] private RectTransform _groupFixedPosition;
+    [AllowNesting] [ShowIf("Fixed")] private RectTransform _groupFixedPosition = default;
     [SerializeField] 
-    [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")] private float _mousePaddingX;
+    [Range(-50f, 50f)] [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")] 
+    private float _mousePaddingX = default;
     [SerializeField] 
-    [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")] private float _mousePaddingY;
+    [Range(-50f, 50f)] [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")] 
+    private float _mousePaddingY = default;
     
     [Header("Keyboard and Controller Settings")]
     [SerializeField] 
     [AllowNesting] [Label("Tooltip Preset")] [HideIf("Fixed")] private UseSide _positionToUse = UseSide.ToTheRightOf;
     [SerializeField] 
-    [AllowNesting] [Label("Offset Position")] [HideIf("Fixed")] private ToolTipAnchor _keyboardPosition;
+    [AllowNesting] [Label("Offset Position")] [HideIf("Fixed")] private ToolTipAnchor _keyboardPosition = default;
     [SerializeField] 
-    [AllowNesting] [Label("GameObject Marker")] [ShowIf("UseGameObject")] private RectTransform _fixedPosition;
+    [AllowNesting] [Label("GameObject Marker")] [ShowIf("UseGameObject")] private RectTransform _fixedPosition = default;
+    [SerializeField]  
+    [Range(-50f, 50f)] [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")] 
+    private float _keyboardPaddingX = default;
     [SerializeField] 
-    [AllowNesting] [Label("X Padding (-50 to 50)")] [HideIf("Fixed")] private float _keyboardPaddingX;
-    [SerializeField] 
-    [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")] private float _keyboardPaddingY;
+    [Range(-50f, 50f)] [AllowNesting] [Label("Y Padding (-50 to 50)")] [HideIf("Fixed")] 
+    private float _keyboardPaddingY = default;
     
     [Header("Other Settings")]
     [SerializeField] 
@@ -39,9 +43,9 @@ public class ToolTipScheme : ScriptableObject
     
     [Header("FadeTween Settings")]
     [SerializeField] 
-    private float _fadeInTweenTime;
+    [Range(0.1f, 1f)]private float _fadeInTweenTime = 0.2f;
     [SerializeField] 
-    private float _fadeOutTweenTime;
+    [Range(0.1f, 1f)]private float _fadeOutTweenTime = 0.2f;
 
 
     public TooltipType ToolTipType => _tooltipType;

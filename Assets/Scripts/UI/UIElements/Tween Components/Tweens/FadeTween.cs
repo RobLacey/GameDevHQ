@@ -86,9 +86,4 @@ public class FadeTween : TweenBase, IFadeTween
                    .Play()
                    .OnComplete(callback);
     }
-
-    public void Print()
-    {
-        Debug.Log("Made Fader");
-    }
 }

@@ -6,29 +6,29 @@ using NaughtyAttributes;
 
 public class TestRunner : MonoBehaviour, IEventUser
 {
-    [SerializeField] private UINode _lastHighlighted;
-    [SerializeField] private UINode _lastSelected;
-    [SerializeField] private UIBranch _activeBranch;
-    [SerializeField] private List<UINode> _history;
+    [SerializeField] private UINode _lastHighlighted = default;
+    [SerializeField] private UINode _lastSelected = default;
+    [SerializeField] private UIBranch _activeBranch = default;
+    [SerializeField] private List<UINode> _history = default;
     [SerializeField] [ReadOnly] private bool _onHomeScreen = true;
-    [SerializeField] [ReadOnly] private bool _allowKeys;
-    [SerializeField] private EventsForTest _eventsForTest;
-    [SerializeField] private string _test1Test;
-    [SerializeField] private string _test2Test;
-    [SerializeField] private string _test3Test;
-    [SerializeField] private string _test4Test;
-    [SerializeField] private string _test5Test;
+    [SerializeField] [ReadOnly] private bool _allowKeys = default;
+    [SerializeField] private EventsForTest _eventsForTest = default;
+    [SerializeField] private string _test1Test = default;
+    [SerializeField] private string _test2Test = default;
+    [SerializeField] private string _test3Test = default;
+    [SerializeField] private string _test4Test = default;
+    [SerializeField] private string _test5Test = default;
 
 
     [Serializable]
     private class EventsForTest
     {
-        [SerializeField] public UnityEvent _event1;
-        [SerializeField] public UnityEvent _event2;
-        [SerializeField] public UnityEvent _event3;
-        [SerializeField] public UnityEvent _event4;
-        [SerializeField] public UnityEvent _event5;
-        [SerializeField] public UnityEvent _event6;
+        [SerializeField] public UnityEvent _event1 = default;
+        [SerializeField] public UnityEvent _event2 = default;
+        [SerializeField] public UnityEvent _event3 = default;
+        [SerializeField] public UnityEvent _event4 = default;
+        [SerializeField] public UnityEvent _event5 = default;
+        [SerializeField] public UnityEvent _event6 = default;
     }
     
     private void SaveLastHighlighted(IHighlightedNode args) => _lastHighlighted = (UINode)args.Highlighted;

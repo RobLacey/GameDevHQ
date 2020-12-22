@@ -20,9 +20,6 @@ public class StandardBranch : BranchBase, IStandardBranch
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
-        if (_myBranch.CanvasIsEnabled)
-            _myBranch.DoNotTween();
-        
         SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
         _myBranch.SetHighlightedNode();
@@ -46,7 +43,7 @@ public class StandardBranch : BranchBase, IStandardBranch
 
     public override void SetBlockRaycast(BlockRaycast active)
     {
-        if(_resolvePopUps) return;
+        if(_activeResolvePopUps) return;
         base.SetBlockRaycast(active);
     }
 }

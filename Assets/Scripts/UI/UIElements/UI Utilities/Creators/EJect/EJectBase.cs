@@ -6,6 +6,6 @@ public abstract class EJectBase<TBind, TInject> : IEJect
     public static TInject Class { get; } = new TInject();
     protected static TBind Bind { get; } = new TBind();
 
-    public abstract TBind WithParams<TBind>(IParameters args);
-    public abstract TBind NoParams<TBind>();
+    public abstract T WithParams<T>(IParameters args);
+    public abstract T NoParams<T>();
 }

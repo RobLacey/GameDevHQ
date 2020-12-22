@@ -12,8 +12,8 @@ public interface ISizeAndPositionSettings : IComponentSettings
 [Serializable]
 public class SizeAndPositionSettings : ISizeAndPositionSettings
 {
-    [SerializeField] RectTransform _rectTransforms;
-    [SerializeField] private SizeAndPositionScheme _scheme;
+    [SerializeField] RectTransform _rectTransforms = default;
+    [SerializeField] private SizeAndPositionScheme _scheme = default;
 
     public SizeAndPositionScheme Scheme => _scheme;
     public RectTransform RectTransform => _rectTransforms;

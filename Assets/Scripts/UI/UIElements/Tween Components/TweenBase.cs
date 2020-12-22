@@ -59,7 +59,7 @@ public abstract class TweenBase : IEventUser
     public virtual void StartTween(TweenType tweenType, TweenCallback tweenCallback)
     {
         StartTweenCommon(tweenCallback);
-
+        
         switch (_tweenStyle)
         {
             case TweenStyle.In:

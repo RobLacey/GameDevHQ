@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using NaughtyAttributes;
 using UnityEngine;
 
@@ -7,33 +8,35 @@ public class PositionSettings
 {
     [SerializeField] 
     [AllowNesting] [ShowIf("PositionTween")] [OnValueChanged("GrabStartPos")]
-    private bool _grabStartPosition;
+    private bool _grabStartPosition  = default;
     [SerializeField] 
     [AllowNesting] [ShowIf("MiddleTween")] [OnValueChanged("GrabMidPos")]
-    private bool _grabMidPosition;
+    private bool _grabMidPosition  = default;
     [SerializeField] 
     [AllowNesting] [ShowIf("PositionTween")] [OnValueChanged("GrabEndPos")]
-    private bool _grabEndPosition;
+    private bool _grabEndPosition  = default;
     
+#pragma warning disable 414 
     [SerializeField] 
     [AllowNesting] [ShowIf("PositionTween")] [OnValueChanged("GotToStart")]
-    private bool _goToStartPosition;
+    private bool _goToStartPosition  = default;
     [SerializeField] 
     [AllowNesting] [ShowIf("MiddleTween")] [OnValueChanged("GotToMid")]
-    private bool _goToMidPosition;
+    private bool _goToMidPosition  = default;
     [SerializeField] 
     [AllowNesting] [ShowIf("PositionTween")] [OnValueChanged("GotToEnd")]
-    private bool _goToEndPosition;
+    private bool _goToEndPosition  = default;
+#pragma warning restore 414 
 
     [SerializeField] 
     [ShowIf("PositionTween")] [Label("Start Position")] [ReadOnly]  
-    private Vector3 _tweenStartPosition;
+    private Vector3 _tweenStartPosition  = default;
     [SerializeField] 
     [ShowIf("MiddleTween")] [Label("Mid Position")] [ReadOnly] 
-    private Vector3 _tweenMiddlePosition;
+    private Vector3 _tweenMiddlePosition  = default;
     [SerializeField] 
     [ShowIf("PositionTween")] [Label("End Position")] [ReadOnly]  
-    private Vector3 _tweenTargetPosition;
+    private Vector3 _tweenTargetPosition  = default;
 
     private RectTransform _element;
     

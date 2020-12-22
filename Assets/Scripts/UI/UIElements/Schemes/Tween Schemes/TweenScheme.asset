@@ -16,7 +16,7 @@ MonoBehaviour:
   _rotationTween: 0
   _fadeTween: 0
   _scaleTween: 3
-  _punchTween: 1
+  _punchTween: 0
   _shakeTween: 0
   _useGlobalTime: 1
   _globalInTime: 1
@@ -32,13 +32,13 @@ MonoBehaviour:
     _easeIn: 1
     _easeOut: 1
   _scaleData:
-    _inTime: 1
-    _outTime: 1
-    _easeIn: 1
-    _easeOut: 1
+    _inTime: 0.2
+    _outTime: 0.2
+    _easeIn: 6
+    _easeOut: 5
   _fadeData:
-    _inTime: 0.5
-    _outTime: 0.5
+    _inTime: 2
+    _outTime: 2
     _easeIn: 1
     _easeOut: 1
   _shakeData:

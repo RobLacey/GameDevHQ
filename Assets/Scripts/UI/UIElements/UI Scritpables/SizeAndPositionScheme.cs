@@ -8,15 +8,15 @@ public class SizeAndPositionScheme : ScriptableObject
 {
     [SerializeField] private Choose _changeSizeOn = Choose.None;
     [SerializeField] [ShowIf("Activate")] private TweenEffect _tweenEffect = TweenEffect.Scale;
-    [SerializeField] [ShowIf("PositionSettings")] private Vector3 _pixelsToMoveBy;
-    [SerializeField] [ShowIf("OtherSettings")] private Vector3 _changeBy;
-    [SerializeField] [ShowIf("IsTween")] [Range(0f, 5f)] private float _time;
-    [SerializeField] [HideIf("DontAllowLoop")] private bool _loop;
+    [SerializeField] [ShowIf("PositionSettings")] private Vector3 _pixelsToMoveBy = default;
+    [SerializeField] [ShowIf("OtherSettings")] private Vector3 _changeBy = default;
+    [SerializeField] [ShowIf("IsTween")] [Range(0f, 5f)] private float _time = 0.2f;
+    [SerializeField] [HideIf("DontAllowLoop")] private bool _loop = false;
     [SerializeField] [ShowIf("IsPunchOrShake")] [Range(0f, 15f)] private int _vibrato = 6;
     [SerializeField] [ShowIf("IsPunch")] [Range(0f, 1f)]  private float _elasticity = 0.5f;
     [SerializeField] [ShowIf("IsShake")] [Range(0f, 90f)]  private float _shakeRandomness = 45f;
     [SerializeField] [ShowIf("IsShake")] private bool _fadeOut = true;
-    [SerializeField] [ShowIf("ShowEase")] private Ease _ease;
+    [SerializeField] [ShowIf("ShowEase")] private Ease _ease = Ease.Linear;
 
     private Choose ChangeSizeOn => _changeSizeOn;
     public TweenEffect TweenEffect => _tweenEffect;

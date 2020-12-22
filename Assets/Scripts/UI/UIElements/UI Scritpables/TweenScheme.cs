@@ -129,6 +129,36 @@ public class TweenScheme: ScriptableObject
     public bool Fade() => _fadeTween != TweenStyle.NoTween;
     public bool Punch() => _punchTween != TweenStyle.NoTween;
 
-    public bool Shake() => _shakeTween != TweenStyle.NoTween; 
+    public bool Shake() => _shakeTween != TweenStyle.NoTween;
+
+    public bool InAndOutTween()
+    {
+        if (_positionTween == TweenStyle.InAndOut)
+        {
+            return true;
+        }
+        if (_rotationTween == TweenStyle.InAndOut)
+        {
+            return true;
+        }
+        if (_scaleTween == TweenStyle.InAndOut)
+        {
+            return true;
+        }
+        if (_fadeTween == TweenStyle.InAndOut)
+        {
+            return true;
+        }
+        if (_punchTween == TweenStyle.InAndOut)
+        {
+            return true;
+        }
+        if (_shakeTween == TweenStyle.InAndOut)
+        {
+            return true;
+        }
+
+        return false;
+    }
 }
 

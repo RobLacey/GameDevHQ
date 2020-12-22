@@ -12,7 +12,6 @@ public class EventManager : ScriptableObject
     [SerializeField] EventInvocationLists _innvocationLists;
     [SerializeField] List<string> _parameterTypes = new List<string>();
     [SerializeField] string _returnTypes = "";
-    [SerializeField] bool _justInvoke = false;
     [SerializeField] bool _resetTypeData = true;
 
     private Action newEvent;
@@ -79,8 +78,6 @@ public class EventManager : ScriptableObject
     public void Invoke(MonoBehaviour invoker)
     {
         newEvent?.Invoke();
-
-        _justInvoke = true;
 
         if (_innvocationLists != null && newEvent != null)
         {

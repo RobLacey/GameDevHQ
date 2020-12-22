@@ -4,16 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
-using Unity.Mathematics;
 using UnityEngine.EventSystems;
-
-public interface ICanvasOrder
-{
-    OrderInCanvas CanvasOrder { get; set; }
-    int ManualCanvasOrder { get; set; }
-    Canvas MyCanvas { get; }
-    GameObject ThisBranchesGameObject { get; }
-}
 
 [RequireComponent(typeof(Canvas))]
 [RequireComponent(typeof(CanvasGroup))]
@@ -25,31 +16,25 @@ public interface ICanvasOrder
 public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch, IBranch, IEventDispatcher,
                                 IPointerEnterHandler, IPointerExitHandler, IGetHomeBranches
 {
-    [Header("Settings")] [HorizontalLine(1f, EColor.Blue, order = 1)]
+    [Header("Branch Main Settings")] [HorizontalLine(1f, EColor.Blue, order = 1)]
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, "IsHomeScreenBranch")] [Label("Is Control Bar")]
     private IsActive _controlBar = IsActive.No;
-    
-    [SerializeField] 
-    [ShowIf("ManualOrder")] [OnValueChanged("SetUpCanvasOrder")] 
-    private int _orderInCanvas;
-    [SerializeField] [HideIf("IsHomeScreenBranch")] [OnValueChanged("SetUpCanvasOrder")] 
-    private OrderInCanvas _canvasOrderSetting = OrderInCanvas.Default;
-
-    private void SetUpCanvasOrder()
-    {
-        CanvasOrderCalculator.SetUpCanvasOrderAtStart(this);
-    }
-
-    private bool ManualOrder => _canvasOrderSetting == OrderInCanvas.Manual;
-    
-    [SerializeField]
-    [Label("Move To Next Branch...")] private WhenToMove _moveType = WhenToMove.Immediately;
     [SerializeField]
     [Label("Start On (Optional)")] 
     private UINode _startOnThisNode;
+    [SerializeField] 
+    [ShowIf("ManualOrder")] [OnValueChanged("SetUpCanvasOrder")] 
+    private int _orderInCanvas;
+    [SerializeField] 
+    [OnValueChanged("SetUpCanvasOrder")] 
+    private OrderInCanvas _canvasOrderSetting = OrderInCanvas.Default;
+    
+    [Header("Type Settings", order = 2)] [HorizontalLine(1f, EColor.Blue, order = 3)] [Space(20, order = 1)]
+    [SerializeField]
+    [Label("Move To Next Branch...")] private WhenToMove _moveType = WhenToMove.Immediately;
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "IsControlBar", "IsAPopUpEditor")] [Label("Auto Open/Close")]
     private AutoOpenClose _autoOpenClose = AutoOpenClose.No;
@@ -62,7 +47,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [HideIf(EConditionOperator.Or, "IsOptional", "IsTimedPopUp", "IsHomeScreenBranch", "IsControlBar")]
     private ScreenType _screenType = ScreenType.FullScreen;
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "IsAPopUpEditor", "IsFullScreen", "IsControlBar")] 
+    [HideIf(EConditionOperator.Or, "IsAPopUpEditor", "IsFullScreen", "IsControlBar")]
+    [ValidateInput("AllowableInAndOutTweens", "Can't have IN And Out tweens and Stay Visible set")]
     private IsActive _stayVisible = IsActive.No;
     [SerializeField] 
     [ShowIf("IsOptional")] private StoreAndRestorePopUps _storeOrResetOptional = StoreAndRestorePopUps.Reset;
@@ -80,8 +66,10 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [HideIf(EConditionOperator.Or, "IsAPopUpEditor", "IsHomeScreenBranch")] 
     [Label("Branch Groups List (Leave blank if NO groups needed)")] 
     [ReorderableList] private List<GroupList> _groupsList;
+    
+    [Header("Events & Create New Buttons", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
+    [Space(20, order = 1)]
     [SerializeField] 
-    [Header("Events")][HorizontalLine(1f, EColor.Blue, order = 1)] 
     private BranchEvents _branchEvents;
 
     [Button("Create Node")]
@@ -97,52 +85,9 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
     private bool _activePopUp, _isTabBranch;
     private IBranchBase _branchTypeClass;
+    private INode _lastHighlighted;
 
-    //Properties
-    public AutoOpenClose AutoOpenClose
-    {
-        get => _autoOpenClose;
-        set => _autoOpenClose = value;
-    }
-    public IAutoOpenClose AutoOpenCloseClass { get; private set; }
-    public bool PointerOverBranch => AutoOpenCloseClass.PointerOverBranch;
-    public IsActive BlockOtherNode
-    {
-        get => _blockOtherNodes;
-        set => _blockOtherNodes = value;
-    }
 
-    public List<UIBranch> HomeBranches { private get; set; }
-    public OrderInCanvas CanvasOrder
-    {
-        get => _canvasOrderSetting;
-        set
-        {
-            _canvasOrderSetting = value;
-            SetUpCanvasOrder();
-        }
-    }
-
-    public int ManualCanvasOrder
-    {
-        get => _orderInCanvas;
-        set => _orderInCanvas = value;
-    }
-
-    //Set / Getters
-    private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
-    private void SaveHighlighted(IHighlightedNode args)
-    {
-        LastHighlighted = NodeSearch.Find(args.Highlighted)
-                                    .DefaultReturn(LastSelected)
-                                    .RunOn(ThisGroupsUiNodes);
-    }
-    private void SaveSelected(ISelectedNode args)
-    {
-        LastSelected = NodeSearch.Find(args.UINode)
-                                 .DefaultReturn(LastSelected)
-                                 .RunOn(ThisGroupsUiNodes);
-    }    
     /// <summary>
     /// Call To to start any PopUps through I StartPopUp
     /// </summary>
@@ -157,6 +102,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     //Main
     private void Awake()
     {
+        CheckForValidSetUp();
         ThisGroupsUiNodes = SetBranchesChildNodes.GetChildNodes(this);
         MyCanvasGroup = GetComponent<CanvasGroup>();
         MyCanvasGroup.blocksRaycasts = false;
@@ -165,13 +111,22 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         MyParentBranch = this;
         SetStartPositions();
         SetNodesChildrenToThisBranch();
-        AutoOpenCloseClass = EJect.Class.WithParams<IAutoOpenClose>(this);
+        AutoOpenCloseClass = EJect.Class.WithParams<IAutoOpenClose>(this); 
+    }
+
+    private void CheckForValidSetUp()
+    {
+        if (AllowableInAndOutTweens(_stayVisible)) return;
+        
+        Debug.Log($"Can't have Stay Visible and also have IN AND OUT Tweens on : {this} " +
+                  $"{Environment.NewLine} Stay Visible Set to No");
+        _stayVisible = IsActive.No;
     }
 
     private void SetStartPositions()
     {
         SetDefaultStartPosition();
-        LastHighlighted = DefaultStartOnThisNode;
+        _lastHighlighted = DefaultStartOnThisNode;
         LastSelected = DefaultStartOnThisNode;
         if(_groupsList.Count <= 1) return;
         _groupIndex = BranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
@@ -250,7 +205,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         _branchTypeClass.SetUpBranch(newParentBranch);
         
         if (_canActivateBranch) SetAsActiveBranch();
-        
+
         if (_tweenOnChange)
         {
             StartInTweens();
@@ -270,7 +225,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private void InTweenCallback()
     {
         if (_canActivateBranch)
-            LastHighlighted.SetNodeAsActive();
+            _lastHighlighted.SetNodeAsActive();
         if(!IsAPopUpBranch() && !IsTimedPopUp())
             CanvasOrderCalculator.ResetCanvasOrder(this, MyCanvas);
 
@@ -335,7 +290,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         if (_saveExitSelection == IsActive.Yes) return;
         
         _groupIndex = BranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
-        LastHighlighted = DefaultStartOnThisNode;
+        _lastHighlighted = DefaultStartOnThisNode;
     }
 
     public void SetCanvas(ActiveCanvas activeCanvas) => _branchTypeClass.SetCanvas(activeCanvas);

@@ -19,193 +19,230 @@ public interface IHub : IParameters
     InputScheme Scheme { get; }
 }
 
-[RequireComponent(typeof(Canvas))]
-[RequireComponent(typeof(CanvasScaler))]
-[RequireComponent(typeof(AudioSource))]
-[RequireComponent(typeof(UIInput))]
-
-public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnStart, ISceneChange, 
-                     IEServUser, IEventDispatcher
+namespace UIElements
 {
-    [SerializeField] private int _nextScene;
-    [SerializeField]
-    [ReorderableList] [Label("Home Screen Branches (First Branch is Start Position)")]
-    private List<UIBranch> _homeBranches;
+    [RequireComponent(typeof(Canvas))]
+    [RequireComponent(typeof(CanvasScaler))]
+    [RequireComponent(typeof(AudioSource))]
+    [RequireComponent(typeof(UIInput))]
 
-    [SerializeField] private int _pauseMenuCanvasOrder = 10;
-    [SerializeField] private int _toolTipCanvasOrder = 20;
-    [SerializeField] private int _popUpCanvasOrder = 5;
-
-    //Editor
-    [Button("Add a New Tree Structure")]
-    private void MakeFolder() 
-        => new CreateNewObjects().CreateMainFolder(transform)
-                                 .CreateBranch()
-                                 .CreateNode();
+    public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnStart, ISceneChange, 
+                         IEServUser, IEventDispatcher
+    {
+        [SerializeField] private UIBranch _startOnThisBranch;
+        [Header("Canvas Offsets for Branch Types", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
+        [Space(10, order = 1)]
+        [SerializeField] private int _pauseMenuCanvasOrder = 10;
+        [SerializeField] private int _toolTipCanvasOrder = 20;
+        [SerializeField] private int _resolvePopUpCanvasOrder = 5;
+        [SerializeField] private int _timedPopUpCanvasOrder = 5;
+        [SerializeField] private int _optionalPopUpCanvasOrder = 5;
+ 
+        [SerializeField] [Space(20, order = 1)] private int _nextScene  = default;
+        //Editor
+        [Button("Add a New Tree Structure")]
+        private void MakeFolder() 
+            => new CreateNewObjects().CreateMainFolder(transform)
+                                     .CreateBranch()
+                                     .CreateNode();
     
-    //Events
-    private Action<IOnStart> OnStart { get; set; }
-    private Action<ISetUpStartBranches> SetUpBranchesAtStart { get; set; }
-    private Action<ISceneChange> SceneChanging { get; set; }
+        //Variables
+        private List<UIBranch> _homeBranches;
+        private INode _lastHighlighted;
+        private bool _inMenu, _startingInGame;
+        private InputScheme _inputScheme;
+        private EVentBindings _eVentBindings = new EVentBindings(new EVent());
+        private IHistoryTrack _historyTrack;
+        private IAudioService _audioService;
+        private IHomeGroup _homeGroup;
+        private ICancel _cancelHandler;
 
-    //Variables
-    private INode _lastHighlighted;
-    private bool _inMenu, _startingInGame;
-    private InputScheme _inputScheme;
-    private EVentBindings _eVentBindings = new EVentBindings(new EVent());
-    private IHistoryTrack _historyTrack;
-    private IAudioService _audioService;
-    private IHomeGroup _homeGroup;
-    private ICancel _cancelHandler;
+        //Events
+        private Action<IOnStart> OnStart { get; set; }
+        private Action<ISetUpStartBranches> SetUpBranchesAtStart { get; set; }
+        private Action<ISceneChange> SceneChanging { get; set; }
+        
+        //Properties
+        public IBranch StartBranch => _homeBranches.First();
+        public GameObject ThisGameObject => gameObject;
+        public IBranch[] HomeBranches => _homeBranches.ToArray<IBranch>();
+        public InputScheme Scheme => _inputScheme;
 
-    //Properties
-    public IBranch StartBranch => _homeBranches.First();
-    public GameObject ThisGameObject => gameObject;
-    public IBranch[] HomeBranches => _homeBranches.ToArray<IBranch>();
-    public InputScheme Scheme => _inputScheme;
-
-    //Set / Getters
-    private void SaveInMenu(IInMenu args)
-    {
-        _inMenu = args.InTheMenu;
-        if(!_inMenu) SetEventSystem(null);
-    }
-
-    private void ReturnPauseCanvasOrder(IPauseCanvasOrder args) 
-        => args.PauseMenuCanvasOrder = _pauseMenuCanvasOrder;
-    
-    private void ReturnToolTipCanvasOrder(IToolTipCanvasOrder args) 
-        => args.ToolTipCanvasOrder = _toolTipCanvasOrder;
-    
-    private void ReturnPopUpCanvasOrder(IPopUpCanvasOrder args) 
-        => args.PopUpCanvasOrder = _popUpCanvasOrder;
-
-    private void ReturnHomeBranches(IGetHomeBranches args) => args.HomeBranches = _homeBranches;
-
-    //Main
-    private void Awake()
-    { 
-       var uIInput = GetComponent<IInput>();
-        _inputScheme = uIInput.ReturnScheme;
-        _startingInGame = uIInput.StartInGame();
-        _historyTrack = EJect.Class.NoParams<IHistoryTrack>();
-        _cancelHandler = EJect.Class.WithParams<ICancel>(this);
-        _audioService = EJect.Class.WithParams<IAudioService>(this);
-        _homeGroup = EJect.Class.WithParams<IHomeGroup>(this);
-    }
-
-    private void OnEnable()
-    {
-        UseEServLocator();
-        FetchEvents();
-        _historyTrack.OnEnable();
-        _homeGroup.OnEnable();
-        _cancelHandler.OnEnable();
-        ObserveEvents();
-    }
-
-    private void OnDisable() => _audioService.OnDisable();
-
-    public void FetchEvents()
-    {
-        OnStart = EVent.Do.Fetch<IOnStart>();
-        SetUpBranchesAtStart  = EVent.Do.Fetch<ISetUpStartBranches>();
-        SceneChanging = EVent.Do.Fetch<ISceneChange>();
-    }
-
-    public void UseEServLocator()
-    {
-        EServ.Locator.AddNew(_historyTrack);
-        EServ.Locator.AddNew(_audioService);
-        EServ.Locator.AddNew(_homeGroup);
-    }
-
-    public void ObserveEvents()
-    {
-        EVent.Do.Subscribe<IHighlightedNode>(SetLastHighlighted);
-        EVent.Do.Subscribe<IInMenu>(SaveInMenu);
-        EVent.Do.Subscribe<IAllowKeys>(SwitchedToKeys);
-        EVent.Do.Subscribe<IGetHomeBranches>(ReturnHomeBranches);
-        EVent.Do.Subscribe<IPauseCanvasOrder>(ReturnPauseCanvasOrder);
-        EVent.Do.Subscribe<IToolTipCanvasOrder>(ReturnToolTipCanvasOrder);
-        EVent.Do.Subscribe<IPopUpCanvasOrder>(ReturnPopUpCanvasOrder);
-    }
-
-    private void Start() => StartCoroutine(StartUIDelay());
-
-    private IEnumerator StartUIDelay()
-    {
-        yield return new WaitForEndOfFrame(); //Helps sync up Tweens and thread
-        if(_inputScheme.DelayUIStart != 0)
-            yield return new WaitForSeconds(_inputScheme.DelayUIStart);
-        CheckIfStartingInGame();
-        SetStartPositionsAndSettings();
-        StartCoroutine(EnableStartControls());
-    }
-
-    private void SetStartPositionsAndSettings() => SetUpBranchesAtStart?.Invoke(this);
-
-    private void CheckIfStartingInGame()
-    {
-        if (_startingInGame)
+        //Set / Getters
+        private void SaveInMenu(IInMenu args)
         {
-            OnStart?.Invoke(this);
-            _inMenu = false;
+            _inMenu = args.InTheMenu;
+            if(!_inMenu) SetEventSystem(null);
         }
-        else
+
+        private void ReturnPauseCanvasOrder(IPauseCanvasOrder args) 
+            => args.PauseMenuCanvasOrder = _pauseMenuCanvasOrder;
+    
+        private void ReturnToolTipCanvasOrder(IToolTipCanvasOrder args) 
+            => args.ToolTipCanvasOrder = _toolTipCanvasOrder;
+    
+        private void ReturnTimedCanvasOrder(IAdjustCanvasOrder args)
         {
-            EventSystem.current.SetSelectedGameObject(GetFirstHighlightedNodeInHomeGroup());
-            _inMenu = true;
+            switch (args.BranchType)
+            {
+                case BranchType.ResolvePopUp:
+                    args.CanvasOrderOffset = _resolvePopUpCanvasOrder;
+                    break;
+                case BranchType.OptionalPopUp:
+                    args.CanvasOrderOffset = _optionalPopUpCanvasOrder;
+                    break;
+                case BranchType.TimedPopUp:
+                    args.CanvasOrderOffset = _timedPopUpCanvasOrder;
+                    break;
+            }
+            
         }
-    }
+        private void ReturnHomeBranches(IGetHomeBranches args) => args.HomeBranches = _homeBranches;
 
-    private GameObject GetFirstHighlightedNodeInHomeGroup()
-    {
-        return _homeBranches.First().DefaultStartOnThisNode.ReturnGameObject;
-    }
+        //Main
+        private void Awake()
+        { 
+            var uIInput = GetComponent<IInput>();
+            _inputScheme = uIInput.ReturnScheme;
+            _startingInGame = uIInput.StartInGame();
+            GetHomeScreenBranches();
+            _historyTrack = EJect.Class.NoParams<IHistoryTrack>();
+            _cancelHandler = EJect.Class.WithParams<ICancel>(this);
+            _audioService = EJect.Class.WithParams<IAudioService>(this);
+            _homeGroup = EJect.Class.WithParams<IHomeGroup>(this);
+        }
 
-    private IEnumerator EnableStartControls()
-    {
-        if(_inputScheme.ControlActivateDelay != 0)
-            yield return new WaitForSeconds(Scheme.ControlActivateDelay);
-        if(!_startingInGame)
-            OnStart?.Invoke(this);
-        SetEventSystem(GetFirstHighlightedNodeInHomeGroup());
-    }
+        private void GetHomeScreenBranches()
+        {
+            var all = FindObjectsOfType<UIBranch>();
+            _homeBranches = new List<UIBranch>();
+            foreach (var uiBranch in all)
+            {
+                if (!uiBranch.IsHomeScreenBranch()) continue;
+                
+                if(uiBranch == _startOnThisBranch)
+                {
+                    _homeBranches.Insert(0, uiBranch);
+                }
+                else
+                {
+                    _homeBranches.Add(uiBranch);
+                }
+            }
+        }
+
+        private void OnEnable()
+        {
+            UseEServLocator();
+            FetchEvents();
+            _historyTrack.OnEnable();
+            _homeGroup.OnEnable();
+            _cancelHandler.OnEnable();
+            ObserveEvents();
+        }
+
+        private void OnDisable() => _audioService.OnDisable();
+
+        public void FetchEvents()
+        {
+            OnStart = EVent.Do.Fetch<IOnStart>();
+            SetUpBranchesAtStart  = EVent.Do.Fetch<ISetUpStartBranches>();
+            SceneChanging = EVent.Do.Fetch<ISceneChange>();
+        }
+
+        public void UseEServLocator()
+        {
+            EServ.Locator.AddNew(_historyTrack);
+            EServ.Locator.AddNew(_audioService);
+            EServ.Locator.AddNew(_homeGroup);
+        }
+
+        public void ObserveEvents()
+        {
+            EVent.Do.Subscribe<IHighlightedNode>(SetLastHighlighted);
+            EVent.Do.Subscribe<IInMenu>(SaveInMenu);
+            EVent.Do.Subscribe<IAllowKeys>(SwitchedToKeys);
+            EVent.Do.Subscribe<IGetHomeBranches>(ReturnHomeBranches);
+            EVent.Do.Subscribe<IPauseCanvasOrder>(ReturnPauseCanvasOrder);
+            EVent.Do.Subscribe<IToolTipCanvasOrder>(ReturnToolTipCanvasOrder);
+            EVent.Do.Subscribe<IAdjustCanvasOrder>(ReturnTimedCanvasOrder);
+        }
+
+        private void Start() => StartCoroutine(StartUIDelay());
+
+        // ReSharper disable Unity.PerformanceAnalysis
+        private IEnumerator StartUIDelay()
+        {
+            yield return new WaitForEndOfFrame(); //Helps sync up Tweens and thread
+            if(_inputScheme.DelayUIStart != 0)
+                yield return new WaitForSeconds(_inputScheme.DelayUIStart);
+            CheckIfStartingInGame();
+            SetStartPositionsAndSettings();
+            StartCoroutine(EnableStartControls());
+        }
+
+        private void SetStartPositionsAndSettings() => SetUpBranchesAtStart?.Invoke(this);
+
+        private void CheckIfStartingInGame()
+        {
+            if (_startingInGame)
+            {
+                OnStart?.Invoke(this);
+                _inMenu = false;
+            }
+            else
+            {
+                EventSystem.current.SetSelectedGameObject(GetFirstHighlightedNodeInHomeGroup());
+                _inMenu = true;
+            }
+        }
+
+        private GameObject GetFirstHighlightedNodeInHomeGroup()
+        {
+            return _homeBranches.First().DefaultStartOnThisNode.ReturnGameObject;
+        }
+
+        private IEnumerator EnableStartControls()
+        {
+            if(_inputScheme.ControlActivateDelay != 0)
+                yield return new WaitForSeconds(Scheme.ControlActivateDelay);
+            if(!_startingInGame)
+                OnStart?.Invoke(this);
+            SetEventSystem(GetFirstHighlightedNodeInHomeGroup());
+        }
     
-    private void SetLastHighlighted(IHighlightedNode args)
-    {
-        _lastHighlighted = args.Highlighted;
-        if(_inMenu) SetEventSystem(_lastHighlighted.ReturnGameObject);
-    }
+        private void SetLastHighlighted(IHighlightedNode args)
+        {
+            _lastHighlighted = args.Highlighted;
+            if(_inMenu) SetEventSystem(_lastHighlighted.ReturnGameObject);
+        }
 
-    private void SwitchedToKeys(IAllowKeys args)
-    {
-        SetEventSystem(GetCorrectLastHighlighted());
-    }
+        private void SwitchedToKeys(IAllowKeys args) => SetEventSystem(GetCorrectLastHighlighted());
 
-    private GameObject GetCorrectLastHighlighted()
-    {
-        return _lastHighlighted is null ? GetFirstHighlightedNodeInHomeGroup() : 
-                                          _lastHighlighted.ReturnGameObject;
-    }
+        private GameObject GetCorrectLastHighlighted()
+        {
+            return _lastHighlighted is null ? GetFirstHighlightedNodeInHomeGroup() : 
+                _lastHighlighted.ReturnGameObject;
+        }
 
-    private static void SetEventSystem(GameObject newGameObject) 
-        => EventSystem.current.SetSelectedGameObject(newGameObject);
-    
-    /// <summary>
-    /// Used by UnityEvent in Inspector
-    /// </summary>
-    public void LoadNextScene()
-    {
-        StartCoroutine(StartOut());
-    }
+        private static void SetEventSystem(GameObject newGameObject)
+        {
+            EventSystem.current.SetSelectedGameObject(newGameObject);
+        }    
+        /// <summary>
+        /// Used by UnityEvent in Inspector
+        /// </summary>
+        public void LoadNextScene()
+        {
+            StartCoroutine(StartOut());
+        }
 
-    private IEnumerator StartOut()
-    {
-        yield return new WaitForSeconds(0.5f);
-        SceneChanging?.Invoke(this);
-        SceneManager.LoadScene(_nextScene);
-    }
+        private IEnumerator StartOut()
+        {
+            yield return new WaitForSeconds(0.5f);
+            SceneChanging?.Invoke(this);
+            SceneManager.LoadScene(_nextScene);
+        }
 
+    }
 }

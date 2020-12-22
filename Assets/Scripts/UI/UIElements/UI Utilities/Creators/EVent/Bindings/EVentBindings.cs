@@ -21,6 +21,7 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<IAddResolvePopUp>();
         AutoRemove().CreateEvent<INoResolvePopUp>();
         AutoRemove().CreateEvent<INoPopUps>();
+        AutoRemove().CreateEvent<ILastRemovedPopUp>();
         
         //History
         AutoRemove().CreateEvent<IReturnToHome>();
@@ -65,7 +66,7 @@ public class EVentBindings : IEVentBindings
         //CanvasOrder
         AutoRemove().CreateEvent<IPauseCanvasOrder>();
         AutoRemove().CreateEvent<IToolTipCanvasOrder>();
-        AutoRemove().CreateEvent<IPopUpCanvasOrder>();
+        AutoRemove().CreateEvent<IAdjustCanvasOrder>();
     }
     
     public void CreateEvent<TType>()

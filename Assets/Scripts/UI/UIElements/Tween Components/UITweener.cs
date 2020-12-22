@@ -24,6 +24,7 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
     private List<ITweenBase> _activeTweens;
     private readonly ITweenInspector _tweenInspector = EJect.Class.NoParams<ITweenInspector>();
 
+    //Properties
     public RectTransform EndTweenRect { get; private set; }
     public TweenScheme Scheme => _scheme;
 
@@ -31,7 +32,9 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
     private Action FinishedTweenCallback{ get; set; }
     private Action<IEndTween> EndTweenEffect { get; set; }
     private TweenTrigger CurrentUserEvent{ get; set; }
-    
+    public bool HasInAndOutTween() => !(_scheme is null) && _scheme.InAndOutTween();
+
+    //Main
     public void Awake()
     {
         if(_buildObjectsList.Count == 0 || _scheme is null) return;

@@ -3,14 +3,14 @@
 [CreateAssetMenu(fileName = "Sound Scheme", menuName = "UIElements Schemes / New Audio Scheme")]
 public class AudioScheme : ScriptableObject
 {
-    [SerializeField] private AudioClip _highlighted;
-    [SerializeField] private float _highlightedVolume;
-    [SerializeField] private AudioClip _select;
-    [SerializeField] private float _selectedVolume;
-    [SerializeField] private AudioClip _cancel;
-    [SerializeField] private float _cancelVolume;
-    [SerializeField] private AudioClip _disabled;
-    [SerializeField] private float _disabledVolume;
+    [SerializeField] private AudioClip _highlighted = default;
+    [SerializeField] private float _highlightedVolume = default;
+    [SerializeField] private AudioClip _select = default;
+    [SerializeField] private float _selectedVolume = default;
+    [SerializeField] private AudioClip _cancel = default;
+    [SerializeField] private float _cancelVolume = default;
+    [SerializeField] private AudioClip _disabled = default;
+    [SerializeField] private float _disabledVolume = default;
 
     public AudioClip HighlightedClip => _highlighted;
     public AudioClip SelectedClip => _select;

@@ -181,8 +181,6 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IToolTipCanvasOrder
     {
         for (int toolTipIndex = 0; toolTipIndex < ListOfTooltips.Length; toolTipIndex++)
         {
-            yield return new WaitForSeconds(_buildDelay);
-            
             if(toolTipIndex > 0)
             {
                 yield return FadeLastToolTipOut(toolTipIndex - 1).WaitForCompletion();
@@ -191,6 +189,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IToolTipCanvasOrder
             CurrentToolTipIndex = toolTipIndex;
             _cachedToolTipCanvasList[toolTipIndex].enabled = true;
             yield return FadeNextToolTipIn(toolTipIndex).WaitForCompletion();
+            yield return new WaitForSeconds(_buildDelay);
         }
         yield return null;
     }

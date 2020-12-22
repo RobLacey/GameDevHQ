@@ -1,7 +1,4 @@
-﻿
-using UnityEngine;
-
-public interface IStandard : INodeBase { }
+﻿public interface IStandard : INodeBase { }
 
 public class Standard : NodeBase, IStandard
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 public interface IInput : IParameters
 {
@@ -14,14 +15,17 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
                        ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, IEServUser, IEventDispatcher
 {
     [SerializeField] 
-    [Expandable] private InputScheme _inputScheme;
+    [ReorderableList] private List<HotKeys> _hotKeySettings = new List<HotKeys>();
     [SerializeField] 
-    [ReorderableList] private List<HotKeys> _hotKeySettings;
+    private InGameOrInMenu _returnToGameControl  = default;
+    
+    [Header("Input Scheme (Changes are saved to ALL)", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
+    [Space(10, order = 1)]
     [SerializeField] 
-    private InGameOrInMenu _returnToGameControl;
+    [Expandable] private InputScheme _inputScheme  = default;
 
     //Variables
-    private bool _canStart, _inMenu, _gameIsPaused, _allowKeys;
+    private bool _canStart, _inMenu, _gameIsPaused, _allowKeys, _nothingSelected;
     private bool _noActivePopUps = true;
     private bool _onHomeScreen = true;
     private UINode _lastHomeScreenNode;
@@ -124,12 +128,17 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private void Update()
     {
         if (!_canStart) return;
-        
-         if (CanPauseGame())
-         {
-             PausedPressedActions();
-             return;
-         }
+
+        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+        {
+            _historyTrack.BackToHome();
+        }
+
+        if (CanPauseGame())
+        {
+            PausedPressedActions();
+            return;
+        }
         
         if (CanSwitchBetweenInGameAndMenu() && _onHomeScreen) return;
         if (CheckIfHotKeyAllowed()) return;

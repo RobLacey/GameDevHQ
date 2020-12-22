@@ -89,8 +89,6 @@ public interface INoResolvePopUp // This one is test
 public interface INoPopUps // This one is test
 {
     bool NoActivePopUps { get; }
-    int ActiveResolvePopUpCount { get; }
-    int ActiveOptionalPopUpCount { get; }
 }
 
 public interface IRemoveOptionalPopUp // This one is test
@@ -98,6 +96,10 @@ public interface IRemoveOptionalPopUp // This one is test
     IBranch ThisPopUp { get; }
 }
 
+public interface ILastRemovedPopUp
+{
+    IBranch LastOptionalPopUp { get; }
+}
 
 public interface IAddOptionalPopUp // This one is test
 {

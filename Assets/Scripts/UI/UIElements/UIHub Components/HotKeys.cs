@@ -6,9 +6,9 @@ using UnityEngine;
 public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
 {
     [SerializeField] 
-    private HotKey _hotKeyInput;
+    private HotKey _hotKeyInput  = default;
     [SerializeField] 
-    private UIBranch _myBranch;
+    private UIBranch _myBranch  = default;
     
     //Variables
     private bool _hasParentNode;
@@ -59,6 +59,7 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
         return true;
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     private void HotKeyActivation()
     {    
         if(ReferenceEquals(_activeBranch, _myBranch)) return;
@@ -96,7 +97,7 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
     private void GetImmediateParent()
     {
         var branchesNodes = _myBranch.MyParentBranch.ThisGroupsUiNodes;
-        _parentNode = branchesNodes.First(node => _myBranch == node.HasChildBranch);
+        _parentNode = branchesNodes.First(node => ReferenceEquals(_myBranch, node.HasChildBranch));
     }
     
     private void FindHomeScreenParent(IBranch branch)

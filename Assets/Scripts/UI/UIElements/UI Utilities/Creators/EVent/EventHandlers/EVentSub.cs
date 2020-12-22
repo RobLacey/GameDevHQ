@@ -12,6 +12,11 @@ public class EVentSub : EVentBaseClass<EVentSub>, IEVentSub
         return default;
     }
 
+    public override void Return<T>(T obj)
+    {
+        Debug.Log("Return");
+    }
+
     public override void Subscribe<TType>(Action<TType> listener)
     {
         Debug.Log("Subscribe");

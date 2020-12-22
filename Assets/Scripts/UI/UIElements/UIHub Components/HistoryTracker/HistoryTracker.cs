@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public interface ITestList //TODO Remove
 {
@@ -17,7 +18,6 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         SelectionProcess = EJect.Class.WithParams<INewSelectionProcess> (this);
         MoveBackInHistory = EJect.Class.WithParams<IMoveBackInHistory>(this);
         PopUpHistory = EJect.Class.WithParams<IManagePopUpHistory>(this);
-        
     }
 
     //Variables
@@ -180,6 +180,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         }
         else
         {
+            _history.Last().HasChildBranch.DoNotTween();
             _history.Last().HasChildBranch.MoveToThisBranch();
         }
     }

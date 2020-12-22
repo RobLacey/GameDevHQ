@@ -14,6 +14,7 @@ public abstract class EVentBaseClass<TEVent> : ISetNewEVent where TEVent : new()
     protected Hashtable EVentsList { get; set; }
     
     public abstract Action<T> Fetch<T>();
+    public abstract void Return<T>(T obj);
     public abstract void Subscribe<TType>(Action<TType> listener);
     public abstract void Unsubscribe<T>(Action<T> listener);
 }

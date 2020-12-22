@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 
@@ -24,9 +25,9 @@ public abstract class InputScheme : ScriptableObject
     [Header("Start Delay")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
     [SerializeField] 
     [Label("Delay UI Start By then..")]
-    protected float _delayUIStart;
+    [Range(0, 10)] protected float _delayUIStart;
     [SerializeField] [Label("..Enable Controls After..")]
-    protected float _controlActivateDelay;
+    [Range(0, 10)] protected float _controlActivateDelay;
 
     //Variables
     protected Vector3 _mousePosition;
