@@ -86,6 +86,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         EVent.Do.Subscribe<IInMenu>(SwitchToGame);
         EVent.Do.Subscribe<ICancelPopUp>(CancelPopUpFromButton);
         EVent.Do.Subscribe<ISelectedNode>(SetSelected);
+        EVent.Do.Subscribe<IClearAll>(ClearAll);
     }
 
     private void SetCanStart(IOnStart onStart) => _canStart = true;
@@ -120,6 +121,8 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
             BackToHome();
         }
     }
+
+    public void ClearAll(IClearAll args) => BackToHome();
 
     public void BackToHome()
     {

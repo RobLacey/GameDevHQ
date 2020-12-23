@@ -12,7 +12,8 @@ public interface IInput : IParameters
 }
 
 public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitchGroupPressed, 
-                       ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, IEServUser, IEventDispatcher
+                       ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, 
+                       IEServUser, IEventDispatcher, IClearAll
 {
     [SerializeField] 
     [ReorderableList] private List<HotKeys> _hotKeySettings = new List<HotKeys>();
@@ -40,6 +41,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private Action<ICancelPressed> OnCancelPressed { get; set; }
     private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; set; }
     private Action<IChangeControlsPressed> OnChangeControlPressed { get; set; }
+    private Action<IClearAll> OnClearAll { get; set; }
 
     [Serializable]
     public class InGameOrInMenu : UnityEvent<bool> { }
@@ -112,6 +114,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         OnCancelPressed = EVent.Do.Fetch<ICancelPressed>();
         OnSwitchGroupPressed  = EVent.Do.Fetch<ISwitchGroupPressed>();
         OnChangeControlPressed = EVent.Do.Fetch<IChangeControlsPressed>();
+        OnClearAll = EVent.Do.Fetch<IClearAll>();
     }
 
     public void ObserveEvents()
@@ -125,13 +128,15 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
 
+    public static event Action NothingClicked;
+
     private void Update()
     {
         if (!_canStart) return;
 
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
         {
-            _historyTrack.BackToHome();
+            OnClearAll?.Invoke(this);
         }
 
         if (CanPauseGame())

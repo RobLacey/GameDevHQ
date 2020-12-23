@@ -1,4 +1,5 @@
 ﻿using System;
+using UIElements;
 using UnityEngine;
 
 public interface IStartPopUp
@@ -17,6 +18,9 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     
     
     event Action OnStartPopUp;
+    event Action<UIGameObject> StartInGamePopUp;
+    event Action ExitPopUp;
+    
     INode DefaultStartOnThisNode { get; }
     CanvasGroup MyCanvasGroup { get; }
     ScreenType ScreenType { get; set; }
@@ -31,6 +35,7 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     bool PointerOverBranch { get;}
     IAutoOpenClose AutoOpenCloseClass { get; }
     IsActive BlockOtherNode { get; set; }
+    IsActive ResetSavePositionOnExit();
     
     IBranch[] FindAllBranches();
     IsActive GetStayOn();

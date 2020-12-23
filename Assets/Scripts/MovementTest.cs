@@ -12,6 +12,7 @@ public class MovementTest : MonoBehaviour
 
     float _horizontalSpeed;
     float _verticalSpeed;
+    private Transform _child;
 
     bool _inMenu = true;
 
@@ -21,13 +22,14 @@ public class MovementTest : MonoBehaviour
     {
         //SetUp _inMenu
         _myTransform = GetComponent<Transform>();
+        _child = GetComponentInChildren<SpriteRenderer>().transform;
     }
 
     // Update is called once per frame
     void Update()
     {
         Vector3 rotationSpeed = new Vector3(0, 0, 30);
-        transform.Rotate(rotationSpeed * Time.deltaTime, Space.Self);
+        _child.Rotate(rotationSpeed * Time.deltaTime, Space.Self);
         if (!_inMenu)
         {
             _horizontalSpeed = Input.GetAxis(_horizontal) * _speed;

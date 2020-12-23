@@ -47,6 +47,7 @@
         _eJectMaster.Bind<OptionalPopUpPopUp>().To<IOptionalPopUpBranch>().WithParameters();
         _eJectMaster.Bind<TimedPopUp>().To<ITimedPopUpBranch>().WithParameters();
         _eJectMaster.Bind<PauseMenu>().To<IPauseBranch>().WithParameters();
+        _eJectMaster.Bind<InGameUI>().To<IInGameUi>().WithParameters();
         
         //NodeTweens
         _eJectMaster.Bind<Position>().To<IPosition>().WithParameters();

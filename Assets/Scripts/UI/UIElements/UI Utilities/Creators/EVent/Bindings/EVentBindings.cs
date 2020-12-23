@@ -36,6 +36,7 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<ISwitchGroupPressed>();
         AutoRemove().CreateEvent<IHotKeyPressed>();
         AutoRemove().CreateEvent<IMenuGameSwitchingPressed>();
+        AutoRemove().CreateEvent<IClearAll>();
         
         //ChangeControl
         AutoRemove().CreateEvent<IAllowKeys>();

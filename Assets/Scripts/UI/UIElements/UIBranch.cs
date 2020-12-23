@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
+using UIElements;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Canvas))]
@@ -86,15 +87,22 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private bool _activePopUp, _isTabBranch;
     private IBranchBase _branchTypeClass;
     private INode _lastHighlighted;
-
-
+    
     /// <summary>
     /// Call To to start any PopUps through I StartPopUp
     /// </summary>
     public void StartPopUp() => OnStartPopUp?.Invoke();
+    
+    /// <summary>
+    /// Call To to start and Exit InGameUi
+    /// </summary>
+    public void StartInGameUi(UIGameObject uiGameObject) => StartInGamePopUp?.Invoke(uiGameObject);
+    public void ExitInGameUi() => ExitPopUp?.Invoke();
 
     //Delegates & Events
     public event Action OnStartPopUp; 
+    public event Action<UIGameObject> StartInGamePopUp; 
+    public event Action ExitPopUp; 
     private Action TweenFinishedCallBack { get; set; }
     private  Action<IActiveBranch> SetActiveBranch { get; set; }
     private  Action<IGetHomeBranches> GetHomeBranches { get; set; }
@@ -143,7 +151,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         {
             FindStartPosition();
         }
-        
     }
 
     private void FindStartPosition()
@@ -203,7 +210,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     public void MoveToThisBranch(IBranch newParentBranch = null)
     {
         _branchTypeClass.SetUpBranch(newParentBranch);
-        
+
         if (_canActivateBranch) SetAsActiveBranch();
 
         if (_tweenOnChange)
@@ -226,6 +233,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     {
         if (_canActivateBranch)
             _lastHighlighted.SetNodeAsActive();
+        
         if(!IsAPopUpBranch() && !IsTimedPopUp())
             CanvasOrderCalculator.ResetCanvasOrder(this, MyCanvas);
 

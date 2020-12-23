@@ -56,6 +56,7 @@ public partial class UIBranch
     public bool PointerOverBranch => AutoOpenCloseClass.PointerOverBranch;
     public List<UIBranch> HomeBranches { private get; set; }
     public float Timer => _timer;
+    public IsActive ResetSavePositionOnExit() => _saveExitSelection = IsActive.Yes;
 
 
     public EscapeKey EscapeKeyType

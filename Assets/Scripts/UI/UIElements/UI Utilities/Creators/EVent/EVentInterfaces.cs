@@ -137,5 +137,7 @@ public interface IGetHomeBranches
     List<UIBranch> HomeBranches { set; }
 }
 
+public interface IClearAll { }
+
 
 

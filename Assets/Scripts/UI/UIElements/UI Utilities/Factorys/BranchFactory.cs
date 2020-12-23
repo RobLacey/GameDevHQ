@@ -1,4 +1,6 @@
-﻿public class BranchFactory
+﻿using System;
+
+public class BranchFactory
 {
     private IBranch _branch;
     private static readonly IEJect ieJect = new EJect();
@@ -50,11 +52,17 @@
                 CreateInternal(_branch);
                 return ieJect.WithParams<IStandardBranch>(_branch);
             }
+            case BranchType.InGameUi:
+                CreateInGameUi(_branch);
+                return ieJect.WithParams<IInGameUi>(_branch);
+            default:
+                throw new ArgumentOutOfRangeException(nameof(branchType), branchType, null);
         }
 
         return null;
     }
-    
+
+
     private static void CreateHomeScreenBranch(IBranch branch)
     {
         branch.ScreenType = ScreenType.Normal;
@@ -79,6 +87,7 @@
         branch.TweenOnHome = DoTween.DoNothing;
         branch.SetStayOn = IsActive.No;
         branch.BlockOtherNode = IsActive.No;
+        branch.ResetSavePositionOnExit();
     }
 
     private static void CreateOptionalPopUp(IBranch branch)
@@ -88,6 +97,7 @@
         branch.SetStayOn = IsActive.No;
         branch.AutoOpenClose = AutoOpenClose.No;
         branch.BlockOtherNode = IsActive.No;
+        branch.ResetSavePositionOnExit();
     }
     
     private static void CreateTimedPopUp(IBranch branch)
@@ -98,6 +108,7 @@
         branch.SetStayOn = IsActive.No;
         branch.AutoOpenClose = AutoOpenClose.No;
         branch.BlockOtherNode = IsActive.No;
+        branch.ResetSavePositionOnExit();
     }
 
     private static void CreatePauseMenu(IBranch branch)
@@ -113,4 +124,15 @@
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.BlockOtherNode = IsActive.No;
     }
+    
+    private static void CreateInGameUi(IBranch branch)
+    {
+        branch.ScreenType = ScreenType.Normal;
+        branch.TweenOnHome = DoTween.DoNothing;
+        branch.SetStayOn = IsActive.No;
+        branch.WhenToMove = WhenToMove.AfterEndOfTween;
+        branch.BlockOtherNode = IsActive.No;
+        branch.ResetSavePositionOnExit();
+    }
+
 }

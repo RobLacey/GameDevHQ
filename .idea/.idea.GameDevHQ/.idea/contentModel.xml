@@ -402,6 +402,7 @@
                   <e p="BranchBaseInterfaces.cs" t="Include" />
                   <e p="Types" t="Include">
                     <e p="HomeScreenBranch.cs" t="Include" />
+                    <e p="InGameUI.cs" t="Include" />
                     <e p="OptionalPopUp.cs" t="Include" />
                     <e p="PauseMenu.cs" t="Include" />
                     <e p="ResolvePopUp.cs" t="Include" />
@@ -425,6 +426,7 @@
                 </e>
               </e>
               <e p="UIBranch.cs" t="Include" />
+              <e p="UIGameObject.cs" t="Include" />
               <e p="UIHub Components" t="Include">
                 <e p="ChangeControl.cs" t="Include" />
                 <e p="HistoryTracker" t="Include">
