@@ -128,12 +128,14 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
 
-    public static event Action NothingClicked;
+    //public static event Action NothingClicked;
 
     private void Update()
     {
         if (!_canStart) return;
 
+        if(ReturnControlToGameIfKeysOnly()) return;
+        
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
         {
             OnClearAll?.Invoke(this);
@@ -149,6 +151,17 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         if (CheckIfHotKeyAllowed()) return;
 
         if (_inMenu) InMenuControls();
+    }
+
+    private bool ReturnControlToGameIfKeysOnly()
+    {
+        if(!_inMenu) return false;
+        if (Input.GetMouseButtonDown(0) && _inputScheme.ControlType == ControlMethod.KeysOrControllerOnly)
+        {
+            EventSystem.current.SetSelectedGameObject(_activeBranch.LastSelected.ReturnGameObject);
+            return true;
+        }
+        return false;
     }
 
     private void InMenuControls()

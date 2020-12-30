@@ -8,12 +8,10 @@ public abstract class InputScheme : ScriptableObject
     [Space(20f, order = 1)]
     [SerializeField] 
     protected ControlMethod _mainControlType = ControlMethod.MouseOnly;
-    
-    [Header("In Game System")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
-    [SerializeField] 
+    [SerializeField] [ShowIf("KeyboardOnly")]
     protected InGameSystem _inGameMenuSystem = InGameSystem.Off;
     [SerializeField] 
-    [EnableIf("InGameOn")]
+    [ShowIf("KeyboardOnly")] [EnableIf("InGameOn")]
     protected StartInMenu _startGameWhere = StartInMenu.InGameControl;
     
     [Header("Cancel / Back Settings")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
@@ -35,6 +33,21 @@ public abstract class InputScheme : ScriptableObject
     
     //Editor
     private bool InGameOn => _inGameMenuSystem == InGameSystem.On;
+
+    private bool KeyboardOnly
+    {
+        get
+        {
+            var KeysOnly = _mainControlType == ControlMethod.KeysOrControllerOnly;
+
+            if (!KeysOnly)
+            {
+                _inGameMenuSystem = InGameSystem.Off;
+            }
+
+            return KeysOnly;
+        }
+    }
 
     public ControlMethod ControlType => _mainControlType;
     public PauseOptionsOnEscape PauseOptions => _pauseOptionsOnEscape;

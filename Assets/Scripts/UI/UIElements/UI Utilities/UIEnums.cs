@@ -16,7 +16,7 @@ public enum ToggleGroup { TG1, TG2, TG3, TG4, TG5 }
 
 public enum EscapeKey { None, BackOneLevel, BackToHome, GlobalSetting }
 
-public enum ButtonFunction { Standard, ToggleGroup, ToggleNotLinked, CancelOrBack }
+public enum ButtonFunction { Standard, ToggleGroup, ToggleNotLinked, CancelOrBack, InGameUi }
 
 [Flags]
 public enum Setting
@@ -53,7 +53,7 @@ public enum ToolTipAnchor
     MiddleBottom, TopLeft, TopRight, BottomLeft, BottomRight
 }
 
-public enum TooltipType { Fixed, Follow }
+public enum TooltipType { FixedPosition, Follow, AsInInspector }
 
 [Flags]
 public enum EventType

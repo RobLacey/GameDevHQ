@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ba0795612f67412288cc7dc8e7b56c47, type: 3}
-  m_Name: ToolTipScheme - Main
+  m_Name: ToolTipScheme - In Game
   m_EditorClassIdentifier: 
-  _tooltipType: 2
+  _tooltipType: 1
   _toolTipPosition: 8
   _groupFixedPosition: {fileID: 0}
   _mousePaddingX: 0

@@ -127,11 +127,7 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
         SetNextHighlightedForKeys();
     }
 
-    private void SetAllowKeys()
-    {
-        if (_controlMethod == ControlMethod.MouseOnly) return;
-        AllowKeys?.Invoke(this);
-   }
+    private void SetAllowKeys() => AllowKeys?.Invoke(this);
 
     private void SetNextHighlightedForKeys() => _historyTracker.MoveToLastBranchInHistory();
 }

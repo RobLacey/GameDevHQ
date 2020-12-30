@@ -289,6 +289,7 @@
             <e p="TipController.cs" t="Include" />
             <e p="UIActivator.cs" t="Include" />
             <e p="UIElements" t="Include">
+              <e p="GameObjectController.cs" t="Include" />
               <e p="Shader" t="Include">
                 <e p="UnlitFrostedGlass.shader" t="Include" />
                 <e p="UnlitFrostGlassWithTint.shader" t="Include" />
@@ -498,6 +499,7 @@
                     <e p="CancelOrBackButton.cs" t="Include" />
                     <e p="Disable.cs" t="Include" />
                     <e p="IDisableData.cs" t="Include" />
+                    <e p="InGameNode.cs" t="Include" />
                     <e p="LinkedToggles.cs" t="Include" />
                     <e p="Standard.cs" t="Include" />
                     <e p="ToggleData.cs" t="Include" />

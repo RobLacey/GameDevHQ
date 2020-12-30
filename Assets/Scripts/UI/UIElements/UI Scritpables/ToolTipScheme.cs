@@ -1,10 +1,14 @@
 ﻿
+using System;
 using NaughtyAttributes;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "UIElements Schemes / New ToolTip Scheme ", fileName = "ToolTipScheme")]
 public class ToolTipScheme : ScriptableObject
 {
+    [InfoBox("AS IN INSPECTOR - Only applies to Keyboard / Controller. Will Follow Mouse \n \n" +
+             "FOLLOW - Everything follows parent objects RectTransform \n \n" + 
+             "FIXED POSITION - Everything. Tooltip appears in the position of the supplied RectTransform")]
     [SerializeField] private TooltipType _tooltipType = TooltipType.Follow;
     
     [Header("Mouse & Global Fixed Position Settings", order = 2)]
@@ -64,8 +68,10 @@ public class ToolTipScheme : ScriptableObject
     public float FadeInTime => _fadeInTweenTime;
     public float FadeOutTime => _fadeOutTweenTime;
 
-    public bool Fixed() => _tooltipType == TooltipType.Fixed;
-    public bool FollowMouse() => _tooltipType == TooltipType.Follow;
-    public bool UseGameObject() => _positionToUse == UseSide.GameObjectAsPosition && _tooltipType != TooltipType.Fixed;
+    public bool Fixed() => _tooltipType == TooltipType.FixedPosition;
+    public bool AsInInspector() => _tooltipType == TooltipType.AsInInspector;
+    public bool Follow() => _tooltipType == TooltipType.Follow;
+    public bool UseGameObject() => _positionToUse == UseSide.GameObjectAsPosition 
+                                   && _tooltipType != TooltipType.FixedPosition;
 
 }

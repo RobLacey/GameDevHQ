@@ -1,4 +1,5 @@
 ﻿
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +17,7 @@ public class GetScreenPosition : IGetScreenPosition
         _listOfTooltips = _tooltip.ListOfTooltips;
         _toolTipsRects = _tooltip.ToolTipsRects;
         _myCorners = _tooltip.MyCorners;
+        _parentRectTransform = _tooltip.ParentRectTransform;
         _calculation = new ToolTipsCalcs(_tooltip.MainCanvas, _scheme.ScreenSafeZone);
     }
 
@@ -25,11 +27,11 @@ public class GetScreenPosition : IGetScreenPosition
     private readonly LayoutGroup[] _listOfTooltips;
     private readonly RectTransform[] _toolTipsRects;
     private readonly Vector3[] _myCorners;
+    private readonly RectTransform _parentRectTransform;
     
     //Properties
     private Vector2 KeyboardPadding => new Vector2(_scheme.KeyboardXPadding, _scheme.KeyboardYPadding);
     private Vector2 MousePadding => new Vector2(_scheme.MouseXPadding, _scheme.MouseYPadding);
-
 
     public void SetExactPosition(bool isKeyboard)
     {
@@ -55,8 +57,14 @@ public class GetScreenPosition : IGetScreenPosition
                 return SetKeyboardTooltipPosition();
             case TooltipType.Follow:
                 return SetMouseToolTipPosition();
-            case TooltipType.Fixed:
+            case TooltipType.FixedPosition:
                 return SetFixedToolTipPosition();
+            case TooltipType.AsInInspector when isKeyboard:
+                return SetKeyboardTooltipPosition();
+            case TooltipType.AsInInspector:
+                return SetMouseToolTipPosition();
+            default:
+                throw new ArgumentOutOfRangeException(nameof(toolTipType), toolTipType, null);
         }
         return Vector3.zero;
     }
@@ -67,9 +75,13 @@ public class GetScreenPosition : IGetScreenPosition
 
     private Vector3 SetKeyboardTooltipPosition()
     {
-        var tolTipPosition = Vector3.zero;
-        tolTipPosition = PositionBasedOnSettings(tolTipPosition);
-        return ReturnScreenPosition(tolTipPosition) + KeyboardPadding;
+        var toolTipPosition = Vector3.zero;
+        toolTipPosition = PositionBasedOnSettings(toolTipPosition);
+        
+        if (_scheme.Follow())
+            toolTipPosition += _parentRectTransform.transform.position;
+        
+        return ReturnScreenPosition(toolTipPosition) + KeyboardPadding;
     }
 
     private Vector3 PositionBasedOnSettings(Vector3 position)

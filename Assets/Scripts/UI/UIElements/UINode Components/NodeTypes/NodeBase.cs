@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 using UnityEngine.EventSystems;
 
 public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelectedNode, 
@@ -13,12 +12,13 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     }
     
     //Variables
-    protected INode _uiNode;
-    private IDisabledNode _disabledNode;
-    private bool _inMenu, _hasFinishedSetUp;
+    protected readonly INode _uiNode;
+    protected IDisabledNode _disabledNode;
+    protected bool _inMenu;
+    private bool _hasFinishedSetUp;
     protected bool _allowKeys;
     private INode _lastHighlighted;
-    private readonly IUiEvents _uiFunctionEvents;
+    protected readonly IUiEvents _uiFunctionEvents;
     private bool _fromHotKey;
 
     //Events
@@ -26,9 +26,9 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     private Action<ISelectedNode> DoSelected { get; set; }
 
     //Properties
-    private bool PointerOverNode { get; set; }
+    protected bool PointerOverNode { get; set; }
     public IBranch MyBranch { get; protected set; }
-    private bool IsDisabled => _disabledNode.IsDisabled;
+    protected bool IsDisabled => _disabledNode.IsDisabled;
     public UINavigation Navigation { get; set; }
     protected bool IsSelected { get; private set; }
     public INode Highlighted => _uiNode;
@@ -60,10 +60,12 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
             OnExit();
     }
     
-    private void SaveInMenuOrInGame(IInMenu args)
+    protected virtual void SaveInMenuOrInGame(IInMenu args)
     {
         _inMenu = args.InTheMenu;
         if (HasNotFinishedSetUp()) return;
+        
+        if(!ReferenceEquals(_lastHighlighted, _uiNode)) return;
         
         if (!_inMenu)
         {
@@ -131,7 +133,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         _uiFunctionEvents.DoIsDisabled(_disabledNode.IsDisabled);
     }
 
-    public void SetNodeAsActive()
+    public virtual void SetNodeAsActive()
     {
         if (_disabledNode.IsThisNodeIsDisabled()) return;
         
@@ -148,7 +150,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         }
     }
 
-    protected void SetAsHighlighted() 
+    protected virtual void SetAsHighlighted() 
     {
         if (IsDisabled) return;
         ThisNodeIsHighLighted();
@@ -171,7 +173,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     public void SelectedAction()
     {
         if (IsDisabled) return;
-        if (_allowKeys) PointerOverNode = false;
+        PointerOverNode = false;
         TurnNodeOnOff();
     }
 

@@ -70,6 +70,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     private INodeBase _nodeBase;
     private readonly List<NodeFunctionBase> _activeFunctions = new List<NodeFunctionBase>();
     private bool _canStart;
+    private bool _allowKeys;
 
     //Properties
     public RectTransform MainCanvas => FindObjectOfType<UIHub>().GetComponent<RectTransform>();
@@ -93,6 +94,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     
     //Setting / Getters
     private void CanStart(IOnStart args) => _canStart = true;
+    private void AllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
     
     //Main
     private void Awake()
@@ -104,7 +106,11 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
         ObserveEvents();
     }
     
-    public void ObserveEvents() => EVent.Do.Subscribe<IOnStart>(CanStart);
+    public void ObserveEvents()
+    {
+        EVent.Do.Subscribe<IOnStart>(CanStart);
+        EVent.Do.Subscribe<IAllowKeys>(AllowKeys);
+    }
 
     private void OnEnable() => SetUpUiFunctions();
 
@@ -174,10 +180,14 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public void OnPointerEnter(PointerEventData eventData) => _nodeBase.OnEnter();
     public void OnPointerExit(PointerEventData eventData) => _nodeBase.OnExit();
     public void OnPointerDown(PointerEventData eventData) => _nodeBase.SelectedAction();
-    public void OnSubmit(BaseEventData eventData) => _nodeBase.SelectedAction();
+    public void OnSubmit(BaseEventData eventData)
+    {
+        if(!_allowKeys) return;
+        _nodeBase.SelectedAction();
+    }
     public void OnMove(AxisEventData eventData)
     {
-        if(!_canStart) return;
+        if(!_canStart || !_allowKeys) return;
         _nodeBase.DoMoveToNextNode(eventData.moveDir);
     }
     public void OnPointerUp(PointerEventData eventData) { }

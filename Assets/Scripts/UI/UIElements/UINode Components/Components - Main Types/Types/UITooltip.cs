@@ -14,6 +14,7 @@ public interface IToolTipData: IParameters
     RectTransform[] ToolTipsRects { get; }
     Vector3[] MyCorners { get; }
     ToolTipScheme Scheme { get; }
+    RectTransform ParentRectTransform { get; }
 }
 
 public interface IToolTipCanvasOrder
@@ -51,6 +52,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IToolTipCanvasOrder
     public RectTransform[] ToolTipsRects { get; private set; }
     public Vector3[] MyCorners { get; } = new Vector3[4];
     public int ToolTipCanvasOrder { private get; set; }
+    public RectTransform ParentRectTransform { get; private set; }
 
     //Set / Getters
     protected override bool CanBeHighlighted() => false;
@@ -69,21 +71,32 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IToolTipCanvasOrder
     protected sealed override void OnAwake(IUiEvents uiEvents) 
     {
         base.OnAwake(uiEvents);
-        SetUp(uiEvents.ReturnMasterNode.GetComponent<RectTransform>());
+        SetUp();
         SetUToolTipContainerObject();
+        SetCorners();
         _toolTipFade = EJect.Class.WithParams<IToolTipFade>(this);
-        _getScreenPosition = EJect.Class.WithParams<IGetScreenPosition>(this);
     }
 
-    private void SetUp(RectTransform parentRectTransform)
+    private void SetUp()
     {
         if (FunctionNotActive()) return;
         SetUpTooltips();
-        SetCorners(parentRectTransform);
         CheckSetUpForError();
     }
-
-    private void SetCorners(RectTransform parentRectTransform) => parentRectTransform.GetWorldCorners(MyCorners);
+    
+    private void SetCorners()
+    {
+        ParentRectTransform = _uiEvents.ReturnMasterNode.GetComponent<RectTransform>();
+        _getScreenPosition = EJect.Class.WithParams<IGetScreenPosition>(this);
+        if (Scheme.AsInInspector())
+        {
+            ParentRectTransform.GetWorldCorners(MyCorners);
+        }
+        else
+        {
+            ParentRectTransform.GetLocalCorners(MyCorners);
+        }
+    }
 
     private void SetUToolTipContainerObject()
     {
@@ -109,7 +122,8 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IToolTipCanvasOrder
         base.Start();
         SetToolTipCanvasOrder();
     }
-
+    
+    //Main
     private void SetToolTipCanvasOrder()
     {
         EVent.Do.Fetch<IToolTipCanvasOrder>().Invoke(this);
@@ -176,6 +190,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IToolTipCanvasOrder
         _coroutineBuild = StaticCoroutine.StartCoroutine(ToolTipBuild());
         _coroutineActivate = StaticCoroutine.StartCoroutine(ActivateTooltip(_allowKeys));
     }
+    
 
     private IEnumerator ToolTipBuild()
     {

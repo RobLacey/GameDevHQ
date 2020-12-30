@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class NodeFactory
 {
-    private static IEJect ieJect = new EJect();
+    private static IEJect EJect { get; } = new EJect();
     
     public static INodeBase Factory(ButtonFunction functions, INode node)
     {
@@ -25,6 +25,10 @@ public static class NodeFactory
             {
                 return CreateCancelOrBack(node);
             }
+            case ButtonFunction.InGameUi:
+            {
+                return CreateInGameUi(node);
+            }            
             default:
                 throw new Exception("No Node Type Found");
         }
@@ -32,22 +36,26 @@ public static class NodeFactory
 
     private static INodeBase CreateStandard(INode node)
     {
-        
-        return ieJect.WithParams<IStandard>(node);
+        return EJect.WithParams<IStandard>(node);
     }
     private static INodeBase CreateLinkedToggles(INode node)
     {
         node.HasChildBranch = null;
-        return ieJect.WithParams<ILinkedToggles>(node);
+        return EJect.WithParams<ILinkedToggles>(node);
     }
     private static INodeBase CreateTogglesNotLinked(INode node)
     {
         node.HasChildBranch = null;
-        return ieJect.WithParams<IToggleNotLinked>(node);
+        return EJect.WithParams<IToggleNotLinked>(node);
     }
     private static INodeBase CreateCancelOrBack(INode node)
     {
         node.HasChildBranch = null;
-        return ieJect.WithParams<ICancelOrBack>(node);
+        return EJect.WithParams<ICancelOrBack>(node);
+    }
+    
+    private static INodeBase CreateInGameUi(INode node)
+    {
+        return EJect.WithParams<IInGameNode>(node);
     }
 }

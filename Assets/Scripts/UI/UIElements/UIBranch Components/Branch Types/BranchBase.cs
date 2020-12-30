@@ -22,6 +22,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
     private readonly Canvas _myCanvas;
     private readonly CanvasGroup _myCanvasGroup;
     protected bool _isTabBranch;
+    private bool _allowKeys;
 
     //Events
     private Action<IOnHomeScreen> SetIsOnHomeScreen { get; set; }
@@ -39,6 +40,17 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
     protected virtual void SaveInMenu(IInMenu args) => _inMenu = args.InTheMenu;
     protected virtual void SaveIfOnHomeScreen(IOnHomeScreen args) => OnHomeScreen = args.OnHomeScreen;
     protected virtual void SaveOnStart(IOnStart args) => _canStart = true;
+
+    private void AllowKeys(IAllowKeys args)
+    {
+        _allowKeys = args.CanAllowKeys;
+        if (!_canStart && _allowKeys)
+        {
+            _myCanvasGroup.blocksRaycasts = false;
+        }
+        var blockRaycast = _allowKeys ? BlockRaycast.No : BlockRaycast.Yes;
+        SetBlockRaycast(blockRaycast);
+    }
     public bool OnHomeScreen { get; private set; } = true;
     public IBranch IgnoreThisBranch => _myBranch;
     public ScreenType MyScreenType { get; }
@@ -67,6 +79,7 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
         EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
         EVent.Do.Subscribe<IInMenu>(SaveInMenu);
         EVent.Do.Subscribe<IClearScreen>(ClearBranchForFullscreen);
+        EVent.Do.Subscribe<IAllowKeys>(AllowKeys);
     }
 
     public void UseEServLocator() => _historyTrack = EServ.Locator.Get<IHistoryTrack>(this);
@@ -88,7 +101,14 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
     public virtual void SetBlockRaycast(BlockRaycast active)
     {
         if(!_canStart) return;
-        _myCanvasGroup.blocksRaycasts = active == BlockRaycast.Yes && _inMenu;
+        if (_allowKeys)
+        {
+            _myCanvasGroup.blocksRaycasts = false;
+        }
+        else
+        {
+            _myCanvasGroup.blocksRaycasts = active == BlockRaycast.Yes && _inMenu;
+        }
     }
 
     protected virtual void ClearBranchForFullscreen(IClearScreen args)

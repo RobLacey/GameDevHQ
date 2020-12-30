@@ -4,7 +4,6 @@ public class Standard : NodeBase, IStandard
 {
     public Standard(INode uiNode) : base(uiNode)
     {
-        _uiNode = uiNode;
         _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
         _canAutoClose = MyBranch.AutoOpenCloseClass.CanAutoClose();
         _autoOpenDelay = _uiNode.AutoOpenDelay;

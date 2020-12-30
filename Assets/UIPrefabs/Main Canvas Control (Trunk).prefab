@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 4421614741107817062}
   - component: {fileID: 4421614741107817063}
   - component: {fileID: 4421614741107817060}
-  - component: {fileID: 4421614741107817081}
   - component: {fileID: 9083441568170203453}
+  - component: {fileID: 4421614741107817081}
   - component: {fileID: 5711224037595763713}
   m_Layer: 5
   m_Name: Main Canvas Control (Trunk)
@@ -83,19 +83,6 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
---- !u!114 &4421614741107817081
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4421614741107817058}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 031b6fb864dbb044d8e3a145109c2c68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _homeBranches: []
 --- !u!82 &9083441568170203453
 AudioSource:
   m_ObjectHideFlags: 0
@@ -192,6 +179,25 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4421614741107817081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4421614741107817058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 031b6fb864dbb044d8e3a145109c2c68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _startOnThisBranch: {fileID: 0}
+  _pauseMenuCanvasOrder: 10
+  _toolTipCanvasOrder: 20
+  _resolvePopUpCanvasOrder: 5
+  _timedPopUpCanvasOrder: 5
+  _optionalPopUpCanvasOrder: 5
+  _nextScene: 0
 --- !u!114 &5711224037595763713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,8 +210,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 328ed8e34d6089144b9e8a9ce07619e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputScheme: {fileID: 0}
+  _hotKeySettings: []
   _returnToGameControl:
     m_PersistentCalls:
       m_Calls: []
-  _hotKeySettings: []
+  _inputScheme: {fileID: 0}

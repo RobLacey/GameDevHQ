@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cf72707778a495380664443a05e90e8, type: 3}
   m_Name: Scheme - Old
   m_EditorClassIdentifier: 
-  _mainControlType: 3
-  _inGameMenuSystem: 0
+  _mainControlType: 0
+  _inGameMenuSystem: 1
   _startGameWhere: 0
   _pauseOptionsOnEscape: 0
   _globalEscapeFunction: 2
