@@ -66,7 +66,7 @@ public enum EventType
 
 public enum ScreenType { Normal, FullScreen }
 
-public enum StartInMenu { InMenu, InGameControl }
+public enum InMenuOrGame { InMenu, InGameControl }
 public enum BranchType { HomeScreen, Standard, ResolvePopUp, OptionalPopUp, 
                          TimedPopUp, PauseMenu, Internal, InGameUi }
 
@@ -110,5 +110,15 @@ public enum InGameUiTurnOn
 public enum InGameUiTurnOff
 {
     OnClick, OnExit, Both, ScriptCall
+}
+
+public enum VirtualControl
+{
+    None, Cursor, Switcher, Both
+}
+    
+public enum GameType
+{
+    _2D, _3D, Both
 }
 

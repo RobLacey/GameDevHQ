@@ -20,6 +20,15 @@ public class OldSystem : InputScheme
     [Label("Switch To/From Game Menus")] [InputAxis] 
     private string _switchToMenusButton = default;
     [SerializeField] 
+    [Label("Virtual Cursor Horizontal")] [InputAxis] private string _vCursorHorizontal = default;
+    [SerializeField] 
+    [Label("Virtual Cursor Vertical")] [InputAxis] private string _vCursorVertical = default;
+    [SerializeField] [InputAxis] private string _selectButton = default;
+
+    [Space(10f, order = 1)]
+    [Header("HotKey Settings", order = 2)] [HorizontalLine(1, color: EColor.Blue, order = 3)]
+
+    [SerializeField] 
     [InputAxis] private string _hotKey1 = default;
     [SerializeField] 
     [InputAxis] private string _hotKey2 = default;
@@ -41,10 +50,17 @@ public class OldSystem : InputScheme
     [InputAxis] private string _hotKey0 = default;
     
     //Variables
-    private bool _hasPauseAxis, _hasPosSwitchAxis, _hasNegSwitchAxis, _hasCancelAxis, _hasSwitchToMenusButton
-        , _hasHotKey1, _hasHotKey2, _hasHotKey3, _hasHotKey4, _hasHotKey5;
+    private bool _hasPauseAxis,
+                 _hasPosSwitchAxis,
+                 _hasNegSwitchAxis,
+                 _hasCancelAxis,
+                 _hasSwitchToMenusButton,
+                 _hasVCursorHorizontal,
+                 _hasVCursorVertical,
+                 _hasSelectButton;
 
-    private bool _hasHotKey6, _hasHotKey7, _hasHotKey8, _hasHotKey9, _hasHotKey0;
+    private bool _hasHotKey6, _hasHotKey7, _hasHotKey8, _hasHotKey9, _hasHotKey0 
+                 , _hasHotKey1, _hasHotKey2, _hasHotKey3, _hasHotKey4, _hasHotKey5;
 
     //Properties and Setter/Getters
     protected override string PauseButton => _pauseOptionButton;
@@ -52,6 +68,9 @@ public class OldSystem : InputScheme
     protected override string NegativeSwitch => _negSwitchButton;
     protected override string CancelButton => _cancelButton;
     protected override string MenuToGameSwitch => _switchToMenusButton;
+    protected override string VCursorHorizontal => _vCursorHorizontal;
+    protected override string VCursorVertical => _vCursorVertical;
+    protected override string SelectedButton => _selectButton;
     public override bool MouseClicked => Input.GetMouseButton(0) || Input.GetMouseButton(1);
     public override bool CanSwitchToKeysOrController => Input.anyKeyDown && ControlType != ControlMethod.MouseOnly;
     public override bool CanSwitchToMouse 
@@ -67,6 +86,9 @@ public class OldSystem : InputScheme
         _hasNegSwitchAxis = NegativeSwitch != string.Empty;
         _hasCancelAxis = CancelButton != string.Empty;
         _hasSwitchToMenusButton = MenuToGameSwitch != string.Empty;
+        _hasVCursorHorizontal = VCursorHorizontal != string.Empty;
+        _hasVCursorVertical = VCursorVertical != string.Empty;
+        _hasSelectButton = SelectedButton != string.Empty;
         _hasHotKey1 = _hotKey1 != string.Empty;
         _hasHotKey2 = _hotKey2 != string.Empty;
         _hasHotKey3 = _hotKey3 != string.Empty;
@@ -85,7 +107,10 @@ public class OldSystem : InputScheme
     public override bool PressedCancel() => _hasCancelAxis && Input.GetButtonDown(CancelButton);
     public override bool PressedPositiveSwitch() => _hasPosSwitchAxis && Input.GetButtonDown(PositiveSwitch);
     public override bool PressedNegativeSwitch() => _hasNegSwitchAxis && Input.GetButtonDown(NegativeSwitch);
-    
+    public override float VcHorizontal() => _hasVCursorHorizontal ? Input.GetAxis(VCursorHorizontal) : 0;
+    public override float VcVertical() =>  _hasVCursorVertical ? Input.GetAxis(VCursorVertical) : 0;
+    public override bool PressSelect() =>  _hasSelectButton && Input.GetButtonDown(SelectedButton);
+
     public override bool HotKeyChecker(HotKey hotKey)
     {
         switch (hotKey)    

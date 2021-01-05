@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 
@@ -12,7 +11,7 @@ public abstract class InputScheme : ScriptableObject
     protected InGameSystem _inGameMenuSystem = InGameSystem.Off;
     [SerializeField] 
     [ShowIf("KeyboardOnly")] [EnableIf("InGameOn")]
-    protected StartInMenu _startGameWhere = StartInMenu.InGameControl;
+    protected InMenuOrGame _startGameWhere = InMenuOrGame.InGameControl;
     
     [Header("Cancel / Back Settings")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
     [SerializeField] 
@@ -26,6 +25,11 @@ public abstract class InputScheme : ScriptableObject
     [Range(0, 10)] protected float _delayUIStart;
     [SerializeField] [Label("..Enable Controls After..")]
     [Range(0, 10)] protected float _controlActivateDelay;
+    
+    [Header("Cursor")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
+    [SerializeField] private IsActive _useCustomCursor = IsActive.No;
+    [SerializeField] [ShowIf("CustomCursor")] private Texture2D _cursor = default;
+    [SerializeField] [ShowIf("CustomCursor")] private Vector2 _hotSpot =default;
 
     //Variables
     protected Vector3 _mousePosition;
@@ -33,6 +37,7 @@ public abstract class InputScheme : ScriptableObject
     
     //Editor
     private bool InGameOn => _inGameMenuSystem == InGameSystem.On;
+    private bool CustomCursor => _useCustomCursor == IsActive.Yes;
 
     private bool KeyboardOnly
     {
@@ -49,19 +54,30 @@ public abstract class InputScheme : ScriptableObject
         }
     }
 
+    public void SetCursor()
+    {
+        if (_useCustomCursor == IsActive.Yes && ControlType != ControlMethod.KeysOrControllerOnly)
+        {
+            Cursor.SetCursor(_cursor, _hotSpot, CursorMode.Auto);
+        }
+    }
+
     public ControlMethod ControlType => _mainControlType;
     public PauseOptionsOnEscape PauseOptions => _pauseOptionsOnEscape;
     public EscapeKey GlobalCancelAction => SetGlobalEscapeFunction();
     public float ControlActivateDelay => _controlActivateDelay;
     public float DelayUIStart => _delayUIStart;
     public InGameSystem InGameMenuSystem => _inGameMenuSystem;
-    public StartInMenu WhereToStartGame => _startGameWhere;
+    public InMenuOrGame WhereToStartGame => _startGameWhere;
 
     protected abstract string PauseButton { get; }
     protected abstract string PositiveSwitch { get; }
     protected abstract string NegativeSwitch { get; }
     protected abstract string CancelButton { get; }
     protected abstract string MenuToGameSwitch { get; }
+    protected abstract string VCursorHorizontal { get; }
+    protected abstract string VCursorVertical { get; }
+    protected abstract string SelectedButton { get; }
     public abstract bool  MouseClicked { get; }
     public abstract bool CanSwitchToKeysOrController { get; }
     public abstract bool CanSwitchToMouse { get; }
@@ -76,6 +92,9 @@ public abstract class InputScheme : ScriptableObject
     public abstract bool PressedCancel();
     public abstract bool PressedPositiveSwitch();
     public abstract bool PressedNegativeSwitch();
+    public abstract float VcHorizontal();
+    public abstract float VcVertical();
+    public abstract bool PressSelect();
     public abstract bool HotKeyChecker(HotKey hotKey);
 
     private EscapeKey SetGlobalEscapeFunction()

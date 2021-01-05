@@ -96,12 +96,12 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     /// <summary>
     /// Call To to start and Exit InGameUi
     /// </summary>
-    public void StartInGameUi(UIGameObject uiGameObject) => StartInGamePopUp?.Invoke(uiGameObject);
+    public void StartInGameUi(InGameObjectUI uiInGameObject) => StartInGamePopUp?.Invoke(uiInGameObject);
     public void ExitInGameUi() => ExitPopUp?.Invoke();
 
     //Delegates & Events
     public event Action OnStartPopUp; 
-    public event Action<UIGameObject> StartInGamePopUp; 
+    public event Action<InGameObjectUI> StartInGamePopUp; 
     public event Action ExitPopUp; 
     private Action TweenFinishedCallBack { get; set; }
     private  Action<IActiveBranch> SetActiveBranch { get; set; }

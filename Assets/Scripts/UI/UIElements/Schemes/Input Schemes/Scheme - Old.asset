@@ -12,18 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cf72707778a495380664443a05e90e8, type: 3}
   m_Name: Scheme - Old
   m_EditorClassIdentifier: 
-  _mainControlType: 0
-  _inGameMenuSystem: 1
+  _mainControlType: 1
+  _inGameMenuSystem: 0
   _startGameWhere: 0
   _pauseOptionsOnEscape: 0
   _globalEscapeFunction: 2
   _delayUIStart: 0
   _controlActivateDelay: 0
+  _useCustomCursor: 1
+  _cursor: {fileID: 2800000, guid: b0f5b9203d2557e41a5037b243319f77, type: 3}
+  _hotSpot: {x: 85, y: 50}
   _pauseOptionButton: Pause
-  _posSwitchButton: Posivtive Group Switch
+  _posSwitchButton: Positive Group Switch
   _negSwitchButton: Negative Group Switch
   _cancelButton: Cancel
   _switchToMenusButton: SwitchToInGameMenus
+  _vCursorHorizontal: Horizontal
+  _vCursorVertical: Vertical
+  _selectButton: Submit Game
   _hotKey1: HotKey 1
   _hotKey2: HotKey 2
   _hotKey3: Hotkey 3

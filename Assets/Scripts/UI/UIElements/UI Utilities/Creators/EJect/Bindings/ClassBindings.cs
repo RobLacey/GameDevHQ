@@ -1,4 +1,6 @@
-﻿public class ClassBindings : BindBase
+﻿using UIElements;
+
+public class ClassBindings : BindBase
 {
     public ClassBindings()
     {
@@ -79,6 +81,10 @@
         //AutoOpenClose
         _eJectMaster.Bind<AutoOpenCloseController>().To<IAutoOpenClose>().WithParameters();
         _eJectMaster.Bind<DelayTimer>().To<IDelayTimer>();
+        
+        //InGameControl
+        _eJectMaster.Bind<_2DRaycast>().To<I2DRaycast>().WithParameters();
+        _eJectMaster.Bind<_3DRaycast>().To<I3DRaycast>().WithParameters();
 
     }
 }

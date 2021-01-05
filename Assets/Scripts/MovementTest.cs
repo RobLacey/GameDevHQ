@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
 using UIElements;
 
-public class MovementTest : MonoBehaviour
+public class MovementTest : MonoBehaviour, IEventUser
 {
     Transform _myTransform;
     [SerializeField] [InputAxis] string _horizontal;
@@ -14,24 +15,27 @@ public class MovementTest : MonoBehaviour
     float _horizontalSpeed;
     float _verticalSpeed;
     private Transform _child;
-    private UIGameObject _myGameObject;
+    private InGameObjectUI _myInGameObject;
 
     bool _active = false;
 
-    void Start()
+    private void Awake()
     {
         //SetUp _inMenu
         _myTransform = GetComponent<Transform>();
         _child = GetComponentInChildren<SpriteRenderer>().transform;
-        _myGameObject = GetComponent<UIGameObject>();
+        _myInGameObject = GetComponent<InGameObjectUI>();
     }
+
+    private void OnEnable() => ObserveEvents();
+    
+    public void ObserveEvents() => EVent.Do.Subscribe<IActiveInGameObject>(ActivateObject);
 
     // Update is called once per frame
     void Update()
     {
         if (_active)
         {
-            Debug.Log(_myGameObject);
             Vector3 rotationSpeed = new Vector3(0, 0, 30);
             _child.Rotate(rotationSpeed * Time.deltaTime, Space.Self);
             _horizontalSpeed = Input.GetAxis(_horizontal) * _speed;
@@ -41,8 +45,18 @@ public class MovementTest : MonoBehaviour
         }    
     }
 
-    public void ActivateObject(UIGameObject activeObj)
+    private void ActivateObject(IActiveInGameObject activeInGameObj)
     {
-        _active = activeObj == _myGameObject;
+        if (activeInGameObj.IsNull())
+        {
+            _active = false;
+            return;
+        }
+        _active = activeInGameObj.ActiveObject == _myInGameObject;
+    }
+
+    public void SwitchToInGame(InMenuOrGame inGame)
+    {
+        Debug.Log(inGame);
     }
 }

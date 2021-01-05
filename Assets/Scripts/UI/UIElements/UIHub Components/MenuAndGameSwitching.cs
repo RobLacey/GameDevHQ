@@ -24,7 +24,7 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispat
 
     //Properties
     public bool InTheMenu { get; set; } = true;
-    private StartInMenu StartWhere { get; }
+    private InMenuOrGame StartWhere { get; }
 
     private void SaveNoPopUps(INoPopUps args)
     {
@@ -72,7 +72,7 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispat
     private void StartUp(IOnStart onStart)
     {
         InTheMenu = true;
-        if (StartWhere == StartInMenu.InGameControl)
+        if (StartWhere == InMenuOrGame.InGameControl)
         {
             SwitchBetweenGameAndMenu();
         }

@@ -1,5 +1,8 @@
-﻿using NaughtyAttributes;
+﻿using System;
+using NaughtyAttributes;
+using UIElements;
 using UnityEngine;
+using UnityEngine.Events;
 
 public interface ICursorHandler
 {
@@ -8,9 +11,14 @@ public interface ICursorHandler
     void CursorDown();
 }
 
+public interface IActiveInGameObject
+{
+    InGameObjectUI ActiveObject { get; }
+}
+
 namespace UIElements
 {
-    public class UIGameObject : MonoBehaviour, IEventUser, ICursorHandler
+    public class InGameObjectUI : MonoBehaviour, IEventUser, ICursorHandler, IActiveInGameObject, IEventDispatcher
     {
         [SerializeField] private UIBranch _branch;
         [SerializeField] private InGameUiTurnOn _turnOnWhen;
@@ -21,14 +29,18 @@ namespace UIElements
         //Variables
         private bool _active;
         private static bool pointerOver;
-        private MovementTest _myMovement;
         private bool _allowKeys;
 
         //Properties & Set / Getters
         public bool UiTargetNotActive => !_active;
         public void SetAsNotActive() => _active = false;
-        public void SetAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
+        private void SetAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
         public Transform UsersTransform => _uiOffsetPosition;
+        public InGameObjectUI ActiveObject => this;
+
+        //Events
+        public UnityEvent<bool> _activateInGameObject;
+        private Action<IActiveInGameObject> DoActivateInGameObject;
         
         //Main
         private void Awake()
@@ -38,18 +50,18 @@ namespace UIElements
             {
                 _uiOffsetPosition = transform;
             }
-
-            _myMovement = GetComponent<MovementTest>();
-            
-            ObserveEvents();
+            FetchEvents();
         }
-        
+
+        private void OnEnable() => ObserveEvents();
+
+        public void FetchEvents() => DoActivateInGameObject = EVent.Do.Fetch<IActiveInGameObject>();
+
         public void ObserveEvents()
         {
             EVent.Do.Subscribe<IClearAll>(ClearUI);
             EVent.Do.Subscribe<IAllowKeys>(SetAllowKeys);
         }
-        
        
         /// <summary>
         /// Three public methods to allow access for cursor control for keyboard or mouse. Not Tested yet
@@ -66,11 +78,13 @@ namespace UIElements
         {
             pointerOver = true;
             if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
-            _myMovement.ActivateObject(this);
+            Activate();
             EnterUi();
             _branch.DefaultStartOnThisNode.SetNodeAsActive();
         }
 
+        
+        //TODO Not Used??
         public void SelectFocus()
         {
             if (!_active)
@@ -78,20 +92,20 @@ namespace UIElements
                 if (_turnOnWhen == InGameUiTurnOn.OnEnter) return;
                 EnterUi();
                 _branch.DefaultStartOnThisNode.SetNodeAsActive();
-                _myMovement.ActivateObject(this);
+                Activate();
             }
             else
             {
                 if(_turnOffWhen == InGameUiTurnOff.OnExit || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
                 ExitUi();
                 _branch.DefaultStartOnThisNode.DeactivateNode();
-                _myMovement.ActivateObject(null);
+                Deactivate();
             }
         }
 
-        public void UnFocus()
+        public void UnFocus() 
         {
-            _myMovement.ActivateObject(null);
+            Deactivate();
             pointerOver = false;
             if (!_active || _turnOffWhen == InGameUiTurnOff.OnClick
                          || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
@@ -101,6 +115,7 @@ namespace UIElements
 
         private void OnMouseEnter()
         {
+            if(gameObject.layer != LayerMask.NameToLayer("InGameUI") ) return;
             if(_allowKeys) return;
             pointerOver = true;
             if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
@@ -183,8 +198,25 @@ namespace UIElements
                 if(_turnOffWhen == InGameUiTurnOff.OnExit || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
                 ExitUi();
                 _branch.DefaultStartOnThisNode.DeactivateNode();
-
             }
+        }
+
+        private void Activate()
+        {
+            DoActivateInGameObject?.Invoke(this);
+            _activateInGameObject.Invoke(true);
+        }
+        
+        private void Deactivate()
+        {
+            DoActivateInGameObject?.Invoke(null);
+            _activateInGameObject.Invoke(false);
+        }
+
+        public void SetToUseSwitcher()
+        {
+            _turnOnWhen = InGameUiTurnOn.OnEnter;
+            _turnOffWhen = InGameUiTurnOff.OnExit;
         }
     }
 }

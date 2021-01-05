@@ -289,7 +289,6 @@
             <e p="TipController.cs" t="Include" />
             <e p="UIActivator.cs" t="Include" />
             <e p="UIElements" t="Include">
-              <e p="GameObjectController.cs" t="Include" />
               <e p="Shader" t="Include">
                 <e p="UnlitFrostedGlass.shader" t="Include" />
                 <e p="UnlitFrostGlassWithTint.shader" t="Include" />
@@ -427,7 +426,6 @@
                 </e>
               </e>
               <e p="UIBranch.cs" t="Include" />
-              <e p="UIGameObject.cs" t="Include" />
               <e p="UIHub Components" t="Include">
                 <e p="ChangeControl.cs" t="Include" />
                 <e p="HistoryTracker" t="Include">
@@ -439,6 +437,14 @@
                   <e p="NewSelectionProcess.cs" t="Include" />
                 </e>
                 <e p="HotKeys.cs" t="Include" />
+                <e p="In Game Control" t="Include">
+                  <e p="_2DRaycast.cs" t="Include" />
+                  <e p="_3DRaycast.cs" t="Include" />
+                  <e p="GameObjectUI.cs" t="Include" />
+                  <e p="InGameObjectUI.cs" t="Include" />
+                  <e p="IRaycast.cs" t="Include" />
+                  <e p="RaycastBase.cs" t="Include" />
+                </e>
                 <e p="MenuAndGameSwitching.cs" t="Include" />
                 <e p="PopUpController.cs" t="Include" />
                 <e p="UIAudioManager.cs" t="Include" />

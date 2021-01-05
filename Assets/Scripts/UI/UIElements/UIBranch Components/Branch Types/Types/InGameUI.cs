@@ -10,7 +10,7 @@ public class InGameUI : BranchBase, IInGameUi
     private readonly Camera _mainCamera;
     private readonly RectTransform _rectTransform;
     private Coroutine _coroutine;
-    private UIGameObject _currentObjUser;
+    private InGameObjectUI _currentObjUser;
 
     public InGameUI(IBranch branch) : base(branch)
     {
@@ -30,7 +30,7 @@ public class InGameUI : BranchBase, IInGameUi
         }
     }
 
-    private void StartPopUp(UIGameObject newUser)
+    private void StartPopUp(InGameObjectUI newUser)
     {
         if (_currentObjUser is null) _currentObjUser = newUser;
         
@@ -46,7 +46,7 @@ public class InGameUI : BranchBase, IInGameUi
         void NextUser() => ToNext(newUser);
     }
 
-    private void ToNext(UIGameObject newUser)
+    private void ToNext(InGameObjectUI newUser)
     {
         _currentObjUser.SetAsNotActive();
         _currentObjUser = newUser;

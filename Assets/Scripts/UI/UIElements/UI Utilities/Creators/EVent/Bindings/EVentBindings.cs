@@ -42,6 +42,9 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<IAllowKeys>();
         AutoRemove().CreateEvent<IChangeControlsPressed>();
         
+        //InGameControl
+        AutoRemove().CreateEvent<IActiveInGameObject>();
+        
         //Cancel
         AutoRemove().CreateEvent<ICancelHoverOverButton>();
         AutoRemove().CreateEvent<ICancelPressed>();

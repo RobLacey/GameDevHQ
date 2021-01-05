@@ -15,15 +15,14 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
                        ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, 
                        IEServUser, IEventDispatcher, IClearAll
 {
-    [SerializeField] 
-    [ReorderableList] private List<HotKeys> _hotKeySettings = new List<HotKeys>();
-    [SerializeField] 
-    private InGameOrInMenu _returnToGameControl  = default;
-    
-    [Header("Input Scheme (Changes are saved to ALL)", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
-    [Space(10, order = 1)]
+    [Header("Input Scheme(Expandable)", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
     [SerializeField] 
     [Expandable] private InputScheme _inputScheme  = default;
+    [SerializeField] 
+    [Space(20, order = 1)]
+    private SwitchGameOrMenu _switchBetweenMenuAndGame  = default;
+    [SerializeField] 
+    [ReorderableList] private List<HotKeys> _hotKeySettings = new List<HotKeys>();
 
     //Variables
     private bool _canStart, _inMenu, _gameIsPaused, _allowKeys, _nothingSelected;
@@ -44,7 +43,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private Action<IClearAll> OnClearAll { get; set; }
 
     [Serializable]
-    public class InGameOrInMenu : UnityEvent<bool> { }
+    public class SwitchGameOrMenu : UnityEvent<InMenuOrGame> { }
 
     //Properties
     private bool MouseOnly()
@@ -57,14 +56,21 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     {
         if (_inputScheme.InGameMenuSystem == InGameSystem.On)
         {
-            return _inputScheme.WhereToStartGame == StartInMenu.InGameControl;
+            return _inputScheme.WhereToStartGame == InMenuOrGame.InGameControl;
         }
         return false;
     }
     private void SaveInMenu(IInMenu args)
     {
         _inMenu = args.InTheMenu;
-        _returnToGameControl?.Invoke(_inMenu);
+        if(_inMenu)
+        {
+            _switchBetweenMenuAndGame?.Invoke(InMenuOrGame.InMenu);
+        }
+        else
+        {
+            _switchBetweenMenuAndGame?.Invoke(InMenuOrGame.InGameControl);
+        }
     }
     private void SaveNoActivePopUps(INoPopUps args) => _noActivePopUps = args.NoActivePopUps;
     private void SaveOnStart(IOnStart onStart) => _canStart = true;
@@ -84,6 +90,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         _changeControl = EJect.Class.WithParams<IChangeControl>(this);
         _menuToGameSwitching = EJect.Class.WithParams<IMenuAndGameSwitching>(this);
         UseEServLocator();
+        _inputScheme.SetCursor();
     }
 
     private void OnEnable()
