@@ -32,7 +32,12 @@ public class InGameUI : BranchBase, IInGameUi
 
     private void StartPopUp(InGameObjectUI newUser)
     {
-        if (_currentObjUser is null) _currentObjUser = newUser;
+        if (_currentObjUser is null)
+        {
+            _currentObjUser = newUser;
+            NextUser();
+            return;
+        }
         
         if (_currentObjUser == newUser || _currentObjUser.UiTargetNotActive)
         {
@@ -40,6 +45,7 @@ public class InGameUI : BranchBase, IInGameUi
         }
         else
         {
+            _currentObjUser.SetAsNotActive();
             ExitProcess(NextUser);
         }
         
@@ -48,7 +54,6 @@ public class InGameUI : BranchBase, IInGameUi
 
     private void ToNext(InGameObjectUI newUser)
     {
-        _currentObjUser.SetAsNotActive();
         _currentObjUser = newUser;
         StaticCoroutine.StopCoroutines(_coroutine);
         _myBranch.MoveToThisBranch();

@@ -6,7 +6,7 @@ namespace UIElements
     
     public class _2DRaycast : RaycastBase
     {
-        public _2DRaycast(IGameObject parent) : base(parent) { }
+        public _2DRaycast(IUIGameObjectController parent) : base(parent) { }
         
         private readonly Vector3 _direction2D = Vector3.forward;
 

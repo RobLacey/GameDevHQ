@@ -6,7 +6,7 @@ namespace UIElements
 
     public class _3DRaycast : RaycastBase
     {
-        public _3DRaycast(IGameObject parent): base(parent)
+        public _3DRaycast(IUIGameObjectController parent): base(parent)
         {
             _laserLength = parent.LaserLength;
         }

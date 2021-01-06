@@ -27,7 +27,7 @@ namespace UIElements
         private Transform _uiOffsetPosition;
         
         //Variables
-        private bool _active;
+        private bool _active, _justSwitchedFromMouse;
         private static bool pointerOver;
         private bool _allowKeys;
 
@@ -37,6 +37,17 @@ namespace UIElements
         private void SetAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
         public Transform UsersTransform => _uiOffsetPosition;
         public InGameObjectUI ActiveObject => this;
+
+        public void CheckForSetLayerMask(LayerMask layerMask)
+        {
+            var temp = LayerMask.LayerToName(gameObject.layer);
+            var thisLayerMask = LayerMask.GetMask(temp);
+            if ((thisLayerMask & layerMask) == 0)
+            {
+                throw new Exception
+                    ($"Set Layer on {gameObject.name} to _layerToHit found in UI GameObject Controller");
+            }
+        }
 
         //Events
         public UnityEvent<bool> _activateInGameObject;
@@ -83,6 +94,14 @@ namespace UIElements
             _branch.DefaultStartOnThisNode.SetNodeAsActive();
         }
 
+        public void SwitchMouseOnly()
+        {
+            Activate();
+            EnterUi();
+            _active = false;
+            _justSwitchedFromMouse = true;
+        }
+
         
         //TODO Not Used??
         public void SelectFocus()
@@ -107,6 +126,7 @@ namespace UIElements
         {
             Deactivate();
             pointerOver = false;
+
             if (!_active || _turnOffWhen == InGameUiTurnOff.OnClick
                          || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
             ExitUi();
@@ -115,20 +135,39 @@ namespace UIElements
 
         private void OnMouseEnter()
         {
-            if(gameObject.layer != LayerMask.NameToLayer("InGameUI") ) return;
-            if(_allowKeys) return;
+            if (AllowUseOfMouseOver()) return;
             pointerOver = true;
             if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
+            OnlyJustSwitchedOnFromMouseOnlyControl();
             EnterUi();
+            _branch.DefaultStartOnThisNode.SetNodeAsActive();
+
+        }
+
+        private bool AllowUseOfMouseOver()
+        {
+            if (_allowKeys) return true;
+            return false;
+        }
+
+        private void OnlyJustSwitchedOnFromMouseOnlyControl()
+        {
+            if (_justSwitchedFromMouse)
+            {
+                _branch.DoNotTween();
+                _justSwitchedFromMouse = false;
+            }
         }
 
         private void OnMouseExit()
         {
-            if(_allowKeys) return;
+            if(AllowUseOfMouseOver()) return;
             pointerOver = false;
             if (!_active || _turnOffWhen == InGameUiTurnOff.OnClick
                             || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
             ExitUi();
+            _branch.DefaultStartOnThisNode.DeactivateNode();
+
         }
 
         private void OnMouseDown()
@@ -168,19 +207,23 @@ namespace UIElements
         public void CursorEnter()
         {
             pointerOver = true;
-            if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
-            EnterUi();
 
+            if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
+
+            EnterUi();
+            Activate();
             _branch.DefaultStartOnThisNode.SetNodeAsActive();
         }
 
         public void CursorExit()
         {
             pointerOver = false;
+
             if (!_active || _turnOffWhen == InGameUiTurnOff.OnClick
                          || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
+            
             ExitUi();
-
+            Deactivate();
             _branch.DefaultStartOnThisNode.DeactivateNode();
         }
 

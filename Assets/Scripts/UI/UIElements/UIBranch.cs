@@ -231,6 +231,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
 
     private void InTweenCallback()
     {
+        Debug.Log($"Here : {_canActivateBranch}");
         if (_canActivateBranch)
             _lastHighlighted.SetNodeAsActive();
         
@@ -244,7 +245,11 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
 
     public void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null)
     {
-        if(!CanvasIsEnabled) return;
+        if(!CanvasIsEnabled)
+        {
+            endOfTweenCallback?.Invoke();
+            return;
+        }
         
         if (WhenToMove == WhenToMove.AfterEndOfTween)
         {

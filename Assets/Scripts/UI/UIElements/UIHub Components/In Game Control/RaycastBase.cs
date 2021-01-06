@@ -4,7 +4,7 @@ namespace UIElements
 {
     public abstract class RaycastBase : I2DRaycast, I3DRaycast
     {
-        protected RaycastBase(IGameObject parent)
+        protected RaycastBase(IUIGameObjectController parent)
         {
             _controller = parent;
             _layerToHit = parent.LayerToHit;
@@ -12,12 +12,17 @@ namespace UIElements
 
         //Variables
         private GameObject _lastGameObject;
-        private readonly IGameObject _controller;
+        private readonly IUIGameObjectController _controller;
         protected LayerMask _layerToHit;
         protected readonly Camera _mainCamera = Camera.main;
 
         //Properties
         protected Vector3 CameraPosition => _mainCamera.transform.position;
+
+        public void SetLastGameObject(GameObject last) //**
+        {
+            _lastGameObject = last;
+        }
 
         //Main
         public void DoSelectedInGameObj()
@@ -43,7 +48,7 @@ namespace UIElements
                 if (_lastGameObject == hit) return;
                 _lastGameObject.GetComponent<ICursorHandler>().CursorExit();
             }
-        
+            
             _lastGameObject = hit;
             hit.GetComponent<ICursorHandler>().CursorEnter();
         }

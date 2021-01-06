@@ -114,11 +114,11 @@ public enum InGameUiTurnOff
 
 public enum VirtualControl
 {
-    None, Cursor, Switcher, Both
+    None, Cursor, Switcher, Both, SwitcherMouseOnly
 }
     
 public enum GameType
 {
-    _2D, _3D, Both
+    _2D, _3D, NoRestrictions
 }
 

@@ -1,21 +1,24 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using NaughtyAttributes;
 using UIElements;
+using UnityEditor;
+using UnityEditor.U2D.Path.GUIFramework;
 using UnityEngine;
 
-public interface IGameObject : IParameters
+public interface IUIGameObjectController : IParameters
 {
     LayerMask LayerToHit { get; }
     float LaserLength { get; }
     bool SelectPressed { get; }
 }
 
-public class GameObjectUI : MonoBehaviour, IEventUser, IGameObject
+public class UIGameObjectController : MonoBehaviour, IEventUser, IUIGameObjectController, IClearAll
 {
     [SerializeField] 
     private VirtualControl _inGameControlType = VirtualControl.None;
-    [SerializeField] 
-    private GameType _raycastColliderType = GameType._2D;
+    [SerializeField] [ShowIf("InGameCursorEditor")]
+    private GameType _restrictRaycastTo = GameType.NoRestrictions;
     [SerializeField] 
     [ValidateInput("HasRect", "Assign Virtual Cursor RectTransform")] [ShowIf("InGameCursorEditor")]
     private RectTransform _virtualCursor = default;
@@ -46,15 +49,36 @@ public class GameObjectUI : MonoBehaviour, IEventUser, IGameObject
     public float LaserLength => _raycastLength;
     public bool SelectPressed => _scheme.PressSelect();
     private bool UseBoth => _inGameControlType == VirtualControl.Both;
-    private bool InGameSwitch => (_inGameControlType == VirtualControl.Switcher || UseBoth) && _inGame;
-    private bool InGameCursor => (_inGameControlType == VirtualControl.Cursor || UseBoth) && _inGame;
-    private bool Allow2D => _raycastColliderType == GameType._2D || _raycastColliderType == GameType.Both;
-    private bool Allow3D => _raycastColliderType == GameType._3D || _raycastColliderType == GameType.Both;
+    private bool InGameSwitch => _inGameControlType == VirtualControl.Switcher 
+                                 || UseBoth 
+                                 || _inGameControlType == VirtualControl.SwitcherMouseOnly;
+    private bool InGameCursor => _inGameControlType == VirtualControl.Cursor || UseBoth;
+    private bool Allow2D => _restrictRaycastTo == GameType._2D || _restrictRaycastTo == GameType.NoRestrictions;
+    private bool Allow3D => _restrictRaycastTo == GameType._3D || _restrictRaycastTo == GameType.NoRestrictions;
     
     //Editor
     private bool HasRect(RectTransform rect) => rect != null;
     private bool InGameCursorEditor => (_inGameControlType == VirtualControl.Cursor || UseBoth) 
                                       && GetComponent<UIInput>().ReturnScheme.InGameMenuSystem == InGameSystem.On;
+
+    private bool IsCursor(VirtualControl control)
+    {
+        var scheme = GetComponent<UIInput>().ReturnScheme;
+        
+        if(_inGameControlType == VirtualControl.Cursor && scheme.ControlType != ControlMethod.KeysOrControllerOnly )
+        {
+            EditorUtility.DisplayDialog("Is Cursor",
+                                        "Are you sure? ", "Ok");
+            return false;
+        }
+
+        return true;
+    }
+    
+    private bool NonError(VirtualControl control)
+    {
+        return control == VirtualControl.None;
+    }
 
     private void Awake()
     {
@@ -64,27 +88,29 @@ public class GameObjectUI : MonoBehaviour, IEventUser, IGameObject
         _scheme = GetComponent<UIInput>().ReturnScheme;
 
         SetUpVirtualCursor();
-        SetUpSwitcher();
+        SetUpInGameObjects();
     }
 
     private void SetUpVirtualCursor()
     {
         _newCursorPos = Vector2.zero;
-        if (_inGameControlType == VirtualControl.Switcher
-            || _scheme.ControlType != ControlMethod.KeysOrControllerOnly)
+        var canUseVirtualCursor = _inGameControlType == VirtualControl.Switcher ||
+                                     _inGameControlType == VirtualControl.SwitcherMouseOnly ||
+                                     _scheme.ControlType != ControlMethod.KeysOrControllerOnly;
+        
+        if (canUseVirtualCursor)
         {
             _virtualCursor.gameObject.SetActive(false);
         }
     }
 
-    private void SetUpSwitcher()
+    private void SetUpInGameObjects()
     {
-        if (_inGameControlType == VirtualControl.Switcher)
+        foreach (var obj in _playerObjects)
         {
-            foreach (var obj in _playerObjects)
-            {
+            if(InGameSwitch)
                 obj.SetToUseSwitcher();
-            }
+            obj.CheckForSetLayerMask(_layerToHit);
         }
     }
 
@@ -109,6 +135,7 @@ public class GameObjectUI : MonoBehaviour, IEventUser, IGameObject
 
     private void Update()
     {
+        UseMouseOnlySwitcher();
         if(!_inGame) return;
         UseSwitcher();
         UseVirtualCursor();
@@ -123,9 +150,19 @@ public class GameObjectUI : MonoBehaviour, IEventUser, IGameObject
             _raycastTo3D.DoRaycast(_virtualCursor.position);
     }
 
+    private void UseMouseOnlySwitcher()
+    {
+        if (_inGameControlType == VirtualControl.SwitcherMouseOnly && Input.GetKeyDown(KeyCode.G))
+        {
+            Debug.Log("SwitchToGame");
+            EVent.Do.Fetch<IClearAll>()?.Invoke(this);
+            _playerObjects[_index].SwitchMouseOnly();
+        }
+    }
+
     private void UseSwitcher()
     {
-        if(!InGameSwitch || _playerObjects.Length == 0) return;
+        if(!InGameSwitch || _playerObjects.Length == 0 || !_inGame) return;
         
         if (_scheme.PressedPositiveSwitch())
         {
@@ -148,7 +185,7 @@ public class GameObjectUI : MonoBehaviour, IEventUser, IGameObject
 
     private void UseVirtualCursor()
     {
-        if (!InGameCursor) return;
+        if (!InGameCursor || !_inGame) return;
 
         HasSelectedBeenPressed();
         MoveVirtualCursor();

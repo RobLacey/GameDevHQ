@@ -440,10 +440,10 @@
                 <e p="In Game Control" t="Include">
                   <e p="_2DRaycast.cs" t="Include" />
                   <e p="_3DRaycast.cs" t="Include" />
-                  <e p="GameObjectUI.cs" t="Include" />
                   <e p="InGameObjectUI.cs" t="Include" />
                   <e p="IRaycast.cs" t="Include" />
                   <e p="RaycastBase.cs" t="Include" />
+                  <e p="UIGameObjectController.cs" t="Include" />
                 </e>
                 <e p="MenuAndGameSwitching.cs" t="Include" />
                 <e p="PopUpController.cs" t="Include" />
