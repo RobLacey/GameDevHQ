@@ -6,21 +6,21 @@ namespace UIElements
 
     public class _3DRaycast : RaycastBase
     {
-        public _3DRaycast(IUIGameObjectController parent): base(parent)
+        public _3DRaycast(IRaycastController parent): base(parent)
         {
             _laserLength = parent.LaserLength;
         }
 
         private readonly float _laserLength;
 
-        protected override GameObject RaycastToObj(Vector3 virtualCursorPos)
+        protected override ICursorHandler RaycastToObj(Vector3 virtualCursorPos)
         {
             var mousePos = virtualCursorPos;
             mousePos.z = -10;
             var cursorPosition = _mainCamera.ScreenToWorldPoint(mousePos);
             var direction = (CameraPosition - cursorPosition).normalized;
             var hit = Physics.RaycastAll(CameraPosition, direction, _laserLength, _layerToHit);
-            return hit.Length == 0  ? null : hit[0].collider.gameObject;
+            return hit.Length == 0  ? null : hit[0].collider.gameObject.GetComponent<ICursorHandler>();;
         }
     }
 }

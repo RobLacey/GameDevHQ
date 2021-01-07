@@ -15,6 +15,8 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
                        ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, 
                        IEServUser, IEventDispatcher, IClearAll
 {
+    public UIInput() => _validationCheck = new ValidationCheck(this);
+
     [Header("Input Scheme(Expandable)", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
     [SerializeField] 
     [Expandable] private InputScheme _inputScheme  = default;
@@ -33,6 +35,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private IMenuAndGameSwitching _menuToGameSwitching;
     private IChangeControl _changeControl;
     private IHistoryTrack _historyTrack;
+    private readonly ValidationCheck _validationCheck;
 
     //Events
     private Action<IPausePressed> OnPausedPressed { get; set; }
@@ -93,6 +96,8 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         _inputScheme.SetCursor();
     }
 
+    public void DoValidation() => _validationCheck.ValidateDialogue();
+
     private void OnEnable()
     {
         FetchEvents();
@@ -134,8 +139,6 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         EVent.Do.Subscribe<INoPopUps>(SaveNoActivePopUps);
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
-
-    //public static event Action NothingClicked;
 
     private void Update()
     {

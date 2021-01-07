@@ -23,19 +23,39 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf145f6b-d551-4e26-8fbc-722270da7110" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEditorDialogue.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEditorDialogue.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/MouseOnlySwitcher.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/MouseOnlySwitcher.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/Switcher.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/Switcher.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/VirtualCursor.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/VirtualCursor.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/IRaycastController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/IRaycastController.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/ValidationCheck.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/ValidationCheck.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Embedded Test/Embedded Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test/Embedded Test.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Input Schemes/Scheme - Old.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Input Schemes/Scheme - Old.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/InputScheme.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/InputScheme.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindings.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/InGameUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/InGameUI.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GameObjectUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIGameObjectController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GameObjectUI.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIGameObjectController.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/IRaycast.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/IRaycast.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/IRaycast.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/IRaycast.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/InGameObjectUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/InGameObjectUI.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RaycastBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RaycastBase.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/_2DRaycast.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/_2DRaycast.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/_3DRaycast.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/_3DRaycast.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RaycastBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/RaycastBase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RaycastBase.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/RaycastBase.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIGameObjectController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIGameObjectController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/_2DRaycast.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/_2DRaycast.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/_2DRaycast.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/_2DRaycast.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/_3DRaycast.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/_3DRaycast.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/_3DRaycast.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/_3DRaycast.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,6 +88,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/3c/ed406a2a/TweenManager.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Utility/ObjectPool.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/63/6205f4bc/Tween.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/62FFEEB7-EC02-4BEA-B61E-5FBF8D44AC5B/4c/6e64323a/Action`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49F4E7E7-91CC-4FFF-ACD8-8F729E2B1E4C/a5/ee3791b1/Transform.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/63DD8BF9-8CFA-4BA9-85AF-735EF1A56BA9/9e/40bffb1f/Void.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Utility/ListPool.cs" root0="SKIP_HIGHLIGHTING" />
@@ -137,21 +158,6 @@
   </component>
   <component name="IdeDocumentHistory">
     <changedPaths>
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/FadeTween.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UINavigation.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/StandardBranch.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenData/TweenData.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/BranchFactory.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Sub Classes/UIBranch.Properties.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentInterfaces.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/HistoryTracker.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Sub Classes/BranchInterfaces.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/NodeFactory.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/Standard.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/InGame.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/ToolTip Components/GetScreenPosition.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/ToolTipScheme.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/InGameNode.cs" />
@@ -166,7 +172,6 @@
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/InGameControl.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/2DRaycast.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RaycastFactory.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindings.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/_3DRaycast.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/RaycastFactory.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/_2DRaycast.cs" />
@@ -176,18 +181,34 @@
       <option value="$PROJECT_DIR$/Assets/Scripts/MovementTest.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/NewSystem.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/OldSystem.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GameObjectController.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/InputScheme.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RaycastBase.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/IRaycast.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UITooltip.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GameObjectUI.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/InGameObjectUI.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/InGameUI.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/InputScheme.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIEditorDialogue.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/ValidationCheck.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEditorDialogue.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/VirtualCursor.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/MouseOnlySwitcher.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Switcher.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/IRaycastController.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindings.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIGameObjectController.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/MouseOnlySwitcher.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentInterfaces.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/IRaycast.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/InGameObjectUI.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/RaycastBase.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/_2DRaycast.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/_3DRaycast.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/VirtualCursor.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/Switcher.cs" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1e2570ZwNqmdtJXPsStj2CYD2JX" />
@@ -419,6 +440,7 @@
       <workItem from="1609319866554" duration="24641000" />
       <workItem from="1609838208606" duration="26788000" />
       <workItem from="1609927842722" duration="16021000" />
+      <workItem from="1610011081154" duration="27567000" />
     </task>
     <servers />
   </component>

@@ -85,6 +85,7 @@ public class ClassBindings : BindBase
         //InGameControl
         _eJectMaster.Bind<_2DRaycast>().To<I2DRaycast>().WithParameters();
         _eJectMaster.Bind<_3DRaycast>().To<I3DRaycast>().WithParameters();
-
+        _eJectMaster.Bind<MouseOnlySwitcher>().To<IMouseOnlySwitcher>().WithParameters();
+        _eJectMaster.Bind<Switcher>().To<ISwitcher>().WithParameters();
     }
 }

@@ -33,6 +33,7 @@ public abstract class InputScheme : ScriptableObject
 
     //Variables
     protected Vector3 _mousePosition;
+    public ValidationCheck Check { get; set; }
     private enum PauseFunction { DoNothing, BackOneLevel, BackToHome }
     
     //Editor
@@ -62,7 +63,12 @@ public abstract class InputScheme : ScriptableObject
         }
     }
 
-    public ControlMethod ControlType => _mainControlType;
+    public ControlMethod ControlType
+    {
+        get => _mainControlType;
+        set => _mainControlType = value;
+    }
+
     public PauseOptionsOnEscape PauseOptions => _pauseOptionsOnEscape;
     public EscapeKey GlobalCancelAction => SetGlobalEscapeFunction();
     public float ControlActivateDelay => _controlActivateDelay;
@@ -110,5 +116,10 @@ public abstract class InputScheme : ScriptableObject
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    }
+
+    private void OnValidate()
+    {
+        FindObjectOfType<UIInput>().DoValidation();
     }
 }

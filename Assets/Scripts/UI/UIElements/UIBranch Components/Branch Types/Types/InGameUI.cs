@@ -41,6 +41,7 @@ public class InGameUI : BranchBase, IInGameUi
         
         if (_currentObjUser == newUser || _currentObjUser.UiTargetNotActive)
         {
+            _currentObjUser.SetAsNotActive();
             NextUser();
         }
         else

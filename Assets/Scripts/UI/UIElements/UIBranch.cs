@@ -231,7 +231,6 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
 
     private void InTweenCallback()
     {
-        Debug.Log($"Here : {_canActivateBranch}");
         if (_canActivateBranch)
             _lastHighlighted.SetNodeAsActive();
         

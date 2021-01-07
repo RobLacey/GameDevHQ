@@ -9,6 +9,7 @@ public interface ICursorHandler
     void CursorEnter();
     void CursorExit();
     void CursorDown();
+    void NotInGame();
 }
 
 public interface IActiveInGameObject
@@ -28,12 +29,16 @@ namespace UIElements
         
         //Variables
         private bool _active, _justSwitchedFromMouse;
-        private static bool pointerOver;
+        private bool _pointerOver;
         private bool _allowKeys;
 
         //Properties & Set / Getters
         public bool UiTargetNotActive => !_active;
-        public void SetAsNotActive() => _active = false;
+        public void SetAsNotActive()
+        {
+            _justSwitchedFromMouse = false;
+            _active = false;
+        }
         private void SetAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
         public Transform UsersTransform => _uiOffsetPosition;
         public InGameObjectUI ActiveObject => this;
@@ -56,7 +61,7 @@ namespace UIElements
         //Main
         private void Awake()
         {
-            pointerOver = false;
+            _pointerOver = false;
             if (_uiOffsetPosition == null)
             {
                 _uiOffsetPosition = transform;
@@ -64,34 +69,35 @@ namespace UIElements
             FetchEvents();
         }
 
-        private void OnEnable() => ObserveEvents();
-
         public void FetchEvents() => DoActivateInGameObject = EVent.Do.Fetch<IActiveInGameObject>();
+        
+        private void OnEnable() => ObserveEvents();
 
         public void ObserveEvents()
         {
             EVent.Do.Subscribe<IClearAll>(ClearUI);
             EVent.Do.Subscribe<IAllowKeys>(SetAllowKeys);
         }
-       
-        /// <summary>
-        /// Three public methods to allow access for cursor control for keyboard or mouse. Not Tested yet
-        /// </summary>
-        //TODO Activate these controls if needs be
-        
-        public void OnEnter() => OnMouseEnter();
-
-        public void OnExit() => OnMouseExit();
-
-        public void OnSelect() => OnMouseDown();
 
         public void OverFocus()
         {
-            pointerOver = true;
+          //  pointerOver = true;
             if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
-            Activate();
             EnterUi();
-            _branch.DefaultStartOnThisNode.SetNodeAsActive();
+            // Activate();
+            // _branch.DefaultStartOnThisNode.SetNodeAsActive();
+        }
+
+        public void UnFocus() 
+        {
+         //   pointerOver = false;
+            _justSwitchedFromMouse = false;
+            
+            if (!_active || _turnOffWhen == InGameUiTurnOff.OnClick
+                         || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
+            ExitUi();
+            // Deactivate();
+            // _branch.DefaultStartOnThisNode.DeactivateNode();
         }
 
         public void SwitchMouseOnly()
@@ -102,52 +108,16 @@ namespace UIElements
             _justSwitchedFromMouse = true;
         }
 
-        
-        //TODO Not Used??
-        public void SelectFocus()
-        {
-            if (!_active)
-            {
-                if (_turnOnWhen == InGameUiTurnOn.OnEnter) return;
-                EnterUi();
-                _branch.DefaultStartOnThisNode.SetNodeAsActive();
-                Activate();
-            }
-            else
-            {
-                if(_turnOffWhen == InGameUiTurnOff.OnExit || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
-                ExitUi();
-                _branch.DefaultStartOnThisNode.DeactivateNode();
-                Deactivate();
-            }
-        }
-
-        public void UnFocus() 
-        {
-            Deactivate();
-            pointerOver = false;
-
-            if (!_active || _turnOffWhen == InGameUiTurnOff.OnClick
-                         || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
-            ExitUi();
-            _branch.DefaultStartOnThisNode.DeactivateNode();
-        }
-
         private void OnMouseEnter()
         {
-            if (AllowUseOfMouseOver()) return;
-            pointerOver = true;
-            if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
+            if (_allowKeys) return;
             OnlyJustSwitchedOnFromMouseOnlyControl();
+            
+            _pointerOver = true;
+            if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
             EnterUi();
-            _branch.DefaultStartOnThisNode.SetNodeAsActive();
-
-        }
-
-        private bool AllowUseOfMouseOver()
-        {
-            if (_allowKeys) return true;
-            return false;
+            // Activate();
+            // _branch.DefaultStartOnThisNode.SetNodeAsActive();
         }
 
         private void OnlyJustSwitchedOnFromMouseOnlyControl()
@@ -161,13 +131,14 @@ namespace UIElements
 
         private void OnMouseExit()
         {
-            if(AllowUseOfMouseOver()) return;
-            pointerOver = false;
+            if(_allowKeys) return;
+            _pointerOver = false;
+            
             if (!_active || _turnOffWhen == InGameUiTurnOff.OnClick
                             || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
-            ExitUi();
-            _branch.DefaultStartOnThisNode.DeactivateNode();
-
+             ExitUi();
+            //Deactivate();
+            // _branch.DefaultStartOnThisNode.DeactivateNode();
         }
 
         private void OnMouseDown()
@@ -178,53 +149,65 @@ namespace UIElements
             {
                 if (_turnOnWhen == InGameUiTurnOn.OnEnter) return;
                 EnterUi();
+                // Activate();
+                // _branch.DefaultStartOnThisNode.SetNodeAsActive();
             }
             else
             {
                 if(_turnOffWhen == InGameUiTurnOff.OnExit || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
                 ExitUi();
+                // Deactivate();
+                // _branch.DefaultStartOnThisNode.DeactivateNode();
             }
         }
 
+        public void NotInGame() => _pointerOver = false;
+
         private void ClearUI(IClearAll args)
         {
-            if(!_active || pointerOver) return;
+            if(!_active || _pointerOver) return;
+            _justSwitchedFromMouse = false;
             ExitUi();
+            // _branch.DefaultStartOnThisNode.DeactivateNode();
+            // Deactivate();
         }
 
         private void EnterUi()
         {
             _branch.StartInGameUi(this);
             _active = true;
+            Activate();
+            _branch.DefaultStartOnThisNode.SetNodeAsActive();
         }
 
         private void ExitUi()
         {
             _branch.ExitInGameUi();
             _active = false;
+            Deactivate();
+            _branch.DefaultStartOnThisNode.DeactivateNode();
         }
 
         public void CursorEnter()
         {
-            pointerOver = true;
-
+            _pointerOver = true;
             if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
 
             EnterUi();
-            Activate();
-            _branch.DefaultStartOnThisNode.SetNodeAsActive();
+            // Activate();
+            // _branch.DefaultStartOnThisNode.SetNodeAsActive();
         }
 
         public void CursorExit()
         {
-            pointerOver = false;
+            _pointerOver = false;
 
             if (!_active || _turnOffWhen == InGameUiTurnOff.OnClick
                          || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
             
             ExitUi();
-            Deactivate();
-            _branch.DefaultStartOnThisNode.DeactivateNode();
+            // Deactivate();
+            // _branch.DefaultStartOnThisNode.DeactivateNode();
         }
 
         public void CursorDown()
@@ -233,17 +216,18 @@ namespace UIElements
             {
                 if (_turnOnWhen == InGameUiTurnOn.OnEnter) return;
                 EnterUi();
-                _branch.DefaultStartOnThisNode.SetNodeAsActive();
-
+                // _branch.DefaultStartOnThisNode.SetNodeAsActive();
+                // Activate();
             }
             else
             {
                 if(_turnOffWhen == InGameUiTurnOff.OnExit || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
                 ExitUi();
-                _branch.DefaultStartOnThisNode.DeactivateNode();
+                // _branch.DefaultStartOnThisNode.DeactivateNode();
+                // Deactivate();
             }
         }
-
+        
         private void Activate()
         {
             DoActivateInGameObject?.Invoke(this);

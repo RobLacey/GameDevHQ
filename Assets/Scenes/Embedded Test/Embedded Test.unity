@@ -25821,14 +25821,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86bb58c54bbd4fb0a2bf58f6edbdb7b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inGameControlType: 1
-  _restrictRaycastTo: 2
-  _virtualCursor: {fileID: 1854834984}
-  _cursorSpeed: 10
-  _layerToHit:
-    serializedVersion: 2
-    m_Bits: 512
-  _raycastLength: 1000
+  _inGameControlType: 4
+  _virtualCursor:
+    _restrictRaycastTo: 2
+    _virtualCursor: {fileID: 1854834984}
+    _cursorSpeed: 7
+    _layerToHit:
+      serializedVersion: 2
+      m_Bits: 512
+    _raycastLength: 1000
 --- !u!114 &1186721465 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8432195791396970355, guid: 1520ba3c28fb6824a8f5ecd400f5e649,

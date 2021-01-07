@@ -6,5 +6,6 @@ namespace UIElements
     {
         void DoSelectedInGameObj();
         void DoRaycast(Vector3 virtualCursorPos);
+        void WhenInMenu();
     }
 }
