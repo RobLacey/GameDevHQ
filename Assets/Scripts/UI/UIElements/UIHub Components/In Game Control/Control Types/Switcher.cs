@@ -15,12 +15,11 @@ namespace UIElements
             _controller = uiGameObjectController.Controller;
             _scheme = _controller.GetScheme();
             _playerObjects = _controller.GetPlayerObjects();
-            SetUpInGameObjects();
         }
         
         //Variables
         private int _index = 0;
-        private readonly UIGameObjectController _controller;
+        private readonly UIGOController _controller;
         private readonly InputScheme _scheme;
         private readonly InGameObjectUI[] _playerObjects;
         private bool _inGame;
@@ -30,15 +29,6 @@ namespace UIElements
         private bool UseBoth => _controller.ControlType == VirtualControl.Both;
 
         //Main
-        private void SetUpInGameObjects()
-        {
-            foreach (var obj in _playerObjects)
-            {
-                if(InGameSwitch)
-                    obj.SetToUseSwitcher();
-            }
-        }
-
         public void OnEnable() => ObserveEvents();
         
         public void ObserveEvents() => EVent.Do.Subscribe<IInMenu>(InGame);

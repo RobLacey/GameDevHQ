@@ -125,6 +125,7 @@ public partial class UIBranch
 
 
     //Editor Properties
+    private bool InGameUI => _branchType == BranchType.InGameUi;
     private bool ManualOrder => _canvasOrderSetting == OrderInCanvas.Manual;
 
     private bool IsOptional() => _branchType == BranchType.OptionalPopUp;

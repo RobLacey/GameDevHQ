@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NaughtyAttributes;
+using UIElements;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -19,7 +20,8 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
 
     [Header("Input Scheme(Expandable)", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
     [SerializeField] 
-    [Expandable] private InputScheme _inputScheme  = default;
+    [Expandable] 
+    private InputScheme _inputScheme  = default;
     [SerializeField] 
     [Space(20, order = 1)]
     private SwitchGameOrMenu _switchBetweenMenuAndGame  = default;
@@ -36,6 +38,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private IChangeControl _changeControl;
     private IHistoryTrack _historyTrack;
     private readonly ValidationCheck _validationCheck;
+    private InGameObjectUI _activeInGameUiObject;
 
     //Events
     private Action<IPausePressed> OnPausedPressed { get; set; }
@@ -81,6 +84,9 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveOnHomeScreen (IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveAllowKeys (IAllowKeys args) => _allowKeys = args.CanAllowKeys;
+    private void SaveActiveInGameObject(IActiveInGameObject args) 
+        => _activeInGameUiObject = args.IsNull() ? null : args.ActiveObject;
+
     public SwitchType SwitchType { get; private set; }
     public InputScheme ReturnScheme => _inputScheme;
     public EscapeKey EscapeKeySettings => _activeBranch.EscapeKeyType;
@@ -138,6 +144,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         EVent.Do.Subscribe<IInMenu>(SaveInMenu);
         EVent.Do.Subscribe<INoPopUps>(SaveNoActivePopUps);
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+        EVent.Do.Subscribe<IActiveInGameObject>(SaveActiveInGameObject);
     }
 
     private void Update()
@@ -149,6 +156,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
         {
             OnClearAll?.Invoke(this);
+            return;
         }
 
         if (CanPauseGame())
@@ -184,7 +192,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         
         if (CanSwitchBranches() && SwitchGroupProcess()) return;
         
-        OnChangeControlPressed?.Invoke(this);
+         OnChangeControlPressed?.Invoke(this);
     }
 
     private bool CanPauseGame() => _inputScheme.PressPause();
@@ -242,7 +250,9 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private void CancelPressed() => OnCancelPressed?.Invoke(this);
     
     private bool CanEnterPauseWithNothingSelected() =>
-        (_noActivePopUps && !_gameIsPaused && _historyTrack.NoHistory) && NothingSelectedAction;
+        (_noActivePopUps && !_gameIsPaused && _historyTrack.NoHistory) 
+        && NothingSelectedAction 
+        && _activeInGameUiObject.IsNull();
     
     private bool CanSwitchBranches() => _noActivePopUps && !MouseOnly() && _allowKeys;
 

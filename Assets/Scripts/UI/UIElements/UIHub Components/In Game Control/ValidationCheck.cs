@@ -8,10 +8,10 @@ public abstract class DialogueBox
 
 public class ValidationCheck : DialogueBox
 {
-    private UIGameObjectController _goController;
+    private UIGOController _goController;
     private UIInput _uiInput;
 
-    public ValidationCheck(UIGameObjectController parent)
+    public ValidationCheck(UIGOController parent)
     {
         _goController = parent;
     }
@@ -68,11 +68,11 @@ public class ValidationCheck : DialogueBox
 
         if (_goController is null)
         {
-            _goController = _uiInput.GetComponent<UIGameObjectController>();
+            _goController = _uiInput.GetComponent<UIGOController>();
             _currentState = _goController.ControlType;
         }
 
         if (_scheme is null)
-            _scheme = _goController.GetComponent<UIInput>().ReturnScheme;
+            _scheme = _uiInput.ReturnScheme;
     }
 }

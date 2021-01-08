@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Collections;
 using NaughtyAttributes;
 using UIElements;
 using UnityEngine;
@@ -11,7 +10,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
     [SerializeField]
     private GameType _restrictRaycastTo = GameType.NoRestrictions;
     [SerializeField] 
-    [AllowNesting] [ValidateInput("HasRect", "Assign Virtual Cursor RectTransform")]
+    [AllowNesting] [ValidateInput(HasRecTransform, RectMessage)]
     private RectTransform _virtualCursor = default;
     [SerializeField] 
     [Range(1f, 20f)] 
@@ -30,11 +29,13 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
     private IRaycast _raycastTo2D, _raycastTo3D;
     private bool _noInput, _inGame;
     private InputScheme _scheme;
-    private UIGameObjectController _controller;
+    private UIGOController _controller;
     private InGameObjectUI[] _playerObjects;
 
     //Editor
     private bool HasRect(RectTransform rect) => rect != null;
+    private const string HasRecTransform = nameof(HasRect);
+    private const string RectMessage = "Assign Virtual Cursor RectTransform";
 
     //Properties
     public LayerMask LayerToHit => _layerToHit;
@@ -63,7 +64,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
     private bool Allow3D => _restrictRaycastTo == GameType._3D || _restrictRaycastTo == GameType.NoRestrictions;
 
     //Main
-    public void SetUpVirtualCursor(UIGameObjectController controller)
+    public void SetUpVirtualCursor(UIGOController controller)
     {
         _controller = controller;
         _scheme = _controller.GetScheme();

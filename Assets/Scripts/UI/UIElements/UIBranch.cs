@@ -37,7 +37,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [SerializeField]
     [Label("Move To Next Branch...")] private WhenToMove _moveType = WhenToMove.Immediately;
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "IsControlBar", "IsAPopUpEditor")] [Label("Auto Open/Close")]
+    [HideIf(EConditionOperator.Or, "IsControlBar", "IsAPopUpEditor", "InGameUI")] [Label("Auto Open/Close")]
     private AutoOpenClose _autoOpenClose = AutoOpenClose.No;
     [SerializeField] 
     [ShowIf("IsStandardBranch")]
@@ -45,7 +45,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [SerializeField] 
     [ShowIf("IsTimedPopUp")] private float _timer = 1f;
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, "IsOptional", "IsTimedPopUp", "IsHomeScreenBranch", "IsControlBar")]
+    [HideIf(EConditionOperator.Or, "IsOptional", "IsTimedPopUp", "IsHomeScreenBranch", "IsControlBar", "InGameUI")]
     private ScreenType _screenType = ScreenType.FullScreen;
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "IsAPopUpEditor", "IsFullScreen", "IsControlBar")]
@@ -58,13 +58,13 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [Label("On Return To Home Screen")]
     private DoTween _tweenOnHome = DoTween.Tween;
     [SerializeField] 
-    [Label("Save Position On Exit")] [HideIf("IsAPopUpEditor")] 
+    [Label("Save Position On Exit")] [HideIf(EConditionOperator.Or,"IsAPopUpEditor", "InGameUI")] 
     private IsActive _saveExitSelection = IsActive.Yes;
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, "IsStandardBranch")]
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
     [SerializeField]
-    [HideIf(EConditionOperator.Or, "IsAPopUpEditor", "IsHomeScreenBranch")] 
+    [HideIf(EConditionOperator.Or, "IsAPopUpEditor", "IsHomeScreenBranch", "InGameUI")] 
     [Label("Branch Groups List (Leave blank if NO groups needed)")] 
     [ReorderableList] private List<GroupList> _groupsList;
     

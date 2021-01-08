@@ -452,7 +452,8 @@
                     <e p="IRaycastController.cs" t="Include" />
                     <e p="RaycastBase.cs" t="Include" />
                   </e>
-                  <e p="UIGameObjectController.cs" t="Include" />
+                  <e p="UIGOController.cs" t="Include" />
+                  <e p="UIGOControllerEditor.cs" t="Include" />
                   <e p="ValidationCheck.cs" t="Include" />
                 </e>
                 <e p="MenuAndGameSwitching.cs" t="Include" />

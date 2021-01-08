@@ -20,6 +20,15 @@ public class InGameUI : BranchBase, IInGameUi
         _rectTransform = _myBranch.MyCanvas.GetComponent<RectTransform>();
     }
 
+    private void SaveActiveUiObject(IActiveInGameObject args) 
+        => _currentObjUser = args.IsNull() ? null : args.ActiveObject;
+
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EVent.Do.Subscribe<IActiveInGameObject>(SaveActiveUiObject);
+    }
+
     protected override void SaveInMenu(IInMenu args)
     {
         base.SaveInMenu(args);
@@ -32,25 +41,22 @@ public class InGameUI : BranchBase, IInGameUi
 
     private void StartPopUp(InGameObjectUI newUser)
     {
-        if (_currentObjUser is null)
-        {
-            _currentObjUser = newUser;
-            NextUser();
-            return;
-        }
+        if (ActivateOnFirstUse(NextUser, newUser)) return;
         
-        if (_currentObjUser == newUser || _currentObjUser.UiTargetNotActive)
-        {
-            _currentObjUser.SetAsNotActive();
-            NextUser();
-        }
-        else
-        {
-            _currentObjUser.SetAsNotActive();
-            ExitProcess(NextUser);
-        }
+        ExitProcess(NextUser);
         
         void NextUser() => ToNext(newUser);
+    }
+
+    private bool ActivateOnFirstUse(Action callBack, InGameObjectUI newUser)
+    {
+        if(_currentObjUser is null)
+        {
+            _currentObjUser = newUser;
+            callBack?.Invoke();
+            return true;
+        }
+        return false;
     }
 
     private void ToNext(InGameObjectUI newUser)
@@ -70,16 +76,20 @@ public class InGameUI : BranchBase, IInGameUi
     private void ExitPopUp() => ExitProcess(StopSettingPosition);
 
     private void ExitProcess(Action callback)
-    {
-        if(_currentObjUser is null) return;
-        _myBranch.StartBranchExitProcess(OutTweenType.Cancel, callback);
+    { 
+        _currentObjUser.SetAsNotActive();
+        _currentObjUser.MyBranch.StartBranchExitProcess(OutTweenType.Cancel, callback);
     }
 
-    private void StopSettingPosition()
+    protected override void ClearBranchForFullscreen(IClearScreen args)
     {
-        SetCanvas(ActiveCanvas.No);
-        StaticCoroutine.StopCoroutines(_coroutine);
+        base.ClearBranchForFullscreen(args);
+        if(_currentObjUser.IsNull()) return;
+        _currentObjUser.SetAsNotActive();
+        _currentObjUser.CancelUi();
     }
+
+    private void StopSettingPosition() => StaticCoroutine.StopCoroutines(_coroutine);
 
     private IEnumerator SetMyScreenPosition(Transform objTransform)
     {

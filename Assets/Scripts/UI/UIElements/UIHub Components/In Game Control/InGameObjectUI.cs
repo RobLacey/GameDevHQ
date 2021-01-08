@@ -3,6 +3,7 @@ using NaughtyAttributes;
 using UIElements;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 public interface ICursorHandler
 {
@@ -24,24 +25,25 @@ namespace UIElements
         [SerializeField] private UIBranch _branch;
         [SerializeField] private InGameUiTurnOn _turnOnWhen;
         [SerializeField] private InGameUiTurnOff _turnOffWhen;
-        [SerializeField] [InfoBox("If left blank the centre of object will be used")] 
-        private Transform _uiOffsetPosition;
-        
+        [SerializeField] [Space(10f, order = 1)] [InfoBox(InfoBox, order = 2)] 
+        private Transform _uiPosition;
+        [SerializeField] [Space(10f)] private UnityEvent<bool> _activateInGameObject;
+
         //Variables
-        private bool _active, _justSwitchedFromMouse;
+        private bool _active, _justSwitchedToMouse;
         private bool _pointerOver;
         private bool _allowKeys;
+        private UIGOController _controller;
+        
+        //Editor
+        private const string InfoBox = "If left blank the centre of object will be used";
 
         //Properties & Set / Getters
-        public bool UiTargetNotActive => !_active;
-        public void SetAsNotActive()
-        {
-            _justSwitchedFromMouse = false;
-            _active = false;
-        }
+        public UIBranch MyBranch => _branch;
         private void SetAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
-        public Transform UsersTransform => _uiOffsetPosition;
+        public Transform UsersTransform => _uiPosition;
         public InGameObjectUI ActiveObject => this;
+        public bool PointerOver => _pointerOver;
 
         public void CheckForSetLayerMask(LayerMask layerMask)
         {
@@ -55,16 +57,21 @@ namespace UIElements
         }
 
         //Events
-        public UnityEvent<bool> _activateInGameObject;
         private Action<IActiveInGameObject> DoActivateInGameObject;
         
         //Main
         private void Awake()
         {
+            Debug.Log("Trying to fix the cancel bug when switching from mouse to in game and" +
+                      " also the weird not appearing tooltip bug. Might need new EVent as ClearAll causes issues if used" +
+                      "to clear ingameUi");
+            
+            _controller = FindObjectOfType<UIGOController>();
+            
             _pointerOver = false;
-            if (_uiOffsetPosition == null)
+            if (_uiPosition == null)
             {
-                _uiOffsetPosition = transform;
+                _uiPosition = transform;
             }
             FetchEvents();
         }
@@ -78,54 +85,64 @@ namespace UIElements
             EVent.Do.Subscribe<IClearAll>(ClearUI);
             EVent.Do.Subscribe<IAllowKeys>(SetAllowKeys);
         }
+        
+        public void SetAsNotActive()
+        {
+            _justSwitchedToMouse = false;
+            _active = false;
+        }
 
         public void OverFocus()
         {
-          //  pointerOver = true;
             if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
-            EnterUi();
-            // Activate();
-            // _branch.DefaultStartOnThisNode.SetNodeAsActive();
+            StartInGameUi();
         }
 
         public void UnFocus() 
         {
-         //   pointerOver = false;
-            _justSwitchedFromMouse = false;
+            _justSwitchedToMouse = false;
             
-            if (!_active || _turnOffWhen == InGameUiTurnOff.OnClick
-                         || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
-            ExitUi();
-            // Deactivate();
-            // _branch.DefaultStartOnThisNode.DeactivateNode();
+            if (!_active /*|| _turnOffWhen == InGameUiTurnOff.OnClick
+                         || _turnOffWhen == InGameUiTurnOff.ScriptCall*/) return;
+            ExitInGameUi();
         }
 
         public void SwitchMouseOnly()
         {
-            Activate();
-            EnterUi();
-            _active = false;
-            _justSwitchedFromMouse = true;
+            _justSwitchedToMouse = true;
+            StartInGameUi();
         }
 
         private void OnMouseEnter()
         {
             if (_allowKeys) return;
-            OnlyJustSwitchedOnFromMouseOnlyControl();
-            
             _pointerOver = true;
+            OnlyJustSwitchedOnFromMouseOnlyControl();
+            if(_active)
+                _branch.DefaultStartOnThisNode.SetNodeAsActive();
+            
             if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
-            EnterUi();
-            // Activate();
-            // _branch.DefaultStartOnThisNode.SetNodeAsActive();
+            
+            StartInGameUi();
+        }
+        
+        public void CursorEnter()
+        {
+            _pointerOver = true;
+            if(_active)
+                _branch.DefaultStartOnThisNode.SetNodeAsActive();
+
+            if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
+
+            StartInGameUi();
         }
 
         private void OnlyJustSwitchedOnFromMouseOnlyControl()
         {
-            if (_justSwitchedFromMouse)
+            if (_justSwitchedToMouse)
             {
                 _branch.DoNotTween();
-                _justSwitchedFromMouse = false;
+                _justSwitchedToMouse = false;
             }
         }
 
@@ -133,12 +150,20 @@ namespace UIElements
         {
             if(_allowKeys) return;
             _pointerOver = false;
-            
-            if (!_active || _turnOffWhen == InGameUiTurnOff.OnClick
-                            || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
-             ExitUi();
-            //Deactivate();
-            // _branch.DefaultStartOnThisNode.DeactivateNode();
+
+            if (!_active) return; 
+            if (DeactivateNodeForOnClick()) return;             
+            ExitInGameUi();
+        }
+
+        private bool DeactivateNodeForOnClick()
+        {
+            if (_turnOffWhen == InGameUiTurnOff.OnClick || _turnOffWhen == InGameUiTurnOff.ScriptCall)
+            {
+                _branch.DefaultStartOnThisNode.DeactivateNode();
+                return true;
+            }
+            return false;
         }
 
         private void OnMouseDown()
@@ -148,39 +173,42 @@ namespace UIElements
             if(!_active)
             {
                 if (_turnOnWhen == InGameUiTurnOn.OnEnter) return;
-                EnterUi();
-                // Activate();
-                // _branch.DefaultStartOnThisNode.SetNodeAsActive();
+                StartInGameUi();
             }
             else
             {
                 if(_turnOffWhen == InGameUiTurnOff.OnExit || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
-                ExitUi();
-                // Deactivate();
-                // _branch.DefaultStartOnThisNode.DeactivateNode();
+                ExitInGameUi();
             }
         }
 
         public void NotInGame() => _pointerOver = false;
 
-        private void ClearUI(IClearAll args)
+        public void CancelUi()
         {
-            if(!_active || _pointerOver) return;
-            _justSwitchedFromMouse = false;
-            ExitUi();
-            // _branch.DefaultStartOnThisNode.DeactivateNode();
-            // Deactivate();
+            _justSwitchedToMouse = false;
+            ExitInGameUi();
         }
 
-        private void EnterUi()
+        private void ClearUI(IClearAll args = null)
         {
+            if(!_active || _pointerOver) return;
+            _justSwitchedToMouse = false;
+            ExitInGameUi();
+        }
+
+        private void StartInGameUi()
+        {
+            _controller.SetIndex(this);
+
             _branch.StartInGameUi(this);
             _active = true;
             Activate();
+            if(_justSwitchedToMouse) return;
             _branch.DefaultStartOnThisNode.SetNodeAsActive();
         }
 
-        private void ExitUi()
+        private void ExitInGameUi()
         {
             _branch.ExitInGameUi();
             _active = false;
@@ -188,26 +216,14 @@ namespace UIElements
             _branch.DefaultStartOnThisNode.DeactivateNode();
         }
 
-        public void CursorEnter()
-        {
-            _pointerOver = true;
-            if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
-
-            EnterUi();
-            // Activate();
-            // _branch.DefaultStartOnThisNode.SetNodeAsActive();
-        }
 
         public void CursorExit()
         {
             _pointerOver = false;
+            if (!_active) return; 
+            if (DeactivateNodeForOnClick()) return;
 
-            if (!_active || _turnOffWhen == InGameUiTurnOff.OnClick
-                         || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
-            
-            ExitUi();
-            // Deactivate();
-            // _branch.DefaultStartOnThisNode.DeactivateNode();
+            ExitInGameUi();
         }
 
         public void CursorDown()
@@ -215,16 +231,12 @@ namespace UIElements
             if(!_active)
             {
                 if (_turnOnWhen == InGameUiTurnOn.OnEnter) return;
-                EnterUi();
-                // _branch.DefaultStartOnThisNode.SetNodeAsActive();
-                // Activate();
+                StartInGameUi();
             }
             else
             {
                 if(_turnOffWhen == InGameUiTurnOff.OnExit || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
-                ExitUi();
-                // _branch.DefaultStartOnThisNode.DeactivateNode();
-                // Deactivate();
+                ExitInGameUi();
             }
         }
         
@@ -240,10 +252,10 @@ namespace UIElements
             _activateInGameObject.Invoke(false);
         }
 
-        public void SetToUseSwitcher()
-        {
-            _turnOnWhen = InGameUiTurnOn.OnEnter;
-            _turnOffWhen = InGameUiTurnOff.OnExit;
-        }
+        // public void SetToUseSwitcher()
+        // {
+        //     _turnOnWhen = InGameUiTurnOn.OnEnter;
+        //     _turnOffWhen = InGameUiTurnOff.OnExit;
+        // }
     }
 }

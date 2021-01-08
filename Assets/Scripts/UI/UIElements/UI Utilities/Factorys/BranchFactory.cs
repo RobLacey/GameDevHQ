@@ -130,7 +130,6 @@ public class BranchFactory
         branch.ScreenType = ScreenType.Normal;
         branch.TweenOnHome = DoTween.DoNothing;
         branch.SetStayOn = IsActive.No;
-        branch.WhenToMove = WhenToMove.AfterEndOfTween;
         branch.BlockOtherNode = IsActive.No;
         branch.ResetSavePositionOnExit();
     }

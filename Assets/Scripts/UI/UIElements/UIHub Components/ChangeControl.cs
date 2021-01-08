@@ -107,7 +107,7 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
     }
 
     private void ActivateMouse()
-    {
+    { 
         _inputScheme.SetMousePosition();
         Cursor.visible = true;
         if (_usingMouse) return;

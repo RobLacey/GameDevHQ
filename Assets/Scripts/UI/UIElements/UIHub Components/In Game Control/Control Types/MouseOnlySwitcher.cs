@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace UIElements
 {
@@ -19,7 +20,7 @@ namespace UIElements
 
         //Variables
         private int _index = 0;
-        private readonly UIGameObjectController _controller;
+        private readonly UIGOController _controller;
         private readonly InputScheme _scheme;
         private readonly InGameObjectUI[] _playerObjects;
         
@@ -56,8 +57,11 @@ namespace UIElements
     
         private void SwapObjectMouseOnly(Func<int, int> swap)
         {
+            _index = _controller.GetIndex();
             _playerObjects[_index].UnFocus();
+            Debug.Log(_playerObjects[_index]);
             _index = swap(_playerObjects.Length);
+            Debug.Log(_playerObjects[_index]);
             _playerObjects[_index].SwitchMouseOnly();
         }
     }
