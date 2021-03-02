@@ -87,22 +87,15 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private bool _activePopUp, _isTabBranch;
     private IBranchBase _branchTypeClass;
     private INode _lastHighlighted;
+    private InGameObjectUI _inGameObjectUI;
     
     /// <summary>
     /// Call To to start any PopUps through I StartPopUp
     /// </summary>
     public void StartPopUp() => OnStartPopUp?.Invoke();
     
-    /// <summary>
-    /// Call To to start and Exit InGameUi
-    /// </summary>
-    public void StartInGameUi(InGameObjectUI uiInGameObject) => StartInGamePopUp?.Invoke(uiInGameObject);
-    public void ExitInGameUi() => ExitPopUp?.Invoke();
-
     //Delegates & Events
     public event Action OnStartPopUp; 
-    public event Action<InGameObjectUI> StartInGamePopUp; 
-    public event Action ExitPopUp; 
     private Action TweenFinishedCallBack { get; set; }
     private  Action<IActiveBranch> SetActiveBranch { get; set; }
     private  Action<IGetHomeBranches> GetHomeBranches { get; set; }
@@ -210,9 +203,9 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     public void MoveToThisBranch(IBranch newParentBranch = null)
     {
         _branchTypeClass.SetUpBranch(newParentBranch);
-
+        
         if (_canActivateBranch) SetAsActiveBranch();
-
+        
         if (_tweenOnChange)
         {
             StartInTweens();

@@ -11,7 +11,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
     private GameType _restrictRaycastTo = GameType.NoRestrictions;
     [SerializeField] 
     [AllowNesting] [ValidateInput(HasRecTransform, RectMessage)]
-    private RectTransform _virtualCursor = default;
+    private RectTransform _virtualCursor;
     [SerializeField] 
     [Range(1f, 20f)] 
     private float _cursorSpeed = 7f;
@@ -81,6 +81,8 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
 
     private bool CanNotUseVirtualCursor()
     {
+        if (!_virtualCursor) return false;
+
         if (!InGameCursor || _scheme.ControlType != ControlMethod.KeysOrControllerOnly)
         {
             _virtualCursor.gameObject.SetActive(false);

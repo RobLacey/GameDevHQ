@@ -18,8 +18,8 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     
     
     event Action OnStartPopUp;
-    event Action<InGameObjectUI> StartInGamePopUp;
-    event Action ExitPopUp;
+   // event Action<InGameObjectUI> StartInGamePopUp;
+  //  event Action<InGameObjectUI> ExitPopUp;
     
     INode DefaultStartOnThisNode { get; }
     CanvasGroup MyCanvasGroup { get; }

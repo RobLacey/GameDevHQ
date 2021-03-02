@@ -30,10 +30,14 @@ namespace UIElements
         [SerializeField] [Space(10f)] private UnityEvent<bool> _activateInGameObject;
 
         //Variables
-        private bool _active, _justSwitchedToMouse;
+        private bool _active/*, _justSwitchedToMouse*/;
         private bool _pointerOver;
         private bool _allowKeys;
         private UIGOController _controller;
+        
+        //Events
+        public static Action<InGameObjectUI, IBranch> StartUIGO;
+        public static Action ExitUIGO;
         
         //Editor
         private const string InfoBox = "If left blank the centre of object will be used";
@@ -55,16 +59,14 @@ namespace UIElements
                     ($"Set Layer on {gameObject.name} to _layerToHit found in UI GameObject Controller");
             }
         }
-
+        
         //Events
-        private Action<IActiveInGameObject> DoActivateInGameObject;
+        private Action<IActiveInGameObject> SetActivateInGameObject;
         
         //Main
         private void Awake()
         {
-            Debug.Log("Trying to fix the cancel bug when switching from mouse to in game and" +
-                      " also the weird not appearing tooltip bug. Might need new EVent as ClearAll causes issues if used" +
-                      "to clear ingameUi");
+            Debug.Log("MOve Active to when moused over to make tooltip work correctly. Or reuse JustMousedOver");
             
             _controller = FindObjectOfType<UIGOController>();
             
@@ -76,19 +78,32 @@ namespace UIElements
             FetchEvents();
         }
 
-        public void FetchEvents() => DoActivateInGameObject = EVent.Do.Fetch<IActiveInGameObject>();
+        public void FetchEvents() => SetActivateInGameObject = EVent.Do.Fetch<IActiveInGameObject>();
         
         private void OnEnable() => ObserveEvents();
+
+        private void OnDisable() //TODO REmove
+        {
+            StartUIGO = null;
+            ExitUIGO = null;
+           // SetUpUIGO = null;
+        }
 
         public void ObserveEvents()
         {
             EVent.Do.Subscribe<IClearAll>(ClearUI);
             EVent.Do.Subscribe<IAllowKeys>(SetAllowKeys);
         }
-        
+
+        // private void Start()
+        // {
+        //     SetUpUIGO.Invoke(this, _branch);
+        //     Debug.Log(SetUpUIGO.GetInvocationList().Length);
+        // }
+
         public void SetAsNotActive()
         {
-            _justSwitchedToMouse = false;
+            //_justSwitchedToMouse = false;
             _active = false;
         }
 
@@ -100,7 +115,7 @@ namespace UIElements
 
         public void UnFocus() 
         {
-            _justSwitchedToMouse = false;
+            //_justSwitchedToMouse = false;
             
             if (!_active /*|| _turnOffWhen == InGameUiTurnOff.OnClick
                          || _turnOffWhen == InGameUiTurnOff.ScriptCall*/) return;
@@ -109,7 +124,7 @@ namespace UIElements
 
         public void SwitchMouseOnly()
         {
-            _justSwitchedToMouse = true;
+            //_justSwitchedToMouse = true;
             StartInGameUi();
         }
 
@@ -117,7 +132,7 @@ namespace UIElements
         {
             if (_allowKeys) return;
             _pointerOver = true;
-            OnlyJustSwitchedOnFromMouseOnlyControl();
+            //OnlyJustSwitchedOnFromMouseOnlyControl();
             if(_active)
                 _branch.DefaultStartOnThisNode.SetNodeAsActive();
             
@@ -137,14 +152,14 @@ namespace UIElements
             StartInGameUi();
         }
 
-        private void OnlyJustSwitchedOnFromMouseOnlyControl()
-        {
-            if (_justSwitchedToMouse)
-            {
-                _branch.DoNotTween();
-                _justSwitchedToMouse = false;
-            }
-        }
+        // private void OnlyJustSwitchedOnFromMouseOnlyControl()
+        // {
+        //     if (_justSwitchedToMouse)
+        //     {
+        //         _branch.DoNotTween();
+        //         _justSwitchedToMouse = false;
+        //     }
+        // }
 
         private void OnMouseExit()
         {
@@ -186,36 +201,49 @@ namespace UIElements
 
         public void CancelUi()
         {
-            _justSwitchedToMouse = false;
+            //_justSwitchedToMouse = false;
             ExitInGameUi();
         }
 
         private void ClearUI(IClearAll args = null)
         {
             if(!_active || _pointerOver) return;
-            _justSwitchedToMouse = false;
+            //_justSwitchedToMouse = false;
             ExitInGameUi();
         }
 
         private void StartInGameUi()
         {
+            if(_active) return;
             _controller.SetIndex(this);
 
-            _branch.StartInGameUi(this);
             _active = true;
-            Activate();
-            if(_justSwitchedToMouse) return;
+            StartUIGO.Invoke(this, _branch);
+            Activate(); //Rename
+            //if(_justSwitchedToMouse) return;
             _branch.DefaultStartOnThisNode.SetNodeAsActive();
+        }
+
+        private void Activate()
+        {
+            SetActivateInGameObject?.Invoke(this);
+            _activateInGameObject.Invoke(true);
         }
 
         private void ExitInGameUi()
         {
-            _branch.ExitInGameUi();
+            if(!_active) return;
+            ExitUIGO.Invoke();
             _active = false;
-            Deactivate();
+            Deactivate(); //Rename
             _branch.DefaultStartOnThisNode.DeactivateNode();
         }
 
+        private void Deactivate()
+        {
+            SetActivateInGameObject?.Invoke(null);
+            _activateInGameObject.Invoke(false);
+        }
 
         public void CursorExit()
         {
@@ -238,18 +266,6 @@ namespace UIElements
                 if(_turnOffWhen == InGameUiTurnOff.OnExit || _turnOffWhen == InGameUiTurnOff.ScriptCall) return;
                 ExitInGameUi();
             }
-        }
-        
-        private void Activate()
-        {
-            DoActivateInGameObject?.Invoke(this);
-            _activateInGameObject.Invoke(true);
-        }
-        
-        private void Deactivate()
-        {
-            DoActivateInGameObject?.Invoke(null);
-            _activateInGameObject.Invoke(false);
         }
 
         // public void SetToUseSwitcher()

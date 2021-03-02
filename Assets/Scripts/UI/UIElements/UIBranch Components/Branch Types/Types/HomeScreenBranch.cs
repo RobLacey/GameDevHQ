@@ -5,8 +5,6 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 {
     public HomeScreenBranch(IBranch branch) : base(branch) { }
     
-    private bool _startBranch;
-    
     //Properties
     private bool CannotTweenOnHome => _myBranch.TweenOnHome == DoTween.DoNothing;
     private bool IsControlBar => _myBranch.IsControlBar();
@@ -21,11 +19,6 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
     protected override void SaveOnStart(IOnStart args) 
     {
         base.SaveOnStart(args);
-        if (_startBranch)
-        {
-            _myBranch.DoNotTween();
-            _myBranch.MoveToThisBranch();
-        }
         SetBlockRaycast(BlockRaycast.Yes);
     }
 
@@ -47,10 +40,12 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 
         if (args.StartBranch == _myBranch)
         {
-            _startBranch = true;
             _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
         }
-        _myBranch.DontSetBranchAsActive();
+        else
+        {
+            _myBranch.DontSetBranchAsActive();
+        }
         _myBranch.MoveToThisBranch();
     }
 

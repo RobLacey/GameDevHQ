@@ -27,7 +27,8 @@ public class UINavigation : NodeFunctionBase
     private IBranch _activeBranch;
 
     //Properties
-    private void ActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch; 
+    private void ActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
+   
     protected override bool CanBeHighlighted() => false;
     protected override bool CanBePressed() => !(_childBranch is null);
     protected override bool FunctionNotActive() => !CanActivate;

@@ -41,10 +41,10 @@ public class ValidationCheck : DialogueBox
     {
         PopulateVariables();
 
+        if(_goController.ControlType == VirtualControl.None || _scheme is null) return;
+        
         var message =
             $"In game control set to '{_goController.ControlType}' while 'Input Scheme' is set to '{_scheme.ControlType}'.";
-
-        if(_goController.ControlType == VirtualControl.None) return;
         
         if(NonMouseOnlyControls && _scheme.ControlType == ControlMethod.MouseOnly )
         {

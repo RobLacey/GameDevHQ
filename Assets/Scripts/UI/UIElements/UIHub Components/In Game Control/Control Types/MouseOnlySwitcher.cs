@@ -59,9 +59,7 @@ namespace UIElements
         {
             _index = _controller.GetIndex();
             _playerObjects[_index].UnFocus();
-            Debug.Log(_playerObjects[_index]);
             _index = swap(_playerObjects.Length);
-            Debug.Log(_playerObjects[_index]);
             _playerObjects[_index].SwitchMouseOnly();
         }
     }
