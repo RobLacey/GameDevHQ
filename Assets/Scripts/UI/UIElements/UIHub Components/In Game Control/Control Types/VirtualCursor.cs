@@ -29,8 +29,8 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
     private IRaycast _raycastTo2D, _raycastTo3D;
     private bool _noInput, _inGame;
     private InputScheme _scheme;
-    private UIGOController _controller;
-    private InGameObjectUI[] _playerObjects;
+    private GOUIController _controller;
+    private GOUIModule[] _playerObjects;
 
     //Editor
     private bool HasRect(RectTransform rect) => rect != null;
@@ -48,7 +48,6 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
         {
             _raycastTo2D.WhenInMenu();
             _raycastTo3D.WhenInMenu();
-            EVent.Do.Fetch<IClearAll>()?.Invoke(this);
         }
         else
         {
@@ -64,7 +63,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
     private bool Allow3D => _restrictRaycastTo == GameType._3D || _restrictRaycastTo == GameType.NoRestrictions;
 
     //Main
-    public void SetUpVirtualCursor(UIGOController controller)
+    public void SetUpVirtualCursor(GOUIController controller)
     {
         _controller = controller;
         _scheme = _controller.GetScheme();

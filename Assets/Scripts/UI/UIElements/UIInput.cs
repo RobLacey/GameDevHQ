@@ -38,7 +38,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private IChangeControl _changeControl;
     private IHistoryTrack _historyTrack;
     private readonly ValidationCheck _validationCheck;
-    private InGameObjectUI _activeInGameUiObject;
+    private GOUIModule _activeGameUIModuleObject;
 
     //Events
     private Action<IPausePressed> OnPausedPressed { get; set; }
@@ -85,7 +85,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private void SaveOnHomeScreen (IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveAllowKeys (IAllowKeys args) => _allowKeys = args.CanAllowKeys;
     private void SaveActiveInGameObject(IActiveInGameObject args) 
-        => _activeInGameUiObject = args.IsNull() ? null : args.ActiveObject;
+        => _activeGameUIModuleObject = args.IsNull() ? null : args.UIGOModule;
 
     public SwitchType SwitchType { get; private set; }
     public InputScheme ReturnScheme => _inputScheme;
@@ -252,7 +252,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private bool CanEnterPauseWithNothingSelected() =>
         (_noActivePopUps && !_gameIsPaused && _historyTrack.NoHistory) 
         && NothingSelectedAction 
-        && _activeInGameUiObject.IsNull();
+        && _activeGameUIModuleObject.IsNull();
     
     private bool CanSwitchBranches() => _noActivePopUps && !MouseOnly() && _allowKeys;
 

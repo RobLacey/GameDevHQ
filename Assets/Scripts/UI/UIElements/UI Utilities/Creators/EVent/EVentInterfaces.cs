@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UIElements;
 
 public interface IReturnToHome // This one is test
 {
@@ -138,6 +139,23 @@ public interface IGetHomeBranches
 }
 
 public interface IClearAll { }
+
+public interface IActiveInGameObject
+{
+    GOUIModule UIGOModule { get; }
+}
+
+public interface ISetUpUIGOBranch
+{
+    IBranch TargetBranch  { get; }
+    GOUIModule UIGOModule { get; }
+}
+
+public interface IStartBranch
+{
+    UIBranch TargetBranch { get; }
+}
+
 
 
 

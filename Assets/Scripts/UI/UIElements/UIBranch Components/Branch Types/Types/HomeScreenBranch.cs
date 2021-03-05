@@ -51,8 +51,6 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
-        _myBranch.SetHighlightedNode();
-        
         if(!_canStart || !_inMenu) return;
         
         SetCanvas(ActiveCanvas.Yes);
@@ -91,7 +89,7 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
         }
     }
 
-    public override void ActivateStoredPosition()
+    protected override void ActivateStoredPosition()
     {
         if (MyScreenType != ScreenType.FullScreen && _myBranch.IsControlBar())
         {

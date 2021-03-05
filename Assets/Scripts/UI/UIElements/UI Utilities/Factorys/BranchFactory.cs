@@ -54,7 +54,7 @@ public class BranchFactory
             }
             case BranchType.InGameUi:
                 CreateInGameUi(_branch);
-                return ieJect.WithParams<IInGameUi>(_branch);
+                return ieJect.WithParams<IGOUIBranch>(_branch);
             default:
                 throw new ArgumentOutOfRangeException(nameof(branchType), branchType, null);
         }

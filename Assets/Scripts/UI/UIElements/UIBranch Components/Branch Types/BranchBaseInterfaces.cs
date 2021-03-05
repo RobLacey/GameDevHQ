@@ -4,9 +4,12 @@
     void OnEnable();
     void SetUpAsTabBranch();
     void SetUpBranch(IBranch newParentController = null);
+    void EndOfBranchStart();
+    void StartBranchExit(OutTweenType outTweenType);
+    void EndOfBranchExit();
     void SetCanvas(ActiveCanvas active);
     void SetBlockRaycast(BlockRaycast active);
-    void ActivateStoredPosition();
+    bool CanStartBranch();
 }
 
 public interface IBranchParams
@@ -18,7 +21,4 @@ public interface IAdjustCanvasOrder //Inherited in PopUp Branch Types
 {
     int CanvasOrderOffset { set; }
     BranchType BranchType { get; }
-    void SetUpCanvasOrder(ICanvasOrder branch);
-    void AdjustCanvasOrderAdded();
-    void AdjustCanvasOrderRemoved(ILastRemovedPopUp args);
 }

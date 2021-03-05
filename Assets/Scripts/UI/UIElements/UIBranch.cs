@@ -14,21 +14,25 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(UITweener))]
 
 
-public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveBranch, IBranch, IEventDispatcher,
+public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranch, IEventDispatcher,
                                 IPointerEnterHandler, IPointerExitHandler, IGetHomeBranches
 {
     [Header("Branch Main Settings")] [HorizontalLine(1f, EColor.Blue, order = 1)]
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
+    
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, "IsHomeScreenBranch")] [Label("Is Control Bar")]
     private IsActive _controlBar = IsActive.No;
+    
     [SerializeField]
     [Label("Start On (Optional)")] 
     private UINode _startOnThisNode;
+    
     [SerializeField] 
     [ShowIf("ManualOrder")] [OnValueChanged("SetUpCanvasOrder")] 
     private int _orderInCanvas;
+    
     [SerializeField] 
     [OnValueChanged("SetUpCanvasOrder")] 
     private OrderInCanvas _canvasOrderSetting = OrderInCanvas.Default;
@@ -36,33 +40,43 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     [Header("Type Settings", order = 2)] [HorizontalLine(1f, EColor.Blue, order = 3)] [Space(20, order = 1)]
     [SerializeField]
     [Label("Move To Next Branch...")] private WhenToMove _moveType = WhenToMove.Immediately;
+    
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "IsControlBar", "IsAPopUpEditor", "InGameUI")] [Label("Auto Open/Close")]
     private AutoOpenClose _autoOpenClose = AutoOpenClose.No;
+    
     [SerializeField] 
     [ShowIf("IsStandardBranch")]
     private IsActive _blockOtherNodes = IsActive.No;
+    
     [SerializeField] 
     [ShowIf("IsTimedPopUp")] private float _timer = 1f;
+    
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "IsOptional", "IsTimedPopUp", "IsHomeScreenBranch", "IsControlBar", "InGameUI")]
     private ScreenType _screenType = ScreenType.FullScreen;
+    
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "IsAPopUpEditor", "IsFullScreen", "IsControlBar")]
     [ValidateInput("AllowableInAndOutTweens", "Can't have IN And Out tweens and Stay Visible set")]
     private IsActive _stayVisible = IsActive.No;
+    
     [SerializeField] 
     [ShowIf("IsOptional")] private StoreAndRestorePopUps _storeOrResetOptional = StoreAndRestorePopUps.Reset;
+    
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, "IsHomeAndNotControl", "IsStored")] 
     [Label("On Return To Home Screen")]
     private DoTween _tweenOnHome = DoTween.Tween;
+    
     [SerializeField] 
     [Label("Save Position On Exit")] [HideIf(EConditionOperator.Or,"IsAPopUpEditor", "InGameUI")] 
     private IsActive _saveExitSelection = IsActive.Yes;
+    
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, "IsStandardBranch")]
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
+    
     [SerializeField]
     [HideIf(EConditionOperator.Or, "IsAPopUpEditor", "IsHomeScreenBranch", "InGameUI")] 
     [Label("Branch Groups List (Leave blank if NO groups needed)")] 
@@ -87,15 +101,9 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     private bool _activePopUp, _isTabBranch;
     private IBranchBase _branchTypeClass;
     private INode _lastHighlighted;
-    private InGameObjectUI _inGameObjectUI;
     
-    /// <summary>
-    /// Call To to start any PopUps through I StartPopUp
-    /// </summary>
-    public void StartPopUp() => OnStartPopUp?.Invoke();
     
     //Delegates & Events
-    public event Action OnStartPopUp; 
     private Action TweenFinishedCallBack { get; set; }
     private  Action<IActiveBranch> SetActiveBranch { get; set; }
     private  Action<IGetHomeBranches> GetHomeBranches { get; set; }
@@ -103,6 +111,8 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     //Main
     private void Awake()
     {
+        Debug.Log("Got to test GOUI and check out canvas order as dropdown doesn't work correctly now. If keys the turning on GOUI should switch from menu to game");
+        
         CheckForValidSetUp();
         ThisGroupsUiNodes = SetBranchesChildNodes.GetChildNodes(this);
         MyCanvasGroup = GetComponent<CanvasGroup>();
@@ -186,6 +196,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Subscribe<ISelectedNode>(SaveSelected);
         EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
+        EVent.Do.Subscribe<IStartBranch>(StartBranch_EventCall);
     }
 
     private void Start()
@@ -200,9 +211,23 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         BranchGroups.AddControlBarToGroupList(_groupsList, HomeBranches, this);
     }
 
+    private void StartBranch_EventCall(IStartBranch args)
+    {
+        if(args.TargetBranch != this) return;
+        if(!_branchTypeClass.CanStartBranch()) return;
+        MoveToThisBranch();
+    }
+    
+    public void StartBranch_InspectorCall()
+    {
+        if(!_branchTypeClass.CanStartBranch()) return;
+        MoveToThisBranch();
+    }
+
     public void MoveToThisBranch(IBranch newParentBranch = null)
     {
         _branchTypeClass.SetUpBranch(newParentBranch);
+        SetHighlightedNode();
         
         if (_canActivateBranch) SetAsActiveBranch();
         
@@ -227,10 +252,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         if (_canActivateBranch)
             _lastHighlighted.SetNodeAsActive();
         
-        if(!IsAPopUpBranch() && !IsTimedPopUp())
-            CanvasOrderCalculator.ResetCanvasOrder(this, MyCanvas);
-
-        _branchTypeClass.SetBlockRaycast(BlockRaycast.Yes);
+        _branchTypeClass.EndOfBranchStart();
         _branchEvents.OnBranchEnter();
         _canActivateBranch = true;
     }
@@ -258,26 +280,18 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
     {
         TweenFinishedCallBack = endOfTweenCallback;
         SetUpBranchForTween(outTweenType);
-        _uiTweener.DeactivateTweens(callBack:() => OutTweenCallback(outTweenType));
+        _uiTweener.DeactivateTweens(OutTweenCallback);
     }
 
     private void SetUpBranchForTween(OutTweenType outTweenType)
     {
         _branchEvents.OnBranchExit();
-        
-        if (_stayVisible == IsActive.No || outTweenType == OutTweenType.Cancel)
-            _branchTypeClass.SetBlockRaycast(BlockRaycast.No);
+        _branchTypeClass.StartBranchExit(outTweenType);
     }
 
-    private void OutTweenCallback(OutTweenType outTweenType)
+    private void OutTweenCallback()
     {
-        if(_stayVisible == IsActive.No || outTweenType == OutTweenType.Cancel)
-            _branchTypeClass.SetCanvas(ActiveCanvas.No);
-        
-        if(!IsPauseMenuBranch()) 
-        {
-            _branchTypeClass.ActivateStoredPosition();
-        }        
+        _branchTypeClass.EndOfBranchExit();
         TweenFinishedCallBack?.Invoke();
         CanvasOrderCalculator.ResetCanvasOrder(this, MyCanvas);
     }
@@ -290,7 +304,7 @@ public partial class UIBranch : MonoBehaviour, IStartPopUp, IEventUser, IActiveB
         _groupIndex = BranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, args.SwitchType);
     }
 
-    public void SetHighlightedNode()
+    private void SetHighlightedNode()
     {
         if (_saveExitSelection == IsActive.Yes) return;
         

@@ -6,12 +6,12 @@ using UnityEngine;
 
 public interface IGOController : IParameters
 {
-    UIGOController Controller { get; }
+    GOUIController Controller { get; }
 }
 
-public partial class UIGOController : MonoBehaviour, IGOController, IEventUser
+public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
 {
-    public UIGOController() => _validationCheck = new ValidationCheck(this);
+    public GOUIController() => _validationCheck = new ValidationCheck(this);
 
     [SerializeField] 
     private VirtualControl _inGameControlType = VirtualControl.None;
@@ -33,28 +33,28 @@ public partial class UIGOController : MonoBehaviour, IGOController, IEventUser
     private IMouseOnlySwitcher _mouseOnlySwitcher;
     private ISwitcher _switcher;
     private InputScheme _inputScheme;
-    private InGameObjectUI _activeObject;
+    private GOUIModule _activeObject;
     private int _index;
-    private InGameObjectUI[] _playerObjects;
+    private GOUIModule[] _playerObjects;
 
     private enum CancelWhen
     {
         EscapeKeyOnly, NewHighlightedNode, NewSelectedNode
     }
     //Properties
-    public UIGOController Controller => this;
+    public GOUIController Controller => this;
     public VirtualControl ControlType
     {
         get => _inGameControlType;
         set => _inGameControlType = value;
     }
     public InputScheme GetScheme() => GetComponent<UIInput>().ReturnScheme;
-    public InGameObjectUI[] GetPlayerObjects() => _playerObjects;
+    public GOUIModule[] GetPlayerObjects() => _playerObjects;
     private bool UseBoth => _inGameControlType == VirtualControl.Both;
 
     public int GetIndex() => _index;
 
-    public void SetIndex(InGameObjectUI newObj)
+    public void SetIndex(GOUIModule newObj)
     {
         int index = 0;
         foreach (var inGameObjectUI in _playerObjects)
@@ -72,7 +72,6 @@ public partial class UIGOController : MonoBehaviour, IGOController, IEventUser
     {
         if (_activeObject.IsNull() || _cancelWhen != CancelWhen.NewHighlightedNode) return;
         if(_safeNodeList.Contains(args.Highlighted)) return;
-        if(_activeObject.PointerOver) return;
         _activeObject.CancelUi();
     }
     
@@ -83,13 +82,19 @@ public partial class UIGOController : MonoBehaviour, IGOController, IEventUser
         _activeObject.CancelUi();
     }
     
-    private void SaveActiveInGameObject(IActiveInGameObject args) 
-        => _activeObject = args.IsNull() ? null : args.ActiveObject;
+    private void SaveActiveInGameObject(IActiveInGameObject args)
+    {
+        if(_activeObject.IsNotNull())
+        {
+            _activeObject.CancelUi();
+        }        
+        _activeObject = args.IsNull() ? null : args.UIGOModule;
+    }
 
     //Main
     private void Awake()
     {
-        _playerObjects = FindObjectsOfType<InGameObjectUI>();
+        _playerObjects = FindObjectsOfType<GOUIModule>();
         _inputScheme = GetComponent<UIInput>().ReturnScheme;
         _mouseOnlySwitcher = EJect.Class.WithParams<IMouseOnlySwitcher>(this);
         _switcher = EJect.Class.WithParams<ISwitcher>(this);

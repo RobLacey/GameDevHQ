@@ -6,7 +6,7 @@ public class CanvasOrderCalculator
 {
     public static void SetUpCanvasOrderAtStart(ICanvasOrder branch)
     {
-        var myCanvas = branch.ThisBranchesGameObject.GetComponent<Canvas>();
+        var myCanvas = branch.MyCanvas;
         var storeCanvasSetting = myCanvas.enabled;
         myCanvas.enabled = true;
         

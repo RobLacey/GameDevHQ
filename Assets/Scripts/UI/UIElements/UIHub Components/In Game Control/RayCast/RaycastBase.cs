@@ -36,16 +36,15 @@ namespace UIElements
 
         public void DoSelectedInGameObj()
         {
-            if (_controller.SelectPressed)
+            if (!_controller.SelectPressed) return;
+            
+            if(_lastGameObject.IsNotNull())
             {
-                if(_lastGameObject.IsNotNull())
-                {
-                    _lastGameObject.CursorDown();
-                }
-                else
-                {
-                    ClearAll?.Invoke(this);
-                }
+                _lastGameObject.CursorDown();
+            }
+            else
+            {
+                ClearAll?.Invoke(this);
             }
         }
 

@@ -12,7 +12,7 @@ public interface IPauseCanvasOrder
     int PauseMenuCanvasOrder { set; }
 }
 
-public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch, IPauseCanvasOrder
+public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch, IPauseCanvasOrder
 {
     public PauseMenu(IBranch branch) : base(branch) => _allBranches = branch.FindAllBranches();
 
@@ -56,9 +56,7 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch, I
         _myBranch.CanvasOrder = OrderInCanvas.Manual;
     }
 
-    private void StartPopUp(IPausePressed e) => StartPopUp();
-
-    public void StartPopUp()
+    private void StartPopUp(IPausePressed args)
     {
         if(!_canStart) return;
         
@@ -96,7 +94,12 @@ public class PauseMenu : BranchBase, IStartPopUp, IGameIsPaused, IPauseBranch, I
     {
         SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
-        _myBranch.SetHighlightedNode();
+    }
+
+    public override void EndOfBranchExit()
+    {
+        base.EndOfBranchExit();
+        ActivateStoredPosition();
     }
 
     private void ExitPause() => _myBranch.StartBranchExitProcess(OutTweenType.Cancel, RestoreLastStoredState);

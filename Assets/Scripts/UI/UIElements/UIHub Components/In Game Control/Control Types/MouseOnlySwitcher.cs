@@ -20,9 +20,9 @@ namespace UIElements
 
         //Variables
         private int _index = 0;
-        private readonly UIGOController _controller;
+        private readonly GOUIController _controller;
         private readonly InputScheme _scheme;
-        private readonly InGameObjectUI[] _playerObjects;
+        private readonly GOUIModule[] _playerObjects;
         
         //Events
         private Action<IClearAll> ClearAll { get; set; }
@@ -60,7 +60,7 @@ namespace UIElements
             _index = _controller.GetIndex();
             _playerObjects[_index].UnFocus();
             _index = swap(_playerObjects.Length);
-            _playerObjects[_index].SwitchMouseOnly();
+            _playerObjects[_index].SwitchGOUI_MouseOnly();
         }
     }
 }

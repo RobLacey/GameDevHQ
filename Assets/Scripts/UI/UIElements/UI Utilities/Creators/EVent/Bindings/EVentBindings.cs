@@ -22,6 +22,7 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<INoResolvePopUp>();
         AutoRemove().CreateEvent<INoPopUps>();
         AutoRemove().CreateEvent<ILastRemovedPopUp>();
+        AutoRemove().CreateEvent<IStartBranch>();
         
         //History
         AutoRemove().CreateEvent<IReturnToHome>();
@@ -71,6 +72,9 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<IPauseCanvasOrder>();
         AutoRemove().CreateEvent<IToolTipCanvasOrder>();
         AutoRemove().CreateEvent<IAdjustCanvasOrder>();
+        
+        //UIGO System
+        AutoRemove().CreateEvent<ISetUpUIGOBranch>();
     }
     
     public void CreateEvent<TType>()

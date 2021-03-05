@@ -16440,7 +16440,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 620683490}
           m_TargetAssemblyTypeName: UIBranch, Assembly-CSharp
-          m_MethodName: StartPopUp
+          m_MethodName: StartBranch_InspectorCall
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -16455,7 +16455,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 2018220711}
           m_TargetAssemblyTypeName: UIBranch, Assembly-CSharp
-          m_MethodName: StartPopUp
+          m_MethodName: StartBranch_InspectorCall
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -16470,7 +16470,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 1478859609}
           m_TargetAssemblyTypeName: UIBranch, Assembly-CSharp
-          m_MethodName: StartPopUp
+          m_MethodName: StartBranch_InspectorCall
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -16483,9 +16483,9 @@ MonoBehaviour:
     _event6:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1478859609}
-          m_TargetAssemblyTypeName: UIBranch, Assembly-CSharp
-          m_MethodName: StartPopUp
+        - m_Target: {fileID: 1259628779}
+          m_TargetAssemblyTypeName: UIElements.GOUIModule, Assembly-CSharp
+          m_MethodName: ActivateGOUI
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -24532,7 +24532,7 @@ MonoBehaviour:
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 11400000, guid: bef112396d015b743891691837bd61dd, type: 2}
     _listOfTooltips:
-    - {fileID: 1354169483}
+    - {fileID: 1829031493}
   _events:
     _highlightEvents:
       _onEnterEvent:
@@ -26195,7 +26195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86bb58c54bbd4fb0a2bf58f6edbdb7b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inGameControlType: 4
+  _inGameControlType: 1
   _virtualCursor:
     _restrictRaycastTo: 2
     _virtualCursor: {fileID: 1854834984}
@@ -36504,7 +36504,7 @@ MonoBehaviour:
   _autoOpenClose: 0
   _blockOtherNodes: 1
   _timer: 1
-  _screenType: 0
+  _screenType: 1
   _stayVisible: 1
   _storeOrResetOptional: 1
   _tweenOnHome: 0
@@ -37942,6 +37942,7 @@ GameObject:
   - component: {fileID: 1854834986}
   - component: {fileID: 1854834987}
   - component: {fileID: 1854834985}
+  - component: {fileID: 1854834988}
   m_Layer: 5
   m_Name: Cursor
   m_TagString: Untagged
@@ -38027,6 +38028,21 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 20
   m_TargetDisplay: 0
+--- !u!114 &1854834988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854834983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!114 &1857393385 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8968508909532072357, guid: 74a615c871e3f7f49b9e659c416cdb84,
@@ -38624,7 +38640,7 @@ MonoBehaviour:
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 11400000, guid: bef112396d015b743891691837bd61dd, type: 2}
     _listOfTooltips:
-    - {fileID: 1829031493}
+    - {fileID: 1905710739}
   _events:
     _highlightEvents:
       _onEnterEvent:

@@ -19,9 +19,9 @@ namespace UIElements
         
         //Variables
         private int _index = 0;
-        private readonly UIGOController _controller;
+        private readonly GOUIController _controller;
         private readonly InputScheme _scheme;
-        private readonly InGameObjectUI[] _playerObjects;
+        private readonly GOUIModule[] _playerObjects;
         private bool _inGame;
 
         //Properties

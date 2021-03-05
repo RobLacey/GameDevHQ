@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using NaughtyAttributes;
 
-public class TestRunner : MonoBehaviour, IEventUser
+public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
 {
     [SerializeField] private UINode _lastHighlighted = default;
     [SerializeField] private UINode _lastSelected = default;
@@ -37,6 +37,8 @@ public class TestRunner : MonoBehaviour, IEventUser
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
 
+    private Action<IStartBranch> StartBranch { get; set; }
+
     private void Awake()
     {
         _onHomeScreen = true;
@@ -44,6 +46,7 @@ public class TestRunner : MonoBehaviour, IEventUser
 
     private void OnEnable() => ObserveEvents();
 
+    
     public void ObserveEvents()
     {
         EVent.Do.Subscribe<IHighlightedNode>(SaveLastHighlighted);
@@ -52,6 +55,8 @@ public class TestRunner : MonoBehaviour, IEventUser
         EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
         EVent.Do.Subscribe<ITestList>(ManageHistory);
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+
+        StartBranch = EVent.Do.Fetch<IStartBranch>();
     }
 
     private void ManageHistory(ITestList args)
@@ -123,4 +128,11 @@ public class TestRunner : MonoBehaviour, IEventUser
         Debug.Log(_test5Test + " : " + value);
     }
 
+    public void TestEventTrigger(UIBranch branch)
+    {
+        TargetBranch = branch;
+        StartBranch.Invoke(this);
+    }
+
+    public UIBranch TargetBranch { get; private set; }
 }

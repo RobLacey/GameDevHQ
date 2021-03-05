@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Linq;
+using NaughtyAttributes;
 using UnityEngine;
 
 [Serializable]
-public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
+public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IStartBranch
 {
     [SerializeField] 
     private HotKey _hotKeyInput  = default;
-    [SerializeField] 
+    [SerializeField] [AllowNesting] [OnValueChanged("IsAllowedType")]
     private UIBranch _myBranch  = default;
     
     //Variables
@@ -23,6 +24,8 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     public INode ParentNode => _parentNode;
     public IBranch MyBranch => _myBranch;
+    public UIBranch TargetBranch => _myBranch;
+
     
     //Main
     public void OnAwake(InputScheme inputScheme)
@@ -43,12 +46,18 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
     
     private void IsAllowedType()
     {
-        if (_myBranch.IsAPopUpBranch())
-            throw new Exception("Can't have a PopUp as a Hot Key");
-        if (_myBranch.IsPauseMenuBranch())
-            throw new Exception("Can't have Pause as a Hot Key");
-        if (_myBranch.IsInternalBranch())
-            throw new Exception("Can't have an Internal Branch as a Hot Key");
+        string message = $"Can't have \"{_myBranch.name}\" as a Hot Key. " +
+                         $"{Environment.NewLine}" +
+                         $"{Environment.NewLine}" +
+                         "Only Standard or HomeScreen branch Types allowed";
+        
+        const string title = "Invalid Hot Key Type";
+
+        if (_myBranch.ReturnBranchType == BranchType.Standard 
+            || _myBranch.ReturnBranchType == BranchType.HomeScreen) return;
+        
+        UIEditorDialogue.WarningDialogue(title, message, "OK");
+        _myBranch = null;
     }
 
     public bool CheckHotKeys()
@@ -85,22 +94,22 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
     {
         if (_myBranch.ScreenType != ScreenType.FullScreen)
         {
-            GetImmediateParent();
+            GetImmediateParentNode();
         }
         else
         {
-            FindHomeScreenParent(_myBranch);
+            FindHomeScreenParentNode(_myBranch);
         }
         _hasParentNode = true;
     }
 
-    private void GetImmediateParent()
+    private void GetImmediateParentNode()
     {
         var branchesNodes = _myBranch.MyParentBranch.ThisGroupsUiNodes;
         _parentNode = branchesNodes.First(node => ReferenceEquals(_myBranch, node.HasChildBranch));
     }
     
-    private void FindHomeScreenParent(IBranch branch)
+    private void FindHomeScreenParentNode(IBranch branch)
     {
         while (!branch.IsHomeScreenBranch())
         {
@@ -115,4 +124,5 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
         _parentNode.SetAsHotKeyParent();
         _myBranch.MoveToThisBranch();
     }
+
 }

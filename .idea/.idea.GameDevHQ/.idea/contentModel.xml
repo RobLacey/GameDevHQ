@@ -402,8 +402,8 @@
                   <e p="BranchBase.cs" t="Include" />
                   <e p="BranchBaseInterfaces.cs" t="Include" />
                   <e p="Types" t="Include">
+                    <e p="GOUIBranch.cs" t="Include" />
                     <e p="HomeScreenBranch.cs" t="Include" />
-                    <e p="InGameUI.cs" t="Include" />
                     <e p="OptionalPopUp.cs" t="Include" />
                     <e p="PauseMenu.cs" t="Include" />
                     <e p="ResolvePopUp.cs" t="Include" />
@@ -444,7 +444,9 @@
                     <e p="Switcher.cs" t="Include" />
                     <e p="VirtualCursor.cs" t="Include" />
                   </e>
-                  <e p="InGameObjectUI.cs" t="Include" />
+                  <e p="GOUIController.cs" t="Include" />
+                  <e p="GOUIInput.cs" t="Include" />
+                  <e p="GOUIModule.cs" t="Include" />
                   <e p="RayCast" t="Include">
                     <e p="_2DRaycast.cs" t="Include" />
                     <e p="_3DRaycast.cs" t="Include" />
@@ -452,7 +454,6 @@
                     <e p="IRaycastController.cs" t="Include" />
                     <e p="RaycastBase.cs" t="Include" />
                   </e>
-                  <e p="UIGOController.cs" t="Include" />
                   <e p="UIGOControllerEditor.cs" t="Include" />
                   <e p="ValidationCheck.cs" t="Include" />
                 </e>

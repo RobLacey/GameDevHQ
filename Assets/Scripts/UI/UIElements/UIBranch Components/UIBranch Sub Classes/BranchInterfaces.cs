@@ -2,10 +2,6 @@
 using UIElements;
 using UnityEngine;
 
-public interface IStartPopUp
-{
-    void StartPopUp();
-}
 
 public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
 {
@@ -15,11 +11,6 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     bool IsInternalBranch();
     bool IsHomeScreenBranch();
     bool IsTimedPopUp();
-    
-    
-    event Action OnStartPopUp;
-   // event Action<InGameObjectUI> StartInGamePopUp;
-  //  event Action<InGameObjectUI> ExitPopUp;
     
     INode DefaultStartOnThisNode { get; }
     CanvasGroup MyCanvasGroup { get; }
@@ -41,7 +32,6 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     IsActive GetStayOn();
     void MoveToThisBranch(IBranch newParentBranch = null);
     void DontSetBranchAsActive();
-    void SetHighlightedNode();
     void DoNotTween();
     void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null);
     void SetCanvas(ActiveCanvas activeCanvas);

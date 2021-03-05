@@ -22,7 +22,6 @@ public class StandardBranch : BranchBase, IStandardBranch
     {
         SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
-        _myBranch.SetHighlightedNode();
         SetNewParentBranch(newParentController);
         
         if(_myBranch.BlockOtherNode == IsActive.Yes || _myBranch.ScreenType == ScreenType.FullScreen)

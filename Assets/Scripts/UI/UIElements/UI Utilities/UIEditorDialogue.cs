@@ -4,14 +4,15 @@ using UnityEditor;
 public class UIEditorDialogue
 {
     //Convert into Builder pattern if expanded in future
-    
-    public static void NewDialogue(string title, string message, string ok, string cancel, Action cancelAction = null)
+
+    public static void WarningDialogue(string title, string message, string okButton)
     {
-        if (!EditorUtility.DisplayDialog
-        (title: $"{title}",
-         message:$"{message}",
-         ok: $"{ok}",
-         cancel: $"{cancel}"))
+        EditorUtility.DisplayDialog(title, message, okButton);
+    }
+
+    public static void DialogueWithCancelAction(string title, string message, string okButton, string cancel, Action cancelAction = null)
+    {
+        if (!EditorUtility.DisplayDialog(title, message, okButton, cancel))
         {
             cancelAction?.Invoke();
         }

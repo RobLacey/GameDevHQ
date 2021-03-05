@@ -15,7 +15,7 @@ public class MovementTest : MonoBehaviour, IEventUser
     float _horizontalSpeed;
     float _verticalSpeed;
     private Transform _child;
-    private InGameObjectUI _myInGameObject;
+    private GOUIModule _myGameObject;
 
     bool _active = false;
 
@@ -24,7 +24,7 @@ public class MovementTest : MonoBehaviour, IEventUser
         //SetUp _inMenu
         _myTransform = GetComponent<Transform>();
         _child = GetComponentInChildren<SpriteRenderer>().transform;
-        _myInGameObject = GetComponent<InGameObjectUI>();
+        _myGameObject = GetComponent<GOUIModule>();
     }
 
     private void OnEnable() => ObserveEvents();
@@ -52,7 +52,7 @@ public class MovementTest : MonoBehaviour, IEventUser
             _active = false;
             return;
         }
-        _active = activeInGameObj.ActiveObject == _myInGameObject;
+        _active = activeInGameObj.UIGOModule == _myGameObject;
     }
 
     public void SwitchToInGame(InMenuOrGame inGame)

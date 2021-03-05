@@ -2,12 +2,13 @@
 using UnityEngine;
 
 
-public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, IBranchBase, IBranchParams,
+public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, IBranchBase, IBranchParams,
                                    IEventDispatcher
 {
     protected BranchBase(IBranch branch)
     {
         _myBranch = branch.ThisBranch;
+        _stayVisible = branch.GetStayOn();
         _myCanvas = _myBranch.MyCanvas;
         _myCanvasGroup = _myBranch.MyCanvasGroup;
         MyScreenType = _myBranch.ScreenType;
@@ -19,10 +20,12 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
     protected readonly IScreenData _screenData;
     protected bool _inMenu, _canStart, _gameIsPaused, _activeResolvePopUps;
     protected IHistoryTrack _historyTrack;
-    private readonly Canvas _myCanvas;
+    protected readonly Canvas _myCanvas;
     private readonly CanvasGroup _myCanvasGroup;
     protected bool _isTabBranch;
     private bool _allowKeys;
+    private readonly IsActive _stayVisible;
+    private OutTweenType _outTweenType;
 
     //Events
     private Action<IOnHomeScreen> SetIsOnHomeScreen { get; set; }
@@ -93,8 +96,29 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
     }
     
     public virtual void OnStart() { }
+    
+    public virtual bool CanStartBranch() => true;
 
-    public abstract void SetUpBranch(IBranch newParentController = null);
+    public virtual void SetUpBranch(IBranch newParentController = null){ }
+
+    public virtual void EndOfBranchStart()
+    {
+        SetBlockRaycast(BlockRaycast.Yes);
+    }
+
+    public virtual void StartBranchExit(OutTweenType outTweenType)
+    {
+        _outTweenType = outTweenType;
+        
+        if (_stayVisible == IsActive.No || _outTweenType == OutTweenType.Cancel)
+            SetBlockRaycast(BlockRaycast.No);
+
+    }
+    public virtual void EndOfBranchExit()
+    {
+        if (_stayVisible == IsActive.No || _outTweenType == OutTweenType.Cancel)
+            SetCanvas(ActiveCanvas.No);
+    }
     
     public virtual void SetCanvas(ActiveCanvas active) => _myCanvas.enabled = active == ActiveCanvas.Yes;
 
@@ -124,11 +148,12 @@ public abstract class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IESe
         InvokeDoClearScreen();
         InvokeOnHomeScreen(false);
     }
-    
-    public virtual void ActivateStoredPosition()
+
+    protected virtual void ActivateStoredPosition()
     {
         _screenData.RestoreScreen();
         if (_screenData.WasOnHomeScreen)
             InvokeOnHomeScreen(true);
     }
+
 }

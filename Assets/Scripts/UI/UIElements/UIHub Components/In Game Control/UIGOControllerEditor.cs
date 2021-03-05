@@ -1,4 +1,4 @@
-﻿public partial class UIGOController
+﻿public partial class GOUIController
 {
     private const string IsInGameCursor = nameof(InGameCursorEditor);
 

@@ -8,10 +8,10 @@ public abstract class DialogueBox
 
 public class ValidationCheck : DialogueBox
 {
-    private UIGOController _goController;
+    private GOUIController _goController;
     private UIInput _uiInput;
 
-    public ValidationCheck(UIGOController parent)
+    public ValidationCheck(GOUIController parent)
     {
         _goController = parent;
     }
@@ -48,13 +48,13 @@ public class ValidationCheck : DialogueBox
         
         if(NonMouseOnlyControls && _scheme.ControlType == ControlMethod.MouseOnly )
         {
-            UIEditorDialogue.NewDialogue(_title, message, _ok, _cancel, CancelAction);
+            UIEditorDialogue.DialogueWithCancelAction(_title, message, _ok, _cancel, CancelAction);
             return;
         }
         
         if(MouseSwitchOnlyEditor && _scheme.ControlType != ControlMethod.MouseOnly)
         {
-            UIEditorDialogue.NewDialogue(_title, message, _ok, _cancel, CancelAction);
+            UIEditorDialogue.DialogueWithCancelAction(_title, message, _ok, _cancel, CancelAction);
         }
 
         _currentState = _goController.ControlType;
@@ -68,7 +68,7 @@ public class ValidationCheck : DialogueBox
 
         if (_goController is null)
         {
-            _goController = _uiInput.GetComponent<UIGOController>();
+            _goController = _uiInput.GetComponent<GOUIController>();
             _currentState = _goController.ControlType;
         }
 
