@@ -20,6 +20,7 @@ public partial class UIBranch
     public bool IsHomeScreenBranch() => _branchType == BranchType.HomeScreen;
     public void DoNotTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
+    public void SetBranchAsActive() => _canActivateBranch = true;
     public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
     public bool IsTimedPopUp() => _branchType == BranchType.TimedPopUp;
     public IsActive GetStayOn() => _stayVisible;
@@ -105,6 +106,7 @@ public partial class UIBranch
     
     public int ReturnManualCanvasOrder => _orderInCanvas;
     public IsActive ReturnOnlyAllowOnHomeScreen => _onlyAllowOnHomeScreen;
+    public IsActive AlwaysOn => _alwaysOnUI; 
 
     //Editor Properties
     private const string HomeScreenBranch = nameof(IsHomeScreenBranch);

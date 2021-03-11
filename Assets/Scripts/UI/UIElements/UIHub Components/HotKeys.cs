@@ -24,7 +24,7 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IStartBranc
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     public INode ParentNode => _parentNode;
     public IBranch MyBranch => _myBranch;
-    public UIBranch TargetBranch => _myBranch;
+    public IBranch TargetBranch => _myBranch;
 
     
     //Main

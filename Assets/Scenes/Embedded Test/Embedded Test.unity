@@ -1361,13 +1361,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0331c19bd454f81b89608b9d151f8e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branch: {fileID: 1718085406}
-  _turnOnWhen: 0
-  _turnOffWhen: 0
-  _uiPosition: {fileID: 339928673}
-  _activateInGameObject:
-    m_PersistentCalls:
-      m_Calls: []
+  _branch: {fileID: 0}
+  _mainCanvasRect: {fileID: 0}
+  _turnOnWhen: 1
+  _turnOffWhen: 1
+  _uiPosition: {fileID: 0}
 --- !u!58 &124459452
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -5164,6 +5162,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 1
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 0}
   _orderInCanvas: 2
   _onlyAllowOnHomeScreen: 0
@@ -5365,6 +5364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 0
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 0}
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
@@ -9561,6 +9561,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 0
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 1579058406}
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
@@ -11710,6 +11711,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 1
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 0}
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
@@ -12282,6 +12284,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 7
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 1608135886}
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
@@ -14076,6 +14079,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 3
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 0}
   _orderInCanvas: 2
   _onlyAllowOnHomeScreen: 0
@@ -25476,6 +25480,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 1
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 0}
   _orderInCanvas: 2
   _onlyAllowOnHomeScreen: 0
@@ -26382,8 +26387,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 158, y: 50}
-  m_SizeDelta: {x: 200, y: 100}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1189779479
 MonoBehaviour:
@@ -27570,6 +27575,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 1
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 0}
   _orderInCanvas: 2
   _onlyAllowOnHomeScreen: 0
@@ -27779,12 +27785,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _branch: {fileID: 2084390253}
+  _mainCanvasRect: {fileID: 819564431}
   _turnOnWhen: 1
   _turnOffWhen: 1
-  _uiPosition: {fileID: 1811943485}
-  _activateInGameObject:
-    m_PersistentCalls:
-      m_Calls: []
+  _uiPosition: {fileID: 0}
 --- !u!224 &1267887509 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8968508911427264652, guid: 74a615c871e3f7f49b9e659c416cdb84,
@@ -29181,6 +29185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 0
   _controlBar: 0
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 0}
   _orderInCanvas: 10
   _onlyAllowOnHomeScreen: 0
@@ -31241,6 +31246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 3
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 0}
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
@@ -33621,85 +33627,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1606956474
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1606956475}
-  - component: {fileID: 1606956477}
-  - component: {fileID: 1606956476}
-  m_Layer: 5
-  m_Name: Text
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1606956475
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1606956474}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1883439849}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 158, y: 50}
-  m_SizeDelta: {x: 200, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1606956476
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1606956474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 12800000, guid: 4e92f72e610985946b4ac0b10fd1c6ac, type: 3}
-    m_FontSize: 70
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 0
-    m_MaxSize: 70
-    m_Alignment: 4
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: 1
---- !u!222 &1606956477
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1606956474}
-  m_CullTransparentMesh: 0
 --- !u!1 &1608135885
 GameObject:
   m_ObjectHideFlags: 0
@@ -35437,6 +35364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 1
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 0}
   _orderInCanvas: 5
   _onlyAllowOnHomeScreen: 0
@@ -35591,6 +35519,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 7
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 1025744424}
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
@@ -36652,6 +36581,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 5
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 0}
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
@@ -38730,7 +38660,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1189779478}
-  - {fileID: 1606956475}
   m_Father: {fileID: 2084390251}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -38759,18 +38688,19 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
-  _enabledFunctions: 128
+  _enabledFunctions: 387
   _navigation:
-    _childBranch: {fileID: 0}
+    _childBranch: {fileID: 616071579}
     _setNavigation: 1
     _up: {fileID: 0}
     _down: {fileID: 0}
     _left: {fileID: 0}
     _right: {fileID: 0}
   _coloursTest:
-    _scheme: {fileID: 0}
+    _scheme: {fileID: 11400000, guid: f2317544bd8dcca428a7d48f1ccef21f, type: 2}
     _textElements: {fileID: 0}
-    _imageElements: []
+    _imageElements:
+    - {fileID: 1189779479}
   _invertColourCorrection:
     _activateWhen: 0
     _text: {fileID: 0}
@@ -38808,7 +38738,19 @@ MonoBehaviour:
     _selectClickEvents:
       _onButtonClickEvent:
         m_PersistentCalls:
-          m_Calls: []
+          m_Calls:
+          - m_Target: {fileID: 616071579}
+            m_TargetAssemblyTypeName: UIBranch, Assembly-CSharp
+            m_MethodName: StartBranch_InspectorCall
+            m_Mode: 1
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
       _onDisable:
         m_PersistentCalls:
           m_Calls: []
@@ -41047,6 +40989,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 3
   _controlBar: 1
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 0}
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
@@ -41960,6 +41903,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 7
   _controlBar: 1
+  _alwaysOnUI: 0
   _startOnThisNode: {fileID: 1883439850}
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
@@ -42941,13 +42885,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0331c19bd454f81b89608b9d151f8e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branch: {fileID: 553494885}
-  _turnOnWhen: 0
-  _turnOffWhen: 0
-  _uiPosition: {fileID: 1500052991}
-  _activateInGameObject:
-    m_PersistentCalls:
-      m_Calls: []
+  _branch: {fileID: 0}
+  _mainCanvasRect: {fileID: 0}
+  _turnOnWhen: 1
+  _turnOffWhen: 1
+  _uiPosition: {fileID: 0}
 --- !u!4 &2113496482
 Transform:
   m_ObjectHideFlags: 0

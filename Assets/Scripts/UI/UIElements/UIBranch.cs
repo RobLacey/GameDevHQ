@@ -23,6 +23,8 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, HomeScreenBranch)] [Label("Is Control Bar")]
     private IsActive _controlBar = IsActive.No;
+
+    [SerializeField] [ShowIf(InGamUIBranch)] private IsActive _alwaysOnUI = IsActive.No;
     
     [SerializeField]
     [Label("Start On (Optional)")] 
@@ -59,7 +61,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     
     [SerializeField] 
     [HideIf(EConditionOperator.Or, OptionalBranch, TimedBranch, HomeScreenBranch, ControlBarBranch, InGamUIBranch)]
-    private ScreenType _screenType = ScreenType.FullScreen;
+    private ScreenType _screenType = ScreenType.Normal;
     
     [SerializeField] 
     [HideIf(EConditionOperator.Or, AnyPopUpBranch, Fullscreen, ControlBarBranch)]
@@ -170,6 +172,11 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
 
     private void SetNodesChildrenToThisBranch()
     {
+        if(InGameUI)
+        {
+            Debug.Log(this);
+            return;
+        }
         foreach (var node in ThisGroupsUiNodes)
         {
             if (node.HasChildBranch is null) continue;
@@ -199,6 +206,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         EVent.Do.Subscribe<ISelectedNode>(SaveSelected);
         EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
         EVent.Do.Subscribe<IStartBranch>(StartBranch_EventCall);
+        EVent.Do.Subscribe<ICloseBranch>(ExitBranch_EventCall);
     }
 
     private void Start() => CheckForControlBar();
@@ -212,8 +220,14 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     private void StartBranch_EventCall(IStartBranch args)
     {
         if(args.TargetBranch != this) return;
-        if(!_branchTypeClass.CanStartBranch()) return;
         MoveToThisBranch();
+    }
+    
+    private void ExitBranch_EventCall(ICloseBranch args)
+    {
+        if(args.TargetBranch != this) return;
+        if(!CanvasIsEnabled) return;
+        StartBranchExitProcess(args.OutTweenType, args.EndOfExitAction);
     }
     
     public void StartBranch_InspectorCall()
@@ -224,6 +238,8 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
 
     public void MoveToThisBranch(IBranch newParentBranch = null)
     {
+        if(!_branchTypeClass.CanStartBranch()) return;
+        
         _branchTypeClass.SetUpBranch(newParentBranch);
         SetHighlightedNode();
         
@@ -247,17 +263,18 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
 
     private void InTweenCallback()
     {
+        _branchTypeClass.EndOfBranchStart();
+        
         if (_canActivateBranch)
             _lastHighlighted.SetNodeAsActive();
-        
-        _branchTypeClass.EndOfBranchStart();
+
         _branchEvents.OnBranchEnter();
         _canActivateBranch = true;
     }
 
     public void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null)
     {
-        if(!CanvasIsEnabled || CanExitBranch())
+        if(!CanvasIsEnabled || DontExitBranch())
         {
             endOfTweenCallback?.Invoke();
             return;
@@ -273,7 +290,8 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
             endOfTweenCallback?.Invoke();
         }
 
-        bool CanExitBranch() => _stayVisible == IsActive.Yes && outTweenType == OutTweenType.MoveToChild;
+        bool DontExitBranch() => _stayVisible == IsActive.Yes && outTweenType == OutTweenType.MoveToChild 
+                                 || _alwaysOnUI == IsActive.Yes;
     }
 
     private void StartOutTween(Action endOfTweenCallback = null)

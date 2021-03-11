@@ -26,6 +26,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     [SerializeField] 
     [HideIf(EConditionOperator.Or, "GroupSettings", "IsCancelOrBack")]
     private ToggleData _toggleData;
+
     [Header("Tween Data", order = 2)] [Space(20, order = 1)]
     [HorizontalLine(1, EColor.Blue , order = 3)]
 
@@ -150,6 +151,8 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     private void SetChildParentBranch()
     {
+        if(_buttonFunction == ButtonFunction.InGameUi) return;
+        
         if (!(HasChildBranch is null))
         {
             HasChildBranch.MyParentBranch = MyBranch;
@@ -177,9 +180,18 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public void ThisNodeIsHighLighted() => _nodeBase.ThisNodeIsHighLighted();
     
     //Input Interfaces
-    public void OnPointerEnter(PointerEventData eventData) => _nodeBase.OnEnter();
-    public void OnPointerExit(PointerEventData eventData) => _nodeBase.OnExit();
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        Debug.Log("Enter");
+        _nodeBase.OnEnter();
+    }
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        Debug.Log("Exit");
+        _nodeBase.OnExit();
+    }
     public void OnPointerDown(PointerEventData eventData) => _nodeBase.SelectedAction();
+
     public void OnSubmit(BaseEventData eventData)
     {
         if(!_allowKeys) return;

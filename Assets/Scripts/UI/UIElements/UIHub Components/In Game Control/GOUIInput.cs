@@ -33,15 +33,15 @@ namespace UIElements
         
         public void EnterGO(bool active)
         {
-            _pointerOver = true;
+            //_pointerOver = true;
             
-            if(active)
-                _myBranch.DefaultStartOnThisNode.SetNodeAsActive();
+            // if(active)
+            //     _myBranch.DefaultStartOnThisNode.SetNodeAsActive();
             
-            if(active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
-            StartInGameUI.Invoke();
+            // if(active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
+            // StartInGameUI.Invoke();
             
-            ActivateNode();
+           // ActivateNode();
         }
 
         private void ActivateNode()
@@ -54,12 +54,12 @@ namespace UIElements
 
         public void ExitGO(bool active)
         {
-            _pointerOver = false;
+            //_pointerOver = false;
 
-            if (!active) return; 
-            if (DeactivateNodeForOnClick()) return;             
-            ExitInGameUI.Invoke();
-            DeactivateNode();
+            // if (!active) return; 
+            // if (DeactivateNodeForOnClick()) return;             
+            // ExitInGameUI.Invoke();
+           // DeactivateNode();
         }
         
         private bool DeactivateNodeForOnClick()
@@ -75,7 +75,6 @@ namespace UIElements
 
         public void ClickOnGO(bool active)
         {
-            Debug.Log(active);
             if(!active)
             {
                 if (_turnOnWhen == InGameUiTurnOn.OnEnter) return;

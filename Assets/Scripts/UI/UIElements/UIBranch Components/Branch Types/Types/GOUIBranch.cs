@@ -8,14 +8,15 @@ public interface IGOUIBranch: IBranchBase { }
 public class GOUIBranch : BranchBase, IGOUIBranch
 {
     private readonly Camera _mainCamera;
-    private readonly RectTransform _rectTransform;
+    private RectTransform _myRectTransform;
+    private RectTransform _mainCanvasRect;
     private Coroutine _coroutine;
     private GOUIModule _myUIGOModule;
 
     public GOUIBranch(IBranch branch) : base(branch)
     {
         _mainCamera = Camera.main;
-        _rectTransform = _myBranch.MyCanvas.GetComponent<RectTransform>();
+        _myRectTransform = branch.MyCanvas.GetComponent<RectTransform>();
     }
 
     protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
@@ -23,6 +24,8 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         if(args.OnHomeScreen)
         {
             SetBlockRaycast(BlockRaycast.No);
+            if(_myBranch.AlwaysOn == IsActive.Yes)
+                SetCanvas(ActiveCanvas.Yes);
         }
         else
         {
@@ -37,16 +40,33 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     }
     
     //Main
+
+    protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
+    {
+        SetCanvas(ActiveCanvas.No);
+        if(_myBranch.AlwaysOn == IsActive.Yes)
+        {
+            _myBranch.MoveToThisBranch();
+        }        
+        else
+        {
+            base.SetUpBranchesOnStart(args);
+        }
+    }
+
     private void SetUpGOUIParent(ISetUpUIGOBranch args)
     {
         if(args.TargetBranch != _myBranch || _myUIGOModule.IsNotNull()) return;
         _myUIGOModule = args.UIGOModule;
+        _mainCanvasRect = args.MainCanvas;
     }
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
         base.SetUpBranch(newParentController);
-        _myBranch.DontSetBranchAsActive(); 
+        _myBranch.DontSetBranchAsActive();
+        if(_myBranch.CanvasIsEnabled)
+            _myBranch.DoNotTween();
         SetCanvas(ActiveCanvas.Yes);
         
         StartMyUIGO();
@@ -64,9 +84,22 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         _coroutine = StaticCoroutine.StartCoroutine(SetMyScreenPosition(_myUIGOModule.UsersTransform));
     }
 
+    public override void SetCanvas(ActiveCanvas active)
+    {
+        base.SetCanvas(active);
+    }
+
+    public override void EndOfBranchStart()
+    {
+        base.EndOfBranchStart();
+        if(!_canStart) return;
+        _myBranch.SetBranchAsActive();
+    }
+
     public override void StartBranchExit()
     {
         base.StartBranchExit();
+        
         StopSettingPosition();
     }
 
@@ -81,6 +114,12 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         }
     }
 
-    private void SetPosition(Transform objTransform) 
-        => _rectTransform.anchoredPosition3D = _mainCamera.WorldToScreenPoint(objTransform.position);
+    private void SetPosition(Transform objTransform)
+    {
+        var temp = _mainCamera.WorldToScreenPoint(objTransform.position);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvasRect, temp, 
+                                                                null, out var canvasPos);
+        
+        _myRectTransform.localPosition = canvasPos;
+    }
 }

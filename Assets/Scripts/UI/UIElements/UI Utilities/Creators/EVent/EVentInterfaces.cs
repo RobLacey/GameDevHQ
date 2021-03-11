@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UIElements;
 
@@ -149,11 +150,19 @@ public interface ISetUpUIGOBranch
 {
     IBranch TargetBranch  { get; }
     GOUIModule UIGOModule { get; }
+    RectTransform MainCanvas { get; }
 }
 
 public interface IStartBranch
 {
-    UIBranch TargetBranch { get; }
+    IBranch TargetBranch { get; }
+}
+
+public interface ICloseBranch
+{
+    IBranch TargetBranch { get; }
+    OutTweenType OutTweenType { get; }
+    Action EndOfExitAction { get; }
 }
 
 public interface ISetStartingCanvasOrder

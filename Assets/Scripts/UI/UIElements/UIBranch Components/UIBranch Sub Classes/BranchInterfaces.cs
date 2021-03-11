@@ -32,6 +32,7 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     INode LastSelected { get; }
     GameObject ThisBranchesGameObject { get; }
     IsActive ReturnOnlyAllowOnHomeScreen { get; }
+    IsActive AlwaysOn { get; }
 
 
     
@@ -39,6 +40,7 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     IsActive GetStayOn();
     void MoveToThisBranch(IBranch newParentBranch = null);
     void DontSetBranchAsActive();
+    void SetBranchAsActive();
     void DoNotTween();
     void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null);
     void SetCanvas(ActiveCanvas activeCanvas);

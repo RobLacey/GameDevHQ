@@ -103,14 +103,6 @@ public enum StoreAndRestorePopUps { StoreAndRestore, Reset }
 
 public enum OrderInCanvas { InFront, Behind, Manual, Default }
 
-public enum InGameUiTurnOn
-{
-    OnClick, OnEnter
-}
-public enum InGameUiTurnOff
-{
-    OnClick, OnExit, Both, ScriptCall
-}
 
 public enum VirtualControl
 {

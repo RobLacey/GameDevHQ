@@ -22,13 +22,25 @@ public interface IGOUIModule
     void ExitInGameUi();
 }
 
+public enum InGameUiTurnOn
+{
+    OnClick, OnEnter
+}
+public enum InGameUiTurnOff
+{
+    OnClick, OnExit, Both, ScriptCall
+}
+
+
 namespace UIElements
 {
 
     public class GOUIModule : MonoBehaviour, IEventUser, ICursorHandler, IActiveInGameObject, IEventDispatcher, 
-                              IGOUIModule, ISetUpUIGOBranch
+                              IGOUIModule, ISetUpUIGOBranch, IStartBranch, ICloseBranch
     {
         [SerializeField] private UIBranch _branch;
+        [SerializeField] private RectTransform _mainCanvasRect;
+
         [SerializeField] 
         [DisableIf(AppIsRunning)] 
         private InGameUiTurnOn _turnOnWhen;
@@ -38,7 +50,6 @@ namespace UIElements
         [SerializeField] 
         [Space(10f, order = 1)] [InfoBox(GOUIModule.InfoBox, order = 2)] 
         private Transform _uiPosition;
-        [SerializeField] [Space(10f)] private UnityEvent<bool> _activateInGameObject;
 
         //Variables
         private bool _active;
@@ -54,21 +65,29 @@ namespace UIElements
 
 
         //Events
-        private Action<IActiveInGameObject> SetActivateInGameObject { get; set; }
+        private Action<IActiveInGameObject> SetAsActiveGameObject { get; set; }
         private Action<ISetUpUIGOBranch> SetUpUIGOBranch { get; set; }
+        private Action<IStartBranch> StartBranch { get; set; }
+        private Action<ICloseBranch> CloseBranch { get; set; }
+
 
         //Editor
         private const string InfoBox = "If left blank the centre of object will be used";
 
         //Properties & Set / Getters
+        public IBranch TargetBranch { get; private set; }
+
+        public OutTweenType OutTweenType { get; } = OutTweenType.Cancel;
+        public Action EndOfExitAction { get; } = null;
+
         private bool DontAcceptMouseInput => _allowKeys || !_onHomeScreen || _gameIsPaused;
         public InGameUiTurnOn TurnOnWhen => _turnOnWhen;
         public InGameUiTurnOff TurnOffWhen => _turnOffWhen;
-        public IBranch TargetBranch => _branch;
         private void SetAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
         public Transform UsersTransform => _uiPosition;
         public GOUIModule UIGOModule => this;
-        
+        public RectTransform MainCanvas => _mainCanvasRect;
+
         private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
         private void SaveIsGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
 
@@ -86,6 +105,7 @@ namespace UIElements
         //Main
         private void Awake()
         {
+            TargetBranch = _branch;
             _controller = FindObjectOfType<GOUIController>();
             _GOUIInput = new GOUIInput(this);
             
@@ -98,13 +118,18 @@ namespace UIElements
 
         public void FetchEvents()
         {
-            SetActivateInGameObject = EVent.Do.Fetch<IActiveInGameObject>();
+            SetAsActiveGameObject = EVent.Do.Fetch<IActiveInGameObject>();
             SetUpUIGOBranch = EVent.Do.Fetch<ISetUpUIGOBranch>();
+            StartBranch = EVent.Do.Fetch<IStartBranch>();
+            CloseBranch = EVent.Do.Fetch<ICloseBranch>();
         }
         
         private void OnEnable() => ObserveEvents();
 
-        private void Start() => SetUpUIGOBranch.Invoke(this);
+        private void Start()
+        {
+            SetUpUIGOBranch.Invoke(this);
+        }
 
         public void ObserveEvents()
         {
@@ -138,19 +163,21 @@ namespace UIElements
         private void OnMouseEnter()
         {
             if(DontAcceptMouseInput) return;
-            _GOUIInput.EnterGO(_active);
+            //_GOUIInput.EnterGO(_active);
+            StartInGameUi();
         }
 
         private void OnMouseExit()
         {
             if(DontAcceptMouseInput) return;
-            _GOUIInput.ExitGO(_active);
+            // _GOUIInput.ExitGO(_active);
+            ExitInGameUi();
         }
         
         private void OnMouseDown()
         {
-            if(DontAcceptMouseInput) return;
-            _GOUIInput.ClickOnGO(_active);
+            // if(DontAcceptMouseInput) return;
+            // _GOUIInput.ClickOnGO(_active);
         }
 
         public void CursorEnter() => _GOUIInput.EnterGO(_active);
@@ -168,22 +195,22 @@ namespace UIElements
 
         private void CancelWhenInMenu(IInMenu args)
         {
-            if (args.InTheMenu && _active)
-            {
-                CancelUi();
-            }
+            // if (args.InTheMenu && _active)
+            // {
+            //     CancelUi();
+            // }
         }
 
         public void CancelUi()
         {
             if(!_active) return;
-            _GOUIInput.ClearGOUI();
-            ExitInGameUi();
+            //_GOUIInput.ClearGOUI();
+           // ExitInGameUi();
         }
 
         private void ClearUI(IClearAll args = null)
         {
-            if(!_active) return;
+            if(!_active ) return;
             _GOUIInput.ClearGOUIExceptHighlighted();
         }
 
@@ -191,29 +218,17 @@ namespace UIElements
         {
             if(_active) return;
             _controller.SetIndex(this);
-            ActivateEvents();
             _active = true;
-            _branch.MoveToThisBranch();
-        }
-
-        private void ActivateEvents()
-        {
-            SetActivateInGameObject?.Invoke(this);
-            _activateInGameObject.Invoke(true);
+            SetAsActiveGameObject?.Invoke(this);
+            StartBranch?.Invoke(this);
         }
 
         public void ExitInGameUi()
         {
             if(!_active) return;
-            _branch.StartBranchExitProcess(OutTweenType.Cancel);
+            CloseBranch?.Invoke(this);
             _active = false;
-            DeactivateEvents();
-        }
-
-        private void DeactivateEvents()
-        {
-            SetActivateInGameObject?.Invoke(null);
-            _activateInGameObject.Invoke(false);
+            SetAsActiveGameObject?.Invoke(null);
         }
     }
 }

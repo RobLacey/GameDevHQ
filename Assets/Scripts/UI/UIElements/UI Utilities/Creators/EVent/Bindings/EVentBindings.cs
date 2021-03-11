@@ -23,6 +23,7 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<INoPopUps>();
         AutoRemove().CreateEvent<ILastRemovedPopUp>();
         AutoRemove().CreateEvent<IStartBranch>();
+        AutoRemove().CreateEvent<ICloseBranch>();
         
         //History
         AutoRemove().CreateEvent<IReturnToHome>();

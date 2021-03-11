@@ -32,7 +32,10 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
     }
     
     private void SaveLastHighlighted(IHighlightedNode args) => _lastHighlighted = (UINode)args.Highlighted;
-    private void SaveLastSelected(ISelectedNode args) => _lastSelected = (UINode)args.UINode;
+    private void SaveLastSelected(ISelectedNode args)  
+    {
+        _lastSelected = (UINode) args.UINode;
+    }
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = (UIBranch) args.ActiveBranch.ThisBranch;
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
@@ -130,7 +133,7 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
         StartBranch.Invoke(this);
     }
 
-    public UIBranch TargetBranch { get; private set; }
+    public IBranch TargetBranch { get; private set; }
 }
 
 
