@@ -69,9 +69,7 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<ITestList>();
         
         //CanvasOrder
-        AutoRemove().CreateEvent<IPauseCanvasOrder>();
-        AutoRemove().CreateEvent<IToolTipCanvasOrder>();
-        AutoRemove().CreateEvent<IAdjustCanvasOrder>();
+        AutoRemove().CreateEvent<ISetStartingCanvasOrder>();
         
         //UIGO System
         AutoRemove().CreateEvent<ISetUpUIGOBranch>();

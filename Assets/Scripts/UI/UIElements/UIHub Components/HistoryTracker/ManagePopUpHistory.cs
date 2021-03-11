@@ -22,9 +22,11 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
     private bool _isPaused;
     private Action _noPopUpAction;
     private UIBranch _popUpToRemove;
+    private bool _onHomeScreen;
 
     //Properties
     private void ActivePopUps(INoPopUps args) => _noPopUps = args.NoActivePopUps;
+    private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
 
     //Main
     public void OnEnable()
@@ -33,7 +35,11 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
         _popUpController.OnEnable();
     }
 
-    public void ObserveEvents() => EVent.Do.Subscribe<INoPopUps>(ActivePopUps);
+    public void ObserveEvents()
+    {
+        EVent.Do.Subscribe<INoPopUps>(ActivePopUps);
+        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+    }
 
     public IManagePopUpHistory IsGamePaused(bool isPaused)
     {
@@ -49,7 +55,7 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
 
     public void DoPopUpCheckAndHandle()
     {
-        if (!_noPopUps && !_isPaused)
+        if (!_noPopUps && !_isPaused && _onHomeScreen)
         {
             HandlePopUps(_popUpController.NextPopUp());
         }

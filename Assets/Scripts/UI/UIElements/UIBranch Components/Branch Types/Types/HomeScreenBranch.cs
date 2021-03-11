@@ -1,4 +1,6 @@
 ﻿
+using UnityEngine;
+
 public interface IHomeScreenBranch : IBranchBase { }
 
 public class HomeScreenBranch: BranchBase, IHomeScreenBranch
@@ -26,10 +28,14 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
     {
         if (!OnHomeScreen && args.OnHomeScreen)
         {
-            SetCanvas(ActiveCanvas.Yes);
-            SetBlockRaycast(BlockRaycast.Yes);
+            base.SaveIfOnHomeScreen(args);
+            _myBranch.DontSetBranchAsActive();
+            _myBranch.MoveToThisBranch();
         }
-        base.SaveIfOnHomeScreen(args);
+        else
+        {
+            base.SaveIfOnHomeScreen(args);
+        }
     }
 
     //Main
@@ -51,8 +57,11 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
+        base.SetUpBranch(newParentController);
+        
         if(!_canStart || !_inMenu) return;
         
+        _canvasOrderCalculator.SetCanvasOrder();
         SetCanvas(ActiveCanvas.Yes);
         
         if (CannotTweenOnHome && !OnHomeScreen)
@@ -60,8 +69,9 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
         
         if (OnHomeScreen && _myBranch.GetStayOn() == IsActive.Yes)
             _myBranch.DoNotTween();
-        
-        InvokeOnHomeScreen(_myBranch.IsHomeScreenBranch());
+
+        if(!OnHomeScreen)
+             InvokeOnHomeScreen(true);
     }
 
     public override void SetBlockRaycast(BlockRaycast active)

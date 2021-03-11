@@ -10,13 +10,23 @@ public class CreateNewObjects
 
     private CreateNewObjects Create { get; }
     private GameObject _newTree;
+    private GameObject _newTooltipBin;
     private GameObject _newBranch;
     private GameObject _newNode;
 
-    public CreateNewObjects CreateMainFolder(Transform transform)
+    public void CreateToolTipFolder(Transform hubTransform)
+    {
+        _newTooltipBin = new GameObject();
+        _newTooltipBin.transform.parent = hubTransform;
+        _newTooltipBin.name = $"ToolTips Go Here";
+        _newTooltipBin.AddComponent<RectTransform>();
+        _newTooltipBin.transform.position = hubTransform.position;
+    }
+
+    public CreateNewObjects CreateMainFolder(Transform hubTransform)
     {
         _newTree = new GameObject();
-        _newTree.transform.parent = transform;
+        _newTree.transform.parent = hubTransform;
         _newTree.name = $"New Tree Folder";
         _newTree.AddComponent<RectTransform>();
         return Create;

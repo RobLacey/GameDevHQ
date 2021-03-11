@@ -56,7 +56,7 @@ public partial class UIBranch
     public bool PointerOverBranch => AutoOpenCloseClass.PointerOverBranch;
     public List<UIBranch> HomeBranches { private get; set; }
     public float Timer => _timer;
-    public IsActive ResetSavePositionOnExit() => _saveExitSelection = IsActive.Yes;
+    public void ResetSavePositionOnExit() => _saveExitSelection = IsActive.Yes;
 
 
     public EscapeKey EscapeKeyType
@@ -83,11 +83,7 @@ public partial class UIBranch
         set => _tweenOnHome = value;
     }
 
-    public IsActive SetStayOn
-    {
-        get => _stayVisible;
-        set => _stayVisible = value;
-    }
+    public IsActive SetStayOn { set => _stayVisible = value; }
     
     public AutoOpenClose AutoOpenClose
     {
@@ -104,29 +100,37 @@ public partial class UIBranch
     public OrderInCanvas CanvasOrder
     {
         get => _canvasOrderSetting;
-        set
-        {
-            _canvasOrderSetting = value;
-            SetUpCanvasOrder();
-        }
+        set => _canvasOrderSetting = value;
     }
     
-    private void SetUpCanvasOrder()
-    {
-        CanvasOrderCalculator.SetUpCanvasOrderAtStart(this);
-    }
-
-
-    public int ManualCanvasOrder
-    {
-        get => _orderInCanvas;
-        set => _orderInCanvas = value;
-    }
-
+    public int ReturnManualCanvasOrder => _orderInCanvas;
+    public IsActive ReturnOnlyAllowOnHomeScreen => _onlyAllowOnHomeScreen;
 
     //Editor Properties
+    private const string HomeScreenBranch = nameof(IsHomeScreenBranch);
+    private const string StandardBranch = nameof(IsStandardBranch);
+    private const string ControlBarBranch = nameof(IsControlBar);
+    private const string OptionalBranch = nameof(IsOptional);
+    private const string InGamUIBranch = nameof(InGameUI);
+    private const string TimedBranch = nameof(IsTimedPopUp);
+    private const string ResolveBranch = nameof(IsResolve);
+    private const string AnyPopUpBranch = nameof(IsAPopUpEditor);
+    private const string HomeScreenButNotControl = nameof(IsHomeAndNotControl);
+    private const string Stored = nameof(IsStored);
+    private const string Fullscreen = nameof(IsFullScreen);
+    private const string ManualOrder = nameof(IsManualOrder);
+    private const string ValidInAndOutTweens = nameof(AllowableInAndOutTweens);
+    private const string SetUpCanvasOrder = nameof(ChangeCanvasOrder);
+
+    private void ChangeCanvasOrder()
+    {
+        var temp = GetComponent<Canvas>();
+        temp.overrideSorting = true;
+        temp.sortingOrder = _orderInCanvas;
+    }
     private bool InGameUI => _branchType == BranchType.InGameUi;
-    private bool ManualOrder => _canvasOrderSetting == OrderInCanvas.Manual;
+    private bool IsManualOrder => _canvasOrderSetting == OrderInCanvas.Manual;
+    private bool IsResolve => _branchType == BranchType.ResolvePopUp;
 
     private bool IsOptional() => _branchType == BranchType.OptionalPopUp;
 
@@ -161,4 +165,6 @@ public partial class UIBranch
         }
         return true;
     }
+
+    private const string MessageINAndOutTweens = "Can't have IN And Out tweens and Stay Visible set";
 }

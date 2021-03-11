@@ -34,6 +34,7 @@ public class ScaleTween : TweenBase, IScaleTween
     public override void StartTween(TweenType tweenType, TweenCallback tweenCallback)
     {
         if (_scheme is null) return;
+        
         _tweenStyle = _scheme.ScaleTween;
         base.StartTween(tweenType, tweenCallback);
     }

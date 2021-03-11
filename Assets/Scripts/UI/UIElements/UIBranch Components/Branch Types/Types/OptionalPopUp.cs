@@ -5,38 +5,21 @@ using UnityEngine;
 public interface IOptionalPopUpBranch : IBranchBase { } 
 
 public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp, 
-                                  IAddOptionalPopUp, IOptionalPopUpBranch, IAdjustCanvasOrder
+                                  IAddOptionalPopUp, IOptionalPopUpBranch
 {
-    public OptionalPopUpPopUp(IBranch branch) : base(branch)
-    {
-        _allBranches = branch.FindAllBranches();
-        SetUpCanvasOrder(branch);
-    }
+    public OptionalPopUpPopUp(IBranch branch) : base(branch) => optionalPopUps = new List<Canvas>();
 
-    private void SetUpCanvasOrder(ICanvasOrder branch)
-    {
-        EVent.Do.Return<IAdjustCanvasOrder>(this);
-        branch.ManualCanvasOrder = CanvasOrderOffset;
-        branch.CanvasOrder = OrderInCanvas.Manual;
-        optionalPopUps = new List<Canvas>();
-    }
-    
     //Variables
-    private readonly IBranch[] _allBranches;
     private bool _restoreOnHome;
     private static List<Canvas> optionalPopUps;
 
-
     //Properties
     public IBranch ThisPopUp => _myBranch;
-    public int CanvasOrderOffset { get; set; }
-    public BranchType BranchType { get; } = BranchType.OptionalPopUp;
-
+    
     //Events
     private Action<IAddOptionalPopUp> AddOptionalPopUp { get; set; }
     private Action<IRemoveOptionalPopUp> RemoveOptionalPopUp { get; set; }
 
-    
     //Main
     public override void ObserveEvents()
     {
@@ -82,14 +65,14 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp,
 
     public override bool CanStartBranch() //TODO add to buffer goes here for when paused. trigger from SaveOnHome?
     {
-        if (_gameIsPaused || !OnHomeScreen || !_canStart || _myBranch.CanvasIsEnabled || _activeResolvePopUps) return false; 
-        
+        if (_gameIsPaused || !OnHomeScreen || !_canStart || _myBranch.CanvasIsEnabled || _activeResolvePopUps) return false;
         IfActiveResolvePopUps();        
         return true;
     }
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
+        base.SetUpBranch(newParentController);
         if(!_myBranch.CanvasIsEnabled && !_restoreOnHome)
         {
             AddOptionalPopUp?.Invoke(this);
@@ -98,14 +81,7 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp,
         
         IfActiveResolvePopUps();
         SetCanvas(ActiveCanvas.Yes);
-        _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.No);
         _restoreOnHome = false;
-    }
-
-    public override void EndOfBranchStart()
-    {
-        base.EndOfBranchStart();
-        CanvasOrderCalculator.ResetCanvasOrder(_myBranch, _myCanvas);
     }
 
     private void IfActiveResolvePopUps()
@@ -130,12 +106,13 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp,
 
     private void RemoveOrStorePopUp()
     {
-        if (_myBranch.CanStoreAndRestoreOptionalPoUp)
+        if (_myBranch.CanStoreAndRestoreOptionalPoUp) 
         {
             _restoreOnHome = true;
         }
         else
         {
+            _canvasOrderCalculator.ResetCanvasOrder();
             RemoveOptionalPopUp?.Invoke(this);
         }
     }
@@ -143,12 +120,12 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp,
     private void AdjustCanvasOrderAdded()
     {
         optionalPopUps.Add(_myBranch.MyCanvas);
-        CanvasOrderCalculator.ProcessActiveCanvasses(optionalPopUps, CanvasOrderOffset);
+        _canvasOrderCalculator.ProcessActiveCanvasses(optionalPopUps);
     }
 
     private void AdjustCanvasOrderRemoved(ILastRemovedPopUp args)
     {
         optionalPopUps.Remove(args.LastOptionalPopUp.MyCanvas);
-        CanvasOrderCalculator.ProcessActiveCanvasses(optionalPopUps, CanvasOrderOffset);
+        _canvasOrderCalculator.ProcessActiveCanvasses(optionalPopUps);
     }
 }

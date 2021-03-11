@@ -18,6 +18,18 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         _rectTransform = _myBranch.MyCanvas.GetComponent<RectTransform>();
     }
 
+    protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
+    {
+        if(args.OnHomeScreen)
+        {
+            SetBlockRaycast(BlockRaycast.No);
+        }
+        else
+        {
+            SetBlockRaycast(BlockRaycast.Yes);
+        }
+    }
+
     public override void ObserveEvents()
     {
         base.ObserveEvents();
@@ -33,22 +45,28 @@ public class GOUIBranch : BranchBase, IGOUIBranch
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
+        base.SetUpBranch(newParentController);
         _myBranch.DontSetBranchAsActive(); 
         SetCanvas(ActiveCanvas.Yes);
         
         StartMyUIGO();
     }
 
+    protected override void ClearBranchForFullscreen(IClearScreen args)
+    {
+        base.ClearBranchForFullscreen(args);
+        _canvasOrderCalculator.ResetCanvasOrder();
+    }
+
     private void StartMyUIGO()
     {
         StaticCoroutine.StopCoroutines(_coroutine);
-        //_myBranch.MoveToThisBranch();
         _coroutine = StaticCoroutine.StartCoroutine(SetMyScreenPosition(_myUIGOModule.UsersTransform));
     }
 
-    public override void StartBranchExit(OutTweenType outTweenType)
+    public override void StartBranchExit()
     {
-        base.StartBranchExit(outTweenType);
+        base.StartBranchExit();
         StopSettingPosition();
     }
 

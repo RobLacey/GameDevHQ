@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
-public interface ILinkedToggles : INodeBase { }
+public interface IGroupedToggles : INodeBase { }
 
-public class LinkedToggles : NodeBase, ILinkedToggles
+public class GroupedToggles : NodeBase, IGroupedToggles
 {
-    public LinkedToggles(INode node) : base(node)
+    public GroupedToggles(INode node) : base(node)
     {
         SetUpToggleData();
         SetUpOtherVariables();
-        MyBranch.CanvasOrder = OrderInCanvas.InFront;
         SelectedToggle += SaveSelectedNode;
         _delayTimer = EJect.Class.NoParams<IDelayTimer>();
     }

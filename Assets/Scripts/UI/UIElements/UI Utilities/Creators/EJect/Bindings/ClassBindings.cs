@@ -38,7 +38,7 @@ public class ClassBindings : BindBase
         //NodeBase Types
         _eJectMaster.Bind<Standard>().To<IStandard>().WithParameters();
         _eJectMaster.Bind<CancelOrBackButton>().To<ICancelOrBack>().WithParameters();
-        _eJectMaster.Bind<LinkedToggles>().To<ILinkedToggles>().WithParameters();
+        _eJectMaster.Bind<GroupedToggles>().To<IGroupedToggles>().WithParameters();
         _eJectMaster.Bind<ToggleNotLinked>().To<IToggleNotLinked>().WithParameters();
         _eJectMaster.Bind<DisabledNode>().To<IDisabledNode>().WithParameters();
         _eJectMaster.Bind<InGameNode>().To<IInGameNode>().WithParameters();
@@ -58,8 +58,6 @@ public class ClassBindings : BindBase
         _eJectMaster.Bind<Punch>().To<IPunch>().WithParameters();
         _eJectMaster.Bind<Shake>().To<IShake>().WithParameters();
         
-        //BucketCreator
-        _eJectMaster.Bind<BucketCreator>().To<IBucketCreator>();
         
         //HistoryTrackerClasses
         _eJectMaster.Bind<HistoryListManagement>().To<IHistoryManagement>().WithParameters();

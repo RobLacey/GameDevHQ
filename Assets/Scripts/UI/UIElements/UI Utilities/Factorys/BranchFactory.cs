@@ -87,6 +87,7 @@ public class BranchFactory
         branch.TweenOnHome = DoTween.DoNothing;
         branch.SetStayOn = IsActive.No;
         branch.BlockOtherNode = IsActive.No;
+        branch.CanvasOrder = OrderInCanvas.Manual;
         branch.ResetSavePositionOnExit();
     }
 
@@ -97,6 +98,7 @@ public class BranchFactory
         branch.SetStayOn = IsActive.No;
         branch.AutoOpenClose = AutoOpenClose.No;
         branch.BlockOtherNode = IsActive.No;
+        branch.CanvasOrder = OrderInCanvas.Manual;
         branch.ResetSavePositionOnExit();
     }
     
@@ -108,6 +110,7 @@ public class BranchFactory
         branch.SetStayOn = IsActive.No;
         branch.AutoOpenClose = AutoOpenClose.No;
         branch.BlockOtherNode = IsActive.No;
+        branch.CanvasOrder = OrderInCanvas.Manual;
         branch.ResetSavePositionOnExit();
     }
 
@@ -116,6 +119,7 @@ public class BranchFactory
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.TweenOnHome = DoTween.DoNothing;
         branch.BlockOtherNode = IsActive.No;
+        branch.CanvasOrder = OrderInCanvas.Manual;
     }
     
     private static void CreateInternal(IBranch branch)
@@ -131,6 +135,7 @@ public class BranchFactory
         branch.TweenOnHome = DoTween.DoNothing;
         branch.SetStayOn = IsActive.No;
         branch.BlockOtherNode = IsActive.No;
+        branch.CanvasOrder = OrderInCanvas.Default;
         branch.ResetSavePositionOnExit();
     }
 

@@ -24,18 +24,19 @@ public interface IGOUIModule
 
 namespace UIElements
 {
+
     public class GOUIModule : MonoBehaviour, IEventUser, ICursorHandler, IActiveInGameObject, IEventDispatcher, 
                               IGOUIModule, ISetUpUIGOBranch
     {
         [SerializeField] private UIBranch _branch;
         [SerializeField] 
-        [DisableIf(Running)] 
+        [DisableIf(AppIsRunning)] 
         private InGameUiTurnOn _turnOnWhen;
         [SerializeField] 
-        [DisableIf(Running)] 
+        [DisableIf(AppIsRunning)] 
         private InGameUiTurnOff _turnOffWhen;
         [SerializeField] 
-        [Space(10f, order = 1)] [InfoBox(InfoBox, order = 2)] 
+        [Space(10f, order = 1)] [InfoBox(GOUIModule.InfoBox, order = 2)] 
         private Transform _uiPosition;
         [SerializeField] [Space(10f)] private UnityEvent<bool> _activateInGameObject;
 
@@ -44,6 +45,13 @@ namespace UIElements
         private bool _allowKeys;
         private GOUIController _controller;
         private IGOUIInput _GOUIInput;
+        private bool _onHomeScreen = true;
+        private bool _gameIsPaused;
+
+        //Editor
+        private const string AppIsRunning = nameof(IsRunning);
+        private bool IsRunning() => Application.isPlaying;
+
 
         //Events
         private Action<IActiveInGameObject> SetActivateInGameObject { get; set; }
@@ -51,16 +59,18 @@ namespace UIElements
 
         //Editor
         private const string InfoBox = "If left blank the centre of object will be used";
-        private const string Running = nameof(IsRunning);
-        private bool IsRunning => Application.isPlaying;
 
         //Properties & Set / Getters
+        private bool DontAcceptMouseInput => _allowKeys || !_onHomeScreen || _gameIsPaused;
         public InGameUiTurnOn TurnOnWhen => _turnOnWhen;
         public InGameUiTurnOff TurnOffWhen => _turnOffWhen;
         public IBranch TargetBranch => _branch;
         private void SetAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
         public Transform UsersTransform => _uiPosition;
         public GOUIModule UIGOModule => this;
+        
+        private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
+        private void SaveIsGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
 
         public void CheckForSetLayerMask(LayerMask layerMask)
         {
@@ -102,8 +112,10 @@ namespace UIElements
             EVent.Do.Subscribe<IAllowKeys>(SetAllowKeys);
             EVent.Do.Subscribe<IClearScreen>(CancelUIForFullScreen);
             EVent.Do.Subscribe<IInMenu>(CancelWhenInMenu);
+            EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+            EVent.Do.Subscribe<IGameIsPaused>(SaveIsGamePaused);
         }
-
+        
         public void OverFocus()
         {
             if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
@@ -125,19 +137,19 @@ namespace UIElements
 
         private void OnMouseEnter()
         {
-            if(_allowKeys) return;
+            if(DontAcceptMouseInput) return;
             _GOUIInput.EnterGO(_active);
         }
 
         private void OnMouseExit()
         {
-            if(_allowKeys) return;
+            if(DontAcceptMouseInput) return;
             _GOUIInput.ExitGO(_active);
         }
-
+        
         private void OnMouseDown()
         {
-            if(_allowKeys) return;
+            if(DontAcceptMouseInput) return;
             _GOUIInput.ClickOnGO(_active);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelectedNode, 

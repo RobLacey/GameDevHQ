@@ -93,8 +93,6 @@ public class MoveBackInHistory : IMoveBackInHistory
 
     private static void DoMoveBackOneLevel(INode lastNode, IBranch activeBranch)
     {
-        CanvasOrderCalculator.SetCanvasOrder(activeBranch, lastNode.MyBranch);
-
         if (lastNode.MyBranch.CanvasIsEnabled)
         {
             activeBranch.StartBranchExitProcess(OutTweenType.Cancel, NoTween);

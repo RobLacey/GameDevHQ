@@ -23,25 +23,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf145f6b-d551-4e26-8fbc-722270da7110" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIInput.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIInput.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/CanvasOrderData.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/CanvasOrderData.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/contentModel.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/indexLayout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameDevHQ/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Embedded Test/Embedded Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Embedded Test/Embedded Test.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MovementTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MovementTest.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Input Schemes/Scheme - Old.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Input Schemes/Scheme - Old.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Tween Schemes/TweenScheme.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Schemes/Tween Schemes/TweenScheme.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ScaleTween.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ScaleTween.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/InputScheme.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/InputScheme.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/BucketCreator.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/BucketCreator.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/CreateNewObjects.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/CreateNewObjects.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindings.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/Bindings/EVentBindings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/Bindings/EVentBindings.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentInterfaces.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentInterfaces.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/BranchFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/BranchFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEditorDialogue.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEditorDialogue.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/NodeFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/NodeFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/NullBucketObject.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/NullBucketObject.cs.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/BranchBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/BranchBase.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/BranchBaseInterfaces.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/BranchBaseInterfaces.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/GOUIBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/GOUIBranch.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/HomeScreenBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/HomeScreenBranch.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/InGameUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/GOUIBranch.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/InGameUI.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/GOUIBranch.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/OptionalPopUp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/OptionalPopUp.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/PauseMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/PauseMenu.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/ResolvePopUp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/ResolvePopUp.cs" afterDir="false" />
@@ -49,19 +54,25 @@
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/TimedPopUp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/TimedPopUp.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchUtilityClasses/CanvasOrderCalculator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchUtilityClasses/CanvasOrderCalculator.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Sub Classes/BranchInterfaces.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Sub Classes/BranchInterfaces.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Sub Classes/UIBranch.Properties.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Sub Classes/UIBranch.Properties.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/HistoryListManagement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/HistoryListManagement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/ManagePopUpHistory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/ManagePopUpHistory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/MoveBackInHistory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/MoveBackInHistory.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/MouseOnlySwitcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/MouseOnlySwitcher.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/Switcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/Switcher.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/VirtualCursor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/VirtualCursor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/InGameObjectUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIModule.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/InGameObjectUI.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIModule.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/RaycastBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/RaycastBase.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIGOController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIGOController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIGOControllerEditor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIGOControllerEditor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/ValidationCheck.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/ValidationCheck.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIInput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIInput.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIEvents.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIEvents.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UINavigation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UINavigation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UITooltip.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UITooltip.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/NodeBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/NodeBase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/LinkedToggles.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/GroupedToggles.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/LinkedToggles.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/GroupedToggles.cs.meta" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,149 +83,150 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/9e/0b1582b9/Debugger.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/UIBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components.meta" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/ef/5a8c33f5/Tween.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.memoryprofiler@0.2.6-preview.1/Editor/UI/Hotkey.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/EventSystem.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiEvents.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/50FE65A4-93A0-4952-84F1-E3562EFBE38D/1e/8ab72467/IServiceProvider.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchUtilityClasses/GroupList.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchUtilityClasses/BranchGroups.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/525DC68F-BE66-40F4-83D9-939A51075A29/5e/28a42366/Stack`1.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/58A34B0A-618D-424B-B5FC-18BB9BCDAC20/ca/e1841fc6/SetupCoroutine.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/Raycasters/BaseRaycaster.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Sub Classes/UIBranch.Properties.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/LinkedToggles.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/3c/ed406a2a/TweenManager.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Utility/ObjectPool.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/63/6205f4bc/Tween.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/62FFEEB7-EC02-4BEA-B61E-5FBF8D44AC5B/4c/6e64323a/Action`1.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49F4E7E7-91CC-4FFF-ACD8-8F729E2B1E4C/a5/ee3791b1/Transform.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/63DD8BF9-8CFA-4BA9-85AF-735EF1A56BA9/9e/40bffb1f/Void.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Utility/ListPool.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/NodeInterfaces.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/UINode.EditorScripts.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/8d/41f43f3f/IReadOnlyList`1.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/58A34B0A-618D-424B-B5FC-18BB9BCDAC20/96/1124d6d7/MonoBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Graphic.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/63DD8BF9-8CFA-4BA9-85AF-735EF1A56BA9/ad/5f3d05aa/FieldInfo.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIImageTextToggle.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIEvents.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/63DD8BF9-8CFA-4BA9-85AF-735EF1A56BA9/de/544df211/List`1.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIAudio.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/EventSystem/EventManager.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIColour.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UINavigation.cs.meta" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UINavigation.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UISizeAndPosition.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/D11BA9C6-F020-40DA-B9D0-AE1F9E91DD78/df/a5863fb5/IPointerDownHandler.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/ColourScheme.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UITooltip.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIAccessories.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/Size And Position Components/SizeAndPositionInterfaces.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Utilities/ExtensionsMethods.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ShakeTween.cs.meta" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.timeline@1.2.12/Editor/Tooltip.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/Size And Position Components/Tweens/BasePositionAndScale.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/PunchTween.cs.meta" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/Size And Position Components/Tweens/Scale.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ShakeTween.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ScaleTween.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/RotateTween.cs.meta" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/RotateTween.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/PunchTween.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Attributes.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/PositionTween.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/StaticCoroutine.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/D1BEC468-8006-4709-A5E7-13AD543E6D96/d9/bc8d4cc7/Editor.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49F4E7E7-91CC-4FFF-ACD8-8F729E2B1E4C/1e/68fcee0b/Debug.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Enhanced Hierarchy/Editor/ReflectionHelper.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/MovementTest.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/62FFEEB7-EC02-4BEA-B61E-5FBF8D44AC5B/4c/4889ddc5/Action.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/InputModules/BaseInput.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenData/BuildTweenData.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIAudioManager.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/MaskableGraphic.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49F4E7E7-91CC-4FFF-ACD8-8F729E2B1E4C/f8/6cddb978/Behaviour.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/MenuAndGameSwitching.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Image.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49F4E7E7-91CC-4FFF-ACD8-8F729E2B1E4C/98/12853e2b/Object.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/PauseMenu.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49F4E7E7-91CC-4FFF-ACD8-8F729E2B1E4C/b8/aed3fe6d/SetupCoroutine.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5D1D5A0A-7C19-404A-97CE-EFD28864629E/54/d8ccd8ad/Input.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/StandardBranch.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/3a/7b27e858/DOTweenComponent.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/ExecuteEvents.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/HomeScreenBranch.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/PauseMenu.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49F4E7E7-91CC-4FFF-ACD8-8F729E2B1E4C/1e/68fcee0b/Debug.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/StandardBranch.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/62FFEEB7-EC02-4BEA-B61E-5FBF8D44AC5B/4c/4889ddc5/Action.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiEvents.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/MaskableGraphic.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchUtilityClasses/BranchGroups.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchUtilityClasses/GroupList.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/InputModules/BaseInput.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Image.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.timeline@1.2.12/Editor/Tooltip.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49F4E7E7-91CC-4FFF-ACD8-8F729E2B1E4C/f8/6cddb978/Behaviour.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Sub Classes/UIBranch.Properties.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/ColourScheme.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49F4E7E7-91CC-4FFF-ACD8-8F729E2B1E4C/98/12853e2b/Object.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/GroupedToggles.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49F4E7E7-91CC-4FFF-ACD8-8F729E2B1E4C/b8/aed3fe6d/SetupCoroutine.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEnums.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/NodeInterfaces.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5D1D5A0A-7C19-404A-97CE-EFD28864629E/54/d8ccd8ad/Input.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/ExecuteEvents.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/UIBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/UiNode Partial Classes/UINode.EditorScripts.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/3a/7b27e858/DOTweenComponent.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenBase.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/EventSystem.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ShakeTween.cs.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/ef/5a8c33f5/Tween.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/PunchTween.cs.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ShakeTween.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/50FE65A4-93A0-4952-84F1-E3562EFBE38D/1e/8ab72467/IServiceProvider.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIImageTextToggle.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/RotateTween.cs.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.memoryprofiler@0.2.6-preview.1/Editor/UI/Hotkey.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIAudio.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ScaleTween.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIEvents.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/PunchTween.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/525DC68F-BE66-40F4-83D9-939A51075A29/5e/28a42366/Stack`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Attributes.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/RotateTween.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/StaticCoroutine.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/PositionTween.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIColour.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/58A34B0A-618D-424B-B5FC-18BB9BCDAC20/ca/e1841fc6/SetupCoroutine.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UINavigation.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UINavigation.cs.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/EventSystem/EventManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UISizeAndPosition.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/MovementTest.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/9e/0b1582b9/Debugger.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/Raycasters/BaseRaycaster.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UITooltip.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/3c/ed406a2a/TweenManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIAccessories.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIHomeGroup.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/TweenData/BuildTweenData.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/623DD1C5-ED6E-43BC-8659-6AF9203BEC21/63/6205f4bc/Tween.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Utility/ObjectPool.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/Size And Position Components/SizeAndPositionInterfaces.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UIAudioManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/62FFEEB7-EC02-4BEA-B61E-5FBF8D44AC5B/4c/6e64323a/Action`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/PopUpController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49F4E7E7-91CC-4FFF-ACD8-8F729E2B1E4C/6a/22539cb0/Transform.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/49F4E7E7-91CC-4FFF-ACD8-8F729E2B1E4C/a5/ee3791b1/Transform.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Utility/ListPool.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/MenuAndGameSwitching.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/Size And Position Components/Tweens/BasePositionAndScale.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/Size And Position Components/Tweens/Scale.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/63DD8BF9-8CFA-4BA9-85AF-735EF1A56BA9/9e/40bffb1f/Void.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Unity/Hub/Editor/2020.1.2f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/UI/Core/Graphic.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Utilities/ExtensionsMethods.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4BEC26B5-CBC7-4715-8442-F1499E984732/8d/41f43f3f/IReadOnlyList`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/58A34B0A-618D-424B-B5FC-18BB9BCDAC20/96/1124d6d7/MonoBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/63DD8BF9-8CFA-4BA9-85AF-735EF1A56BA9/de/544df211/List`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/63DD8BF9-8CFA-4BA9-85AF-735EF1A56BA9/ad/5f3d05aa/FieldInfo.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/D11BA9C6-F020-40DA-B9D0-AE1F9E91DD78/df/a5863fb5/IPointerDownHandler.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/D1BEC468-8006-4709-A5E7-13AD543E6D96/d9/bc8d4cc7/Editor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Enhanced Hierarchy/Editor/ReflectionHelper.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <changedPaths>
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/VirtualCursor.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/MouseOnlySwitcher.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Switcher.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/IRaycastController.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindings.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/IRaycast.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/_2DRaycast.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/_3DRaycast.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/ChangeControl.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/InputScheme.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Sub Classes/UIBranch.Properties.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/BranchFactory.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIGameObjectController.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/Switcher.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIGOControllerEditor.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/UIGOController.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/ValidationCheck.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UINavigation.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/MouseOnlySwitcher.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/InGameUI.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/InGameObjectUI.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/InGameUIBranch.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GameObjectUIModule.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/GameObjectUIBranch.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/GOUIModuleFactory.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/List Test.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/ListTest.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/VirtualCursor.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/RayCast/RaycastBase.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/UIEditorDialogue.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/ManagePopUpHistory.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Sub Classes/BranchInterfaces.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/StandardBranch.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/HomeScreenBranch.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/TestClass.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/LinkedToggles.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/Types/GroupedToggles.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/MoveBackInHistory.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/HistoryListManagement.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HotKeys.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/PauseMenu.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentInterfaces.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UINavigation.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/Bindings/EVentBindings.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/GOUIBranch.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIController.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIInput.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIModule.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/BranchBaseInterfaces.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/TimedPopUp.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/ResolvePopUp.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/OptionalPopUp.cs" />
-      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/BranchBase.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/BranchUtilityClasses/CanvasOrderCalculator.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/BranchBaseInterfaces.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UIEvents.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/UITweener.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/Tween Components/Tweens/ScaleTween.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/CreateNewObjects.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/Components - Main Types/Types/UITooltip.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EJect/Bindings/ClassBindings.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/PauseMenu.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIInput.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIController.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/HomeScreenBranch.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/UICancel.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/ManagePopUpHistory.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/StandardBranch.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/BranchBase.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/HistoryTracker/HistoryTracker.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Sub Classes/UIBranch.Properties.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/UIBranch Sub Classes/BranchInterfaces.cs" />
       <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/OptionalPopUp.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/ResolvePopUp.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/TimedPopUp.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/TestRunner.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Factorys/BranchFactory.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIBranch Components/Branch Types/Types/GOUIBranch.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIInput.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Scritpables/InputScheme.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UI Utilities/Creators/EVent/EVentInterfaces.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/Control Types/VirtualCursor.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode Components/NodeTypes/NodeBase.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UINode.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/In Game Control/GOUIModule.cs" />
+      <option value="$PROJECT_DIR$/Assets/Scripts/UI/UIElements/UIHub Components/CanvasOrderData.cs" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1e2570ZwNqmdtJXPsStj2CYD2JX" />
@@ -456,6 +468,13 @@
       <workItem from="1614800377080" duration="44000" />
       <workItem from="1614873023632" duration="2720000" />
       <workItem from="1614938067423" duration="24835000" />
+      <workItem from="1614967228737" duration="736000" />
+      <workItem from="1615210324638" duration="18903000" />
+      <workItem from="1615282827341" duration="24028000" />
+      <workItem from="1615372579485" duration="1358000" />
+      <workItem from="1615384406789" duration="7203000" />
+      <workItem from="1615392019194" duration="7215000" />
+      <workItem from="1615453637088" duration="3280000" />
     </task>
     <servers />
   </component>

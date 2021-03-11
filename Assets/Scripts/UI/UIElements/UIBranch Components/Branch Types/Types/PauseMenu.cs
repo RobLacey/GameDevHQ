@@ -7,14 +7,12 @@ using UnityEngine;
 
 public interface IPauseBranch : IBranchBase { }
 
-public interface IPauseCanvasOrder
+public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch
 {
-    int PauseMenuCanvasOrder { set; }
-}
-
-public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch, IPauseCanvasOrder
-{
-    public PauseMenu(IBranch branch) : base(branch) => _allBranches = branch.FindAllBranches();
+    public PauseMenu(IBranch branch) : base(branch)
+    {
+        _allBranches = branch.FindAllBranches();
+    }
 
     //Variables
     private readonly IBranch[] _allBranches;
@@ -24,7 +22,6 @@ public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch, IPauseCanvasOr
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private bool WasInGame() => !_screenData.WasOnHomeScreen;
     public bool GameIsPaused => _gameIsPaused;
-    public int PauseMenuCanvasOrder { private get; set; }
 
     //Events
     private Action<IGameIsPaused> OnGamePaused { get; set; }
@@ -43,19 +40,6 @@ public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch, IPauseCanvasOr
     }
 
     //Main
-    public override void OnStart()
-    {
-        base.OnStart();
-        SetUpCanvasOrder();
-    }
-
-    private void SetUpCanvasOrder()
-    {
-        EVent.Do.Fetch<IPauseCanvasOrder>()?.Invoke(this);
-        _myBranch.ManualCanvasOrder = PauseMenuCanvasOrder;
-        _myBranch.CanvasOrder = OrderInCanvas.Manual;
-    }
-
     private void StartPopUp(IPausePressed args)
     {
         if(!_canStart) return;
@@ -92,8 +76,9 @@ public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch, IPauseCanvasOr
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
+        base.SetUpBranch(newParentController);
         SetCanvas(ActiveCanvas.Yes);
-        CanGoToFullscreen();
+        CanGoToFullscreen_Paused();
     }
 
     public override void EndOfBranchExit()

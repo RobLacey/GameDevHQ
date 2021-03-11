@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -19,7 +20,6 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
     [SerializeField] private string _test4Test = default;
     [SerializeField] private string _test5Test = default;
 
-
     [Serializable]
     private class EventsForTest
     {
@@ -39,14 +39,10 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
 
     private Action<IStartBranch> StartBranch { get; set; }
 
-    private void Awake()
-    {
-        _onHomeScreen = true;
-    }
+    private void Awake() => _onHomeScreen = true;
 
     private void OnEnable() => ObserveEvents();
 
-    
     public void ObserveEvents()
     {
         EVent.Do.Subscribe<IHighlightedNode>(SaveLastHighlighted);
@@ -136,3 +132,5 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
 
     public UIBranch TargetBranch { get; private set; }
 }
+
+

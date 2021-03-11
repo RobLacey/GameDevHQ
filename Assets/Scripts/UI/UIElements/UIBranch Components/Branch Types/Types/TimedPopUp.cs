@@ -4,34 +4,20 @@ using UnityEngine;
 
 public interface ITimedPopUpBranch : IBranchBase { }
 
-public class TimedPopUp : BranchBase, ITimedPopUpBranch, IAdjustCanvasOrder
+public class TimedPopUp : BranchBase, ITimedPopUpBranch
 {
-    public TimedPopUp(IBranch branch) : base(branch)
-    {
-        SetUpCanvasOrder(branch);
-    }
-
-    private void SetUpCanvasOrder(ICanvasOrder branch)
-    {
-        EVent.Do.Return<IAdjustCanvasOrder>(this);
-        branch.ManualCanvasOrder = CanvasOrderOffset;
-        branch.CanvasOrder = OrderInCanvas.Manual;
-        timedPopUps = new List<Canvas>();
-    }
+    public TimedPopUp(IBranch branch) : base(branch) => timedPopUps = new List<Canvas>();
 
     //Variables
     private bool _running;
     private Coroutine _coroutine;
     private static List<Canvas> timedPopUps;
 
-    //Properties
-    public int CanvasOrderOffset { protected get; set; }
-    public BranchType BranchType { get; } = BranchType.TimedPopUp;
-
     //Main
     public override bool CanStartBranch()
     {
         if (_gameIsPaused || !_canStart || _activeResolvePopUps) return false;
+        if (!OnHomeScreen && _myBranch.ReturnOnlyAllowOnHomeScreen == IsActive.Yes) return false;
 
         SetIfRunningOrNot();
         _myBranch.DontSetBranchAsActive();
@@ -54,14 +40,9 @@ public class TimedPopUp : BranchBase, ITimedPopUpBranch, IAdjustCanvasOrder
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
+        base.SetUpBranch(newParentController);
         StaticCoroutine.StopCoroutines(_coroutine);
         _coroutine = StaticCoroutine.StartCoroutine(TimedPopUpProcess());
-    }
-
-    public override void EndOfBranchStart()
-    {
-        base.EndOfBranchStart();
-        CanvasOrderCalculator.ResetCanvasOrder(_myBranch, _myCanvas);
     }
 
     private IEnumerator TimedPopUpProcess()
@@ -77,15 +58,20 @@ public class TimedPopUp : BranchBase, ITimedPopUpBranch, IAdjustCanvasOrder
         _myBranch.StartBranchExitProcess(OutTweenType.Cancel);
     }
 
+    protected override void ClearBranchForFullscreen(IClearScreen args)
+    {
+        base.ClearBranchForFullscreen(args);
+    }
+
     private void AdjustCanvasOrderAdded()
     {
         timedPopUps.Add(_myBranch.MyCanvas);
-        CanvasOrderCalculator.ProcessActiveCanvasses(timedPopUps, CanvasOrderOffset);
+        _canvasOrderCalculator.ProcessActiveCanvasses(timedPopUps);
     }
 
     private void AdjustCanvasOrderRemoved(ILastRemovedPopUp args = null)
     {
         timedPopUps.Remove(_myBranch.MyCanvas);
-        CanvasOrderCalculator.ProcessActiveCanvasses(timedPopUps, CanvasOrderOffset);
+        _canvasOrderCalculator.ProcessActiveCanvasses(timedPopUps);
     }
 }

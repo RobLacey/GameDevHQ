@@ -2,75 +2,106 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CanvasOrderCalculator
+public class CanvasOrderCalculator: IEventUser
 {
-    public static void SetUpCanvasOrderAtStart(ICanvasOrder branch)
+    private IBranch _activeBranch;
+    private readonly Canvas _myCanvas;
+    private int _startingOrder;
+    private ISetStartingCanvasOrder _startingCanvasOrder;
+
+    //Properties
+    public BranchType GetBranchType { get; }
+
+    public OrderInCanvas GetOrderInCanvas { get; }
+
+    public int GetManualCanvasOrder { get; }
+    
+
+    public CanvasOrderCalculator(IBranch branch)
     {
-        var myCanvas = branch.MyCanvas;
-        var storeCanvasSetting = myCanvas.enabled;
-        myCanvas.enabled = true;
-        
-        if (CheckIfSetToDefault(branch, myCanvas, storeCanvasSetting)) return;
-        
-        myCanvas.overrideSorting = true;
-        ResetCanvasOrder(branch, myCanvas);
-        myCanvas.enabled = storeCanvasSetting;
+        _myCanvas = branch.MyCanvas;
+        GetOrderInCanvas = branch.CanvasOrder;
+        GetBranchType = branch.ReturnBranchType;
+        if (GetOrderInCanvas == OrderInCanvas.Manual)
+        {
+            GetManualCanvasOrder = branch.ReturnManualCanvasOrder;
+        }
+        ObserveEvents();
     }
 
-    private static bool CheckIfSetToDefault(ICanvasOrder branch, Canvas myCanvas, bool storeCanvasSetting)
+    public void ObserveEvents()
     {
-        if (branch.CanvasOrder != OrderInCanvas.Default) return false;
+        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+        EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetStartingSortingOrder);
+    }
+
+    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
+
+    private void SetStartingSortingOrder(ISetStartingCanvasOrder args)
+    {
+        _startingCanvasOrder = args.ReturnCanvasOrderData;
+        SetUpCanvasOrderAtStart();
+    }
+    private void SetUpCanvasOrderAtStart()
+    {
+        var tempSavedCanvasStatus = _myCanvas.enabled;
+        _myCanvas.enabled = true;
         
-        myCanvas.overrideSorting = false;
-        myCanvas.enabled = storeCanvasSetting;
+        if (CheckIfSetToDefaultOrder(tempSavedCanvasStatus)) return;
+        
+        SetStartingSortingOrder(tempSavedCanvasStatus);
+    }
+
+    private void SetStartingSortingOrder(bool tempSavedCanvasStatus)
+    {
+        _startingOrder = _startingCanvasOrder.ReturnPresetCanvasOrder(this);
+        _myCanvas.overrideSorting = true;
+        _myCanvas.sortingOrder = _startingOrder;
+        _myCanvas.enabled = tempSavedCanvasStatus;
+    }
+
+    private bool CheckIfSetToDefaultOrder(bool storeCanvasSetting)
+    {
+        if (GetOrderInCanvas != OrderInCanvas.Default) return false;
+        
+        _startingOrder = _myCanvas.sortingOrder;
+        _myCanvas.overrideSorting = false;
+        _myCanvas.enabled = storeCanvasSetting;
         return true;
     }
 
-    public static void SetCanvasOrder(ICanvasOrder oldBranch, ICanvasOrder newBranch)
+    public void SetCanvasOrder()
     {
-        int oldBranchSortingOrder = oldBranch.MyCanvas.sortingOrder;
-        
-        switch (newBranch.CanvasOrder)
+        if(_activeBranch.IsNull() || _myCanvas.sortingOrder > _startingOrder) return;
+
+        switch (GetOrderInCanvas)
         {
             case OrderInCanvas.InFront:
-                oldBranch.MyCanvas.sortingOrder = oldBranchSortingOrder - 1;
-                newBranch.MyCanvas.sortingOrder = oldBranchSortingOrder + 1;
+                _myCanvas.sortingOrder++;
                 break;
             case OrderInCanvas.Behind:
-                newBranch.MyCanvas.sortingOrder = oldBranchSortingOrder - 1;
+                _myCanvas.sortingOrder--;
+                break;
+            case OrderInCanvas.Manual:
+                if (_activeBranch.CanvasOrder == GetOrderInCanvas)
+                {
+                    _myCanvas.sortingOrder++;
+                }
                 break;
         }
     }
 
-    public static void ResetCanvasOrder(ICanvasOrder branch, Canvas canvas)
+    public void ResetCanvasOrder()
     {
-        switch (branch.CanvasOrder)
-        {
-            case OrderInCanvas.InFront:
-                canvas.sortingOrder = 2;
-                break;
-            case OrderInCanvas.Behind:
-                canvas.sortingOrder = -1;
-                break;
-            case OrderInCanvas.Manual:
-                canvas.sortingOrder = branch.ManualCanvasOrder;
-                break;
-            case OrderInCanvas.Default:
-                canvas.sortingOrder = 0;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        _myCanvas.sortingOrder = _startingOrder;
     }
     
-    public static void ProcessActiveCanvasses(List<Canvas> activeCanvasList, int typeOffset)
+    public void ProcessActiveCanvasses(List<Canvas> activeCanvasList)
     {
         for (var index = 0; index < activeCanvasList.Count; index++)
         {
             var canvasses = activeCanvasList[index];
-            canvasses.sortingOrder = SetSortingOrder(index, typeOffset);
+            canvasses.sortingOrder = _startingOrder + index;
         }
     }
-
-    private static int SetSortingOrder(int index, int typeOffset) => typeOffset + index;
 }

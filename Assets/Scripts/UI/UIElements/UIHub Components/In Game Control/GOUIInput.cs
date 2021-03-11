@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace UIElements
 {
@@ -74,6 +75,7 @@ namespace UIElements
 
         public void ClickOnGO(bool active)
         {
+            Debug.Log(active);
             if(!active)
             {
                 if (_turnOnWhen == InGameUiTurnOn.OnEnter) return;

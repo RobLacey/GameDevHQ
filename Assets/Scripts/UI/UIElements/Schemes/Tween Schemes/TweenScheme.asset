@@ -15,7 +15,7 @@ MonoBehaviour:
   _positionTween: 0
   _rotationTween: 0
   _fadeTween: 0
-  _scaleTween: 3
+  _scaleTween: 1
   _punchTween: 0
   _shakeTween: 0
   _useGlobalTime: 1

@@ -30,21 +30,29 @@ namespace UIElements
                          IEServUser, IEventDispatcher
     {
         [SerializeField] private UIBranch _startOnThisBranch;
-        [Header("Canvas Offsets for Branch Types", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
+
+        [Header("Canvas Offsets for Branch Types", order = 2)]
+        [HorizontalLine(1f, EColor.Blue, order = 3)]
         [Space(10, order = 1)]
-        [SerializeField] private int _pauseMenuCanvasOrder = 10;
-        [SerializeField] private int _toolTipCanvasOrder = 20;
-        [SerializeField] private int _resolvePopUpCanvasOrder = 5;
-        [SerializeField] private int _timedPopUpCanvasOrder = 5;
-        [SerializeField] private int _optionalPopUpCanvasOrder = 5;
- 
+        [SerializeField]
+        private CanvasOrderData _canvasData; 
         [SerializeField] [Space(20, order = 1)] private int _nextScene  = default;
+        
         //Editor
         [Button("Add a New Tree Structure")]
-        private void MakeFolder() 
-            => new CreateNewObjects().CreateMainFolder(transform)
-                                     .CreateBranch()
-                                     .CreateNode();
+        private void MakeTreeFolders()
+        {
+            new CreateNewObjects().CreateMainFolder(transform)
+                                  .CreateBranch()
+                                  .CreateNode();
+            MakeTooltipFolder();
+        }
+        
+        [Button("Add a ToolTip Bin")]
+        private void MakeTooltipFolder()
+        {
+            new CreateNewObjects().CreateToolTipFolder(transform);
+        }
     
         //Variables
         private List<UIBranch> _homeBranches;
@@ -75,28 +83,6 @@ namespace UIElements
             if(!_inMenu) SetEventSystem(null);
         }
 
-        private void ReturnPauseCanvasOrder(IPauseCanvasOrder args) 
-            => args.PauseMenuCanvasOrder = _pauseMenuCanvasOrder;
-    
-        private void ReturnToolTipCanvasOrder(IToolTipCanvasOrder args) 
-            => args.ToolTipCanvasOrder = _toolTipCanvasOrder;
-    
-        private void ReturnTimedCanvasOrder(IAdjustCanvasOrder args)
-        {
-            switch (args.BranchType)
-            {
-                case BranchType.ResolvePopUp:
-                    args.CanvasOrderOffset = _resolvePopUpCanvasOrder;
-                    break;
-                case BranchType.OptionalPopUp:
-                    args.CanvasOrderOffset = _optionalPopUpCanvasOrder;
-                    break;
-                case BranchType.TimedPopUp:
-                    args.CanvasOrderOffset = _timedPopUpCanvasOrder;
-                    break;
-            }
-            
-        }
         private void ReturnHomeBranches(IGetHomeBranches args) => args.HomeBranches = _homeBranches;
 
         //Main
@@ -133,6 +119,7 @@ namespace UIElements
 
         private void OnEnable()
         {
+            _canvasData.OnEnable();
             UseEServLocator();
             FetchEvents();
             _historyTrack.OnEnable();
@@ -163,12 +150,13 @@ namespace UIElements
             EVent.Do.Subscribe<IInMenu>(SaveInMenu);
             EVent.Do.Subscribe<IAllowKeys>(SwitchedToKeys);
             EVent.Do.Subscribe<IGetHomeBranches>(ReturnHomeBranches);
-            EVent.Do.Subscribe<IPauseCanvasOrder>(ReturnPauseCanvasOrder);
-            EVent.Do.Subscribe<IToolTipCanvasOrder>(ReturnToolTipCanvasOrder);
-            EVent.Do.Subscribe<IAdjustCanvasOrder>(ReturnTimedCanvasOrder);
         }
 
-        private void Start() => StartCoroutine(StartUIDelay());
+        private void Start()
+        {
+            _canvasData.OnStart();
+            StartCoroutine(StartUIDelay());
+        }
 
         // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator StartUIDelay()

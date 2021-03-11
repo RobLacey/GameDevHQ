@@ -8,8 +8,8 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     protected BranchBase(IBranch branch)
     {
         _myBranch = branch.ThisBranch;
-        _stayVisible = branch.GetStayOn();
         _myCanvas = _myBranch.MyCanvas;
+        _canvasOrderCalculator = new CanvasOrderCalculator(_myBranch);
         _myCanvasGroup = _myBranch.MyCanvasGroup;
         MyScreenType = _myBranch.ScreenType;
         _screenData = EJect.Class.WithParams<IScreenData>(this);
@@ -20,12 +20,11 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     protected readonly IScreenData _screenData;
     protected bool _inMenu, _canStart, _gameIsPaused, _activeResolvePopUps;
     protected IHistoryTrack _historyTrack;
-    protected readonly Canvas _myCanvas;
+    private readonly Canvas _myCanvas;
     private readonly CanvasGroup _myCanvasGroup;
     protected bool _isTabBranch;
     private bool _allowKeys;
-    private readonly IsActive _stayVisible;
-    private OutTweenType _outTweenType;
+    protected readonly CanvasOrderCalculator _canvasOrderCalculator;
 
     //Events
     private Action<IOnHomeScreen> SetIsOnHomeScreen { get; set; }
@@ -37,6 +36,7 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
         OnHomeScreen = onHome;
         SetIsOnHomeScreen?.Invoke(this);
     }
+    
     private void InvokeDoClearScreen() => DoClearScreen?.Invoke(this);
     private void SaveResolvePopUps(INoResolvePopUp args) => _activeResolvePopUps = args.ActiveResolvePopUps;
     private void SaveIfGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
@@ -94,33 +94,30 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
         SetBlockRaycast(BlockRaycast.No);
         SetCanvas(ActiveCanvas.No);
     }
-    
-    public virtual void OnStart() { }
-    
+
     public virtual bool CanStartBranch() => true;
 
-    public virtual void SetUpBranch(IBranch newParentController = null){ }
+    public virtual void SetUpBranch(IBranch newParentController = null) { }
 
     public virtual void EndOfBranchStart()
     {
         SetBlockRaycast(BlockRaycast.Yes);
     }
 
-    public virtual void StartBranchExit(OutTweenType outTweenType)
+    public virtual void StartBranchExit()
     {
-        _outTweenType = outTweenType;
-        
-        if (_stayVisible == IsActive.No || _outTweenType == OutTweenType.Cancel)
-            SetBlockRaycast(BlockRaycast.No);
-
+        SetBlockRaycast(BlockRaycast.No);
     }
     public virtual void EndOfBranchExit()
     {
-        if (_stayVisible == IsActive.No || _outTweenType == OutTweenType.Cancel)
-            SetCanvas(ActiveCanvas.No);
+        SetCanvas(ActiveCanvas.No);
+        _canvasOrderCalculator.ResetCanvasOrder();
     }
     
-    public virtual void SetCanvas(ActiveCanvas active) => _myCanvas.enabled = active == ActiveCanvas.Yes;
+    public virtual void SetCanvas(ActiveCanvas active)
+    {
+        _myCanvas.enabled = active == ActiveCanvas.Yes;
+    }
 
     public virtual void SetBlockRaycast(BlockRaycast active)
     {
@@ -148,6 +145,12 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
         InvokeDoClearScreen();
         InvokeOnHomeScreen(false);
     }
+    
+    protected void CanGoToFullscreen_Paused()
+    {
+        if (MyScreenType != ScreenType.FullScreen) return;
+        InvokeDoClearScreen();
+    }
 
     protected virtual void ActivateStoredPosition()
     {
@@ -155,5 +158,4 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
         if (_screenData.WasOnHomeScreen)
             InvokeOnHomeScreen(true);
     }
-
 }

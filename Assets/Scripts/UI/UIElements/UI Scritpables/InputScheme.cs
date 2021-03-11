@@ -1,35 +1,44 @@
 ﻿using System;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public abstract class InputScheme : ScriptableObject
 {
-    [Space(20f, order = 1)]
+    [Space(20f, order = 0)]
     [SerializeField] 
     protected ControlMethod _mainControlType = ControlMethod.MouseOnly;
-    [SerializeField] [ShowIf("KeyboardOnly")]
+    
+    [SerializeField] [HideIf(KeysOnly)] private IsActive _customMouseCursor = IsActive.No;
+    [SerializeField] [ShowIf("CustomCursor")] private Texture2D _cursor = default;
+    [SerializeField] [ShowIf("CustomCursor")] private Vector2 _hotSpot =default;
+    
+    [SerializeField] [ShowIf(KeysOnly)]
     protected InGameSystem _inGameMenuSystem = InGameSystem.Off;
+    
     [SerializeField] 
-    [ShowIf("KeyboardOnly")] [EnableIf("InGameOn")]
+    [ShowIf(KeysOnly)] 
+    [EnableIf("InGameOn")]
     protected InMenuOrGame _startGameWhere = InMenuOrGame.InGameControl;
     
     [Header("Cancel / Back Settings")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
     [SerializeField] 
     [Label("Nothing to Cancel Action")] 
     protected PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.DoNothing;
+    
     [SerializeField]
     private PauseFunction _globalEscapeFunction;
+    
     [Header("Start Delay")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
     [SerializeField] 
     [Label("Delay UI Start By then..")]
     [Range(0, 10)] protected float _delayUIStart;
-    [SerializeField] [Label("..Enable Controls After..")]
-    [Range(0, 10)] protected float _controlActivateDelay;
     
-    [Header("Cursor")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
-    [SerializeField] private IsActive _useCustomCursor = IsActive.No;
-    [SerializeField] [ShowIf("CustomCursor")] private Texture2D _cursor = default;
-    [SerializeField] [ShowIf("CustomCursor")] private Vector2 _hotSpot =default;
+    [SerializeField] 
+    [Label("..Enable Controls After..")]
+    [Range(0, 10)] 
+    protected float _controlActivateDelay;
+
 
     //Variables
     protected Vector3 _mousePosition;
@@ -38,26 +47,30 @@ public abstract class InputScheme : ScriptableObject
     
     //Editor
     private bool InGameOn => _inGameMenuSystem == InGameSystem.On;
-    private bool CustomCursor => _useCustomCursor == IsActive.Yes;
+    private bool CustomCursor => _customMouseCursor == IsActive.Yes;
 
+    private const string KeysOnly = nameof(KeyboardOnly);
     private bool KeyboardOnly
     {
-        get
-        {
-            var KeysOnly = _mainControlType == ControlMethod.KeysOrControllerOnly;
+        get{
+            var keysOnly = _mainControlType == ControlMethod.KeysOrControllerOnly;
 
-            if (!KeysOnly)
+            if (!keysOnly)
             {
                 _inGameMenuSystem = InGameSystem.Off;
             }
-
-            return KeysOnly;
+            else
+            {
+                _customMouseCursor = IsActive.No;
+            }
+            return keysOnly;
         }
     }
 
+
     public void SetCursor()
     {
-        if (_useCustomCursor == IsActive.Yes && ControlType != ControlMethod.KeysOrControllerOnly)
+        if (_customMouseCursor == IsActive.Yes && !KeyboardOnly)
         {
             Cursor.SetCursor(_cursor, _hotSpot, CursorMode.Auto);
         }

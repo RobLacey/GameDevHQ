@@ -156,6 +156,16 @@ public interface IStartBranch
     UIBranch TargetBranch { get; }
 }
 
+public interface ISetStartingCanvasOrder
+{
+    ISetStartingCanvasOrder ReturnCanvasOrderData { get; }
+    int ReturnPresetCanvasOrder(CanvasOrderCalculator canvasOrderCalculator);
+    int ReturnToolTipCanvasOrder();
+    int ReturnVirtualCursorCanvasOrder();
+
+}
+
+
 
 
 

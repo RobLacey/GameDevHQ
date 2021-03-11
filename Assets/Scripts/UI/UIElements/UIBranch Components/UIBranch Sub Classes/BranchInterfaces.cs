@@ -26,7 +26,14 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     bool PointerOverBranch { get;}
     IAutoOpenClose AutoOpenCloseClass { get; }
     IsActive BlockOtherNode { get; set; }
-    IsActive ResetSavePositionOnExit();
+    void ResetSavePositionOnExit();
+    BranchType ReturnBranchType { get; }
+    IsActive SetStayOn { set; }
+    INode LastSelected { get; }
+    GameObject ThisBranchesGameObject { get; }
+    IsActive ReturnOnlyAllowOnHomeScreen { get; }
+
+
     
     IBranch[] FindAllBranches();
     IsActive GetStayOn();
@@ -59,10 +66,7 @@ public interface IAutoOpenCloseData
 public interface ICanvasOrder
 {
     OrderInCanvas CanvasOrder { get; set; }
-    IsActive SetStayOn { get; set; }
-    INode LastSelected { get; }
-    int ManualCanvasOrder { get; set; }
+    int ReturnManualCanvasOrder { get; }
     Canvas MyCanvas { get; }
-    GameObject ThisBranchesGameObject { get; }
 }
 

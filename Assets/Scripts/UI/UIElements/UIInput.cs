@@ -153,7 +153,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
 
         if(ReturnControlToGameIfKeysOnly()) return;
         
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && _onHomeScreen)
         {
             OnClearAll?.Invoke(this);
             return;

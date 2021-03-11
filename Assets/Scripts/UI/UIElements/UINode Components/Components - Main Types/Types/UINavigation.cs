@@ -87,8 +87,6 @@ public class UINavigation : NodeFunctionBase
 
     private void NavigateToChildBranch(IBranch moveToo)
     {
-        CanvasOrderCalculator.SetCanvasOrder(_activeBranch, moveToo);
-        
         if (moveToo.IsInternalBranch())
         {
             ToChildBranchProcess();

@@ -129,7 +129,6 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
         _mouseOnlySwitcher.UseMouseOnlySwitcher();
         _switcher.UseSwitcher();
         _virtualCursor.UseVirtualCursor();
-
     }
 
     private void FixedUpdate() => _virtualCursor.FixedUpdate();

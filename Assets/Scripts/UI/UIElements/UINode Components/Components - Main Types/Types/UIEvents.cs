@@ -24,7 +24,7 @@ public class UIEvents : NodeFunctionBase
         _onDisable = settings.DisableEvent;
         _onToggleEvent = settings.ToggleEvent;
         CanActivate = true;
-        OnAwake(uiEvents);
+        base.OnAwake(uiEvents);
     }
     
     //Properties

@@ -17,12 +17,8 @@ public interface IToolTipData: IParameters
     RectTransform ParentRectTransform { get; }
 }
 
-public interface IToolTipCanvasOrder
-{
-    int ToolTipCanvasOrder { set; }
-}
 
-public class UITooltip : NodeFunctionBase, IToolTipData, IToolTipCanvasOrder
+public class UITooltip : NodeFunctionBase, IToolTipData
 {
     public UITooltip(ITooltipSettings settings)
     {
@@ -51,7 +47,6 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IToolTipCanvasOrder
     public LayoutGroup[] ListOfTooltips { get; }
     public RectTransform[] ToolTipsRects { get; private set; }
     public Vector3[] MyCorners { get; } = new Vector3[4];
-    public int ToolTipCanvasOrder { private get; set; }
     public RectTransform ParentRectTransform { get; private set; }
 
     //Set / Getters
@@ -72,7 +67,6 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IToolTipCanvasOrder
     {
         base.OnAwake(uiEvents);
         SetUp();
-        SetUToolTipContainerObject();
         SetCorners();
         _toolTipFade = EJect.Class.WithParams<IToolTipFade>(this);
     }
@@ -98,40 +92,21 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IToolTipCanvasOrder
         }
     }
 
-    private void SetUToolTipContainerObject()
-    {
-        var bucketPosition = EJect.Class.NoParams<IBucketCreator>()
-                                  .SetName("ToolTip Holder")
-                                  .SetParent(MainCanvas.transform)
-                                  .CreateBucket();
-        
-        foreach (var tooltip in ToolTipsRects)
-        {
-            tooltip.SetParent(bucketPosition);
-        }
-    }
-
     public override void ObserveEvents()
     {
         base.ObserveEvents();
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
-    }
-
-    public override void Start()
-    {
-        base.Start();
-        SetToolTipCanvasOrder();
+        EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetToolTipCanvasOrder);
     }
     
     //Main
-    private void SetToolTipCanvasOrder()
+    private void SetToolTipCanvasOrder(ISetStartingCanvasOrder args)
     {
-        EVent.Do.Fetch<IToolTipCanvasOrder>().Invoke(this);
         foreach (var canvas in _cachedToolTipCanvasList)
         {
             canvas.enabled = true;
             canvas.overrideSorting = true;
-            canvas.sortingOrder = ToolTipCanvasOrder;
+            canvas.sortingOrder = args.ReturnToolTipCanvasOrder();
             canvas.enabled = false;
         }
     }

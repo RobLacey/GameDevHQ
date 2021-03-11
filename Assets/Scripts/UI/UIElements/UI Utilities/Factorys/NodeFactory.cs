@@ -41,7 +41,7 @@ public static class NodeFactory
     private static INodeBase CreateLinkedToggles(INode node)
     {
         node.HasChildBranch = null;
-        return EJect.WithParams<ILinkedToggles>(node);
+        return EJect.WithParams<IGroupedToggles>(node);
     }
     private static INodeBase CreateTogglesNotLinked(INode node)
     {

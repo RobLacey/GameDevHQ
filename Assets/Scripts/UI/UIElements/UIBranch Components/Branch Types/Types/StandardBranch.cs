@@ -20,6 +20,9 @@ public class StandardBranch : BranchBase, IStandardBranch
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
+        base.SetUpBranch(newParentController);
+        
+        _canvasOrderCalculator.SetCanvasOrder();
         SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
         SetNewParentBranch(newParentController);
@@ -32,6 +35,7 @@ public class StandardBranch : BranchBase, IStandardBranch
     {
         if(_isTabBranch) return;
         base.ClearBranchForFullscreen(args);
+        _canvasOrderCalculator.ResetCanvasOrder();
     }
 
     private void SetNewParentBranch(IBranch newParentController) 

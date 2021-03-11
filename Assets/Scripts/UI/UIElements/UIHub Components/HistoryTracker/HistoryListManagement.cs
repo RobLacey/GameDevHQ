@@ -71,7 +71,6 @@ public class HistoryListManagement : IHistoryManagement
     {
         _history.Remove(node);
         node.HasChildBranch.LastSelected.DeactivateNode();
-        CanvasOrderCalculator.SetCanvasOrder(node.HasChildBranch, node.MyBranch);
         node.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel, EndOfTweenActions);
         _historyTracker.AddNodeToTestRunner(node);
 

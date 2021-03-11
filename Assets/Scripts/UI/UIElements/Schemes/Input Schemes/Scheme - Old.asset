@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: Scheme - Old
   m_EditorClassIdentifier: 
   _mainControlType: 1
+  _customMouseCursor: 1
+  _cursor: {fileID: 2800000, guid: b0f5b9203d2557e41a5037b243319f77, type: 3}
+  _hotSpot: {x: 85, y: 50}
   _inGameMenuSystem: 0
   _startGameWhere: 0
   _pauseOptionsOnEscape: 0
   _globalEscapeFunction: 2
   _delayUIStart: 0.5
   _controlActivateDelay: 1
-  _useCustomCursor: 1
-  _cursor: {fileID: 2800000, guid: b0f5b9203d2557e41a5037b243319f77, type: 3}
-  _hotSpot: {x: 85, y: 50}
   _pauseOptionButton: Pause
   _posSwitchButton: Positive Group Switch
   _negSwitchButton: Negative Group Switch
