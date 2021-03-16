@@ -36,6 +36,9 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
     private GOUIModule _activeObject;
     private int _index;
     private GOUIModule[] _playerObjects;
+    private bool _canStart;
+    private bool _onHomeScreen = true;
+    private bool _gameIsPaused;
 
     private enum CancelWhen
     {
@@ -49,10 +52,18 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
         set => _inGameControlType = value;
     }
     public InputScheme GetScheme() => GetComponent<UIInput>().ReturnScheme;
+    private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
+    private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
+
+
     public GOUIModule[] GetPlayerObjects() => _playerObjects;
     private bool UseBoth => _inGameControlType == VirtualControl.Both;
 
     public int GetIndex() => _index;
+    private void CanStart(IOnStart obj) => _canStart = true;
+
+    private bool CanSwitch => _canStart && _onHomeScreen && !_gameIsPaused;
+
 
     public void SetIndex(GOUIModule newObj)
     {
@@ -70,25 +81,25 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
 
     private void NewHighlightedNode(IHighlightedNode args)
     {
-        if (_activeObject.IsNull() || _cancelWhen != CancelWhen.NewHighlightedNode) return;
-        if(_safeNodeList.Contains(args.Highlighted)) return;
-        _activeObject.CancelUi();
+        // if (_activeObject.IsNull() || _cancelWhen != CancelWhen.NewHighlightedNode) return;
+        // if(_safeNodeList.Contains(args.Highlighted)) return;
+        // _activeObject.CancelUi();
     }
     
     private void NewSelectedBranch(ISelectedNode args)
     {
-        if (_activeObject.IsNull() || _cancelWhen != CancelWhen.NewSelectedNode) return;
-        if(_safeNodeList.Contains(args.UINode)) return;
-        _activeObject.CancelUi();
+        // if (_activeObject.IsNull() || _cancelWhen != CancelWhen.NewSelectedNode) return;
+        // if(_safeNodeList.Contains(args.UINode)) return;
+        // _activeObject.CancelUi();
     }
     
-    private void SaveActiveInGameObject(IActiveInGameObject args)
+    private void SaveActiveInGameObject(/*IActiveInGameObject args*/)
     {
-        if(_activeObject.IsNotNull())
-        {
-            _activeObject.CancelUi();
-        }        
-        _activeObject = args.IsNull() ? null : args.UIGOModule;
+        // if(_activeObject.IsNotNull())
+        // {
+        //     _activeObject.CancelUi();
+        // }        
+        // _activeObject = args.IsNull() ? null : args.UIGOModule;
     }
 
     //Main
@@ -97,39 +108,54 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
         _playerObjects = FindObjectsOfType<GOUIModule>();
         _inputScheme = GetComponent<UIInput>().ReturnScheme;
         _mouseOnlySwitcher = EJect.Class.WithParams<IMouseOnlySwitcher>(this);
-        _switcher = EJect.Class.WithParams<ISwitcher>(this);
-        SetUpVirtualCursor();
+       // _switcher = EJect.Class.WithParams<ISwitcher>(this);
+       // SetUpVirtualCursor();
     }
 
     private void SetUpVirtualCursor() => _virtualCursor.SetUpVirtualCursor(this);
     private void OnEnable()
     {
         ObserveEvents();
-        _switcher.OnEnable();
+       // _switcher.OnEnable();
     }
     
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IActiveInGameObject>(SaveActiveInGameObject);
+       // EVent.Do.Subscribe<IActiveInGameObject>(SaveActiveInGameObject);
         EVent.Do.Subscribe<IHighlightedNode>(NewHighlightedNode);
         EVent.Do.Subscribe<ISelectedNode>(NewSelectedBranch);
+        EVent.Do.Subscribe<IOnStart>(CanStart);
+        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        EVent.Do.Subscribe<IGameIsPaused>(GameIsPaused);
+
     }
+
+
 
     private void OnValidate() => _validationCheck.ValidateDialogue();
 
     private void Update()
     {
-        if (_inputScheme.PressedCancel())
-        {
-            if(_activeObject.IsNull()) return;
-            _activeObject.CancelUi();
-        }
-        
-        if (_inGameControlType == VirtualControl.None) return;
-        _mouseOnlySwitcher.UseMouseOnlySwitcher();
-        _switcher.UseSwitcher();
-        _virtualCursor.UseVirtualCursor();
+        if(!CanSwitch) return;
+        // if (_inputScheme.PressedCancel())
+        // {
+        //     if(_activeObject.IsNull()) return;
+        //     _activeObject.CancelUi();
+        // }
+        //
+        // if (_inGameControlType == VirtualControl.None) return;
+         _mouseOnlySwitcher.UseMouseOnlySwitcher();
+        // _switcher.UseSwitcher();
+        // _virtualCursor.UseVirtualCursor();
     }
 
-    private void FixedUpdate() => _virtualCursor.FixedUpdate();
+    private void FixedUpdate()
+    {
+        if(!CanSwitch) return;
+
+        _mouseOnlySwitcher.ClearSwitchActivatedGOUI();
+
+    }
+
+    // private void FixedUpdate() => _virtualCursor.FixedUpdate();
 }

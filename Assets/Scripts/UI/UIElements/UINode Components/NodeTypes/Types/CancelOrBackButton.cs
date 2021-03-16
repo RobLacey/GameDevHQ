@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public interface ICancelOrBack : INodeBase { }
 
@@ -9,12 +10,10 @@ public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBac
     {
         MyBranch = node.MyBranch;
         _isPopUp = MyBranch.IsAPopUpBranch();
-        _closeOnExit = node.MyBranch.AutoOpenCloseClass.CanAutoClose();
         EscapeKeyType = node.EscapeKeyType;
     }
 
     private readonly bool _isPopUp;
-    private readonly bool _closeOnExit;
     public EscapeKey EscapeKeyType { get; }
 
     //Events
@@ -33,7 +32,7 @@ public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBac
 
     protected override void TurnNodeOnOff()
     {
-        if (_closeOnExit)
+        if (CloseOnExit())
         {
             CancelHoverOver?.Invoke(this);
         }
@@ -45,6 +44,9 @@ public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBac
         {
             CancelButtonActive?.Invoke(this);
         }
+        
+        bool CloseOnExit() => MyBranch.AutoOpenCloseClass.CanAutoClose();        
+
     }
 }
 

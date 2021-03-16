@@ -141,11 +141,6 @@ public interface IGetHomeBranches
 
 public interface IClearAll { }
 
-public interface IActiveInGameObject
-{
-    GOUIModule UIGOModule { get; }
-}
-
 public interface ISetUpUIGOBranch
 {
     IBranch TargetBranch  { get; }

@@ -84,8 +84,6 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveOnHomeScreen (IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveAllowKeys (IAllowKeys args) => _allowKeys = args.CanAllowKeys;
-    private void SaveActiveInGameObject(IActiveInGameObject args) 
-        => _activeGameUIModuleObject = args.IsNull() ? null : args.UIGOModule;
 
     public SwitchType SwitchType { get; private set; }
     public InputScheme ReturnScheme => _inputScheme;
@@ -144,7 +142,6 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         EVent.Do.Subscribe<IInMenu>(SaveInMenu);
         EVent.Do.Subscribe<INoPopUps>(SaveNoActivePopUps);
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
-        EVent.Do.Subscribe<IActiveInGameObject>(SaveActiveInGameObject);
     }
 
     private void Update()
@@ -248,11 +245,10 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private bool CanUnpauseGame() => _gameIsPaused && _activeBranch.IsPauseMenuBranch();
     
     private void CancelPressed() => OnCancelPressed?.Invoke(this);
-    
+
     private bool CanEnterPauseWithNothingSelected() =>
-        (_noActivePopUps && !_gameIsPaused && _historyTrack.NoHistory) 
-        && NothingSelectedAction 
-        && _activeGameUIModuleObject.IsNull();
+        (_noActivePopUps && !_gameIsPaused && _historyTrack.NoHistory)
+        && NothingSelectedAction;
     
     private bool CanSwitchBranches() => _noActivePopUps && !MouseOnly() && _allowKeys;
 

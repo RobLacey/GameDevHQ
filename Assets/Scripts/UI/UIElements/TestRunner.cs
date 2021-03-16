@@ -13,6 +13,7 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
     [SerializeField] private List<UINode> _history = default;
     [SerializeField] [ReadOnly] private bool _onHomeScreen = true;
     [SerializeField] [ReadOnly] private bool _allowKeys = default;
+    [SerializeField] [ReadOnly] private bool _inMenu;
     [SerializeField] private EventsForTest _eventsForTest = default;
     [SerializeField] private string _test1Test = default;
     [SerializeField] private string _test2Test = default;
@@ -39,6 +40,7 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = (UIBranch) args.ActiveBranch.ThisBranch;
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
+    private void SaveInMenu(IInMenu args) => _inMenu = args.InTheMenu;
 
     private Action<IStartBranch> StartBranch { get; set; }
 
@@ -54,9 +56,11 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
         EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
         EVent.Do.Subscribe<ITestList>(ManageHistory);
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+        EVent.Do.Subscribe<IInMenu>(SaveInMenu);
 
         StartBranch = EVent.Do.Fetch<IStartBranch>();
     }
+
 
     private void ManageHistory(ITestList args)
     {

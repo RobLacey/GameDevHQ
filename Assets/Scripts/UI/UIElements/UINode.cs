@@ -78,7 +78,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
     private bool IsCancelOrBack => _buttonFunction == ButtonFunction.CancelOrBack;
-    public bool CanStoreNodeInHistory => IsToggleGroup || IsToggleNotLinked || HasChildBranch is null;
+    public bool CanNotStoreNodeInHistory => IsToggleGroup || IsToggleNotLinked || HasChildBranch is null;
     public ToggleData ToggleData => _toggleData;
     public IBranch MyBranch { get; private set; }
     public IBranch HasChildBranch
@@ -113,7 +113,14 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
         EVent.Do.Subscribe<IAllowKeys>(AllowKeys);
     }
 
-    private void OnEnable() => SetUpUiFunctions();
+    private void OnEnable()
+    {
+        SetUpUiFunctions();
+        SetChildParentBranch();        
+
+        StartNodeFactory();
+        _nodeBase.OnEnable();
+    }
 
     private void SetUpUiFunctions()
     {
@@ -138,9 +145,9 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     private void Start()
     {
-        SetChildParentBranch();        
-        StartNodeFactory();
-        _nodeBase.OnEnable();
+        //SetChildParentBranch();        
+        // StartNodeFactory();
+        // _nodeBase.OnEnable();
         _nodeBase.Start();
         
         foreach (var func in _activeFunctions)
@@ -180,16 +187,9 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public void ThisNodeIsHighLighted() => _nodeBase.ThisNodeIsHighLighted();
     
     //Input Interfaces
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        Debug.Log("Enter");
-        _nodeBase.OnEnter();
-    }
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        Debug.Log("Exit");
-        _nodeBase.OnExit();
-    }
+    public void OnPointerEnter(PointerEventData eventData) => _nodeBase.OnEnter();
+
+    public void OnPointerExit(PointerEventData eventData) => _nodeBase.OnExit();
     public void OnPointerDown(PointerEventData eventData) => _nodeBase.SelectedAction();
 
     public void OnSubmit(BaseEventData eventData)

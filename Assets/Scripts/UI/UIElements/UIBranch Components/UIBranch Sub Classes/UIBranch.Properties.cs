@@ -18,9 +18,11 @@ public partial class UIBranch
     public bool IsPauseMenuBranch() => _branchType == BranchType.PauseMenu;
     public bool IsInternalBranch() => _branchType == BranchType.Internal;
     public bool IsHomeScreenBranch() => _branchType == BranchType.HomeScreen;
+    public bool IsStandardBranch() => _branchType == BranchType.Standard;
+    public bool IsInGameBranch() => _branchType == BranchType.InGameUi;
+
     public void DoNotTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
-    public void SetBranchAsActive() => _canActivateBranch = true;
     public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
     public bool IsTimedPopUp() => _branchType == BranchType.TimedPopUp;
     public IsActive GetStayOn() => _stayVisible;
@@ -147,7 +149,6 @@ public partial class UIBranch
         _stayVisible = IsActive.No;
         return true;
     }
-    private bool IsStandardBranch() => _branchType == BranchType.Standard;
     private bool IsAPopUpEditor()
     {
         return _branchType == BranchType.OptionalPopUp

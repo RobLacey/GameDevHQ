@@ -18,7 +18,7 @@ public class NavigationSettings :INavigationSettings
     [SerializeField] 
     [AllowNesting] [Label("Move To When Clicked")] [HideIf("CantNavigate")] private UIBranch _childBranch = default;
     [SerializeField] 
-    private NavigationType _setNavigation = NavigationType.UpAndDown;
+    private NavigationType _setKeyNavigation = NavigationType.None;
     [SerializeField] 
     [AllowNesting] [ShowIf("UpDownNav")] private UINode _up = default;
     [SerializeField] 
@@ -32,10 +32,10 @@ public class NavigationSettings :INavigationSettings
     public bool CantNavigate { get; set; }
 
     public bool UpDownNav() 
-        => _setNavigation == NavigationType.UpAndDown || _setNavigation == NavigationType.AllDirections;
+        => _setKeyNavigation == NavigationType.UpAndDown || _setKeyNavigation == NavigationType.AllDirections;
 
     public bool RightLeftNav() 
-        => _setNavigation == NavigationType.RightAndLeft || _setNavigation == NavigationType.AllDirections;
+        => _setKeyNavigation == NavigationType.RightAndLeft || _setKeyNavigation == NavigationType.AllDirections;
 
     public IBranch ChildBranch
     {
@@ -43,7 +43,7 @@ public class NavigationSettings :INavigationSettings
         set => _childBranch = (UIBranch) value;
     }
 
-    public NavigationType NavType => _setNavigation;
+    public NavigationType NavType => _setKeyNavigation;
     public UINode Up => _up;
     public UINode Down => _down;
     public UINode Left => _left;

@@ -5,7 +5,7 @@ using UnityEngine;
 using NaughtyAttributes;
 using UIElements;
 
-public class MovementTest : MonoBehaviour, IEventUser
+public class MovementTest : MonoBehaviour
 {
     Transform _myTransform;
     [SerializeField] [InputAxis] string _horizontal;
@@ -15,7 +15,6 @@ public class MovementTest : MonoBehaviour, IEventUser
     float _horizontalSpeed;
     float _verticalSpeed;
     private Transform _child;
-    private GOUIModule _myGameObject;
 
     bool _active = false;
 
@@ -24,12 +23,7 @@ public class MovementTest : MonoBehaviour, IEventUser
         //SetUp _inMenu
         _myTransform = GetComponent<Transform>();
         _child = GetComponentInChildren<SpriteRenderer>().transform;
-        _myGameObject = GetComponent<GOUIModule>();
     }
-
-    private void OnEnable() => ObserveEvents();
-    
-    public void ObserveEvents() => EVent.Do.Subscribe<IActiveInGameObject>(ActivateObject);
 
     // Update is called once per frame
     void Update()
@@ -45,14 +39,9 @@ public class MovementTest : MonoBehaviour, IEventUser
         }    
     }
 
-    private void ActivateObject(IActiveInGameObject activeInGameObj)
+    public void ActivateObject()
     {
-        if (activeInGameObj.IsNull())
-        {
-            _active = false;
-            return;
-        }
-        _active = activeInGameObj.UIGOModule == _myGameObject;
+        _active = !_active;
     }
 
     public void SwitchToInGame(InMenuOrGame inGame)

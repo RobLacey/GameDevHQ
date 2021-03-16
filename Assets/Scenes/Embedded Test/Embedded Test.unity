@@ -905,8 +905,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 158, y: 50}
-  m_SizeDelta: {x: 200, y: 100}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &75004281
 MonoBehaviour:
@@ -1011,7 +1011,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 375905088}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 1694247286}
     _down: {fileID: 948469796}
     _left: {fileID: 0}
@@ -1343,7 +1343,7 @@ GameObject:
   - component: {fileID: 124459454}
   - component: {fileID: 124459451}
   m_Layer: 9
-  m_Name: Player Sprite (1)
+  m_Name: Player Sprite 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1361,11 +1361,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0331c19bd454f81b89608b9d151f8e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branch: {fileID: 0}
-  _mainCanvasRect: {fileID: 0}
+  _branch: {fileID: 1718085406}
+  _mainCanvasRect: {fileID: 819564431}
   _turnOnWhen: 1
   _turnOffWhen: 1
   _uiPosition: {fileID: 0}
+  _canStartChildBranch: 0
 --- !u!58 &124459452
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2392,7 +2393,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 246213780}
-    _setNavigation: 2
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 2024425559}
     _left: {fileID: 0}
@@ -2682,7 +2683,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 1712214354}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 659218751}
     _left: {fileID: 0}
@@ -2770,7 +2771,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
-    _setNavigation: 2
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 1332049459}
     _left: {fileID: 1746369515}
@@ -3133,6 +3134,11 @@ PrefabInstance:
       propertyPath: _coloursTest._imageElements.Array.data[0]
       value: 
       objectReference: {fileID: 239936196}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _navigation._setKeyNavigation
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3688934388826701117, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: m_Layer
@@ -3551,7 +3557,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
-    _setNavigation: 2
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 1109364856}
     _left: {fileID: 176592437}
@@ -4977,7 +4983,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 634434330}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 1718557794}
     _left: {fileID: 0}
@@ -6465,6 +6471,11 @@ PrefabInstance:
       propertyPath: _sizeAndPos._rectTransforms
       value: 
       objectReference: {fileID: 771899533}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _navigation._setKeyNavigation
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6790820044368940562, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: m_Layer
@@ -12293,8 +12304,8 @@ MonoBehaviour:
   _autoOpenClose: 0
   _blockOtherNodes: 1
   _timer: 2
-  _screenType: 1
-  _stayVisible: 1
+  _screenType: 0
+  _stayVisible: 0
   _storeOrResetOptional: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
@@ -13101,6 +13112,11 @@ PrefabInstance:
       propertyPath: _sizeAndPos._rectTransforms
       value: 
       objectReference: {fileID: 569501866}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _navigation._setKeyNavigation
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6790820044368940562, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: m_Layer
@@ -15187,6 +15203,11 @@ PrefabInstance:
       propertyPath: _coloursTest._imageElements.Array.data[1]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _navigation._setKeyNavigation
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3688934388826701117, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: m_Layer
@@ -16526,6 +16547,7 @@ MonoBehaviour:
   _history: []
   _onHomeScreen: 0
   _allowKeys: 1
+  _inMenu: 0
   _eventsForTest:
     _event1:
       m_PersistentCalls:
@@ -16663,6 +16685,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 2090451337}
   - {fileID: 392278896}
   - {fileID: 1096179285}
   m_Father: {fileID: 684676814}
@@ -17903,6 +17926,11 @@ PrefabInstance:
       propertyPath: _coloursTest._imageElements.Array.data[0]
       value: 
       objectReference: {fileID: 717249548}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _navigation._setKeyNavigation
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3688934388826701117, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: m_Layer
@@ -19643,7 +19671,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 1154447021}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 194668750}
     _down: {fileID: 134818550}
     _left: {fileID: 0}
@@ -21719,7 +21747,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _navigation._childBranch
       value: 
-      objectReference: {fileID: 1885071253}
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -22596,7 +22624,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 477428662}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 75400626}
     _down: {fileID: 1879167844}
     _left: {fileID: 0}
@@ -23981,8 +24009,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 158, y: 50}
-  m_SizeDelta: {x: 200, y: 100}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1009632855
 MonoBehaviour:
@@ -24580,7 +24608,7 @@ GameObject:
   - component: {fileID: 1025744423}
   - component: {fileID: 1025744424}
   m_Layer: 5
-  m_Name: Info
+  m_Name: Info 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24627,10 +24655,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
-  _enabledFunctions: 128
+  _enabledFunctions: 129
   _navigation:
-    _childBranch: {fileID: 0}
-    _setNavigation: 1
+    _childBranch: {fileID: 984987784}
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 0}
     _left: {fileID: 0}
@@ -25638,8 +25666,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 158, y: 50}
-  m_SizeDelta: {x: 200, y: 100}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1088610518
 MonoBehaviour:
@@ -26057,7 +26085,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 1712214354}
-    _setNavigation: 0
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 0}
     _left: {fileID: 2088685279}
@@ -26171,7 +26199,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 1064311445}
-    _setNavigation: 2
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 559061287}
     _left: {fileID: 135199491}
@@ -26329,7 +26357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86bb58c54bbd4fb0a2bf58f6edbdb7b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inGameControlType: 1
+  _inGameControlType: 4
   _virtualCursor:
     _restrictRaycastTo: 2
     _virtualCursor: {fileID: 1854834984}
@@ -26927,7 +26955,7 @@ PrefabInstance:
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -27786,9 +27814,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branch: {fileID: 2084390253}
   _mainCanvasRect: {fileID: 819564431}
-  _turnOnWhen: 1
-  _turnOffWhen: 1
+  _turnOnWhen: 0
+  _turnOffWhen: 0
   _uiPosition: {fileID: 0}
+  _canStartChildBranch: 1
 --- !u!224 &1267887509 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8968508911427264652, guid: 74a615c871e3f7f49b9e659c416cdb84,
@@ -28392,8 +28421,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 158, y: 50}
-  m_SizeDelta: {x: 200, y: 100}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1353247359
 MonoBehaviour:
@@ -32068,6 +32097,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2,
         type: 2}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _navigation._setKeyNavigation
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3688934388826701107, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: m_Enabled
@@ -32575,7 +32609,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _navigation._childBranch
       value: 
-      objectReference: {fileID: 984987784}
+      objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: _navigation._active
@@ -33037,7 +33071,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 504002778}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 0}
     _left: {fileID: 0}
@@ -33638,7 +33672,7 @@ GameObject:
   - component: {fileID: 1608135887}
   - component: {fileID: 1608135886}
   m_Layer: 5
-  m_Name: Info
+  m_Name: Info 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33664,10 +33698,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
-  _enabledFunctions: 128
+  _enabledFunctions: 129
   _navigation:
-    _childBranch: {fileID: 0}
-    _setNavigation: 1
+    _childBranch: {fileID: 1885071253}
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 0}
     _left: {fileID: 0}
@@ -35230,7 +35264,7 @@ MonoBehaviour:
   _enabledFunctions: 323
   _navigation:
     _childBranch: {fileID: 1712214354}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 75400626}
     _left: {fileID: 0}
@@ -35528,8 +35562,8 @@ MonoBehaviour:
   _autoOpenClose: 0
   _blockOtherNodes: 1
   _timer: 2
-  _screenType: 1
-  _stayVisible: 1
+  _screenType: 0
+  _stayVisible: 0
   _storeOrResetOptional: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
@@ -36741,7 +36775,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
-    _setNavigation: 2
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 1109364856}
     _left: {fileID: 183270146}
@@ -38566,7 +38600,7 @@ MonoBehaviour:
   _enabledFunctions: 323
   _navigation:
     _childBranch: {fileID: 0}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 948469796}
     _down: {fileID: 0}
     _left: {fileID: 0}
@@ -38642,7 +38676,7 @@ GameObject:
   - component: {fileID: 1883439849}
   - component: {fileID: 1883439850}
   m_Layer: 5
-  m_Name: Info
+  m_Name: Info 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38691,7 +38725,7 @@ MonoBehaviour:
   _enabledFunctions: 387
   _navigation:
     _childBranch: {fileID: 616071579}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 0}
     _left: {fileID: 0}
@@ -38738,19 +38772,7 @@ MonoBehaviour:
     _selectClickEvents:
       _onButtonClickEvent:
         m_PersistentCalls:
-          m_Calls:
-          - m_Target: {fileID: 616071579}
-            m_TargetAssemblyTypeName: UIBranch, Assembly-CSharp
-            m_MethodName: StartBranch_InspectorCall
-            m_Mode: 1
-            m_Arguments:
-              m_ObjectArgument: {fileID: 0}
-              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-              m_IntArgument: 0
-              m_FloatArgument: 0
-              m_StringArgument: 
-              m_BoolArgument: 0
-            m_CallState: 2
+          m_Calls: []
       _onDisable:
         m_PersistentCalls:
           m_Calls: []
@@ -40078,7 +40100,7 @@ PrefabInstance:
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -40792,6 +40814,11 @@ PrefabInstance:
       propertyPath: _coloursTest._imageElements.Array.data[0]
       value: 
       objectReference: {fileID: 2005940230}
+    - target: {fileID: 3688934388505339739, guid: 86ed9c2d3160af54887a9f55908252df,
+        type: 3}
+      propertyPath: _navigation._setKeyNavigation
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3688934388826701117, guid: 86ed9c2d3160af54887a9f55908252df,
         type: 3}
       propertyPath: m_Layer
@@ -40879,7 +40906,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 1248739661}
-    _setNavigation: 2
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 623457423}
     _left: {fileID: 1173239053}
@@ -41143,7 +41170,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 634434330}
-    _setNavigation: 3
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 0}
     _left: {fileID: 0}
@@ -41903,7 +41930,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _branchType: 7
   _controlBar: 1
-  _alwaysOnUI: 0
+  _alwaysOnUI: 1
   _startOnThisNode: {fileID: 1883439850}
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
@@ -41912,8 +41939,8 @@ MonoBehaviour:
   _autoOpenClose: 0
   _blockOtherNodes: 1
   _timer: 2
-  _screenType: 1
-  _stayVisible: 1
+  _screenType: 0
+  _stayVisible: 0
   _storeOrResetOptional: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
@@ -42096,7 +42123,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 1154447021}
-    _setNavigation: 0
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 0}
     _left: {fileID: 0}
@@ -42154,7 +42181,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 272096976}
+    m_TransformParent: {fileID: 669941711}
     m_Modifications:
     - target: {fileID: 4504971060653009070, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -42204,7 +42231,7 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _canvasOrderSetting
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -42575,7 +42602,7 @@ PrefabInstance:
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -42595,7 +42622,7 @@ PrefabInstance:
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 509
+      value: 537
       objectReference: {fileID: 0}
     - target: {fileID: 8333818716031118041, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
@@ -42852,7 +42879,7 @@ GameObject:
   - component: {fileID: 2113496484}
   - component: {fileID: 2113496481}
   m_Layer: 9
-  m_Name: Player Sprite
+  m_Name: Player Sprite 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42885,11 +42912,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0331c19bd454f81b89608b9d151f8e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branch: {fileID: 0}
-  _mainCanvasRect: {fileID: 0}
+  _branch: {fileID: 553494885}
+  _mainCanvasRect: {fileID: 819564431}
   _turnOnWhen: 1
   _turnOffWhen: 1
   _uiPosition: {fileID: 0}
+  _canStartChildBranch: 0
 --- !u!4 &2113496482
 Transform:
   m_ObjectHideFlags: 0
@@ -43244,7 +43272,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _navigation._childBranch
       value: 
-      objectReference: {fileID: 616071579}
+      objectReference: {fileID: 1096179286}
     - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: _audio._sound_Highlighted
@@ -44172,6 +44200,11 @@ PrefabInstance:
       propertyPath: _sizeAndPos._rectTransforms
       value: 
       objectReference: {fileID: 482976169}
+    - target: {fileID: 6790820043914537165, guid: 15d65165ebb150b439f665eda8fa102d,
+        type: 3}
+      propertyPath: _navigation._setKeyNavigation
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6790820044368940562, guid: 15d65165ebb150b439f665eda8fa102d,
         type: 3}
       propertyPath: m_Layer
@@ -45341,7 +45374,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 6446246268481184040}
     _down: {fileID: 531416950}
     _left: {fileID: 0}
@@ -47118,7 +47151,7 @@ MonoBehaviour:
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 531416950}
     _down: {fileID: 1675654969295092519}
     _left: {fileID: 0}
@@ -47485,7 +47518,7 @@ MonoBehaviour:
   _enabledFunctions: 327
   _navigation:
     _childBranch: {fileID: 0}
-    _setNavigation: 2
+    _setKeyNavigation: 3
     _up: {fileID: 1109364856}
     _down: {fileID: 0}
     _left: {fileID: 7713156618011646807}
@@ -47733,7 +47766,7 @@ MonoBehaviour:
   _enabledFunctions: 327
   _navigation:
     _childBranch: {fileID: 0}
-    _setNavigation: 2
+    _setKeyNavigation: 3
     _up: {fileID: 1332049459}
     _down: {fileID: 0}
     _left: {fileID: 0}

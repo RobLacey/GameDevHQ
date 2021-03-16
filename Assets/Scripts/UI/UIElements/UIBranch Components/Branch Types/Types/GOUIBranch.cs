@@ -8,11 +8,11 @@ public interface IGOUIBranch: IBranchBase { }
 public class GOUIBranch : BranchBase, IGOUIBranch
 {
     private readonly Camera _mainCamera;
-    private RectTransform _myRectTransform;
+    private readonly RectTransform _myRectTransform;
     private RectTransform _mainCanvasRect;
     private Coroutine _coroutine;
-    private GOUIModule _myUIGOModule;
-
+    private GOUIModule _myGOUIModule;
+    
     public GOUIBranch(IBranch branch) : base(branch)
     {
         _mainCamera = Camera.main;
@@ -56,17 +56,26 @@ public class GOUIBranch : BranchBase, IGOUIBranch
 
     private void SetUpGOUIParent(ISetUpUIGOBranch args)
     {
-        if(args.TargetBranch != _myBranch || _myUIGOModule.IsNotNull()) return;
-        _myUIGOModule = args.UIGOModule;
+        if(args.TargetBranch != _myBranch || _myGOUIModule.IsNotNull()) return;
+       
+        _myGOUIModule = args.UIGOModule;
         _mainCanvasRect = args.MainCanvas;
     }
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
         base.SetUpBranch(newParentController);
-        _myBranch.DontSetBranchAsActive();
+        _canvasOrderCalculator.SetCanvasOrder();
+        
+        if (_myBranch.AlwaysOn == IsActive.Yes)
+        {
+            _myBranch.DontSetBranchAsActive();
+        }
+        
         if(_myBranch.CanvasIsEnabled)
+        {
             _myBranch.DoNotTween();
+        }        
         SetCanvas(ActiveCanvas.Yes);
         
         StartMyUIGO();
@@ -81,26 +90,19 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     private void StartMyUIGO()
     {
         StaticCoroutine.StopCoroutines(_coroutine);
-        _coroutine = StaticCoroutine.StartCoroutine(SetMyScreenPosition(_myUIGOModule.UsersTransform));
+        _coroutine = StaticCoroutine.StartCoroutine(SetMyScreenPosition(_myGOUIModule.UIGOTransform));
     }
-
-    public override void SetCanvas(ActiveCanvas active)
-    {
-        base.SetCanvas(active);
-    }
-
-    public override void EndOfBranchStart()
-    {
-        base.EndOfBranchStart();
-        if(!_canStart) return;
-        _myBranch.SetBranchAsActive();
-    }
-
+    
     public override void StartBranchExit()
     {
         base.StartBranchExit();
-        
         StopSettingPosition();
+    }
+
+    public override void EndOfBranchExit()
+    {
+        base.EndOfBranchExit();
+        _canvasOrderCalculator.ResetCanvasOrder();
     }
 
     private void StopSettingPosition() => StaticCoroutine.StopCoroutines(_coroutine);
@@ -122,4 +124,5 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         
         _myRectTransform.localPosition = canvasPos;
     }
+
 }

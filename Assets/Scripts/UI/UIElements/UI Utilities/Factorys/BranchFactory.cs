@@ -134,7 +134,7 @@ public class BranchFactory
         branch.ScreenType = ScreenType.Normal;
         branch.TweenOnHome = DoTween.DoNothing;
         branch.BlockOtherNode = IsActive.No;
-        branch.CanvasOrder = OrderInCanvas.Default;
+        branch.CanvasOrder = OrderInCanvas.Behind;
         branch.ResetSavePositionOnExit();
     }
 

@@ -1,8 +1,7 @@
 ﻿using System;
 using NaughtyAttributes;
-using UIElements;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 public interface ICursorHandler
 {
@@ -20,6 +19,7 @@ public interface IGOUIModule
     InGameUiTurnOff TurnOffWhen { get; }
     void StartInGameUi();
     void ExitInGameUi();
+    void SwitchActive(bool canStart);
 }
 
 public enum InGameUiTurnOn
@@ -35,7 +35,7 @@ public enum InGameUiTurnOff
 namespace UIElements
 {
 
-    public class GOUIModule : MonoBehaviour, IEventUser, ICursorHandler, IActiveInGameObject, IEventDispatcher, 
+    public class GOUIModule : MonoBehaviour, IEventUser, ICursorHandler, /*IActiveInGameObject,*/ IEventDispatcher, 
                               IGOUIModule, ISetUpUIGOBranch, IStartBranch, ICloseBranch
     {
         [SerializeField] private UIBranch _branch;
@@ -51,13 +51,17 @@ namespace UIElements
         [Space(10f, order = 1)] [InfoBox(GOUIModule.InfoBox, order = 2)] 
         private Transform _uiPosition;
 
+        [SerializeField] private bool _canStartChildBranch;
+
         //Variables
         private bool _active;
         private bool _allowKeys;
         private GOUIController _controller;
-        private IGOUIInput _GOUIInput;
+      //  private IGOUIInput _GOUIInput;
         private bool _onHomeScreen = true;
         private bool _gameIsPaused;
+        private bool _canStart;
+        private bool _switchActive;
 
         //Editor
         private const string AppIsRunning = nameof(IsRunning);
@@ -65,7 +69,7 @@ namespace UIElements
 
 
         //Events
-        private Action<IActiveInGameObject> SetAsActiveGameObject { get; set; }
+        // private Action<IActiveInGameObject> SetAsActiveGameObject { get; set; }
         private Action<ISetUpUIGOBranch> SetUpUIGOBranch { get; set; }
         private Action<IStartBranch> StartBranch { get; set; }
         private Action<ICloseBranch> CloseBranch { get; set; }
@@ -76,20 +80,20 @@ namespace UIElements
 
         //Properties & Set / Getters
         public IBranch TargetBranch { get; private set; }
-
         public OutTweenType OutTweenType { get; } = OutTweenType.Cancel;
         public Action EndOfExitAction { get; } = null;
-
-        private bool DontAcceptMouseInput => _allowKeys || !_onHomeScreen || _gameIsPaused;
+        private bool DontAcceptMouseInput => _allowKeys || !_onHomeScreen || _gameIsPaused || !_canStart;
         public InGameUiTurnOn TurnOnWhen => _turnOnWhen;
         public InGameUiTurnOff TurnOffWhen => _turnOffWhen;
         private void SetAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
-        public Transform UsersTransform => _uiPosition;
-        public GOUIModule UIGOModule => this;
+        private void CanStart(IOnStart args) => _canStart = true;
+        public Transform UIGOTransform => _uiPosition;
+       public GOUIModule UIGOModule => this;
         public RectTransform MainCanvas => _mainCanvasRect;
-
         private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
         private void SaveIsGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
+        public void SwitchActive(bool canSwitch) => _switchActive = canSwitch;
+
 
         public void CheckForSetLayerMask(LayerMask layerMask)
         {
@@ -107,7 +111,7 @@ namespace UIElements
         {
             TargetBranch = _branch;
             _controller = FindObjectOfType<GOUIController>();
-            _GOUIInput = new GOUIInput(this);
+            //_GOUIInput = new GOUIInput(this);
             
             if (_uiPosition == null)
             {
@@ -118,7 +122,7 @@ namespace UIElements
 
         public void FetchEvents()
         {
-            SetAsActiveGameObject = EVent.Do.Fetch<IActiveInGameObject>();
+            // SetAsActiveGameObject = EVent.Do.Fetch<IActiveInGameObject>();
             SetUpUIGOBranch = EVent.Do.Fetch<ISetUpUIGOBranch>();
             StartBranch = EVent.Do.Fetch<IStartBranch>();
             CloseBranch = EVent.Do.Fetch<ICloseBranch>();
@@ -139,8 +143,24 @@ namespace UIElements
             EVent.Do.Subscribe<IInMenu>(CancelWhenInMenu);
             EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
             EVent.Do.Subscribe<IGameIsPaused>(SaveIsGamePaused);
+            EVent.Do.Subscribe<IOnStart>(CanStart);
+           // EVent.Do.Subscribe<IActiveInGameObject>(SetActivateUIGO);
         }
-        
+
+
+        /*
+        private void SetActivateUIGO(IActiveInGameObject args)
+        {
+            Debug.Log(args.MyGOUIModule);
+            
+            if(args.MyGOUIModule.IsNull() || args.MyGOUIModule != this)
+            {
+                if(!_active) return;
+                ExitInGameUi();
+            }
+        }
+        */
+
         public void OverFocus()
         {
             if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
@@ -164,13 +184,14 @@ namespace UIElements
         {
             if(DontAcceptMouseInput) return;
             //_GOUIInput.EnterGO(_active);
-            StartInGameUi();
+           StartInGameUi();
         }
 
         private void OnMouseExit()
         {
             if(DontAcceptMouseInput) return;
             // _GOUIInput.ExitGO(_active);
+            if(_branch.GetStayOn() == IsActive.Yes && _branch.LastSelected.HasChildBranch.CanvasIsEnabled) return;
             ExitInGameUi();
         }
         
@@ -180,15 +201,17 @@ namespace UIElements
             // _GOUIInput.ClickOnGO(_active);
         }
 
-        public void CursorEnter() => _GOUIInput.EnterGO(_active);
+        public void CursorEnter(){} /*=> _GOUIInput.EnterGO(_active);*/
 
-        public void CursorExit() => _GOUIInput.ExitGO(_active);
+        public void CursorExit(){} /*=> _GOUIInput.ExitGO(_active);*/
 
-        public void CursorDown() => _GOUIInput.ClickOnGO(_active);
+        public void CursorDown()
+        {
+        }
 
         public void NotInGame()
         {
-            _GOUIInput.ClearGOUIExceptHighlighted();
+            //_GOUIInput.ClearGOUIExceptHighlighted();
         }
 
         private void CancelUIForFullScreen(IClearScreen args) => CancelUi();
@@ -210,8 +233,10 @@ namespace UIElements
 
         private void ClearUI(IClearAll args = null)
         {
+            Debug.Log("Clear All : UIGO");
             if(!_active ) return;
-            _GOUIInput.ClearGOUIExceptHighlighted();
+            ExitInGameUi();
+            //_GOUIInput.ClearGOUIExceptHighlighted();
         }
 
         public void StartInGameUi()
@@ -219,8 +244,18 @@ namespace UIElements
             if(_active) return;
             _controller.SetIndex(this);
             _active = true;
-            SetAsActiveGameObject?.Invoke(this);
+            //SetAsActiveGameObject?.Invoke(this);
             StartBranch?.Invoke(this);
+            
+            Debug.Log("Here : look at how index works with different triggers. " +
+                      "Add OnEnter/OnExit then work on VC and Switcher :(");
+            
+            
+            if(_canStartChildBranch && _switchActive)
+            {
+                UINode temp = (UINode) TargetBranch.DefaultStartOnThisNode;
+                temp.OnPointerDown(new PointerEventData(EventSystem.current));
+            }
         }
 
         public void ExitInGameUi()
@@ -228,7 +263,7 @@ namespace UIElements
             if(!_active) return;
             CloseBranch?.Invoke(this);
             _active = false;
-            SetAsActiveGameObject?.Invoke(null);
+            //SetAsActiveGameObject?.Invoke(null);
         }
     }
 }

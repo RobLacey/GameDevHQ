@@ -4,15 +4,13 @@ public class Standard : NodeBase, IStandard
 {
     public Standard(INode uiNode) : base(uiNode)
     {
-        _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
-        _canAutoClose = MyBranch.AutoOpenCloseClass.CanAutoClose();
         _autoOpenDelay = _uiNode.AutoOpenDelay;
     }
 
     private bool _isToggle;
     private bool _justCancelled;
-    private readonly bool _canAutoOpen;
-    private readonly bool _canAutoClose;
+    private bool _canAutoOpen;
+    private bool _canAutoClose;
     private readonly IDelayTimer _delayTimer = EJect.Class.NoParams<IDelayTimer>();
     private readonly float _autoOpenDelay;
 
@@ -21,6 +19,13 @@ public class Standard : NodeBase, IStandard
         base.ObserveEvents();
         if(_canAutoClose)
             EVent.Do.Subscribe<ISwitchGroupPressed>(ClearJustCancelledFlag);
+    }
+
+    public override void Start()
+    {
+        base.Start();
+        _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
+        _canAutoClose = MyBranch.AutoOpenCloseClass.CanAutoClose();
     }
 
     private void ClearJustCancelledFlag(ISwitchGroupPressed args) => _justCancelled = false;

@@ -95,7 +95,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
     private void SetSelected(ISelectedNode newNode)
     {
         if(!_canStart) return;
-        if(newNode.UINode.CanStoreNodeInHistory) return;
+        if(newNode.UINode.CanNotStoreNodeInHistory) return;
         
         _lastSelected = SelectionProcess.NewNode(newNode.UINode)
                                        .CurrentHistory(_history)

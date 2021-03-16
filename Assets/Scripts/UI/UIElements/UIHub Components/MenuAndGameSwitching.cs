@@ -32,7 +32,7 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispat
         if (!InTheMenu && !_noPopUps) _wasInGame = true;
          PopUpEventHandler();
     }
-    
+
     public void OnEnable()
     {
         FetchEvents();

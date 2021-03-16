@@ -75,32 +75,32 @@ namespace UIElements
 
         public void ClickOnGO(bool active)
         {
-            if(!active)
-            {
-                if (_turnOnWhen == InGameUiTurnOn.OnEnter) return;
-                StartInGameUI.Invoke();
-                ActivateNode();
-            }
-            else
-            {
-                if(_turnoffWhen == InGameUiTurnOff.OnExit 
-                   || _turnoffWhen == InGameUiTurnOff.ScriptCall) return;
-                ExitInGameUI.Invoke();
-                DeactivateNode();
-            }
+            // if(!active)
+            // {
+            //     if (_turnOnWhen == InGameUiTurnOn.OnEnter) return;
+            //     StartInGameUI.Invoke();
+            //     ActivateNode();
+            // }
+            // else
+            // {
+            //     if(_turnoffWhen == InGameUiTurnOff.OnExit 
+            //        || _turnoffWhen == InGameUiTurnOff.ScriptCall) return;
+            //     ExitInGameUI.Invoke();
+            //     DeactivateNode();
+            // }
 
         }
 
         public void ClearGOUIExceptHighlighted()
         {
-            if(_pointerOver) return;
-            ClearGOUI();
+            // if(_pointerOver) return;
+            // ClearGOUI();
         }
 
         public void ClearGOUI()
         {
-            _pointerOver = false;
-            DeactivateNode();
+            // _pointerOver = false;
+            // DeactivateNode();
         }
     }
 }

@@ -9,7 +9,7 @@ public interface INode : IToggles, IParameters
     void SetAsHotKeyParent();
     IBranch MyBranch { get; }
     IBranch HasChildBranch { get; set; }
-    bool CanStoreNodeInHistory { get; }
+    bool CanNotStoreNodeInHistory { get; }
     GameObject ReturnGameObject { get; }
     void SetNodeAsActive();
     void DeactivateNode();

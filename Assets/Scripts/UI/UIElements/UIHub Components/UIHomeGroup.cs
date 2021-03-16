@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using UnityEngine;
 
 public interface IHomeGroup
@@ -50,7 +49,7 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
         EVent.Do.Subscribe<IGameIsPaused>(GameIsPaused);
         EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
     }
-
+    
     private void SwitchHomeGroups(ISwitchGroupPressed args)
     {
         if (!_onHomeScreen) return;
@@ -75,27 +74,32 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
 
     private void SetActiveHomeBranch(IActiveBranch args)
     {
-        if(ActiveBranchIsPopUpOrPaused(args)) return;
+        if(DontDoSearch(args.ActiveBranch)) return;
         if(_lastActiveHomeBranch == args.ActiveBranch) return;
         
         _lastActiveHomeBranch = args.ActiveBranch;
         FindHomeScreenBranch(args.ActiveBranch);
     }
 
-    private bool ActiveBranchIsPopUpOrPaused(IActiveBranch args) 
-        => args.ActiveBranch.IsAPopUpBranch() || args.ActiveBranch.IsPauseMenuBranch() || _gameIsPaused;
+    private bool DontDoSearch(IBranch newBranch) 
+        => newBranch.IsAPopUpBranch() || newBranch.IsPauseMenuBranch() 
+                                              || newBranch.IsInGameBranch() 
+                                              || _gameIsPaused;
 
     private void FindHomeScreenBranch(IBranch newBranch)
     {
-        while (!newBranch.IsHomeScreenBranch())
+        while (!newBranch.IsHomeScreenBranch() && !DontDoSearch(newBranch))
         {
             newBranch = newBranch.MyParentBranch;
         }
+        
         SearchHomeBranchesAndSet(newBranch);
     }
 
     private void SearchHomeBranchesAndSet(IBranch newBranch)
     {
+        if(!newBranch.IsHomeScreenBranch()) return;
+        
         for (var index = 0; index < _homeGroup.Length; index++)
         {
             if (_homeGroup[index] != newBranch) continue;

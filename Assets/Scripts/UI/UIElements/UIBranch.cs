@@ -172,11 +172,8 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
 
     private void SetNodesChildrenToThisBranch()
     {
-        if(InGameUI)
-        {
-            Debug.Log(this);
-            return;
-        }
+        if(InGameUI) return; //TODO review if needed
+        
         foreach (var node in ThisGroupsUiNodes)
         {
             if (node.HasChildBranch is null) continue;

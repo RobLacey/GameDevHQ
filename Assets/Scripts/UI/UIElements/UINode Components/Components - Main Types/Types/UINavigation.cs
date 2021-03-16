@@ -24,10 +24,8 @@ public class UINavigation : NodeFunctionBase
     private readonly UINode _right;
     private IBranch _myBranch;
     private INode _myNode;
-    private IBranch _activeBranch;
 
     //Properties
-    private void ActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
    
     protected override bool CanBeHighlighted() => false;
     protected override bool CanBePressed() => !(_childBranch is null);
@@ -37,7 +35,6 @@ public class UINavigation : NodeFunctionBase
     protected sealed override void OnAwake(IUiEvents events)
     {
         base.OnAwake(events);
-        EVent.Do.Subscribe<IActiveBranch>(ActiveBranch);
         _myNode = events.ReturnMasterNode;
         _myBranch = _myNode.MyBranch;
     }
@@ -95,10 +92,8 @@ public class UINavigation : NodeFunctionBase
         {
             _myBranch.StartBranchExitProcess(OutTweenType.MoveToChild, ToChildBranchProcess);
         }
-        void ToChildBranchProcess()
-        {
-            moveToo.MoveToThisBranch(_myBranch);
-        }
+        
+        void ToChildBranchProcess() => moveToo.MoveToThisBranch(_myBranch);
     }
     
     public void MoveToNextFreeNode()

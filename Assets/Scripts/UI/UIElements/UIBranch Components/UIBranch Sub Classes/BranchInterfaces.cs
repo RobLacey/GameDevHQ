@@ -11,6 +11,7 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     bool IsInternalBranch();
     bool IsHomeScreenBranch();
     bool IsTimedPopUp();
+    bool IsInGameBranch();
     
     INode DefaultStartOnThisNode { get; }
     CanvasGroup MyCanvasGroup { get; }
@@ -40,7 +41,6 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     IsActive GetStayOn();
     void MoveToThisBranch(IBranch newParentBranch = null);
     void DontSetBranchAsActive();
-    void SetBranchAsActive();
     void DoNotTween();
     void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null);
     void SetCanvas(ActiveCanvas activeCanvas);

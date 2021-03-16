@@ -15,6 +15,10 @@ public class OldSystem : InputScheme
     [SerializeField] 
     [InputAxis] private string _negSwitchButton = default;
     [SerializeField] 
+    [InputAxis] private string _posNextGOUIButton = default;
+    [SerializeField] 
+    [InputAxis] private string _negNextGOUIButton = default;
+    [SerializeField] 
     [InputAxis] private string _cancelButton = default;
     [SerializeField] 
     [Label("Switch To/From Game Menus")] [InputAxis] 
@@ -53,6 +57,8 @@ public class OldSystem : InputScheme
     private bool _hasPauseAxis,
                  _hasPosSwitchAxis,
                  _hasNegSwitchAxis,
+                 _hasPosGOUIAxis,
+                 _hasNegGOUIAxis,
                  _hasCancelAxis,
                  _hasSwitchToMenusButton,
                  _hasVCursorHorizontal,
@@ -66,6 +72,8 @@ public class OldSystem : InputScheme
     protected override string PauseButton => _pauseOptionButton;
     protected override string PositiveSwitch => _posSwitchButton;
     protected override string NegativeSwitch => _negSwitchButton;
+    protected override string PositiveGOUISwitch => _posNextGOUIButton;
+    protected override string NegativeGOUISwitch => _negNextGOUIButton;
     protected override string CancelButton => _cancelButton;
     protected override string MenuToGameSwitch => _switchToMenusButton;
     protected override string VCursorHorizontal => _vCursorHorizontal;
@@ -73,8 +81,13 @@ public class OldSystem : InputScheme
     protected override string SelectedButton => _selectButton;
     public override bool MouseClicked => Input.GetMouseButton(0) || Input.GetMouseButton(1);
     public override bool CanSwitchToKeysOrController => Input.anyKeyDown && ControlType != ControlMethod.MouseOnly;
-    public override bool CanSwitchToMouse 
-        => _mousePosition != Input.mousePosition && ControlType != ControlMethod.KeysOrControllerOnly;
+    public override bool CanSwitchToMouse
+    {
+        get
+        {
+            return _mousePosition != Input.mousePosition && ControlType != ControlMethod.KeysOrControllerOnly;
+        }
+    }
 
     public override void SetMousePosition() => _mousePosition = Input.mousePosition;
 
@@ -84,6 +97,8 @@ public class OldSystem : InputScheme
         _hasPauseAxis = PauseButton != string.Empty;
         _hasPosSwitchAxis = PositiveSwitch != string.Empty;
         _hasNegSwitchAxis = NegativeSwitch != string.Empty;
+        _hasPosGOUIAxis = PositiveSwitch != string.Empty;
+        _hasNegGOUIAxis = NegativeSwitch != string.Empty;
         _hasCancelAxis = CancelButton != string.Empty;
         _hasSwitchToMenusButton = MenuToGameSwitch != string.Empty;
         _hasVCursorHorizontal = VCursorHorizontal != string.Empty;
@@ -107,6 +122,10 @@ public class OldSystem : InputScheme
     public override bool PressedCancel() => _hasCancelAxis && Input.GetButtonDown(CancelButton);
     public override bool PressedPositiveSwitch() => _hasPosSwitchAxis && Input.GetButtonDown(PositiveSwitch);
     public override bool PressedNegativeSwitch() => _hasNegSwitchAxis && Input.GetButtonDown(NegativeSwitch);
+    public override bool PressedPositiveGOUISwitch() => _hasPosGOUIAxis && Input.GetButtonDown(PositiveGOUISwitch);
+
+    public override bool PressedNegativeGOUISwitch()=> _hasNegGOUIAxis && Input.GetButtonDown(NegativeGOUISwitch);
+
     public override float VcHorizontal() => _hasVCursorHorizontal ? Input.GetAxis(VCursorHorizontal) : 0;
     public override float VcVertical() =>  _hasVCursorVertical ? Input.GetAxis(VCursorVertical) : 0;
     public override bool PressSelect() =>  _hasSelectButton && Input.GetButtonDown(SelectedButton);

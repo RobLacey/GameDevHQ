@@ -137,7 +137,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     public virtual void SetNodeAsActive()
     {
         if (_disabledNode.IsThisNodeIsDisabled()) return;
-        
+
         ThisNodeIsHighLighted();
         
         if (_allowKeys && _inMenu)
@@ -174,7 +174,6 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     public void SelectedAction()
     {
         if (IsDisabled) return;
-        PointerOverNode = false;
         TurnNodeOnOff();
     }
 

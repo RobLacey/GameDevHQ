@@ -21,9 +21,9 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     protected bool _inMenu, _canStart, _gameIsPaused, _activeResolvePopUps;
     protected IHistoryTrack _historyTrack;
     private readonly Canvas _myCanvas;
-    private readonly CanvasGroup _myCanvasGroup;
+    protected readonly CanvasGroup _myCanvasGroup;
     protected bool _isTabBranch;
-    private bool _allowKeys;
+    protected bool _allowKeys;
     protected readonly CanvasOrderCalculator _canvasOrderCalculator;
 
     //Events
@@ -99,36 +99,29 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
 
     public virtual void SetUpBranch(IBranch newParentController = null) { }
 
-    public virtual void EndOfBranchStart()
-    {
-        SetBlockRaycast(BlockRaycast.Yes);
-    }
+    public virtual void EndOfBranchStart() => SetBlockRaycast(BlockRaycast.Yes);
 
-    public virtual void StartBranchExit()
-    {
-        SetBlockRaycast(BlockRaycast.No);
-    }
+    public virtual void StartBranchExit() => SetBlockRaycast(BlockRaycast.No);
+
     public virtual void EndOfBranchExit()
     {
         SetCanvas(ActiveCanvas.No);
         _canvasOrderCalculator.ResetCanvasOrder();
     }
     
-    public virtual void SetCanvas(ActiveCanvas active)
-    {
-        _myCanvas.enabled = active == ActiveCanvas.Yes;
-    }
+    public virtual void SetCanvas(ActiveCanvas active) => _myCanvas.enabled = active == ActiveCanvas.Yes;
 
     public virtual void SetBlockRaycast(BlockRaycast active)
     {
-        if(!_canStart) return;
+        if(!_canStart  || _activeResolvePopUps) return;
+        
         if (_allowKeys)
         {
             _myCanvasGroup.blocksRaycasts = false;
         }
         else
         {
-            _myCanvasGroup.blocksRaycasts = active == BlockRaycast.Yes && _inMenu;
+            _myCanvasGroup.blocksRaycasts = active == BlockRaycast.Yes;
         }
     }
 

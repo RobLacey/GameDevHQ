@@ -25,9 +25,7 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     private void SetUpOtherVariables()
     {
         _hasATabBranch = _tabBranch != null;
-        _allNodes = _uiNode.MyBranch.ThisGroupsUiNodes.ToList();
         _autoOpenDelay = _uiNode.AutoOpenDelay;
-        _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
     }
 
     //Variables
@@ -49,6 +47,7 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     public override void Start()
     {
         base.Start();
+        _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
         SetUpToggleGroup();
         SetUpTabBranch();
         if (_startAsSelected)
@@ -60,6 +59,8 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     
     private void SetUpToggleGroup()
     {
+        _allNodes = _uiNode.MyBranch.ThisGroupsUiNodes.ToList();
+
         foreach (var node in _allNodes.Where(node => node.IsToggleGroup)
                                       .Where(node => _myToggleGroupId == node.ToggleData.ReturnToggleId))
         {

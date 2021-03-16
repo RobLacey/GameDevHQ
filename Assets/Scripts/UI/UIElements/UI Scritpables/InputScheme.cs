@@ -92,6 +92,9 @@ public abstract class InputScheme : ScriptableObject
     protected abstract string PauseButton { get; }
     protected abstract string PositiveSwitch { get; }
     protected abstract string NegativeSwitch { get; }
+    protected abstract string PositiveGOUISwitch { get; }
+    protected abstract string NegativeGOUISwitch { get; }
+
     protected abstract string CancelButton { get; }
     protected abstract string MenuToGameSwitch { get; }
     protected abstract string VCursorHorizontal { get; }
@@ -111,6 +114,8 @@ public abstract class InputScheme : ScriptableObject
     public abstract bool PressedCancel();
     public abstract bool PressedPositiveSwitch();
     public abstract bool PressedNegativeSwitch();
+    public abstract bool PressedPositiveGOUISwitch();
+    public abstract bool PressedNegativeGOUISwitch();
     public abstract float VcHorizontal();
     public abstract float VcVertical();
     public abstract bool PressSelect();
