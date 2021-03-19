@@ -1,32 +1,15 @@
-﻿
-
-using System;
-using UIElements;
-using UnityEngine;
+﻿using UnityEngine;
 
 public interface IInGameNode : INodeBase { }
 
 public class InGameNode : NodeBase, IInGameNode, ICancelPressed
 {
     private INode _parentNode;
-    private GOUIModule _myGOUIModule;
+    private IGOUIModule _myGOUIModule;
 
     public InGameNode(INode node) : base(node) { }
-
-    protected override void SaveInMenuOrInGame(IInMenu args)
-    {
-        // Debug.Log(args.InTheMenu);
-        // if (args.InTheMenu)
-        // {
-        //     Debug.Log(MyBranch);
-        //     _myGOUIModule.ExitInGameUi();
-        // }
-        // if (args.InTheMenu)
-        // {
-        //     OnExit();
-        // }
-    }
     
+
     public override void ObserveEvents()
     {
         base.ObserveEvents();
@@ -46,23 +29,30 @@ public class InGameNode : NodeBase, IInGameNode, ICancelPressed
     {
         //if(_uiNode.HasChildBranch.IsNull()) return;
         
-           // Debug.Log("On");
+            Debug.Log("On");
             base.Activate();
     }
     
     protected override void Deactivate()
     {
-        //Debug.Log("Off");
+        Debug.Log("Off");
         base.Deactivate();
     }
 
     public void DeactivateNodeByType()
     {
         _myGOUIModule.ExitInGameUi();
-        //MyBranch.StartBranchExitProcess(OutTweenType.Cancel);
-        
         Deactivate();
-       //OnExit();
+        
+        if (_allowKeys)
+        {
+            SetAsHighlighted();
+        }
+        else
+        {
+            OnExit();
+        }
+
     }
 
     public EscapeKey EscapeKeySettings { get; } = EscapeKey.BackOneLevel;

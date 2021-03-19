@@ -104,6 +104,10 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
             if (_inputScheme.MouseClicked) return;
             ActivateKeysOrControl();
         }
+        else if(_inputScheme.PressedNegativeGOUISwitch() || _inputScheme.PressedPositiveGOUISwitch())
+        {
+            ActivateKeysOrControl();
+        }
     }
 
     private void ActivateMouse()

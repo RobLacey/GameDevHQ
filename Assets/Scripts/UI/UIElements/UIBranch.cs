@@ -276,7 +276,8 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
             endOfTweenCallback?.Invoke();
             return;
         }
-        
+        Debug.Log(this);
+
         if (WhenToMove == WhenToMove.AfterEndOfTween)
         {
             StartOutTween(endOfTweenCallback);

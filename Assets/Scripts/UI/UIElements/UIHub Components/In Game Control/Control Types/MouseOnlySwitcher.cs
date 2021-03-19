@@ -1,6 +1,4 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace UIElements
 {
@@ -10,11 +8,10 @@ namespace UIElements
         void ClearSwitchActivatedGOUI();
     }
     
-    public class MouseOnlySwitcher : IMouseOnlySwitcher, IEventDispatcher, IClearAll
+    public class MouseOnlySwitcher : IMouseOnlySwitcher
     {
         public MouseOnlySwitcher(IGOController uiGameObjectController)
         {
-            FetchEvents();
             _controller = uiGameObjectController.Controller;
             _scheme = _controller.GetScheme();
             _playerObjects = _controller.GetPlayerObjects();
@@ -24,17 +21,15 @@ namespace UIElements
         private int _index = 0;
         private readonly GOUIController _controller;
         private readonly InputScheme _scheme;
-        private readonly GOUIModule[] _playerObjects;
+        private readonly IGOUIModule[] _playerObjects;
         private bool _switcherActive;
 
-        //Events
-        private Action<IClearAll> ClearAll { get; set; }
         
         //Properties
-        private bool MouseSwitchOnly => _controller.ControlType == VirtualControl.SwitcherMouseOnly;
+     //   private bool MouseSwitchOnly => _controller.ControlType == VirtualControl.SwitcherMouseOnly;
+        private bool MouseSwitchOnly => true;
         
         //Main
-        public void FetchEvents() => ClearAll = EVent.Do.Fetch<IClearAll>();
 
         public void UseMouseOnlySwitcher()
         {
@@ -46,13 +41,10 @@ namespace UIElements
         {
             if (!MouseSwitchOnly || !_switcherActive) return;
             
-            if (_scheme.CanSwitchToMouse 
-                && !_playerObjects[_index].TargetBranch.DefaultStartOnThisNode.HasChildBranch.CanvasIsEnabled)
-            {
-                Debug.Log(_playerObjects[_index]);
-                _playerObjects[_index].SwitchActive(false);
+            if (_scheme.CanSwitchToMouse)
+            { 
+                _playerObjects[_index].StartChild(false);
                 _switcherActive = false;
-                ClearAll?.Invoke(this);
             }
         }
 
@@ -73,18 +65,20 @@ namespace UIElements
         private void DoSwitchProcess(Func<int, int> switchAction)
         {
             _switcherActive = true;
-            ClearAll?.Invoke(this);
             SwapObjectMouseOnly(switchAction);
         }
 
         private void SwapObjectMouseOnly(Func<int, int> swap)
         {
             _index = _controller.GetIndex();
+            _playerObjects[_index].UnHighlightBranch();
             _playerObjects[_index].ExitInGameUi();
+            
             _index = swap(_playerObjects.Length);
-            _playerObjects[_index].SwitchActive(true);
+            
+            _playerObjects[_index].StartChild(true);
+            _playerObjects[_index].HighlightBranch();
             _playerObjects[_index].StartInGameUi();
         }
-
     }
 }

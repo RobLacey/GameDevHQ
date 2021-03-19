@@ -26,6 +26,8 @@ public partial class UIBranch
     public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
     public bool IsTimedPopUp() => _branchType == BranchType.TimedPopUp;
     public IsActive GetStayOn() => _stayVisible;
+    public IsActive SetStayOn { set => _stayVisible = value; }
+
     private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveHighlighted(IHighlightedNode args)
     {
@@ -85,8 +87,6 @@ public partial class UIBranch
         get => _tweenOnHome;
         set => _tweenOnHome = value;
     }
-
-    public IsActive SetStayOn { set => _stayVisible = value; }
     
     public AutoOpenClose AutoOpenClose
     {

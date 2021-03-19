@@ -21,7 +21,7 @@ namespace UIElements
         private int _index = 0;
         private readonly GOUIController _controller;
         private readonly InputScheme _scheme;
-        private readonly GOUIModule[] _playerObjects;
+        private readonly IGOUIModule[] _playerObjects;
         private bool _inGame;
 
         //Properties
@@ -41,11 +41,11 @@ namespace UIElements
             if (_inGame && InGameSwitch)
             {
                 if(UseBoth) return;
-                _playerObjects[_index].OverFocus();
+                //_playerObjects[_index].OverFocus();
             }
             else
             {
-                _playerObjects[_index].UnFocus();
+               // _playerObjects[_index].UnFocus();
             }
         }
 
@@ -67,9 +67,9 @@ namespace UIElements
 
         private void SwapPlayerControlObject(Func<int, int> swap)
         {
-            _playerObjects[_index].UnFocus();
+            //_playerObjects[_index].UnFocus();
             _index = swap(_playerObjects.Length);
-            _playerObjects[_index].OverFocus();
+          //  _playerObjects[_index].OverFocus();
         }
     }
 }

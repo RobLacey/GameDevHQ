@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public interface IMoveBackInHistory
 {
@@ -91,24 +92,32 @@ public class MoveBackInHistory : IMoveBackInHistory
 
     private bool IsHomeScreenBranch(INode lastNode) => lastNode.MyBranch.IsHomeScreenBranch() && !_onHomeScreen;
 
+    
     private static void DoMoveBackOneLevel(INode lastNode, IBranch activeBranch)
     {
         if (lastNode.MyBranch.CanvasIsEnabled)
         {
-            activeBranch.StartBranchExitProcess(OutTweenType.Cancel, NoTween);
+            activeBranch.StartBranchExitProcess(OutTweenType.Cancel, ParentVisible);
         }
         else
         {
-            if(activeBranch.AutoOpenClose == AutoOpenClose.No) 
+            if (activeBranch.AutoOpenClose == AutoOpenClose.No)
                 lastNode.DeactivateNode();
-            activeBranch.StartBranchExitProcess(OutTweenType.Cancel, WithTween );
+            activeBranch.StartBranchExitProcess(OutTweenType.Cancel, WithTween);
         }
 
-        void WithTween() => lastNode.MyBranch.MoveToThisBranch();
+        void WithTween()
+        {
+            if (lastNode.MyBranch.IsInGameBranch()) return;
+            lastNode.MyBranch.MoveToThisBranch();
+        }
 
-        void NoTween()
+        void ParentVisible()
         {
             lastNode.DeactivateNode();
+            
+            if(lastNode.MyBranch.IsInGameBranch()) return;
+            
             lastNode.MyBranch.DoNotTween();
             lastNode.MyBranch.MoveToThisBranch();
         }

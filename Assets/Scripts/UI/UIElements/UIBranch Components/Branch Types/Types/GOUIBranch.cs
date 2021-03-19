@@ -12,7 +12,7 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     private RectTransform _mainCanvasRect;
     private Coroutine _coroutine;
     private GOUIModule _myGOUIModule;
-    
+
     public GOUIBranch(IBranch branch) : base(branch)
     {
         _mainCamera = Camera.main;
@@ -40,7 +40,6 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     }
     
     //Main
-
     protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
         SetCanvas(ActiveCanvas.No);
@@ -84,6 +83,7 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     protected override void ClearBranchForFullscreen(IClearScreen args)
     {
         base.ClearBranchForFullscreen(args);
+        _myGOUIModule.ExitInGameUi();
         _canvasOrderCalculator.ResetCanvasOrder();
     }
 

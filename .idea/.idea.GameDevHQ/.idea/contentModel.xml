@@ -289,6 +289,7 @@
             <e p="TipController.cs" t="Include" />
             <e p="UIActivator.cs" t="Include" />
             <e p="UIElements" t="Include">
+              <e p="MouseDraw.cs" t="Include" />
               <e p="Shader" t="Include">
                 <e p="UnlitFrostedGlass.shader" t="Include" />
                 <e p="UnlitFrostGlassWithTint.shader" t="Include" />

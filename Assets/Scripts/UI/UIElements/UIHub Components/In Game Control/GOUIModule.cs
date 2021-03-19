@@ -19,7 +19,10 @@ public interface IGOUIModule
     InGameUiTurnOff TurnOffWhen { get; }
     void StartInGameUi();
     void ExitInGameUi();
-    void SwitchActive(bool canStart);
+    void StartChild(bool startChild);
+    void HighlightBranch();
+    void UnHighlightBranch();
+    void CheckForSetLayerMask(LayerMask layerMask);
 }
 
 public enum InGameUiTurnOn
@@ -28,15 +31,15 @@ public enum InGameUiTurnOn
 }
 public enum InGameUiTurnOff
 {
-    OnClick, OnExit, Both, ScriptCall
+    Standard, AlsoOnPointerOnExit
 }
 
 
 namespace UIElements
 {
 
-    public class GOUIModule : MonoBehaviour, IEventUser, ICursorHandler, /*IActiveInGameObject,*/ IEventDispatcher, 
-                              IGOUIModule, ISetUpUIGOBranch, IStartBranch, ICloseBranch
+    public class GOUIModule : MonoBehaviour, IEventUser, ICursorHandler, IEventDispatcher, 
+                              IGOUIModule, ISetUpUIGOBranch, IStartBranch, ICloseBranch, IClearAll
     {
         [SerializeField] private UIBranch _branch;
         [SerializeField] private RectTransform _mainCanvasRect;
@@ -47,32 +50,31 @@ namespace UIElements
         [SerializeField] 
         [DisableIf(AppIsRunning)] 
         private InGameUiTurnOff _turnOffWhen;
+        [SerializeField] private IsActive _startChildOnSwitchPressed = IsActive.Yes;
         [SerializeField] 
         [Space(10f, order = 1)] [InfoBox(GOUIModule.InfoBox, order = 2)] 
         private Transform _uiPosition;
 
-        [SerializeField] private bool _canStartChildBranch;
 
         //Variables
         private bool _active;
         private bool _allowKeys;
         private GOUIController _controller;
-      //  private IGOUIInput _GOUIInput;
         private bool _onHomeScreen = true;
         private bool _gameIsPaused;
         private bool _canStart;
-        private bool _switchActive;
+        private bool _startChild;
+        private UINode _inGameUINode;
 
         //Editor
         private const string AppIsRunning = nameof(IsRunning);
         private bool IsRunning() => Application.isPlaying;
 
-
         //Events
-        // private Action<IActiveInGameObject> SetAsActiveGameObject { get; set; }
         private Action<ISetUpUIGOBranch> SetUpUIGOBranch { get; set; }
         private Action<IStartBranch> StartBranch { get; set; }
         private Action<ICloseBranch> CloseBranch { get; set; }
+        private Action<IClearAll> ClearAll { get; set; }
 
 
         //Editor
@@ -92,7 +94,7 @@ namespace UIElements
         public RectTransform MainCanvas => _mainCanvasRect;
         private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
         private void SaveIsGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
-        public void SwitchActive(bool canSwitch) => _switchActive = canSwitch;
+        public void StartChild(bool startChild) => _startChild = startChild;
 
 
         public void CheckForSetLayerMask(LayerMask layerMask)
@@ -110,8 +112,8 @@ namespace UIElements
         private void Awake()
         {
             TargetBranch = _branch;
+            _inGameUINode = (UINode) TargetBranch.DefaultStartOnThisNode;
             _controller = FindObjectOfType<GOUIController>();
-            //_GOUIInput = new GOUIInput(this);
             
             if (_uiPosition == null)
             {
@@ -122,10 +124,11 @@ namespace UIElements
 
         public void FetchEvents()
         {
-            // SetAsActiveGameObject = EVent.Do.Fetch<IActiveInGameObject>();
             SetUpUIGOBranch = EVent.Do.Fetch<ISetUpUIGOBranch>();
             StartBranch = EVent.Do.Fetch<IStartBranch>();
             CloseBranch = EVent.Do.Fetch<ICloseBranch>();
+            ClearAll = EVent.Do.Fetch<IClearAll>();
+            
         }
         
         private void OnEnable() => ObserveEvents();
@@ -144,22 +147,7 @@ namespace UIElements
             EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
             EVent.Do.Subscribe<IGameIsPaused>(SaveIsGamePaused);
             EVent.Do.Subscribe<IOnStart>(CanStart);
-           // EVent.Do.Subscribe<IActiveInGameObject>(SetActivateUIGO);
         }
-
-
-        /*
-        private void SetActivateUIGO(IActiveInGameObject args)
-        {
-            Debug.Log(args.MyGOUIModule);
-            
-            if(args.MyGOUIModule.IsNull() || args.MyGOUIModule != this)
-            {
-                if(!_active) return;
-                ExitInGameUi();
-            }
-        }
-        */
 
         public void OverFocus()
         {
@@ -182,23 +170,36 @@ namespace UIElements
 
         private void OnMouseEnter()
         {
-            if(DontAcceptMouseInput) return;
-            //_GOUIInput.EnterGO(_active);
+            if(DontAcceptMouseInput || _turnOnWhen != InGameUiTurnOn.OnEnter) return;
+            
+            _startChild = true;
            StartInGameUi();
         }
 
         private void OnMouseExit()
         {
-            if(DontAcceptMouseInput) return;
-            // _GOUIInput.ExitGO(_active);
-            if(_branch.GetStayOn() == IsActive.Yes && _branch.LastSelected.HasChildBranch.CanvasIsEnabled) return;
+            if(DontAcceptMouseInput || _turnOffWhen != InGameUiTurnOff.AlsoOnPointerOnExit) return;
+            if(StayOnIfChildIsActive()) return;
+            
+            ClearAll?.Invoke(this);
             ExitInGameUi();
         }
-        
+
+        private bool StayOnIfChildIsActive() 
+            => _branch.GetStayOn() == IsActive.Yes && HasAnActiveChildBranch() 
+                                                   && _turnOffWhen != InGameUiTurnOff.AlsoOnPointerOnExit;
+
+        private bool HasAnActiveChildBranch() => _branch.LastSelected.HasChildBranch.CanvasIsEnabled;
+
         private void OnMouseDown()
         {
-            // if(DontAcceptMouseInput) return;
-            // _GOUIInput.ClickOnGO(_active);
+             if(DontAcceptMouseInput) return;
+             
+             if (!_active)
+             {
+                 if(_turnOnWhen != InGameUiTurnOn.OnClick) return;
+                 StartInGameUi();
+             }
         }
 
         public void CursorEnter(){} /*=> _GOUIInput.EnterGO(_active);*/
@@ -236,7 +237,6 @@ namespace UIElements
             Debug.Log("Clear All : UIGO");
             if(!_active ) return;
             ExitInGameUi();
-            //_GOUIInput.ClearGOUIExceptHighlighted();
         }
 
         public void StartInGameUi()
@@ -244,26 +244,35 @@ namespace UIElements
             if(_active) return;
             _controller.SetIndex(this);
             _active = true;
-            //SetAsActiveGameObject?.Invoke(this);
             StartBranch?.Invoke(this);
             
-            Debug.Log("Here : look at how index works with different triggers. " +
-                      "Add OnEnter/OnExit then work on VC and Switcher :(");
+            ActivateChildIfConditionAllows(_startChild);
+        }
+
+        private void ActivateChildIfConditionAllows(bool condition)
+        {
+            if (_startChildOnSwitchPressed == IsActive.No || !condition) return;
             
-            
-            if(_canStartChildBranch && _switchActive)
-            {
-                UINode temp = (UINode) TargetBranch.DefaultStartOnThisNode;
-                temp.OnPointerDown(new PointerEventData(EventSystem.current));
-            }
+            _inGameUINode.OnPointerDown(new PointerEventData(EventSystem.current));
         }
 
         public void ExitInGameUi()
         {
             if(!_active) return;
-            CloseBranch?.Invoke(this);
             _active = false;
-            //SetAsActiveGameObject?.Invoke(null);
+            _startChild = false;
+            CloseBranch?.Invoke(this);
+        }
+
+        public void HighlightBranch()
+        {
+            _inGameUINode.SetNodeAsActive();
+        }
+
+        public void UnHighlightBranch()
+        {
+            ClearAll?.Invoke(this);
+            _inGameUINode.ClearNode();
         }
     }
 }

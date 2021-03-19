@@ -25,7 +25,7 @@ namespace UIElements
         public GOUIInput(IGOUIModule parentModule)
         {
             StartInGameUI = parentModule.StartInGameUi;
-            ExitInGameUI = parentModule.ExitInGameUi;
+            //ExitInGameUI = parentModule.ExitInGameUi;
             _turnOnWhen = parentModule.TurnOnWhen;
             _turnoffWhen = parentModule.TurnOffWhen;
             _myBranch = parentModule.TargetBranch;
@@ -62,16 +62,16 @@ namespace UIElements
            // DeactivateNode();
         }
         
-        private bool DeactivateNodeForOnClick()
-        {
-            if (_turnoffWhen == InGameUiTurnOff.OnClick 
-                || _turnoffWhen == InGameUiTurnOff.ScriptCall)
-            {
-                DeactivateNode();
-                return true;
-            }
-            return false;
-        }
+        // private bool DeactivateNodeForOnClick()
+        // {
+        //     // if (_turnoffWhen == InGameUiTurnOff.OnClick 
+        //     //     || _turnoffWhen == InGameUiTurnOff.ScriptCall)
+        //     // {
+        //     //     DeactivateNode();
+        //     //     return true;
+        //     // }
+        //     // return false;
+        // }
 
         public void ClickOnGO(bool active)
         {

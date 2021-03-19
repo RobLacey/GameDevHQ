@@ -30,7 +30,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
     private bool _noInput, _inGame;
     private InputScheme _scheme;
     private GOUIController _controller;
-    private GOUIModule[] _playerObjects;
+    private IGOUIModule[] _playerObjects;
     private Canvas _cursorCanvas;
 
     //Editor

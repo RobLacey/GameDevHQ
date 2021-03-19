@@ -42,7 +42,6 @@ public abstract class InputScheme : ScriptableObject
 
     //Variables
     protected Vector3 _mousePosition;
-    public ValidationCheck Check { get; set; }
     private enum PauseFunction { DoNothing, BackOneLevel, BackToHome }
     
     //Editor
@@ -138,6 +137,6 @@ public abstract class InputScheme : ScriptableObject
 
     private void OnValidate()
     {
-        FindObjectOfType<UIInput>().DoValidation();
+        //FindObjectOfType<UIInput>().DoValidation();
     }
 }

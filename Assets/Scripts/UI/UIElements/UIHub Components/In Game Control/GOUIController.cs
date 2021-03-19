@@ -35,7 +35,7 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
     private InputScheme _inputScheme;
     private GOUIModule _activeObject;
     private int _index;
-    private GOUIModule[] _playerObjects;
+    private IGOUIModule[] _playerObjects;
     private bool _canStart;
     private bool _onHomeScreen = true;
     private bool _gameIsPaused;
@@ -56,7 +56,7 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
 
 
-    public GOUIModule[] GetPlayerObjects() => _playerObjects;
+    public IGOUIModule[] GetPlayerObjects() => _playerObjects;
     private bool UseBoth => _inGameControlType == VirtualControl.Both;
 
     public int GetIndex() => _index;
@@ -132,7 +132,7 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
 
 
 
-    private void OnValidate() => _validationCheck.ValidateDialogue();
+    //private void OnValidate() => _validationCheck.ValidateDialogue();
 
     private void Update()
     {
