@@ -1,9 +1,5 @@
 ﻿public partial class GOUIController
 {
-    private const string IsInGameCursor = nameof(InGameCursorEditor);
-
-    private bool InGameCursorEditor() => (_inGameControlType == VirtualControl.VirtualCursor || UseBoth)
-                                         && GetComponent<UIInput>().ReturnScheme.InGameMenuSystem == InGameSystem.On;
 
     private const string UseSafeList = nameof(SafeList);
     private bool SafeList() => _cancelWhen != CancelWhen.EscapeKeyOnly;

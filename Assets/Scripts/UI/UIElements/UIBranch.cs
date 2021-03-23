@@ -43,9 +43,9 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     [ShowIf(EConditionOperator.Or, HomeScreenBranch, StandardBranch)] 
     private OrderInCanvas _canvasOrderSetting = OrderInCanvas.Default;
     
-    [Header("Type Settings", order = 2)] [HorizontalLine(1f, EColor.Blue, order = 3)] [Space(20, order = 1)]
     [SerializeField]
-    [Label("Move To Next Branch...")] private WhenToMove _moveType = WhenToMove.Immediately;
+    [Label("Move To Next Branch...")] [HideIf(InGamUIBranch)] 
+    private WhenToMove _moveType = WhenToMove.Immediately;
     
     [SerializeField] 
     [HideIf(EConditionOperator.Or, ControlBarBranch, AnyPopUpBranch, InGamUIBranch)] 
@@ -53,11 +53,8 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     private AutoOpenClose _autoOpenClose = AutoOpenClose.No;
     
     [SerializeField] 
-    [ShowIf(StandardBranch)]
-    private IsActive _blockOtherNodes = IsActive.No;
-    
-    [SerializeField] 
-    [ShowIf(TimedBranch)] private float _timer = 1f;
+    [ShowIf(TimedBranch)] [Range(0f,20f)] 
+    private float _timer = 5f;
     
     [SerializeField] 
     [HideIf(EConditionOperator.Or, OptionalBranch, TimedBranch, HomeScreenBranch, ControlBarBranch, InGamUIBranch)]
@@ -69,7 +66,8 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     private IsActive _stayVisible = IsActive.No;
     
     [SerializeField] 
-    [ShowIf(OptionalBranch)] private StoreAndRestorePopUps _storeOrResetOptional = StoreAndRestorePopUps.Reset;
+    [ShowIf(OptionalBranch)] 
+    private StoreAndRestorePopUps _storeOrResetOptional = StoreAndRestorePopUps.Reset;
     
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, HomeScreenButNotControl, Stored)] 
@@ -93,7 +91,9 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     [Space(20, order = 1)]
     [SerializeField] 
     private BranchEvents _branchEvents;
-
+    
+    
+    //Buttons
     [Button("Create Node")]
     private void CreateNode() => new CreateNewObjects().CreateNode(transform);
 
@@ -134,7 +134,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     {
         if (AllowableInAndOutTweens(_stayVisible)) return;
         
-        Debug.Log($"Can't have Stay Visible and also have IN AND OUT Tweens on : {this} " +
+        throw new Exception($"Can't have Stay Visible and also have IN AND OUT Tweens on : {this} " +
                   $"{Environment.NewLine} OutTween NOT Allowed");
     }
 
@@ -276,8 +276,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
             endOfTweenCallback?.Invoke();
             return;
         }
-        Debug.Log(this);
-
+        
         if (WhenToMove == WhenToMove.AfterEndOfTween)
         {
             StartOutTween(endOfTweenCallback);

@@ -12,14 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba0795612f67412288cc7dc8e7b56c47, type: 3}
   m_Name: ToolTipScheme - Main
   m_EditorClassIdentifier: 
-  _tooltipType: 2
-  _toolTipPosition: 8
-  _groupFixedPosition: {fileID: 0}
+  _tooltipType: 0
+  _toolTipPosition: 2
   _mousePaddingX: 0
   _mousePaddingY: 0
-  _positionToUse: 0
+  _positionToUse: 4
   _keyboardPosition: 2
-  _fixedPosition: {fileID: 0}
   _keyboardPaddingX: 0
   _keyboardPaddingY: 0
   _screenSafeZone: 10

@@ -50,7 +50,6 @@ public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelH
         if(!CanAutoClose()) return;
         if (HasHotKeyBeenPressed()) return;
         
-        Debug.Log(ChildNodeHasOpenChild);
         if (ChildNodeHasOpenChild != null)
         {
             StaticCoroutine.StartCoroutine(WaitForPointer());

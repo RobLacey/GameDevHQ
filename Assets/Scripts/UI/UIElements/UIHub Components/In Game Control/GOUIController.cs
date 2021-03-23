@@ -1,23 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using NaughtyAttributes;
 using UIElements;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public interface IGOController : IParameters
 {
     GOUIController Controller { get; }
+    GameObject NewVirtualCursor { get; set; }
 }
 
 public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
 {
     public GOUIController() => _validationCheck = new ValidationCheck(this);
 
-    [SerializeField] 
-    private VirtualControl _inGameControlType = VirtualControl.None;
-    [SerializeField] 
-    [ShowIf(IsInGameCursor)] 
-    private VirtualCursor _virtualCursor;
+    [SerializeField] private Vector3 _cursorPos;
+    [SerializeField] private Vector3[] _corners;
     
     [Space(20, order = 1)]
     [Header(ClearHeader, order = 2)] [HorizontalLine(1f, EColor.Blue, order = 3)]
@@ -26,6 +28,8 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
     [SerializeField] 
     [ShowIf(UseSafeList)] [Space(10, order = 1)] [InfoBox(SafeNodeInfo)] [BoxGroup("Safe Nodes")]
     private UINode[] _safeNodeList;
+
+    [SerializeField] private List<RectTransform> _activeNodes = new List<RectTransform>();
 
     
     //Variables
@@ -39,6 +43,12 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
     private bool _canStart;
     private bool _onHomeScreen = true;
     private bool _gameIsPaused;
+    private VirtualCursor _virtualCursor;
+    
+    GraphicRaycaster m_Raycaster;
+    PointerEventData m_PointerEventData = new PointerEventData(EventSystem.current);
+    EventSystem m_EventSystem;
+
 
     private enum CancelWhen
     {
@@ -46,18 +56,15 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
     }
     //Properties
     public GOUIController Controller => this;
-    public VirtualControl ControlType
-    {
-        get => _inGameControlType;
-        set => _inGameControlType = value;
-    }
+    public VirtualControl ControlType => _inputScheme.CanUseVirtualCursor;
     public InputScheme GetScheme() => GetComponent<UIInput>().ReturnScheme;
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
+    public List<RectTransform> ReturnActiveNodes => _activeNodes;
 
+    public GameObject NewVirtualCursor { get; set; }
 
     public IGOUIModule[] GetPlayerObjects() => _playerObjects;
-    private bool UseBoth => _inGameControlType == VirtualControl.Both;
 
     public int GetIndex() => _index;
     private void CanStart(IOnStart obj) => _canStart = true;
@@ -77,6 +84,17 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
             }
             index++;
         }
+    }
+    
+    public void SetCursorPos(Vector3 pos)
+    {
+        _inputScheme.SetVirtualCursorPosition(pos);
+        _cursorPos = pos;
+    }
+
+    public void SetCorners(Vector3[] corners)
+    {
+        _corners = corners;
     }
 
     private void NewHighlightedNode(IHighlightedNode args)
@@ -107,16 +125,34 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
     {
         _playerObjects = FindObjectsOfType<GOUIModule>();
         _inputScheme = GetComponent<UIInput>().ReturnScheme;
+        _virtualCursor = _inputScheme.ReturnVirtualCursor;
+        
+        if(_inputScheme.CanUseVirtualCursor == VirtualControl.Yes)
+        {
+            NewVirtualCursor = Instantiate(_virtualCursor.ReturnVirtualCursor, transform, true);
+            NewVirtualCursor.GetComponent<Canvas>().enabled = false;
+            NewVirtualCursor.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+            _virtualCursor.SetUpVirtualCursor(this);
+        }        
         _mouseOnlySwitcher = EJect.Class.WithParams<IMouseOnlySwitcher>(this);
        // _switcher = EJect.Class.WithParams<ISwitcher>(this);
-       // SetUpVirtualCursor();
     }
 
-    private void SetUpVirtualCursor() => _virtualCursor.SetUpVirtualCursor(this);
     private void OnEnable()
     {
         ObserveEvents();
+        BranchBase.AddNode += AddNodes;
+        BranchBase.RemoveNode += RemoveNodes;
+
        // _switcher.OnEnable();
+    }
+
+    void Start()
+    {
+        //Fetch the Raycaster from the GameObject (the Canvas)
+        m_Raycaster = GetComponent<GraphicRaycaster>();
+        //Fetch the Event System from the Scene
+        m_EventSystem = EventSystem.current;
     }
     
     public void ObserveEvents()
@@ -127,7 +163,6 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
         EVent.Do.Subscribe<IOnStart>(CanStart);
         EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
         EVent.Do.Subscribe<IGameIsPaused>(GameIsPaused);
-
     }
 
 
@@ -146,7 +181,12 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
         // if (_inGameControlType == VirtualControl.None) return;
          _mouseOnlySwitcher.UseMouseOnlySwitcher();
         // _switcher.UseSwitcher();
-        // _virtualCursor.UseVirtualCursor();
+        // if (Input.GetKeyDown(KeyCode.V))
+        // {
+        //     _virtualCursor.ActivateVC();
+        // }
+        if(_inputScheme.CanUseVirtualCursor == VirtualControl.No) return;
+         _virtualCursor.UseVirtualCursor();
     }
 
     private void FixedUpdate()
@@ -154,6 +194,40 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
         if(!CanSwitch) return;
 
         _mouseOnlySwitcher.ClearSwitchActivatedGOUI();
+        
+        if(_inputScheme.CanUseVirtualCursor == VirtualControl.No) return;
+        _virtualCursor.FixedUpdate();
+    }
+
+    private void OnDisable()
+    {
+        BranchBase.AddNode -= AddNodes;
+        BranchBase.RemoveNode -= RemoveNodes;
+    }
+
+    private void AddNodes(INode[] nodes)
+    {
+        UINode[] list = nodes.Cast<UINode>().ToArray();
+        
+        foreach (var node in list)
+        {
+            var temp = node.GetComponent<RectTransform>();
+            if(_activeNodes.Contains(temp)) continue;
+            _activeNodes.Add( temp);
+           // node.MyBranch.SetBlockRaycast(BlockRaycast.Yes);
+        }
+    }
+    private void RemoveNodes(INode[] nodes)
+    {
+        UINode[] list = nodes.Cast<UINode>().ToArray();
+
+        foreach (var node in list)
+        {
+            var temp = node.GetComponent<RectTransform>();
+            if(!_activeNodes.Contains(temp)) continue;
+            _activeNodes.Remove( temp);
+           // node.MyBranch.SetBlockRaycast(BlockRaycast.No);
+        }
 
     }
 

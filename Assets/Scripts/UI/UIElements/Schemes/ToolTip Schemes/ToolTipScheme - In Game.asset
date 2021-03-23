@@ -14,12 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _tooltipType: 1
   _toolTipPosition: 8
-  _groupFixedPosition: {fileID: 0}
   _mousePaddingX: 0
   _mousePaddingY: 0
   _positionToUse: 0
   _keyboardPosition: 2
-  _fixedPosition: {fileID: 0}
   _keyboardPaddingX: 0
   _keyboardPaddingY: 0
   _screenSafeZone: 10

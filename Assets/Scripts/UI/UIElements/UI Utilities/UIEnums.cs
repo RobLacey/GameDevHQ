@@ -53,7 +53,7 @@ public enum ToolTipAnchor
     MiddleBottom, TopLeft, TopRight, BottomLeft, BottomRight
 }
 
-public enum TooltipType { FixedPosition, Follow, AsInInspector }
+public enum TooltipType { FixedPosition, Follow }
 
 [Flags]
 public enum EventType
@@ -76,7 +76,7 @@ public  enum ControlMethod { MouseOnly, KeysOrControllerOnly, AllowBothStartWith
 public enum SwitchType { Positive, Negative }
 public enum TweenType { In, Out }
 public enum OutTweenType { Cancel, MoveToChild }
-public enum UseSide { ToTheRightOf, ToTheLeftOf, GameObjectAsPosition  }
+public enum UseSide { ToTheRightOf, ToTheLeftOf, ToTheTopOf, ToTheBottomOf, CentreOf  }
 public enum InGameSystem { On, Off }
 
 public enum HotKey {  HotKey1, HotKey2, HotKey3, HotKey4, HotKey5, HotKey6, HotKey7, HotKey8, HotKey9, HotKey0 }
@@ -106,11 +106,16 @@ public enum OrderInCanvas { InFront, Behind, Manual, Default }
 
 public enum VirtualControl
 {
-    None, VirtualCursor, Switcher, Both, SwitcherMouseOnly
+    Yes, No
 }
     
 public enum GameType
 {
     _2D, _3D, NoRestrictions
+}
+
+public enum CancelClickLocation
+{
+    Never, Left, Right, Either
 }
 

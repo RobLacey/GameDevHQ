@@ -4,7 +4,7 @@ using NaughtyAttributes;
 using UnityEngine;
 
 [Serializable]
-public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IStartBranch
+public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
 {
     [SerializeField] 
     private HotKey _hotKeyInput  = default;
@@ -24,7 +24,6 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IStartBranc
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     public INode ParentNode => _parentNode;
     public IBranch MyBranch => _myBranch;
-    public IBranch TargetBranch => _myBranch;
 
     
     //Main

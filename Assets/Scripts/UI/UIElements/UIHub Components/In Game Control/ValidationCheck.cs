@@ -30,18 +30,18 @@ public class ValidationCheck : DialogueBox
 
     protected override void CancelAction()
     {
-        _goController.ControlType = _currentState;
+        //_goController.ControlType = _currentState;
         _scheme.ControlType = _currentControlMethod;
     }
-    
-    private bool NonMouseOnlyControls => _goController.ControlType != VirtualControl.SwitcherMouseOnly;
-    private bool MouseSwitchOnlyEditor => _goController.ControlType == VirtualControl.SwitcherMouseOnly;
+
+    private bool NonMouseOnlyControls => true;  // _goController.ControlType != VirtualControl.SwitcherMouseOnly;
+    private bool MouseSwitchOnlyEditor => true; // _goController.ControlType == VirtualControl.SwitcherMouseOnly;
 
     public override void ValidateDialogue()
     {
         PopulateVariables();
 
-        if(_goController.ControlType == VirtualControl.None || _scheme is null) return;
+      //  if(_goController.ControlType == VirtualControl.None || _scheme is null) return;
         
         var message =
             $"In game control set to '{_goController.ControlType}' while 'Input Scheme' is set to '{_scheme.ControlType}'.";

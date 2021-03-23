@@ -29,6 +29,8 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
 
     //Properties
     public bool CanAllowKeys { get; private set; }
+    public bool UsingVirtualCursor => _inputScheme.CanUseVirtualCursor == VirtualControl.Yes;
+
 
     //Events
     private Action<IAllowKeys> AllowKeys { get; set; }
@@ -52,6 +54,7 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
     private void StartGame(IOnStart onStart)
     {
         _inputScheme.SetMousePosition();
+        
         if (MousePreferredControlMethod())
         {
             SetUpMouse();
@@ -71,7 +74,7 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
     {
         if (!_startInGame)
         {
-            ActivateMouse();
+            ActivateMouseOrVirtualCursor();
         }
         else
         {
@@ -95,13 +98,13 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
 
     private void ChangeControlType(IChangeControlsPressed args)
     {
-        if (_inputScheme.CanSwitchToMouse)
+        if (_inputScheme.CanSwitchToMouseOrVC)
         {
-            ActivateMouse();
+            ActivateMouseOrVirtualCursor();
         }
         else if(_inputScheme.CanSwitchToKeysOrController)
         {
-            if (_inputScheme.MouseClicked) return;
+            if (_inputScheme.AnyMouseClicked) return;
             ActivateKeysOrControl();
         }
         else if(_inputScheme.PressedNegativeGOUISwitch() || _inputScheme.PressedPositiveGOUISwitch())
@@ -110,19 +113,31 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
         }
     }
 
-    private void ActivateMouse()
-    { 
-        _inputScheme.SetMousePosition();
-        Cursor.visible = true;
+    private void ActivateMouseOrVirtualCursor()
+    {
+        if (UsingVirtualCursor)
+        {
+            Cursor.visible = false;
+        }
+        else
+        {
+            _inputScheme.SetMousePosition();
+            Cursor.visible = true;
+        }
+        
         if (_usingMouse) return;
         _usingMouse = true;
         CanAllowKeys = false;
         SetAllowKeys();
     }
-
+    
     private void ActivateKeysOrControl()
     {
-        Cursor.visible = false;
+        if (_inputScheme.HideMouseCursor)
+        {
+            Cursor.visible = false;
+        }
+        
         if (CanAllowKeys) return;
         _usingMouse = false;
         CanAllowKeys = true;

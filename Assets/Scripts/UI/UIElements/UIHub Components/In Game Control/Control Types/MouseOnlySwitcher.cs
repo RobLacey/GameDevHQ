@@ -41,7 +41,7 @@ namespace UIElements
         {
             if (!MouseSwitchOnly || !_switcherActive) return;
             
-            if (_scheme.CanSwitchToMouse)
+            if (_scheme.CanSwitchToMouseOrVC)
             { 
                 _playerObjects[_index].StartChild(false);
                 _switcherActive = false;

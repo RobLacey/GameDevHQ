@@ -13,14 +13,27 @@ public class CreateNewObjects
     private GameObject _newTooltipBin;
     private GameObject _newBranch;
     private GameObject _newNode;
+    private GameObject _newFixedPos;
+    private GameObject _newToolTips;
 
     public void CreateToolTipFolder(Transform hubTransform)
     {
         _newTooltipBin = new GameObject();
         _newTooltipBin.transform.parent = hubTransform;
-        _newTooltipBin.name = $"ToolTips Go Here";
+        _newTooltipBin.name = $"ToolTips & Fixed Positions Go Here";
         _newTooltipBin.AddComponent<RectTransform>();
         _newTooltipBin.transform.position = hubTransform.position;
+        CreateTooltipSubFolders(_newFixedPos, "Fixed Positions Here");
+        CreateTooltipSubFolders(_newToolTips, "ToolTips Here");
+    }
+
+    private void CreateTooltipSubFolders(GameObject newFolder, string name)
+    {
+        newFolder = new GameObject();
+        newFolder.transform.parent = _newTooltipBin.transform;
+        newFolder.name = name;
+        newFolder.AddComponent<RectTransform>();
+        newFolder.transform.position = _newTooltipBin.transform.position;
     }
 
     public CreateNewObjects CreateMainFolder(Transform hubTransform)

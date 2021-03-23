@@ -2,12 +2,28 @@
 
 public partial class UINode
 {
-    private bool SetIfCanNavigate() => IsAToggle() || IsCancelOrBack;
-    private bool IsAToggle() => _buttonFunction == ButtonFunction.ToggleGroup
-                                || _buttonFunction == ButtonFunction.ToggleNotLinked;
+    private const string CanAutoOpenClose = nameof(CheckAutoOpenCloseStatus);
+    private const string CancelOrBack = nameof(IsCancelOrBack);
+    private const string ShowGroupSettings = nameof(GroupSettings);
+    private const string HasNavigation = nameof(UseNavigation);
+    private const string HasColour = nameof(NeedColour);
+    private const string HasInvert = nameof(NeedInvert);
+    private const string HasSize = nameof(NeedSize);
+    private const string HasSwap = nameof(NeedSwap);
+    private const string HasAccessories = nameof(NeedAccessories);
+    private const string HasAudio = nameof(NeedAudio);
+    private const string HasEvents = nameof(NeedEvents);
+    private const string HasTooltip = nameof(NeedTooltip);
 
-    private bool CanAutoOpenClose =>
-        _buttonFunction == ButtonFunction.ToggleGroup || _buttonFunction == ButtonFunction.Standard;
+    private bool CheckAutoOpenCloseStatus()
+    {
+        var autoOpenClosActive = GetComponentInParent<IBranch>().AutoOpenClose != AutoOpenClose.No;
+
+         return (_buttonFunction == ButtonFunction. ToggleGroup 
+                 || _buttonFunction == ButtonFunction. Standard) 
+                 && autoOpenClosActive;
+    }
+
     private bool UseNavigation()
     {
         _navigation.CantNavigate = SetIfCanNavigate();

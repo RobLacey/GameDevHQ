@@ -14,7 +14,6 @@ public class StandardBranch : BranchBase, IStandardBranch
     protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
         SetBlockRaycast(BlockRaycast.No);
-        if (_isTabBranch) return;
         SetCanvas(ActiveCanvas.No);
     }
 
@@ -27,7 +26,7 @@ public class StandardBranch : BranchBase, IStandardBranch
         CanGoToFullscreen();
         SetNewParentBranch(newParentController);
         
-        if(_myBranch.BlockOtherNode == IsActive.Yes || _myBranch.ScreenType == ScreenType.FullScreen)
+        if(_myBranch.ScreenType == ScreenType.FullScreen)
             _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.Yes);
     }
 

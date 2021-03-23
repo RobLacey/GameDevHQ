@@ -12,6 +12,7 @@ namespace UIElements
         [SerializeField] private int _timedPopUpCanvasOrder = 5;
         [SerializeField] private int _optionalPopUpCanvasOrder = 5;
         [SerializeField] private int _virtualCursorCanvasOrder = 5;
+        [SerializeField] private int _GOUICanvasOrder = -3;
 
         //Events
         private Action<ISetStartingCanvasOrder> SetStartingCanvasOrder { get; set; }
@@ -42,7 +43,7 @@ namespace UIElements
                 case BranchType.Internal:
                     return SetStandardCanvasOrder(calculator);
                 case BranchType.InGameUi:
-                    break;
+                    return _GOUICanvasOrder;
                 case BranchType.HomeScreen:
                     return SetStandardCanvasOrder(calculator);
                 default:

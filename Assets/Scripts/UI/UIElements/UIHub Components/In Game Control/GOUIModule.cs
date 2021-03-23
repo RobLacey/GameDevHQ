@@ -1,6 +1,7 @@
 ﻿using System;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 public interface ICursorHandler
@@ -23,6 +24,11 @@ public interface IGOUIModule
     void HighlightBranch();
     void UnHighlightBranch();
     void CheckForSetLayerMask(LayerMask layerMask);
+}
+
+public interface IGOUIObject
+{
+    void ActivateObject(bool active);
 }
 
 public enum InGameUiTurnOn
@@ -55,6 +61,7 @@ namespace UIElements
         [Space(10f, order = 1)] [InfoBox(GOUIModule.InfoBox, order = 2)] 
         private Transform _uiPosition;
 
+        [SerializeField] [Space(20f)] private UnityEvent<bool> _activeGOUI;
 
         //Variables
         private bool _active;
@@ -199,6 +206,12 @@ namespace UIElements
              {
                  if(_turnOnWhen != InGameUiTurnOn.OnClick) return;
                  StartInGameUi();
+                 return;
+             }
+
+             if (_active && _turnOffWhen == InGameUiTurnOff.Standard)
+             {
+                 ExitInGameUi();
              }
         }
 
@@ -245,6 +258,7 @@ namespace UIElements
             _controller.SetIndex(this);
             _active = true;
             StartBranch?.Invoke(this);
+            _activeGOUI.Invoke(_active);
             
             ActivateChildIfConditionAllows(_startChild);
         }
@@ -262,6 +276,7 @@ namespace UIElements
             _active = false;
             _startChild = false;
             CloseBranch?.Invoke(this);
+            _activeGOUI.Invoke(_active);
         }
 
         public void HighlightBranch()

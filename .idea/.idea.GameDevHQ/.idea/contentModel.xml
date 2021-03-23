@@ -289,6 +289,11 @@
             <e p="TipController.cs" t="Include" />
             <e p="UIActivator.cs" t="Include" />
             <e p="UIElements" t="Include">
+              <e p="INput System" t="Include">
+                <e p="InputScheme.cs" t="Include" />
+                <e p="NewSystem.cs" t="Include" />
+                <e p="OldSystem.cs" t="Include" />
+              </e>
               <e p="MouseDraw.cs" t="Include" />
               <e p="Shader" t="Include">
                 <e p="UnlitFrostedGlass.shader" t="Include" />
@@ -321,9 +326,6 @@
               <e p="UI Scritpables" t="Include">
                 <e p="AudioScheme.cs" t="Include" />
                 <e p="ColourScheme.cs" t="Include" />
-                <e p="InputScheme.cs" t="Include" />
-                <e p="NewSystem.cs" t="Include" />
-                <e p="OldSystem.cs" t="Include" />
                 <e p="SizeAndPositionScheme.cs" t="Include" />
                 <e p="ToolTipScheme.cs" t="Include" />
                 <e p="TweenScheme.cs" t="Include" />
@@ -427,8 +429,6 @@
               </e>
               <e p="UIBranch.cs" t="Include" />
               <e p="UIHub Components" t="Include">
-                <e p="CanvasOrderData.cs" t="Include" />
-                <e p="ChangeControl.cs" t="Include" />
                 <e p="HistoryTracker" t="Include">
                   <e p="HistoryListManagement.cs" t="Include" />
                   <e p="HistoryTracker.cs" t="Include" />
@@ -437,7 +437,6 @@
                   <e p="MoveBackInHistory.cs" t="Include" />
                   <e p="NewSelectionProcess.cs" t="Include" />
                 </e>
-                <e p="HotKeys.cs" t="Include" />
                 <e p="In Game Control" t="Include">
                   <e p="Control Types" t="Include">
                     <e p="MouseOnlySwitcher.cs" t="Include" />
@@ -457,11 +456,16 @@
                   <e p="UIGOControllerEditor.cs" t="Include" />
                   <e p="ValidationCheck.cs" t="Include" />
                 </e>
-                <e p="MenuAndGameSwitching.cs" t="Include" />
-                <e p="PopUpController.cs" t="Include" />
-                <e p="UIAudioManager.cs" t="Include" />
-                <e p="UICancel.cs" t="Include" />
-                <e p="UIHomeGroup.cs" t="Include" />
+                <e p="UIHub Subclasses" t="Include">
+                  <e p="CanvasOrderData.cs" t="Include" />
+                  <e p="ChangeControl.cs" t="Include" />
+                  <e p="HotKeys.cs" t="Include" />
+                  <e p="MenuAndGameSwitching.cs" t="Include" />
+                  <e p="PopUpController.cs" t="Include" />
+                  <e p="UIAudioManager.cs" t="Include" />
+                  <e p="UICancel.cs" t="Include" />
+                  <e p="UIHomeGroup.cs" t="Include" />
+                </e>
                 <e p="UIHubInterfaces.cs" t="Include" />
               </e>
               <e p="UIHub.cs" t="Include" />

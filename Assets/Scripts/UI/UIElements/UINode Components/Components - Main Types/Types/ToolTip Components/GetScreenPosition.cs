@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public interface IGetScreenPosition
 {
-    void SetExactPosition(bool isKeyboard);
+    void SetExactPosition(bool isKeyboardOrVC);
 }
 
 public class GetScreenPosition : IGetScreenPosition
@@ -33,7 +33,7 @@ public class GetScreenPosition : IGetScreenPosition
     private Vector2 KeyboardPadding => new Vector2(_scheme.KeyboardXPadding, _scheme.KeyboardYPadding);
     private Vector2 MousePadding => new Vector2(_scheme.MouseXPadding, _scheme.MouseYPadding);
 
-    public void SetExactPosition(bool isKeyboard)
+    public void SetExactPosition(bool isKeyboardOrVC)
     {
         var index = _tooltip.CurrentToolTipIndex;
         
@@ -41,37 +41,34 @@ public class GetScreenPosition : IGetScreenPosition
                                       , _listOfTooltips[index].preferredHeight);
 
         var toolTipAnchorPos 
-            = !isKeyboard ? _scheme.ToolTipPosition : _scheme.KeyboardPosition;
+            = !isKeyboardOrVC ? _scheme.ToolTipPosition : _scheme.KeyboardPosition;
         
-        var toolTipPos = GetToolTipsScreenPosition(isKeyboard, _scheme.ToolTipType);
+        var toolTipPos = GetToolTipsScreenPosition(isKeyboardOrVC, _scheme.ToolTipType);
 
         (_toolTipsRects[index].anchoredPosition, _toolTipsRects[index].pivot)
             = _calculation.CalculatePosition(toolTipPos, toolTipSize, toolTipAnchorPos);
     }
 
-    private Vector3 GetToolTipsScreenPosition(bool isKeyboard, TooltipType toolTipType)
+    private Vector3 GetToolTipsScreenPosition(bool isKeyboardOrVC, TooltipType toolTipType)
     {
         switch (toolTipType)
         {
-            case TooltipType.Follow when isKeyboard:
+            case TooltipType.Follow when isKeyboardOrVC:
                 return SetKeyboardTooltipPosition();
             case TooltipType.Follow:
                 return SetMouseToolTipPosition();
             case TooltipType.FixedPosition:
                 return SetFixedToolTipPosition();
-            case TooltipType.AsInInspector when isKeyboard:
-                return SetKeyboardTooltipPosition();
-            case TooltipType.AsInInspector:
-                return SetMouseToolTipPosition();
             default:
                 throw new ArgumentOutOfRangeException(nameof(toolTipType), toolTipType, null);
         }
         return Vector3.zero;
     }
 
-    private Vector3 SetFixedToolTipPosition() => ReturnScreenPosition(_scheme.GroupFixedPosition.position);
+    private Vector3 SetFixedToolTipPosition() => ReturnScreenPosition(_tooltip.FixedPosition.position);
 
-    private Vector3 SetMouseToolTipPosition() => ReturnScreenPosition(Input.mousePosition) + MousePadding;
+    private Vector3 SetMouseToolTipPosition() 
+        => ReturnScreenPosition(_tooltip.InputScheme.GetMousePosition()) + MousePadding;
 
     private Vector3 SetKeyboardTooltipPosition()
     {
@@ -94,9 +91,17 @@ public class GetScreenPosition : IGetScreenPosition
             case UseSide.ToTheLeftOf:
                 position = _myCorners[1] + ((_myCorners[0] - _myCorners[1]) / 2);
                 break;
-            case UseSide.GameObjectAsPosition:
-                position = _scheme.FixedPosition.position;
+            case UseSide.ToTheTopOf:
+                position = _myCorners[1] + ((_myCorners[2] - _myCorners[1]) / 2);
                 break;
+            case UseSide.ToTheBottomOf:
+                position = _myCorners[0] + ((_myCorners[3] - _myCorners[0]) / 2);
+                break;
+            case UseSide.CentreOf:
+                position = Vector3.zero;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
 
         return position;

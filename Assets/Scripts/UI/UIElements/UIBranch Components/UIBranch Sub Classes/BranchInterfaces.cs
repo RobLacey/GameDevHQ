@@ -26,8 +26,7 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     INode[] ThisGroupsUiNodes { get; }
     bool PointerOverBranch { get;}
     IAutoOpenClose AutoOpenCloseClass { get; }
-    IsActive BlockOtherNode { get; set; }
-    void ResetSavePositionOnExit();
+    IsActive SetSaveLastSelectionOnExit { set; }
     BranchType ReturnBranchType { get; }
     IsActive SetStayOn { set; }
     INode LastSelected { get; }

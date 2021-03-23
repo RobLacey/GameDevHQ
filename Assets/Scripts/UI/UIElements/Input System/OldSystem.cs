@@ -24,10 +24,13 @@ public class OldSystem : InputScheme
     [Label("Switch To/From Game Menus")] [InputAxis] 
     private string _switchToMenusButton = default;
     [SerializeField] 
-    [Label("Virtual Cursor Horizontal")] [InputAxis] private string _vCursorHorizontal = default;
+    [Label("Virtual Cursor Horizontal")] [InputAxis] 
+    private string _vCursorHorizontal = default;
     [SerializeField] 
-    [Label("Virtual Cursor Vertical")] [InputAxis] private string _vCursorVertical = default;
-    [SerializeField] [InputAxis] private string _selectButton = default;
+    [Label("Virtual Cursor Vertical")] [InputAxis] 
+    private string _vCursorVertical = default;
+    [SerializeField] [InputAxis] 
+    private string _selectButton = default;
 
     [Space(10f, order = 1)]
     [Header("HotKey Settings", order = 2)] [HorizontalLine(1, color: EColor.Blue, order = 3)]
@@ -68,6 +71,7 @@ public class OldSystem : InputScheme
     private bool _hasHotKey6, _hasHotKey7, _hasHotKey8, _hasHotKey9, _hasHotKey0 
                  , _hasHotKey1, _hasHotKey2, _hasHotKey3, _hasHotKey4, _hasHotKey5;
 
+
     //Properties and Setter/Getters
     protected override string PauseButton => _pauseOptionButton;
     protected override string PositiveSwitch => _posSwitchButton;
@@ -79,17 +83,40 @@ public class OldSystem : InputScheme
     protected override string VCursorHorizontal => _vCursorHorizontal;
     protected override string VCursorVertical => _vCursorVertical;
     protected override string SelectedButton => _selectButton;
-    public override bool MouseClicked => Input.GetMouseButton(0) || Input.GetMouseButton(1);
+    public override bool AnyMouseClicked => Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
+    public override bool LeftMouseClicked => Input.GetMouseButtonDown(0);
+    public override bool RightMouseClicked => Input.GetMouseButtonDown(1);
     public override bool CanSwitchToKeysOrController => Input.anyKeyDown && ControlType != ControlMethod.MouseOnly;
-    public override bool CanSwitchToMouse
-    {
-        get
-        {
-            return _mousePosition != Input.mousePosition && ControlType != ControlMethod.KeysOrControllerOnly;
-        }
-    }
+
+    public override bool CanSwitchToMouseOrVC =>
+        _mousePosition != Input.mousePosition
+        && ControlType != ControlMethod.KeysOrControllerOnly;
 
     public override void SetMousePosition() => _mousePosition = Input.mousePosition;
+    public override Vector3 GetMousePosition()
+    {
+        if (CanUseVirtualCursor == VirtualControl.Yes) return GetVirtualCursorPosition();
+        return Input.mousePosition;
+    }
+    public override Vector3 SetVirtualCursorPosition(Vector3 pos) => _virtualCursorPosition = pos;
+    public override Vector3 GetVirtualCursorPosition() => _virtualCursorPosition;
+
+    public override bool CanCancelWhenClickedOff()
+    {
+        switch (_cancelClickOn)
+        {
+            case CancelClickLocation.Never:
+                return false;
+            case CancelClickLocation.Left:
+                return LeftMouseClicked;
+            case CancelClickLocation.Right:
+                return RightMouseClicked;
+            case CancelClickLocation.Either:
+                return AnyMouseClicked;
+            default:
+                return false;
+        }
+    }
 
     //Main
     protected override void SetUpUInputScheme()

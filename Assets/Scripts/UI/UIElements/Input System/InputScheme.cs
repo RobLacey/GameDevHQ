@@ -1,27 +1,49 @@
 ﻿using System;
 using NaughtyAttributes;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public abstract class InputScheme : ScriptableObject
 {
-    [Space(20f, order = 0)]
+    [Space(EditorSpace, order = 0)]
     [SerializeField] 
     protected ControlMethod _mainControlType = ControlMethod.MouseOnly;
-    
-    [SerializeField] [HideIf(KeysOnly)] private IsActive _customMouseCursor = IsActive.No;
-    [SerializeField] [ShowIf("CustomCursor")] private Texture2D _cursor = default;
-    [SerializeField] [ShowIf("CustomCursor")] private Vector2 _hotSpot =default;
-    
-    [SerializeField] [ShowIf(KeysOnly)]
-    protected InGameSystem _inGameMenuSystem = InGameSystem.Off;
+
+    [SerializeField] //TODO set to no when keys only
+    [Label("Hide Cursor (Keys Active)")]
+    private IsActive _hideMouseCursor = IsActive.No;
     
     [SerializeField] 
-    [ShowIf(KeysOnly)] 
-    [EnableIf("InGameOn")]
+    [Label("Cancel When Clicked Off UI")] //TODO set to left if VC active (adjust Input Scheme)
+    protected CancelClickLocation _cancelClickOn = CancelClickLocation.Never;
+    
+    [SerializeField] 
+    [Space(EditorSpace)] [HideIf(KeysOnly)] //TODO Hide for VC active
+    private IsActive _customMouseCursor = IsActive.No;
+    
+    [SerializeField] 
+    [ShowIf("CustomCursor")] 
+    private Texture2D _cursor = default;
+    
+    [SerializeField] 
+    [ShowIf("CustomCursor")] 
+    private Vector2 _hotSpot =default;
+    
+    [SerializeField] 
+    [ShowIf(KeysOnly)]
+    protected InGameSystem _inGameMenuSystem = InGameSystem.Off;
+    
+    [SerializeField] [Space(EditorSpace)]
+    private VirtualControl _useVirtualCursor = VirtualControl.No;
+
+    [SerializeField] 
+    [ShowIf(VirtualCursor)] 
+    private VirtualCursor _virtualCursor;
+    
+    [SerializeField] [Space(EditorSpace)]
     protected InMenuOrGame _startGameWhere = InMenuOrGame.InGameControl;
     
     [Header("Cancel / Back Settings")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
+    
     [SerializeField] 
     [Label("Nothing to Cancel Action")] 
     protected PauseOptionsOnEscape _pauseOptionsOnEscape = PauseOptionsOnEscape.DoNothing;
@@ -30,23 +52,28 @@ public abstract class InputScheme : ScriptableObject
     private PauseFunction _globalEscapeFunction;
     
     [Header("Start Delay")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
-    [SerializeField] 
-    [Label("Delay UI Start By then..")]
-    [Range(0, 10)] protected float _delayUIStart;
     
     [SerializeField] 
-    [Label("..Enable Controls After..")]
-    [Range(0, 10)] 
+    [Label("Delay UI Start By then..")] [Range(0, 10)]
+    protected float _delayUIStart;
+    
+    [SerializeField] 
+    [Label("..Enable Controls After..")] [Range(0, 10)] 
     protected float _controlActivateDelay;
 
 
     //Variables
     protected Vector3 _mousePosition;
+    protected Vector3 _virtualCursorPosition;
     private enum PauseFunction { DoNothing, BackOneLevel, BackToHome }
+
     
     //Editor
     private bool InGameOn => _inGameMenuSystem == InGameSystem.On;
     private bool CustomCursor => _customMouseCursor == IsActive.Yes;
+    private bool UseVirtualCursor => _useVirtualCursor == VirtualControl.Yes;
+    private const string VirtualCursor = nameof(UseVirtualCursor);
+    private const int EditorSpace = 20;
 
     private const string KeysOnly = nameof(KeyboardOnly);
     private bool KeyboardOnly
@@ -87,6 +114,10 @@ public abstract class InputScheme : ScriptableObject
     public float DelayUIStart => _delayUIStart;
     public InGameSystem InGameMenuSystem => _inGameMenuSystem;
     public InMenuOrGame WhereToStartGame => _startGameWhere;
+    public VirtualControl CanUseVirtualCursor => _useVirtualCursor;
+    public bool HideMouseCursor => _hideMouseCursor == IsActive.Yes;
+
+    public VirtualCursor ReturnVirtualCursor => _virtualCursor;
 
     protected abstract string PauseButton { get; }
     protected abstract string PositiveSwitch { get; }
@@ -99,12 +130,21 @@ public abstract class InputScheme : ScriptableObject
     protected abstract string VCursorHorizontal { get; }
     protected abstract string VCursorVertical { get; }
     protected abstract string SelectedButton { get; }
-    public abstract bool  MouseClicked { get; }
+    public abstract bool  AnyMouseClicked { get; }
+    public abstract bool  LeftMouseClicked { get; }
+    public abstract bool  RightMouseClicked { get; }
     public abstract bool CanSwitchToKeysOrController { get; }
-    public abstract bool CanSwitchToMouse { get; }
+    public abstract bool CanSwitchToMouseOrVC { get; }
     public abstract void SetMousePosition();
+    public abstract Vector3 GetMousePosition();
+    public abstract Vector3 SetVirtualCursorPosition(Vector3 pos);
+    public abstract Vector3 GetVirtualCursorPosition();
+    public abstract bool CanCancelWhenClickedOff();
 
-    public void OnAwake() => SetUpUInputScheme();
+    public void OnAwake()
+    {
+        SetUpUInputScheme();
+    }
 
     protected abstract void SetUpUInputScheme();
     public void TurnOffInGameMenuSystem() => _inGameMenuSystem = InGameSystem.Off;
@@ -133,10 +173,5 @@ public abstract class InputScheme : ScriptableObject
             default:
                 throw new ArgumentOutOfRangeException();
         }
-    }
-
-    private void OnValidate()
-    {
-        //FindObjectOfType<UIInput>().DoValidation();
     }
 }

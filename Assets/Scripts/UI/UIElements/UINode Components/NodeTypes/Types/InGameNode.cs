@@ -29,13 +29,13 @@ public class InGameNode : NodeBase, IInGameNode, ICancelPressed
     {
         //if(_uiNode.HasChildBranch.IsNull()) return;
         
-            Debug.Log("On");
+            //Debug.Log("On");
             base.Activate();
     }
     
     protected override void Deactivate()
     {
-        Debug.Log("Off");
+        //Debug.Log("Off");
         base.Deactivate();
     }
 

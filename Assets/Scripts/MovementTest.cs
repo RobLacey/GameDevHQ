@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using NaughtyAttributes;
-using UIElements;
 
-public class MovementTest : MonoBehaviour
+public class MovementTest : MonoBehaviour, IEventUser, IGOUIObject
 {
     Transform _myTransform;
     [SerializeField] [InputAxis] string _horizontal;
@@ -24,6 +20,11 @@ public class MovementTest : MonoBehaviour
         _myTransform = GetComponent<Transform>();
         _child = GetComponentInChildren<SpriteRenderer>().transform;
     }
+    public void ObserveEvents()
+    {
+      //  EVent.Do.Subscribe<Ista>();
+    }
+
 
     // Update is called once per frame
     void Update()
@@ -32,20 +33,14 @@ public class MovementTest : MonoBehaviour
         {
             Vector3 rotationSpeed = new Vector3(0, 0, 30);
             _child.Rotate(rotationSpeed * Time.deltaTime, Space.Self);
-            _horizontalSpeed = Input.GetAxis(_horizontal) * _speed;
-            _verticalSpeed = Input.GetAxis(_vertical) * _speed;
+            // _horizontalSpeed = Input.GetAxis(_horizontal) * _speed;
+            // _verticalSpeed = Input.GetAxis(_vertical) * _speed;
 
-            _myTransform.position += new Vector3(_horizontalSpeed, _verticalSpeed, 0);
+            //_myTransform.position += new Vector3(_horizontalSpeed, _verticalSpeed, 0);
         }    
     }
 
-    public void ActivateObject()
-    {
-        _active = !_active;
-    }
+    public void ActivateObject(bool active) => _active = active;
 
-    public void SwitchToInGame(InMenuOrGame inGame)
-    {
-        Debug.Log(inGame);
-    }
+    public void SwitchToInGame(InMenuOrGame inGame) => Debug.Log(inGame);
 }

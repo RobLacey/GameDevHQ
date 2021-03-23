@@ -25,8 +25,8 @@ namespace UIElements
         private bool _inGame;
 
         //Properties
-        private bool InGameSwitch => _controller.ControlType == VirtualControl.Switcher  || UseBoth;
-        private bool UseBoth => _controller.ControlType == VirtualControl.Both;
+        private bool InGameSwitch => true; // _controller.ControlType == VirtualControl.Switcher  || UseBoth;
+        private bool UseBoth => true;      // _controller.ControlType == VirtualControl.Both;
 
         //Main
         public void OnEnable() => ObserveEvents();

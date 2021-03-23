@@ -18,7 +18,6 @@ public interface INode : IToggles, IParameters
     void ClearNode();
     IsActive AutoOpenCloseOverride { get; }
     float AutoOpenDelay { get; }
-    RectTransform MainCanvas { get; }
 }
 
 public interface IToggles

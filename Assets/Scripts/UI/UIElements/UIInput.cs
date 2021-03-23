@@ -16,18 +16,17 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
                        ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, 
                        IEServUser, IEventDispatcher, IClearAll
 {
-    public UIInput() => _validationCheck = new ValidationCheck(this);
+    //public UIInput() => _validationCheck = new ValidationCheck(this);
 
     [Header("Input Scheme(Expandable)", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
     [SerializeField] 
-    [Expandable] 
     private InputScheme _inputScheme  = default;
-    [SerializeField] 
+    [SerializeField] [Header("Switch Event", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
     [Space(20, order = 1)]
     private SwitchGameOrMenu _switchBetweenMenuAndGame  = default;
     [SerializeField] 
     [ReorderableList] private List<HotKeys> _hotKeySettings = new List<HotKeys>();
-
+    
     //Variables
     private bool _canStart, _inMenu, _gameIsPaused, _allowKeys, _nothingSelected;
     private bool _noActivePopUps = true;
@@ -47,9 +46,9 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; set; }
     private Action<IChangeControlsPressed> OnChangeControlPressed { get; set; }
     private Action<IClearAll> OnClearAll { get; set; }
+    [Serializable] public class SwitchGameOrMenu : UnityEvent<InMenuOrGame> { }
 
-    [Serializable]
-    public class SwitchGameOrMenu : UnityEvent<InMenuOrGame> { }
+
 
     //Properties
     private bool MouseOnly()
@@ -100,7 +99,8 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         _inputScheme.SetCursor();
     }
 
-    public void DoValidation() => _validationCheck.ValidateDialogue();
+    //TODO Remove this / sort out validation dialouge
+   // public void DoValidation() => _validationCheck.ValidateDialogue();
 
     private void OnEnable()
     {
@@ -148,9 +148,9 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     {
         if (!_canStart) return;
 
-        if(ReturnControlToGameIfKeysOnly()) return;
+        if(ReturnToGameFromEditorIfKeysOnly()) return;
         
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && _onHomeScreen)
+        if (CanCancelWhenClickedOff())
         {
             OnClearAll?.Invoke(this);
             return;
@@ -168,10 +168,15 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         if (_inMenu) InMenuControls();
     }
 
-    private bool ReturnControlToGameIfKeysOnly()
+    private bool CanCancelWhenClickedOff()
+    {
+        return _inputScheme.CanCancelWhenClickedOff() && !EventSystem.current.IsPointerOverGameObject() && _onHomeScreen;
+    }
+
+    private bool ReturnToGameFromEditorIfKeysOnly()
     {
         if(!_inMenu) return false;
-        if (Input.GetMouseButtonDown(0) && _inputScheme.ControlType == ControlMethod.KeysOrControllerOnly)
+        if (_inputScheme.LeftMouseClicked && _inputScheme.ControlType == ControlMethod.KeysOrControllerOnly)
         {
             EventSystem.current.SetSelectedGameObject(_activeBranch.LastSelected.ReturnGameObject);
             return true;

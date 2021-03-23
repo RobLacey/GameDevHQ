@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace UIElements
 {
@@ -10,6 +13,7 @@ namespace UIElements
             _controller = parent;
             _layerToHit = parent.LayerToHit;
             FetchEvents();
+            _Raycaster = _controller.GraphicRaycaster;
         }
 
         //Variables
@@ -17,6 +21,10 @@ namespace UIElements
         private readonly IRaycastController _controller;
         protected LayerMask _layerToHit;
         protected readonly Camera _mainCamera = Camera.main;
+        GraphicRaycaster _Raycaster;
+        PointerEventData _PointerEventData;
+
+
         
         //Events
         private Action<IClearAll> ClearAll { get; set; }
@@ -48,8 +56,11 @@ namespace UIElements
             }
         }
 
-        public void DoRaycast(Vector3 virtualCursorPos) => OverGameObj(RaycastToObj(virtualCursorPos));
-
+        public void DoRaycast(Vector3 virtualCursorPos)
+        {
+            OverGameObj(RaycastToObj(virtualCursorPos));
+        }
+        
         private void OverGameObj(ICursorHandler hit)
         {
             if (hit.IsNull())

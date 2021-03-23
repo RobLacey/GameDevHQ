@@ -61,7 +61,10 @@ public partial class UIBranch
     public bool PointerOverBranch => AutoOpenCloseClass.PointerOverBranch;
     public List<UIBranch> HomeBranches { private get; set; }
     public float Timer => _timer;
-    public void ResetSavePositionOnExit() => _saveExitSelection = IsActive.Yes;
+    public IsActive SetSaveLastSelectionOnExit
+    {
+        set => _saveExitSelection = value;
+    }
 
 
     public EscapeKey EscapeKeyType
@@ -92,12 +95,6 @@ public partial class UIBranch
     {
         get => _autoOpenClose;
         set => _autoOpenClose = value;
-    }
-    
-    public IsActive BlockOtherNode
-    {
-        get => _blockOtherNodes;
-        set => _blockOtherNodes = value;
     }
     
     public OrderInCanvas CanvasOrder

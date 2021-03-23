@@ -8,6 +8,8 @@ using UnityEngine.UI;
 public interface IToolTipData: IParameters
 {
     RectTransform MainCanvas { get; }
+    RectTransform FixedPosition { get; }
+    InputScheme InputScheme { get; }
     Camera UiCamera { get; }
     LayoutGroup[] ListOfTooltips { get; }
     int CurrentToolTipIndex { get; }
@@ -22,7 +24,9 @@ public class UITooltip : NodeFunctionBase, IToolTipData
 {
     public UITooltip(ITooltipSettings settings)
     {
+        FixedPosition = settings.FixedPosition;
         MainCanvas = settings.UiNodeEvents.ReturnMasterNode.MainCanvas;
+        InputScheme = settings.UiNodeEvents.ReturnMasterNode.InputScheme;
         UiCamera = settings.UiCamera;
         Scheme = settings.Scheme;
         ListOfTooltips = settings.ToolTips;
@@ -38,9 +42,12 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     private float _buildDelay;
     private IToolTipFade _toolTipFade;
     private IGetScreenPosition _getScreenPosition;
+    private bool _vcIsActive;
 
     //Properties
     public ToolTipScheme Scheme { get; }
+    public InputScheme InputScheme { get; }
+    public RectTransform FixedPosition { get; }
     public RectTransform MainCanvas { get; }
     public Camera UiCamera { get; }
     public int CurrentToolTipIndex { get; private set; }
@@ -48,6 +55,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     public RectTransform[] ToolTipsRects { get; private set; }
     public Vector3[] MyCorners { get; } = new Vector3[4];
     public RectTransform ParentRectTransform { get; private set; }
+
 
     //Set / Getters
     protected override bool CanBeHighlighted() => false;
@@ -59,6 +67,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         if(FunctionNotActive()) return;
         HideToolTip();
     }
+    
     private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
     
     //TODO Change size calculations to work from camera size rather than canvas so still works when aspect changes
@@ -82,14 +91,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     {
         ParentRectTransform = _uiEvents.ReturnMasterNode.GetComponent<RectTransform>();
         _getScreenPosition = EJect.Class.WithParams<IGetScreenPosition>(this);
-        if (Scheme.AsInInspector())
-        {
-            ParentRectTransform.GetWorldCorners(MyCorners);
-        }
-        else
-        {
-            ParentRectTransform.GetLocalCorners(MyCorners);
-        }
+        ParentRectTransform.GetLocalCorners(MyCorners);
     }
 
     public override void ObserveEvents()
@@ -98,7 +100,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetToolTipCanvasOrder);
     }
-    
+
     //Main
     private void SetToolTipCanvasOrder(ISetStartingCanvasOrder args)
     {
@@ -165,7 +167,6 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         _coroutineBuild = StaticCoroutine.StartCoroutine(ToolTipBuild());
         _coroutineActivate = StaticCoroutine.StartCoroutine(ActivateTooltip(_allowKeys));
     }
-    
 
     private IEnumerator ToolTipBuild()
     {
@@ -198,11 +199,11 @@ public class UITooltip : NodeFunctionBase, IToolTipData
                            .StartFadeIn(iD);
     }
 
-    private IEnumerator ActivateTooltip(bool isKeyboard)
+    private IEnumerator ActivateTooltip(bool isKeyboardOrVC)
     {
         while (_pointerOver)
         {
-            _getScreenPosition.SetExactPosition(isKeyboard);
+            _getScreenPosition.SetExactPosition(isKeyboardOrVC);
             yield return null;
         }
         yield return null;

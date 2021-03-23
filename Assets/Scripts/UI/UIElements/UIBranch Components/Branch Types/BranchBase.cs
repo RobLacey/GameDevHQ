@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -97,8 +99,24 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
 
     public virtual bool CanStartBranch() => true;
 
-    public virtual void SetUpBranch(IBranch newParentController = null) { }
+    public virtual void SetUpBranch(IBranch newParentController = null)
+    {
+        ActivateChildTabBranches(ActiveCanvas.Yes);
+    }
 
+    private void ActivateChildTabBranches(ActiveCanvas activeCanvas)
+    {
+        if (HasChildTabBranches())
+        {
+            _myBranch.LastSelected.ToggleData.ReturnTabBranch.SetCanvas(activeCanvas);
+        }
+
+        bool HasChildTabBranches()
+        {
+            return _myBranch.LastSelected.IsToggleGroup && _myBranch.LastSelected.ToggleData.ReturnTabBranch;
+        }
+    }
+    
     public virtual void EndOfBranchStart() => SetBlockRaycast(BlockRaycast.Yes);
 
     public virtual void StartBranchExit() => SetBlockRaycast(BlockRaycast.No);
@@ -107,9 +125,27 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     {
         SetCanvas(ActiveCanvas.No);
         _canvasOrderCalculator.ResetCanvasOrder();
+        ActivateChildTabBranches(ActiveCanvas.No);
     }
     
-    public virtual void SetCanvas(ActiveCanvas active) => _myCanvas.enabled = active == ActiveCanvas.Yes;
+    public static event Action<INode[]> AddNode;
+    public static event Action<INode[]> RemoveNode;
+
+    
+    public virtual void SetCanvas(ActiveCanvas active)
+    {
+        var temp = _myBranch.ThisGroupsUiNodes;
+        if (active == ActiveCanvas.Yes)
+        {
+            AddNode?.Invoke(temp);
+        }
+        else
+        {
+            RemoveNode?.Invoke(temp);
+        }
+        
+        _myCanvas.enabled = active == ActiveCanvas.Yes;
+    }
 
     public virtual void SetBlockRaycast(BlockRaycast active)
     {

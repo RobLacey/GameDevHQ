@@ -67,7 +67,6 @@ public class BranchFactory
     {
         branch.ScreenType = ScreenType.Normal;
         branch.EscapeKeyType = EscapeKey.None;
-        branch.BlockOtherNode = IsActive.No;
 
         if (!branch.IsControlBar()) return;
         
@@ -86,9 +85,8 @@ public class BranchFactory
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.TweenOnHome = DoTween.DoNothing;
         branch.SetStayOn = IsActive.No;
-        branch.BlockOtherNode = IsActive.No;
         branch.CanvasOrder = OrderInCanvas.Manual;
-        branch.ResetSavePositionOnExit();
+        branch.SetSaveLastSelectionOnExit = IsActive.No;
     }
 
     private static void CreateOptionalPopUp(IBranch branch)
@@ -97,9 +95,8 @@ public class BranchFactory
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.SetStayOn = IsActive.No;
         branch.AutoOpenClose = AutoOpenClose.No;
-        branch.BlockOtherNode = IsActive.No;
         branch.CanvasOrder = OrderInCanvas.Manual;
-        branch.ResetSavePositionOnExit();
+        branch.SetSaveLastSelectionOnExit = IsActive.No;
     }
     
     private static void CreateTimedPopUp(IBranch branch)
@@ -109,16 +106,14 @@ public class BranchFactory
         branch.WhenToMove = WhenToMove.Immediately;
         branch.SetStayOn = IsActive.No;
         branch.AutoOpenClose = AutoOpenClose.No;
-        branch.BlockOtherNode = IsActive.No;
         branch.CanvasOrder = OrderInCanvas.Manual;
-        branch.ResetSavePositionOnExit();
+        branch.SetSaveLastSelectionOnExit = IsActive.No;
     }
 
     private static void CreatePauseMenu(IBranch branch)
     {
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.TweenOnHome = DoTween.DoNothing;
-        branch.BlockOtherNode = IsActive.No;
         branch.CanvasOrder = OrderInCanvas.Manual;
     }
     
@@ -126,16 +121,17 @@ public class BranchFactory
     {
         branch.TweenOnHome = DoTween.DoNothing;
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
-        branch.BlockOtherNode = IsActive.No;
     }
     
     private static void CreateInGameUi(IBranch branch)
     {
+        branch.WhenToMove = WhenToMove.Immediately;
+        branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.ScreenType = ScreenType.Normal;
         branch.TweenOnHome = DoTween.DoNothing;
-        branch.BlockOtherNode = IsActive.No;
-        branch.CanvasOrder = OrderInCanvas.Behind;
-        branch.ResetSavePositionOnExit();
+        branch.CanvasOrder = OrderInCanvas.Manual;
+        branch.SetSaveLastSelectionOnExit = IsActive.No;
+        branch.AutoOpenClose = AutoOpenClose.No;
     }
 
 }

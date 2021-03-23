@@ -13,13 +13,35 @@ public class NewSystem : InputScheme
     protected override string VCursorHorizontal { get; } = " ";
     protected override string VCursorVertical { get; } = " ";
     protected override string SelectedButton { get; } = " ";
-    public override bool MouseClicked { get; } = false;
+    public override bool AnyMouseClicked { get; } = false;
+    public override bool LeftMouseClicked { get; } = false;
+    public override bool RightMouseClicked { get; } = false;
     public override bool CanSwitchToKeysOrController { get; } = false;
-    public override bool CanSwitchToMouse { get; } = false;
+    public override bool CanSwitchToMouseOrVC { get; } = false;
 
     public override void SetMousePosition()
     {
         Debug.Log("Old Mouse Position set");
+    }
+
+    public override Vector3 GetMousePosition()
+    {
+        return Vector3.zero;
+    }
+
+    public override Vector3 SetVirtualCursorPosition(Vector3 pos)
+    {
+        return Vector3.zero;
+    }
+
+    public override Vector3 GetVirtualCursorPosition()
+    {
+        return Vector3.zero;
+    }
+
+    public override bool CanCancelWhenClickedOff()
+    {
+        return false;
     }
 
     protected override void SetUpUInputScheme()
