@@ -7,6 +7,7 @@ public class OldSystem : InputScheme
 {
     [Space(10f, order = 1)]
     [Header("Input Settings", order = 2)] [HorizontalLine(1, color: EColor.Blue, order = 3)]
+    
     [SerializeField] 
     [Label("Pause / Option Button")] [InputAxis]
     private string _pauseOptionButton = default;
@@ -23,6 +24,15 @@ public class OldSystem : InputScheme
     [SerializeField] 
     [Label("Switch To/From Game Menus")] [InputAxis] 
     private string _switchToMenusButton = default;
+    [SerializeField] 
+    [InputAxis]
+    private string _mouseYAxis = default;
+    [SerializeField] 
+    [InputAxis] 
+    private string _mouseXAxis = default;
+    [SerializeField] 
+    [Label("Switch To Virtual Cursor")] [InputAxis] 
+    private string _switchToVC = default;
     [SerializeField] 
     [Label("Virtual Cursor Horizontal")] [InputAxis] 
     private string _vCursorHorizontal = default;
@@ -64,6 +74,9 @@ public class OldSystem : InputScheme
                  _hasNegGOUIAxis,
                  _hasCancelAxis,
                  _hasSwitchToMenusButton,
+                 _hasMouseXAxis,
+                 _hasMouseYAxis,
+                 _hasSwitchToVCButton,
                  _hasVCursorHorizontal,
                  _hasVCursorVertical,
                  _hasSelectButton;
@@ -81,25 +94,48 @@ public class OldSystem : InputScheme
     protected override string CancelButton => _cancelButton;
     protected override string MenuToGameSwitch => _switchToMenusButton;
     protected override string VCursorHorizontal => _vCursorHorizontal;
+    protected override string SwitchToVC => _switchToVC;
+    protected override string MouseXAxis => _mouseXAxis;
+    protected override string MouseYAxis => _mouseYAxis;
     protected override string VCursorVertical => _vCursorVertical;
     protected override string SelectedButton => _selectButton;
     public override bool AnyMouseClicked => Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
     public override bool LeftMouseClicked => Input.GetMouseButtonDown(0);
     public override bool RightMouseClicked => Input.GetMouseButtonDown(1);
-    public override bool CanSwitchToKeysOrController => Input.anyKeyDown && ControlType != ControlMethod.MouseOnly;
+    public override bool CanSwitchToKeysOrController
+    {
+        get
+        {
+            if (ControlType == ControlMethod.MouseOnly) return false;
+            if (CanUseVirtualCursor == VirtualControl.Yes)
+            {
+                return VCSwitchTo();
+            }
+            return Input.anyKeyDown;
+        }
+    }
 
-    public override bool CanSwitchToMouseOrVC =>
-        _mousePosition != Input.mousePosition
-        && ControlType != ControlMethod.KeysOrControllerOnly;
+    public override bool CanSwitchToMouseOrVC
+    {
+        get
+        {
+            if (ControlType == ControlMethod.KeysOrControllerOnly) return false;
+            if (CanUseVirtualCursor == VirtualControl.Yes)
+            {
+                return VCSwitchTo();
+            }
+            
+            return MouseXAxisValue() != 0 || MouseYAxisValue() != 0;
+        }
+    }
 
-    public override void SetMousePosition() => _mousePosition = Input.mousePosition;
     public override Vector3 GetMousePosition()
     {
         if (CanUseVirtualCursor == VirtualControl.Yes) return GetVirtualCursorPosition();
         return Input.mousePosition;
     }
-    public override Vector3 SetVirtualCursorPosition(Vector3 pos) => _virtualCursorPosition = pos;
-    public override Vector3 GetVirtualCursorPosition() => _virtualCursorPosition;
+    public override void SetVirtualCursorPosition(Vector3 pos) => _virtualCursorPosition = pos;
+    private protected override Vector3 GetVirtualCursorPosition() => _virtualCursorPosition;
 
     public override bool CanCancelWhenClickedOff()
     {
@@ -130,6 +166,9 @@ public class OldSystem : InputScheme
         _hasSwitchToMenusButton = MenuToGameSwitch != string.Empty;
         _hasVCursorHorizontal = VCursorHorizontal != string.Empty;
         _hasVCursorVertical = VCursorVertical != string.Empty;
+        _hasSwitchToVCButton = SwitchToVC != string.Empty;
+        _hasMouseXAxis = MouseXAxis != string.Empty;
+        _hasMouseYAxis = MouseYAxis != string.Empty;
         _hasSelectButton = SelectedButton != string.Empty;
         _hasHotKey1 = _hotKey1 != string.Empty;
         _hasHotKey2 = _hotKey2 != string.Empty;
@@ -155,6 +194,9 @@ public class OldSystem : InputScheme
 
     public override float VcHorizontal() => _hasVCursorHorizontal ? Input.GetAxis(VCursorHorizontal) : 0;
     public override float VcVertical() =>  _hasVCursorVertical ? Input.GetAxis(VCursorVertical) : 0;
+    public override float MouseXAxisValue() =>  _hasMouseXAxis ? Input.GetAxis(MouseXAxis) : 0;
+    public override float MouseYAxisValue() =>  _hasMouseYAxis ? Input.GetAxis(MouseYAxis) : 0;
+    private protected override bool VCSwitchTo() =>  _hasSwitchToVCButton && Input.GetButtonDown(SwitchToVC);
     public override bool PressSelect() =>  _hasSelectButton && Input.GetButtonDown(SelectedButton);
 
     public override bool HotKeyChecker(HotKey hotKey)

@@ -171,7 +171,7 @@ public partial class GOUIController : MonoBehaviour, IGOController, IEventUser
 
     private void Update()
     {
-        if(!CanSwitch) return;
+        if(!CanSwitch || !_canStart) return;
         // if (_inputScheme.PressedCancel())
         // {
         //     if(_activeObject.IsNull()) return;

@@ -118,8 +118,6 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     private void OnEnable()
     {
         SetUpUiFunctions();
-        SetChildParentBranch();        
-
         StartNodeFactory();
         _nodeBase.OnEnable();
     }
@@ -147,6 +145,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     private void Start()
     {
+        SetChildParentBranch();        
         _nodeBase.Start();
         
         foreach (var func in _activeFunctions)
@@ -158,8 +157,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     private void SetChildParentBranch()
     {
         if(_buttonFunction == ButtonFunction.InGameUi) return;
-        
-        if (!(HasChildBranch is null))
+        if (HasChildBranch.IsNotNull())
         {
             HasChildBranch.MyParentBranch = MyBranch;
         }
@@ -172,7 +170,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     }
 
     public void SetNodeAsActive() => _nodeBase.SetNodeAsActive();
-    public void SetAsHotKeyParent() => _nodeBase.HotKeyPressed();
+    public void SetAsHotKeyParent(bool setAsActive) => _nodeBase.HotKeyPressed(setAsActive);
 
     public void DeactivateNode() => _nodeBase.DeactivateNodeByType();
 

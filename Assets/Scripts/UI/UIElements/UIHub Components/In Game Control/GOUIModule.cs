@@ -247,7 +247,7 @@ namespace UIElements
 
         private void ClearUI(IClearAll args = null)
         {
-            Debug.Log("Clear All : UIGO");
+           // Debug.Log("Clear All : UIGO");
             if(!_active ) return;
             ExitInGameUi();
         }

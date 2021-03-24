@@ -169,6 +169,11 @@ public interface ISetStartingCanvasOrder
 
 }
 
+public interface IReturnHomeGroupIndex
+{
+    INode TargetNode { set; }
+}
+
 
 
 

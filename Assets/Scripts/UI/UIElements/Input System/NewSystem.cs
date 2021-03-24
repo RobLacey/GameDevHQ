@@ -12,6 +12,9 @@ public class NewSystem : InputScheme
     protected override string MenuToGameSwitch { get; } = " ";
     protected override string VCursorHorizontal { get; } = " ";
     protected override string VCursorVertical { get; } = " ";
+    protected override string SwitchToVC { get; } = " ";
+    protected override string MouseXAxis { get; } = " ";
+    protected override string MouseYAxis { get; } = " ";
     protected override string SelectedButton { get; } = " ";
     public override bool AnyMouseClicked { get; } = false;
     public override bool LeftMouseClicked { get; } = false;
@@ -19,22 +22,17 @@ public class NewSystem : InputScheme
     public override bool CanSwitchToKeysOrController { get; } = false;
     public override bool CanSwitchToMouseOrVC { get; } = false;
 
-    public override void SetMousePosition()
-    {
-        Debug.Log("Old Mouse Position set");
-    }
-
     public override Vector3 GetMousePosition()
     {
         return Vector3.zero;
     }
 
-    public override Vector3 SetVirtualCursorPosition(Vector3 pos)
+    public override void SetVirtualCursorPosition(Vector3 pos)
     {
-        return Vector3.zero;
+        Debug.Log("Set VC Position");
     }
 
-    public override Vector3 GetVirtualCursorPosition()
+    private protected override Vector3 GetVirtualCursorPosition()
     {
         return Vector3.zero;
     }
@@ -94,6 +92,11 @@ public class NewSystem : InputScheme
         return 0;
     }
 
+    private protected override bool VCSwitchTo()
+    {
+        return false;
+    }
+
     public override bool PressSelect()
     {
         return false;
@@ -102,7 +105,15 @@ public class NewSystem : InputScheme
     public override bool HotKeyChecker(HotKey hotKey)
     {
         return false;
-
     }
 
+    public override float MouseXAxisValue()
+    {
+        return 0;
+    }
+
+    public override float MouseYAxisValue()
+    {
+        return 0;
+    }
 }

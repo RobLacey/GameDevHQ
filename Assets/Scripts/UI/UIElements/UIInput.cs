@@ -170,7 +170,8 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
 
     private bool CanCancelWhenClickedOff()
     {
-        return _inputScheme.CanCancelWhenClickedOff() && !EventSystem.current.IsPointerOverGameObject() && _onHomeScreen;
+        return _inputScheme.CanCancelWhenClickedOff() && !EventSystem.current.IsPointerOverGameObject() 
+                                                      && _onHomeScreen;
     }
 
     private bool ReturnToGameFromEditorIfKeysOnly()

@@ -70,7 +70,6 @@ public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelH
         return false;
     }
 
-
     private IEnumerator WaitForPointer()
     {
         yield return new WaitForEndOfFrame();

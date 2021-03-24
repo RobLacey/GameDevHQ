@@ -153,7 +153,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
                              .ClearAllHistory();
         _lastSelected = args.ParentNode;
     }
-
+    
     private void HotKeyReturnsToHomeScreen(ScreenType hotKeyScreenType)
     {
         if (hotKeyScreenType != ScreenType.FullScreen && !_onHomeScreen)

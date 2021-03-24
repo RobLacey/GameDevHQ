@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba0795612f67412288cc7dc8e7b56c47, type: 3}
   m_Name: ToolTipScheme - In Game
   m_EditorClassIdentifier: 
-  _tooltipType: 1
+  _tooltipTypeMouse: 1
   _toolTipPosition: 8
   _mousePaddingX: 0
   _mousePaddingY: 0
+  _tooltipTypeKeys: 0
   _positionToUse: 0
   _keyboardPosition: 2
   _keyboardPaddingX: 0

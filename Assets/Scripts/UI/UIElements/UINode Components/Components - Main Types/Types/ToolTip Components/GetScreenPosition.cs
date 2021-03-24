@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public interface IGetScreenPosition
 {
-    void SetExactPosition(bool isKeyboardOrVC);
+    void SetExactPosition(bool isKeyboard);
 }
 
 public class GetScreenPosition : IGetScreenPosition
@@ -33,27 +33,28 @@ public class GetScreenPosition : IGetScreenPosition
     private Vector2 KeyboardPadding => new Vector2(_scheme.KeyboardXPadding, _scheme.KeyboardYPadding);
     private Vector2 MousePadding => new Vector2(_scheme.MouseXPadding, _scheme.MouseYPadding);
 
-    public void SetExactPosition(bool isKeyboardOrVC)
+    public void SetExactPosition(bool isKeyboard)
     {
         var index = _tooltip.CurrentToolTipIndex;
         
         var toolTipSize = new Vector2(_listOfTooltips[index].preferredWidth
                                       , _listOfTooltips[index].preferredHeight);
 
-        var toolTipAnchorPos 
-            = !isKeyboardOrVC ? _scheme.ToolTipPosition : _scheme.KeyboardPosition;
+        var toolTipAnchorPos  = isKeyboard ? _scheme.KeyboardPosition : _scheme.ToolTipPosition;
+
+        var tooTipType = isKeyboard ? _scheme.ToolTipTypeKeys : _scheme.ToolTipTypeMouse;
         
-        var toolTipPos = GetToolTipsScreenPosition(isKeyboardOrVC, _scheme.ToolTipType);
+        var toolTipPos = GetToolTipsScreenPosition(isKeyboard, tooTipType);
 
         (_toolTipsRects[index].anchoredPosition, _toolTipsRects[index].pivot)
             = _calculation.CalculatePosition(toolTipPos, toolTipSize, toolTipAnchorPos);
     }
 
-    private Vector3 GetToolTipsScreenPosition(bool isKeyboardOrVC, TooltipType toolTipType)
+    private Vector3 GetToolTipsScreenPosition(bool isKeyboard, TooltipType toolTipType)
     {
         switch (toolTipType)
         {
-            case TooltipType.Follow when isKeyboardOrVC:
+            case TooltipType.Follow when isKeyboard:
                 return SetKeyboardTooltipPosition();
             case TooltipType.Follow:
                 return SetMouseToolTipPosition();

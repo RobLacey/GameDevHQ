@@ -9,26 +9,31 @@ public class ToolTipScheme : ScriptableObject
     [InfoBox("FOLLOW - Follows Mouse or Virtual Cursor or RectTransform of Node for Keys or Controller \n \n" + 
              "FIXED POSITION - Everything. Tooltip appears in the position of the supplied RectTransform")]
     
-    [SerializeField] [Space(20f)] private TooltipType _tooltipType = TooltipType.Follow;
-    
     [Header("Mouse & Virtual Cursor Settings", order = 2)] 
     [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 3)]
+    [SerializeField]
+    [Label("Tooltip Type")]
+    private TooltipType _tooltipTypeMouse = TooltipType.Follow;
     
     [SerializeField] 
     [AllowNesting] [Label("Tooltip Position")] 
     private ToolTipAnchor _toolTipPosition = default;
     
     [SerializeField] 
-    [Range(-50f, 50f)] [Label("X Padding (-50 to 50)")]
+    [Range(-100f, 100f)] [Label("X Padding (-100 to 100)")]
     private float _mousePaddingX = default;
     
     [SerializeField] 
-    [Range(-50f, 50f)] [Label("Y Padding (-50 to 50)")]
+    [Range(-100F, 100F)] [Label("Y Padding (-100 to 100)")]
     private float _mousePaddingY = default;
     
     [Header("Keyboard and Controller Settings")] 
     [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
     
+    [SerializeField] 
+    [Label("Tooltip Type")]
+    private TooltipType _tooltipTypeKeys = TooltipType.Follow;
+
     [SerializeField] 
     [Label("Tooltip Preset")]
     private UseSide _positionToUse = UseSide.ToTheRightOf;
@@ -38,11 +43,11 @@ public class ToolTipScheme : ScriptableObject
     private ToolTipAnchor _keyboardPosition = default;
     
     [SerializeField]  
-    [Range(-50f, 50f)] [Label("X Padding (-50 to 50)")] 
+    [Range(-100F, 100F)] [Label("X Padding (-100 to 100)")] 
     private float _keyboardPaddingX = default;
     
     [SerializeField] 
-    [Range(-50f, 50f)] [Label("Y Padding (-50 to 50)")]
+    [Range(-100f, 100)] [Label("Y Padding (-100 to 100)")]
     private float _keyboardPaddingY = default;
     
     [Header("Other Settings")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
@@ -70,7 +75,8 @@ public class ToolTipScheme : ScriptableObject
     private float _fadeOutTweenTime = 0.2f;
 
 
-    public TooltipType ToolTipType => _tooltipType;
+    public TooltipType ToolTipTypeMouse => _tooltipTypeMouse;
+    public TooltipType ToolTipTypeKeys => _tooltipTypeKeys;
     public ToolTipAnchor ToolTipPosition => _toolTipPosition;
     public float MouseXPadding => _mousePaddingX;
     public float MouseYPadding => _mousePaddingY;
@@ -84,7 +90,7 @@ public class ToolTipScheme : ScriptableObject
     public float FadeInTime => _fadeInTweenTime;
     public float FadeOutTime => _fadeOutTweenTime;
 
-    public bool Fixed() => _tooltipType == TooltipType.FixedPosition;
-    public bool Follow() => _tooltipType == TooltipType.Follow;
+    public bool Fixed() => _tooltipTypeMouse == TooltipType.FixedPosition;
+    public bool Follow() => _tooltipTypeMouse == TooltipType.Follow;
 
 }

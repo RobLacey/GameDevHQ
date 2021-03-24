@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 public interface IHomeGroup
 {
@@ -14,6 +13,7 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
 {
     public UIHomeGroup(IHub hub)
     {
+        _index = 0;
         _homeGroup = hub.HomeBranches;
 
         foreach (var branch in _homeGroup)
@@ -28,7 +28,7 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
     private readonly IBranch[] _homeGroup;
     private bool _onHomeScreen = true;
     private bool _gameIsPaused;
-    private int _index;
+    private static int _index;
     private IBranch _lastActiveHomeBranch;
 
     //Properties
@@ -38,7 +38,8 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     
     public void OnEnable() => ObserveEvents();
-    
+
+
     public void OnDisable() { }
 
     public void ObserveEvents()
@@ -48,8 +49,14 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
         EVent.Do.Subscribe<IActiveBranch>(SetActiveHomeBranch);
         EVent.Do.Subscribe<IGameIsPaused>(GameIsPaused);
         EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        EVent.Do.Subscribe<IReturnHomeGroupIndex>(ReturnHomeGroup);
     }
-    
+
+    private void ReturnHomeGroup(IReturnHomeGroupIndex args)
+    {
+        args.TargetNode = _homeGroup[_index].LastSelected;
+    }
+
     private void SwitchHomeGroups(ISwitchGroupPressed args)
     {
         if (!_onHomeScreen) return;

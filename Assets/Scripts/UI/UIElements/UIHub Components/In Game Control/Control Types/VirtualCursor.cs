@@ -38,6 +38,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
     private RectTransform _cursorRectTransform;
     private GraphicRaycaster _raycaster;
     private RectTransform _lastHit;
+    private bool _canStart;
  
     //Editor
     private bool HasRect(RectTransform rect) => rect != null;
@@ -111,14 +112,12 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
         
         if (args.CanAllowKeys)
         {
-            Debug.Log("Keys");
             _cursorCanvas.enabled = false;
             _raycastTo2D.WhenInMenu();
             _raycastTo3D.WhenInMenu();
         }
         else
         {
-            Debug.Log("Mouse");
             _cursorCanvas.enabled = true;
             _noInput = false;
             FixedUpdate();
@@ -153,6 +152,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
         SetUpInGameObjects();
 
         _newCursorPos = Vector2.zero;
+        _canStart = true;
     }
     
     private bool CanNotUseVirtualCursor()
@@ -177,7 +177,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
     
     public void FixedUpdate()
     {
-       // if(!_inGame) return;
+        if(!_canStart) return;
         
         _noInput = _scheme.VcHorizontal() == 0 && _scheme.VcVertical() == 0;
         
@@ -192,7 +192,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll
     
     public void UseVirtualCursor()
     {
-       // if(!_inGame) return;
+        if(!_canStart) return;
 
         HasSelectedBeenPressed();
         MoveVirtualCursor();

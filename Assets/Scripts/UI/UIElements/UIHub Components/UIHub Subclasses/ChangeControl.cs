@@ -53,8 +53,6 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
 
     private void StartGame(IOnStart onStart)
     {
-        _inputScheme.SetMousePosition();
-        
         if (MousePreferredControlMethod())
         {
             SetUpMouse();
@@ -98,12 +96,15 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
 
     private void ChangeControlType(IChangeControlsPressed args)
     {
-        if (_inputScheme.CanSwitchToMouseOrVC)
+        if (_inputScheme.CanSwitchToMouseOrVC && !_usingMouse)
         {
+            Debug.Log("Mouse");
             ActivateMouseOrVirtualCursor();
         }
-        else if(_inputScheme.CanSwitchToKeysOrController)
+        else if(_inputScheme.CanSwitchToKeysOrController && _usingMouse)
         {
+            Debug.Log("Keys");
+
             if (_inputScheme.AnyMouseClicked) return;
             ActivateKeysOrControl();
         }
@@ -121,7 +122,6 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
         }
         else
         {
-            _inputScheme.SetMousePosition();
             Cursor.visible = true;
         }
         

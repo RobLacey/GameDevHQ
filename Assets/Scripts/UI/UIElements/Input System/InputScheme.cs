@@ -9,7 +9,7 @@ public abstract class InputScheme : ScriptableObject
     protected ControlMethod _mainControlType = ControlMethod.MouseOnly;
 
     [SerializeField] //TODO set to no when keys only
-    [Label("Hide Cursor (Keys Active)")]
+    [Label("Hide Cursor When Keys Active")]
     private IsActive _hideMouseCursor = IsActive.No;
     
     [SerializeField] 
@@ -63,7 +63,6 @@ public abstract class InputScheme : ScriptableObject
 
 
     //Variables
-    protected Vector3 _mousePosition;
     protected Vector3 _virtualCursorPosition;
     private enum PauseFunction { DoNothing, BackOneLevel, BackToHome }
 
@@ -135,10 +134,12 @@ public abstract class InputScheme : ScriptableObject
     public abstract bool  RightMouseClicked { get; }
     public abstract bool CanSwitchToKeysOrController { get; }
     public abstract bool CanSwitchToMouseOrVC { get; }
-    public abstract void SetMousePosition();
+    protected abstract string SwitchToVC { get; }
+    protected abstract string MouseXAxis { get; }
+    protected abstract string MouseYAxis { get; }
     public abstract Vector3 GetMousePosition();
-    public abstract Vector3 SetVirtualCursorPosition(Vector3 pos);
-    public abstract Vector3 GetVirtualCursorPosition();
+    public abstract void SetVirtualCursorPosition(Vector3 pos);
+    private protected abstract Vector3 GetVirtualCursorPosition();
     public abstract bool CanCancelWhenClickedOff();
 
     public void OnAwake()
@@ -157,6 +158,7 @@ public abstract class InputScheme : ScriptableObject
     public abstract bool PressedNegativeGOUISwitch();
     public abstract float VcHorizontal();
     public abstract float VcVertical();
+    private protected abstract bool VCSwitchTo();
     public abstract bool PressSelect();
     public abstract bool HotKeyChecker(HotKey hotKey);
 
@@ -174,4 +176,7 @@ public abstract class InputScheme : ScriptableObject
                 throw new ArgumentOutOfRangeException();
         }
     }
+
+    public abstract float MouseXAxisValue();
+    public abstract float MouseYAxisValue();
 }

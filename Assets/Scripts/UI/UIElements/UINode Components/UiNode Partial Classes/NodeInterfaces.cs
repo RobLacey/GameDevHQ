@@ -6,7 +6,7 @@ using UnityEngine;
 public interface INode : IToggles, IParameters
 {
     EscapeKey EscapeKeyType { get; }
-    void SetAsHotKeyParent();
+    void SetAsHotKeyParent(bool setAsActive);
     IBranch MyBranch { get; }
     IBranch HasChildBranch { get; set; }
     bool CanNotStoreNodeInHistory { get; }

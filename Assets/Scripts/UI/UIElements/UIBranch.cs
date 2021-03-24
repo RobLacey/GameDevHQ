@@ -126,7 +126,6 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         MyCanvas = GetComponent<Canvas>();
         MyParentBranch = this;
         SetStartPositions();
-        SetNodesChildrenToThisBranch();
         AutoOpenCloseClass = EJect.Class.WithParams<IAutoOpenClose>(this); 
     }
 
@@ -169,17 +168,6 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         
         _startOnThisNode = transform.GetComponentsInChildren<UINode>().First();
     }    
-
-    private void SetNodesChildrenToThisBranch()
-    {
-        if(InGameUI) return; //TODO review if needed
-        
-        foreach (var node in ThisGroupsUiNodes)
-        {
-            if (node.HasChildBranch is null) continue;
-            node.HasChildBranch.MyParentBranch = this;
-        }
-    }
 
     private void OnEnable()
     {

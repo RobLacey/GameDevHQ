@@ -244,11 +244,12 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
 
     protected virtual void Deactivate() => SetSelectedStatus(false, DoPressOnNode);
 
-    public void HotKeyPressed()
+    public void HotKeyPressed(bool setAsActive)
     {
         _fromHotKey = true;
         ThisNodeIsHighLighted();
         ThisNodeIsSelected();
+        if(!setAsActive) return;
         SetNodeAsSelected_NoEffects();
     }
 }

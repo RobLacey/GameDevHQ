@@ -19,5 +19,5 @@ public interface INodeBase
 
     void EnableNode();
     void DisableNode();
-    void HotKeyPressed();
+    void HotKeyPressed(bool setAsActive);
 }

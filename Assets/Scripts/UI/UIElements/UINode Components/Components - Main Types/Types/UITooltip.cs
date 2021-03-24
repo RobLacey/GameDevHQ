@@ -199,11 +199,11 @@ public class UITooltip : NodeFunctionBase, IToolTipData
                            .StartFadeIn(iD);
     }
 
-    private IEnumerator ActivateTooltip(bool isKeyboardOrVC)
+    private IEnumerator ActivateTooltip(bool isKeyboard)
     {
         while (_pointerOver)
         {
-            _getScreenPosition.SetExactPosition(isKeyboardOrVC);
+            _getScreenPosition.SetExactPosition(isKeyboard);
             yield return null;
         }
         yield return null;

@@ -71,6 +71,9 @@ public class EVentBindings : IEVentBindings
         
         //UIGO System
         AutoRemove().CreateEvent<ISetUpUIGOBranch>();
+        
+        //HotKey
+        AutoRemove().CreateEvent<IReturnHomeGroupIndex>();
     }
     
     public void CreateEvent<TType>()

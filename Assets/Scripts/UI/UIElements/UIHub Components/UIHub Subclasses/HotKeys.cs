@@ -4,7 +4,7 @@ using NaughtyAttributes;
 using UnityEngine;
 
 [Serializable]
-public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
+public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IReturnHomeGroupIndex
 {
     [SerializeField] 
     private HotKey _hotKeyInput  = default;
@@ -16,14 +16,18 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
     private INode _parentNode;
     private IBranch _activeBranch;
     private InputScheme _inputScheme;
+    private bool _makeParentActive;
     
     //Events
     private Action<IHotKeyPressed> HotKeyPressed { get; set; }
+    private Action<IReturnHomeGroupIndex> ReturnHomeGroupIndex { get; set; }
+
 
     //Properties
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     public INode ParentNode => _parentNode;
     public IBranch MyBranch => _myBranch;
+    public INode TargetNode { private get; set; }
 
     
     //Main
@@ -39,7 +43,11 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
         ObserveEvents();
     }
 
-    public void FetchEvents() => HotKeyPressed = EVent.Do.Fetch<IHotKeyPressed>();
+    public void FetchEvents()
+    {
+        HotKeyPressed = EVent.Do.Fetch<IHotKeyPressed>();
+        ReturnHomeGroupIndex = EVent.Do.Fetch<IReturnHomeGroupIndex>();
+    }
 
     public void ObserveEvents() => EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
     
@@ -95,31 +103,37 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher
         }
         else
         {
-            FindHomeScreenParentNode(_myBranch);
+            FindHomeScreenParentNode();
         }
         _hasParentNode = true;
     }
 
     private void GetImmediateParentNode()
     {
-        var branchesNodes = _myBranch.MyParentBranch.ThisGroupsUiNodes;
-        _parentNode = branchesNodes.First(node => ReferenceEquals(_myBranch, node.HasChildBranch));
+        if (ReferenceEquals(_myBranch.MyParentBranch, _myBranch))
+        {
+            FindHomeScreenParentNode();
+        }
+        else
+        {
+            var branchesNodes = _myBranch.MyParentBranch.ThisGroupsUiNodes;
+            _parentNode = branchesNodes.First(node => ReferenceEquals(_myBranch, node.HasChildBranch));
+            _makeParentActive = true;
+        }
     }
     
-    private void FindHomeScreenParentNode(IBranch branch)
+    private void FindHomeScreenParentNode()
     {
-        while (!branch.IsHomeScreenBranch())
-        {
-            branch = branch.MyParentBranch;
-        }
-        _parentNode = branch.LastSelected;
+        ReturnHomeGroupIndex?.Invoke(this);
+        _parentNode = TargetNode;
+        _makeParentActive = false;
     }
     
     private void StartThisHotKeyBranch()
     {
         HotKeyPressed?.Invoke(this);
-        _parentNode.SetAsHotKeyParent();
-        _myBranch.MoveToThisBranch();
+        _parentNode.SetAsHotKeyParent(_makeParentActive);
+        _myBranch.MoveToThisBranch(_parentNode.MyBranch);
     }
 
 }
