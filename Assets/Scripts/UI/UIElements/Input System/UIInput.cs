@@ -18,7 +18,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
 {
     //public UIInput() => _validationCheck = new ValidationCheck(this);
 
-    [Header("Input Scheme(Expandable)", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
+    [Header("Input Scheme", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
     [SerializeField] 
     private InputScheme _inputScheme  = default;
     [SerializeField] [Header("Switch Event", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
@@ -149,8 +149,8 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         if (!_canStart) return;
 
         if(ReturnToGameFromEditorIfKeysOnly()) return;
-        
-        if (CanCancelWhenClickedOff())
+
+        if (CancelWhenClickedOff.CanCancel(_inputScheme, _onHomeScreen, _allowKeys))
         {
             OnClearAll?.Invoke(this);
             return;
@@ -166,12 +166,6 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         if (CheckIfHotKeyAllowed()) return;
 
         if (_inMenu) InMenuControls();
-    }
-
-    private bool CanCancelWhenClickedOff()
-    {
-        return _inputScheme.CanCancelWhenClickedOff() && !EventSystem.current.IsPointerOverGameObject() 
-                                                      && _onHomeScreen;
     }
 
     private bool ReturnToGameFromEditorIfKeysOnly()

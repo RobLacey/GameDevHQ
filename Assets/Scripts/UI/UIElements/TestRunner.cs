@@ -32,7 +32,10 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
         [SerializeField] public UnityEvent _event6 = default;
     }
     
-    private void SaveLastHighlighted(IHighlightedNode args) => _lastHighlighted = (UINode)args.Highlighted;
+    private void SaveLastHighlighted(IHighlightedNode args)
+    {
+        _lastHighlighted = (UINode) args.Highlighted;
+    }
     private void SaveLastSelected(ISelectedNode args)  
     {
         _lastSelected = (UINode) args.UINode;

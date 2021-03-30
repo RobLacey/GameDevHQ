@@ -58,8 +58,6 @@ public class BranchFactory
             default:
                 throw new ArgumentOutOfRangeException(nameof(branchType), branchType, null);
         }
-
-        return null;
     }
 
 

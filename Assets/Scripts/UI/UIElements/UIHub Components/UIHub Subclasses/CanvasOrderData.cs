@@ -49,8 +49,8 @@ namespace UIElements
                 default:
                     return 0;
             }
-            return 0;
         }
+        
         public int SetStandardCanvasOrder(CanvasOrderCalculator calculator)
         {
             switch (calculator.GetOrderInCanvas)

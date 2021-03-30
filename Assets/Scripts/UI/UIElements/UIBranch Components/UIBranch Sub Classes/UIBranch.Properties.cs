@@ -50,6 +50,7 @@ public partial class UIBranch
     public bool CanStoreAndRestoreOptionalPoUp => _storeOrResetOptional == StoreAndRestorePopUps.StoreAndRestore;
     public INode DefaultStartOnThisNode => _startOnThisNode;
     public INode LastSelected { get; private set; }
+    public INode LastHighlighted => _lastHighlighted;
     public INode[] ThisGroupsUiNodes { get; private set; }
     public Canvas MyCanvas { get; private set; } 
     public CanvasGroup MyCanvasGroup { get; private set; }
@@ -105,8 +106,7 @@ public partial class UIBranch
     
     public int ReturnManualCanvasOrder => _orderInCanvas;
     public IsActive ReturnOnlyAllowOnHomeScreen => _onlyAllowOnHomeScreen;
-    public IsActive AlwaysOn => _alwaysOnUI; 
-
+    
     //Editor Properties
     private const string HomeScreenBranch = nameof(IsHomeScreenBranch);
     private const string StandardBranch = nameof(IsStandardBranch);

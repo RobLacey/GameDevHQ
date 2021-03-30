@@ -10,14 +10,13 @@ public interface IChangeControl : IEventUser
     void OnEnable();
 }
 
-public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispatcher
+public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCActive
 {
     public ChangeControl(IInput input)
     {
         _inputScheme = input.ReturnScheme;
         _controlMethod = _inputScheme.ControlType;
         _startInGame = input.StartInGame();
-        UseEServLocator();
     }
 
     //Variables
@@ -25,17 +24,20 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
     private readonly bool _startInGame;
     private bool _usingMouse, _sceneStarted;
     private readonly InputScheme _inputScheme;
-    private IHistoryTrack _historyTracker;
+    private IBranch _activeBranch;
+    private INode _lastHighlighted;
 
     //Properties
     public bool CanAllowKeys { get; private set; }
-    public bool UsingVirtualCursor => _inputScheme.CanUseVirtualCursor == VirtualControl.Yes;
-
+    private bool UsingVirtualCursor => _inputScheme.CanUseVirtualCursor == VirtualControl.Yes;
+    public bool VCActive => _usingMouse;
 
     //Events
     private Action<IAllowKeys> AllowKeys { get; set; }
+    private Action<IVCActive> VCIsActive { get; set; }
 
-    public void UseEServLocator() => _historyTracker = EServ.Locator.Get<IHistoryTrack>(this);
+    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
+    private void SaveHighlighted(IHighlightedNode args) => _lastHighlighted = args.Highlighted;
 
     public void OnEnable()
     {
@@ -43,14 +45,20 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
         ObserveEvents();
     }
     
-    public void FetchEvents() => AllowKeys = EVent.Do.Fetch<IAllowKeys>();
+    public void FetchEvents()
+    {
+        AllowKeys = EVent.Do.Fetch<IAllowKeys>();
+        VCIsActive = EVent.Do.Fetch<IVCActive>();
+    }
 
     public void ObserveEvents()
     {
         EVent.Do.Subscribe<IChangeControlsPressed>(ChangeControlType);
         EVent.Do.Subscribe<IOnStart>(StartGame);
+        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
     }
-
+    
     private void StartGame(IOnStart onStart)
     {
         if (MousePreferredControlMethod())
@@ -96,20 +104,13 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
 
     private void ChangeControlType(IChangeControlsPressed args)
     {
-        if (_inputScheme.CanSwitchToMouseOrVC && !_usingMouse)
+        if (_inputScheme.CanSwitchToMouseOrVC(_usingMouse))
         {
-            Debug.Log("Mouse");
             ActivateMouseOrVirtualCursor();
         }
-        else if(_inputScheme.CanSwitchToKeysOrController && _usingMouse)
+        else if(_inputScheme.CanSwitchToKeysOrController(CanAllowKeys))
         {
-            Debug.Log("Keys");
-
             if (_inputScheme.AnyMouseClicked) return;
-            ActivateKeysOrControl();
-        }
-        else if(_inputScheme.PressedNegativeGOUISwitch() || _inputScheme.PressedPositiveGOUISwitch())
-        {
             ActivateKeysOrControl();
         }
     }
@@ -129,6 +130,8 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
         _usingMouse = true;
         CanAllowKeys = false;
         SetAllowKeys();
+        if(UsingVirtualCursor) 
+            SetUpVcActivity();
     }
     
     private void ActivateKeysOrControl()
@@ -148,5 +151,22 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEServUser, IEventDispa
 
     private void SetAllowKeys() => AllowKeys?.Invoke(this);
 
-    private void SetNextHighlightedForKeys() => _historyTracker.MoveToLastBranchInHistory();
+    private void SetNextHighlightedForKeys()
+    {
+        if(UsingVirtualCursor)
+            _lastHighlighted.ClearNode();
+        
+        if (_activeBranch.IsHomeScreenBranch())
+        {
+            _lastHighlighted.MyBranch.DoNotTween();
+            _lastHighlighted.MyBranch.MoveToThisBranch();
+        }
+        else
+        {
+            _activeBranch.DoNotTween();
+            _activeBranch.MoveToThisBranch();
+        }
+    }
+    
+    private void SetUpVcActivity() => VCIsActive?.Invoke(this);
 }

@@ -19,10 +19,17 @@ public class NewSystem : InputScheme
     public override bool AnyMouseClicked { get; } = false;
     public override bool LeftMouseClicked { get; } = false;
     public override bool RightMouseClicked { get; } = false;
-    public override bool CanSwitchToKeysOrController { get; } = false;
-    public override bool CanSwitchToMouseOrVC { get; } = false;
 
-    public override Vector3 GetMousePosition()
+    public override bool CanSwitchToMouseOrVC(bool allowKeys)
+    {
+        return false;
+    }
+    public override bool CanSwitchToKeysOrController(bool allowKeys)
+    {
+        return false;
+    }
+
+    public override Vector3 GetMouseOrVcPosition()
     {
         return Vector3.zero;
     }
@@ -35,11 +42,6 @@ public class NewSystem : InputScheme
     private protected override Vector3 GetVirtualCursorPosition()
     {
         return Vector3.zero;
-    }
-
-    public override bool CanCancelWhenClickedOff()
-    {
-        return false;
     }
 
     protected override void SetUpUInputScheme()

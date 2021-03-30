@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 
 public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, IBranchBase, IBranchParams,
-                                   IEventDispatcher
+                                   IEventDispatcher, IAddNewBranch, IRemoveBranch
 {
     protected BranchBase(IBranch branch)
     {
@@ -22,15 +20,17 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     protected readonly IScreenData _screenData;
     protected bool _inMenu, _canStart, _gameIsPaused, _activeResolvePopUps;
     protected IHistoryTrack _historyTrack;
-    private readonly Canvas _myCanvas;
-    protected readonly CanvasGroup _myCanvasGroup;
     protected bool _isTabBranch;
-    protected bool _allowKeys;
     protected readonly CanvasOrderCalculator _canvasOrderCalculator;
+    private readonly Canvas _myCanvas;
+    private bool _allowKeys;
+    private readonly CanvasGroup _myCanvasGroup;
 
     //Events
     private Action<IOnHomeScreen> SetIsOnHomeScreen { get; set; }
     private Action<IClearScreen> DoClearScreen { get; set; }
+    private Action<IAddNewBranch> AddThisBranch { get; } = EVent.Do.Fetch<IAddNewBranch>();
+    private Action<IRemoveBranch> RemoveThisBranch { get; } = EVent.Do.Fetch<IRemoveBranch>();
 
     //Properties & Set/Getters
     protected void InvokeOnHomeScreen(bool onHome)
@@ -58,7 +58,9 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     }
     public bool OnHomeScreen { get; private set; } = true;
     public IBranch IgnoreThisBranch => _myBranch;
+    public IBranch MyBranch => _myBranch;
     public ScreenType MyScreenType { get; }
+    public IsActive AlwaysOn { get; protected set; } = IsActive.No;
 
     //Main
     public void OnEnable()
@@ -128,20 +130,16 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
         ActivateChildTabBranches(ActiveCanvas.No);
     }
     
-    public static event Action<INode[]> AddNode;
-    public static event Action<INode[]> RemoveNode;
-
-    
     public virtual void SetCanvas(ActiveCanvas active)
     {
         var temp = _myBranch.ThisGroupsUiNodes;
         if (active == ActiveCanvas.Yes)
         {
-            AddNode?.Invoke(temp);
+            AddThisBranch?.Invoke(this);
         }
         else
         {
-            RemoveNode?.Invoke(temp);
+            RemoveThisBranch?.Invoke(this);
         }
         
         _myCanvas.enabled = active == ActiveCanvas.Yes;

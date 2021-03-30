@@ -43,6 +43,8 @@ public class EVentBindings : IEVentBindings
         //ChangeControl
         AutoRemove().CreateEvent<IAllowKeys>();
         AutoRemove().CreateEvent<IChangeControlsPressed>();
+        AutoRemove().CreateEvent<IVCActive>();
+
         
         //Cancel
         AutoRemove().CreateEvent<ICancelHoverOverButton>();
@@ -62,6 +64,8 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<ISetUpStartBranches>();
         AutoRemove().CreateEvent<IEndTween>();
         AutoRemove().CreateEvent<IGetHomeBranches>();
+        AutoRemove().CreateEvent<IAddNewBranch>();
+        AutoRemove().CreateEvent<IRemoveBranch>();
         
         //Test
         AutoRemove().CreateEvent<ITestList>();

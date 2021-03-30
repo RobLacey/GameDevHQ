@@ -63,13 +63,12 @@ public class GetScreenPosition : IGetScreenPosition
             default:
                 throw new ArgumentOutOfRangeException(nameof(toolTipType), toolTipType, null);
         }
-        return Vector3.zero;
     }
 
     private Vector3 SetFixedToolTipPosition() => ReturnScreenPosition(_tooltip.FixedPosition.position);
 
     private Vector3 SetMouseToolTipPosition() 
-        => ReturnScreenPosition(_tooltip.InputScheme.GetMousePosition()) + MousePadding;
+        => ReturnScreenPosition(_tooltip.InputScheme.GetMouseOrVcPosition()) + MousePadding;
 
     private Vector3 SetKeyboardTooltipPosition()
     {

@@ -146,6 +146,7 @@ public interface ISetUpUIGOBranch
     IBranch TargetBranch  { get; }
     GOUIModule UIGOModule { get; }
     RectTransform MainCanvas { get; }
+    IsActive AlwaysOn { get; }
 }
 
 public interface IStartBranch
@@ -174,7 +175,16 @@ public interface IReturnHomeGroupIndex
     INode TargetNode { set; }
 }
 
+public interface IVCActive { }
 
+public interface IAddNewBranch
+{
+    IBranch MyBranch { get; }
+}
+public interface IRemoveBranch
+{
+    IBranch MyBranch { get; }
+}
 
 
 

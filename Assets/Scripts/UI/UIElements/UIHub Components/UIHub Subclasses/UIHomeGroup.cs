@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public interface IHomeGroup
 {
@@ -22,14 +23,18 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
                 throw new Exception(
                     $"{branch.ThisBranchesGameObject.name} isn't a Home Screen or Control Bar branch");
         }
+
+        _activeBranch = _homeGroup[_index];
     }
 
     //Variables
     private readonly IBranch[] _homeGroup;
     private bool _onHomeScreen = true;
     private bool _gameIsPaused;
-    private static int _index;
+    private int _index;
     private IBranch _lastActiveHomeBranch;
+    private bool _allowKeys;
+    private IBranch _activeBranch;
 
     //Properties
 
@@ -38,7 +43,6 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     
     public void OnEnable() => ObserveEvents();
-
 
     public void OnDisable() { }
 
@@ -50,12 +54,26 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
         EVent.Do.Subscribe<IGameIsPaused>(GameIsPaused);
         EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
         EVent.Do.Subscribe<IReturnHomeGroupIndex>(ReturnHomeGroup);
+        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
 
-    private void ReturnHomeGroup(IReturnHomeGroupIndex args)
+    private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
+
+    private void SaveHighlighted(IHighlightedNode args)
     {
-        args.TargetNode = _homeGroup[_index].LastSelected;
+        if(_allowKeys) return;
+        
+        if (IsHomeScreenBranchAndNoChildrenOpen())
+        {
+            SearchHomeBranchesAndSet(args.Highlighted.MyBranch);
+        }
+
+        bool IsHomeScreenBranchAndNoChildrenOpen() 
+            => args.Highlighted.MyBranch.IsHomeScreenBranch() && _activeBranch.IsHomeScreenBranch();
     }
+
+    private void ReturnHomeGroup(IReturnHomeGroupIndex args) => args.TargetNode = _homeGroup[_index].LastHighlighted;
 
     private void SwitchHomeGroups(ISwitchGroupPressed args)
     {
@@ -81,11 +99,12 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
 
     private void SetActiveHomeBranch(IActiveBranch args)
     {
-        if(DontDoSearch(args.ActiveBranch)) return;
-        if(_lastActiveHomeBranch == args.ActiveBranch) return;
+        _activeBranch = args.ActiveBranch;
+        if(DontDoSearch(_activeBranch)) return;
+        if(_lastActiveHomeBranch == _activeBranch) return;
         
-        _lastActiveHomeBranch = args.ActiveBranch;
-        FindHomeScreenBranch(args.ActiveBranch);
+        _lastActiveHomeBranch = _activeBranch;
+        FindHomeScreenBranch(_activeBranch);
     }
 
     private bool DontDoSearch(IBranch newBranch) 

@@ -2,13 +2,32 @@
 using NaughtyAttributes;
 using UnityEngine;
 
+[Serializable]
+public class CursorSettings
+{
+    [SerializeField] 
+    [ShowIf("CustomCursor")] 
+    private Texture2D _cursor = default;
+
+    [SerializeField] 
+    [ShowIf("CustomCursor")] 
+    private Vector2 _hotSpot =default;
+
+    public Texture2D CursorTexture => _cursor;
+    public Vector2 HotSpot => _hotSpot;
+}
+
 public abstract class InputScheme : ScriptableObject
 {
     [Space(EditorSpace, order = 0)]
+    
     [SerializeField] 
+    [DisableIf(IsPlaying)]
     protected ControlMethod _mainControlType = ControlMethod.MouseOnly;
 
-    [SerializeField] //TODO set to no when keys only
+    [Header("Mouse and Cursor Settings")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
+
+    [SerializeField]
     [Label("Hide Cursor When Keys Active")]
     private IsActive _hideMouseCursor = IsActive.No;
     
@@ -16,30 +35,29 @@ public abstract class InputScheme : ScriptableObject
     [Label("Cancel When Clicked Off UI")] //TODO set to left if VC active (adjust Input Scheme)
     protected CancelClickLocation _cancelClickOn = CancelClickLocation.Never;
     
+    //TODO Create a custom cursor and virual cursor class so a hotspot can be set for a VC and just use a texture not a prefab
+    
     [SerializeField] 
-    [Space(EditorSpace)] [HideIf(KeysOnly)] //TODO Hide for VC active
+    [HideIf(KeysOnly)] //TODO Hide for VC active
     private IsActive _customMouseCursor = IsActive.No;
-    
+
     [SerializeField] 
-    [ShowIf("CustomCursor")] 
-    private Texture2D _cursor = default;
-    
-    [SerializeField] 
-    [ShowIf("CustomCursor")] 
-    private Vector2 _hotSpot =default;
-    
+    [EnableIf(UseCustomCursor)]
+    private CursorSettings _cursorSettings = default;
+
     [SerializeField] 
     [ShowIf(KeysOnly)]
     protected InGameSystem _inGameMenuSystem = InGameSystem.Off;
     
-    [SerializeField] [Space(EditorSpace)]
+    [SerializeField] 
+    [Space(EditorSpace)] [DisableIf(IsPlaying)]
     private VirtualControl _useVirtualCursor = VirtualControl.No;
 
     [SerializeField] 
     [ShowIf(VirtualCursor)] 
     private VirtualCursor _virtualCursor;
     
-    [SerializeField] [Space(EditorSpace)]
+    [SerializeField] [Space(EditorSpace)] [DisableIf(IsPlaying)]
     protected InMenuOrGame _startGameWhere = InMenuOrGame.InGameControl;
     
     [Header("Cancel / Back Settings")] [Space(10f)] [HorizontalLine(1, color: EColor.Blue, order = 1)]
@@ -64,15 +82,19 @@ public abstract class InputScheme : ScriptableObject
 
     //Variables
     protected Vector3 _virtualCursorPosition;
+
     private enum PauseFunction { DoNothing, BackOneLevel, BackToHome }
 
     
     //Editor
     private bool InGameOn => _inGameMenuSystem == InGameSystem.On;
     private bool CustomCursor => _customMouseCursor == IsActive.Yes;
+    private const string UseCustomCursor = nameof(CustomCursor);
     private bool UseVirtualCursor => _useVirtualCursor == VirtualControl.Yes;
     private const string VirtualCursor = nameof(UseVirtualCursor);
     private const int EditorSpace = 20;
+    private static bool AppIsPlaying => Application.isPlaying;
+    private const string IsPlaying = nameof(AppIsPlaying);
 
     private const string KeysOnly = nameof(KeyboardOnly);
     private bool KeyboardOnly
@@ -97,7 +119,7 @@ public abstract class InputScheme : ScriptableObject
     {
         if (_customMouseCursor == IsActive.Yes && !KeyboardOnly)
         {
-            Cursor.SetCursor(_cursor, _hotSpot, CursorMode.Auto);
+            Cursor.SetCursor(_cursorSettings.CursorTexture, _cursorSettings.HotSpot, CursorMode.Auto);
         }
     }
 
@@ -117,6 +139,7 @@ public abstract class InputScheme : ScriptableObject
     public bool HideMouseCursor => _hideMouseCursor == IsActive.Yes;
 
     public VirtualCursor ReturnVirtualCursor => _virtualCursor;
+    public CancelClickLocation CanCancelWhenClickedOff => _cancelClickOn;
 
     protected abstract string PauseButton { get; }
     protected abstract string PositiveSwitch { get; }
@@ -132,15 +155,14 @@ public abstract class InputScheme : ScriptableObject
     public abstract bool  AnyMouseClicked { get; }
     public abstract bool  LeftMouseClicked { get; }
     public abstract bool  RightMouseClicked { get; }
-    public abstract bool CanSwitchToKeysOrController { get; }
-    public abstract bool CanSwitchToMouseOrVC { get; }
+    public abstract bool CanSwitchToKeysOrController(bool allowKeys);
+    public abstract bool CanSwitchToMouseOrVC(bool allowKeys);
     protected abstract string SwitchToVC { get; }
     protected abstract string MouseXAxis { get; }
     protected abstract string MouseYAxis { get; }
-    public abstract Vector3 GetMousePosition();
+    public abstract Vector3 GetMouseOrVcPosition();
     public abstract void SetVirtualCursorPosition(Vector3 pos);
     private protected abstract Vector3 GetVirtualCursorPosition();
-    public abstract bool CanCancelWhenClickedOff();
 
     public void OnAwake()
     {

@@ -9,6 +9,7 @@
     void SetCanvas(ActiveCanvas active);
     void SetBlockRaycast(BlockRaycast active);
     bool CanStartBranch();
+    IsActive AlwaysOn { get; }
 }
 
 public interface IBranchParams

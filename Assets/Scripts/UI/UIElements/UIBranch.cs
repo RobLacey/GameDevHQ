@@ -24,8 +24,6 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     [ShowIf(EConditionOperator.Or, HomeScreenBranch)] [Label("Is Control Bar")]
     private IsActive _controlBar = IsActive.No;
 
-    [SerializeField] [ShowIf(InGamUIBranch)] private IsActive _alwaysOnUI = IsActive.No;
-    
     [SerializeField]
     [Label("Start On (Optional)")] 
     private UINode _startOnThisNode;
@@ -214,10 +212,10 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         if(!CanvasIsEnabled) return;
         StartBranchExitProcess(args.OutTweenType, args.EndOfExitAction);
     }
-    
+
     public void StartBranch_InspectorCall()
     {
-        if(!_branchTypeClass.CanStartBranch()) return;
+        if (!_branchTypeClass.CanStartBranch()) return;
         MoveToThisBranch();
     }
 
@@ -276,7 +274,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         }
 
         bool DontExitBranch() => _stayVisible == IsActive.Yes && outTweenType == OutTweenType.MoveToChild 
-                                 || _alwaysOnUI == IsActive.Yes;
+                                 || _branchTypeClass.AlwaysOn == IsActive.Yes;
     }
 
     private void StartOutTween(Action endOfTweenCallback = null)

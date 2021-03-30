@@ -30,9 +30,9 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     BranchType ReturnBranchType { get; }
     IsActive SetStayOn { set; }
     INode LastSelected { get; }
+    INode LastHighlighted { get; }
     GameObject ThisBranchesGameObject { get; }
     IsActive ReturnOnlyAllowOnHomeScreen { get; }
-    IsActive AlwaysOn { get; }
 
 
     

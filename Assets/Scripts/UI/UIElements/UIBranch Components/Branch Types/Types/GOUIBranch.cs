@@ -24,7 +24,7 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         if(args.OnHomeScreen)
         {
             SetBlockRaycast(BlockRaycast.No);
-            if(_myBranch.AlwaysOn == IsActive.Yes)
+            if(AlwaysOn == IsActive.Yes)
                 SetCanvas(ActiveCanvas.Yes);
         }
         else
@@ -43,7 +43,7 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
         SetCanvas(ActiveCanvas.No);
-        if(_myBranch.AlwaysOn == IsActive.Yes)
+        if(AlwaysOn == IsActive.Yes)
         {
             _myBranch.MoveToThisBranch();
         }        
@@ -56,7 +56,7 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     private void SetUpGOUIParent(ISetUpUIGOBranch args)
     {
         if(args.TargetBranch != _myBranch || _myGOUIModule.IsNotNull()) return;
-       
+        AlwaysOn = args.AlwaysOn;
         _myGOUIModule = args.UIGOModule;
         _mainCanvasRect = args.MainCanvas;
     }
@@ -66,7 +66,7 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         base.SetUpBranch(newParentController);
         _canvasOrderCalculator.SetCanvasOrder();
         
-        if (_myBranch.AlwaysOn == IsActive.Yes)
+        if (AlwaysOn == IsActive.Yes)
         {
             _myBranch.DontSetBranchAsActive();
         }

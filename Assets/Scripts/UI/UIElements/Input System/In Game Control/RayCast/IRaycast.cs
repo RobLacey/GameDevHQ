@@ -4,7 +4,7 @@ namespace UIElements
 {
     public interface IRaycast
     {
-        void DoSelectedInGameObj();
+        bool DoSelectedInGameObj();
         void DoRaycast(Vector3 virtualCursorPos);
         void WhenInMenu();
     }

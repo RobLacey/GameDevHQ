@@ -10,6 +10,7 @@ public interface ICursorHandler
     void CursorExit();
     void CursorDown();
     void NotInGame();
+    IsActive AlwaysOn { get; }
 }
 
 
@@ -37,7 +38,7 @@ public enum InGameUiTurnOn
 }
 public enum InGameUiTurnOff
 {
-    Standard, AlsoOnPointerOnExit
+    OnClick, OnExit
 }
 
 
@@ -51,12 +52,14 @@ namespace UIElements
         [SerializeField] private RectTransform _mainCanvasRect;
 
         [SerializeField] 
-        [DisableIf(AppIsRunning)] 
+        [DisableIf(EConditionOperator.Or, AppIsRunning, WhenAlwaysOnSet)] 
         private InGameUiTurnOn _turnOnWhen;
         [SerializeField] 
-        [DisableIf(AppIsRunning)] 
+        [DisableIf(EConditionOperator.Or, AppIsRunning, WhenAlwaysOnSet)] 
         private InGameUiTurnOff _turnOffWhen;
         [SerializeField] private IsActive _startChildOnSwitchPressed = IsActive.Yes;
+        [SerializeField] private IsActive _alwaysOnUI = IsActive.No;
+
         [SerializeField] 
         [Space(10f, order = 1)] [InfoBox(GOUIModule.InfoBox, order = 2)] 
         private Transform _uiPosition;
@@ -86,12 +89,15 @@ namespace UIElements
 
         //Editor
         private const string InfoBox = "If left blank the centre of object will be used";
+        private bool AlwaysOnSet => _alwaysOnUI == IsActive.Yes;
+        private const string WhenAlwaysOnSet = nameof(AlwaysOnSet);
 
         //Properties & Set / Getters
         public IBranch TargetBranch { get; private set; }
+        public IsActive AlwaysOn => _alwaysOnUI;
         public OutTweenType OutTweenType { get; } = OutTweenType.Cancel;
         public Action EndOfExitAction { get; } = null;
-        private bool DontAcceptMouseInput => _allowKeys || !_onHomeScreen || _gameIsPaused || !_canStart;
+        private bool CanNotDoAction => _allowKeys || !_onHomeScreen || _gameIsPaused || !_canStart;
         public InGameUiTurnOn TurnOnWhen => _turnOnWhen;
         public InGameUiTurnOff TurnOffWhen => _turnOffWhen;
         private void SetAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
@@ -156,18 +162,6 @@ namespace UIElements
             EVent.Do.Subscribe<IOnStart>(CanStart);
         }
 
-        public void OverFocus()
-        {
-            if(_active || _turnOnWhen == InGameUiTurnOn.OnClick) return;
-            StartInGameUi();
-        }
-
-        public void UnFocus() 
-        {
-            if (!_active) return;
-            ExitInGameUi();
-        }
-
         public void SwitchGOUI_MouseOnly() => StartInGameUi();
         
         /// <summary>
@@ -177,50 +171,75 @@ namespace UIElements
 
         private void OnMouseEnter()
         {
-            if(DontAcceptMouseInput || _turnOnWhen != InGameUiTurnOn.OnEnter) return;
-            
+            if(_allowKeys) return;
+            EnterGOUI();
+        }
+
+        private void EnterGOUI()
+        {
+            if (CanNotDoAction || _turnOnWhen != InGameUiTurnOn.OnEnter) return;
+
             _startChild = true;
-           StartInGameUi();
+            StartInGameUi();
         }
 
         private void OnMouseExit()
         {
-            if(DontAcceptMouseInput || _turnOffWhen != InGameUiTurnOff.AlsoOnPointerOnExit) return;
-            if(StayOnIfChildIsActive()) return;
-            
+            if(_allowKeys) return;
+            ExitGOUI();
+        }
+
+        private void ExitGOUI()
+        {
+            if (CanNotDoAction || _turnOffWhen != InGameUiTurnOff.OnExit) return;
+            if (StayOnIfChildIsActive()) return;
+
             ClearAll?.Invoke(this);
             ExitInGameUi();
         }
-
+        
         private bool StayOnIfChildIsActive() 
-            => _branch.GetStayOn() == IsActive.Yes && HasAnActiveChildBranch() 
-                                                   && _turnOffWhen != InGameUiTurnOff.AlsoOnPointerOnExit;
+            => _branch.GetStayOn() == IsActive.Yes && HasAnActiveChildBranch()/* 
+                                                   && _turnOffWhen != InGameUiTurnOff.AlsoOnPointerOnExit*/;
 
         private bool HasAnActiveChildBranch() => _branch.LastSelected.HasChildBranch.CanvasIsEnabled;
 
         private void OnMouseDown()
         {
-             if(DontAcceptMouseInput) return;
-             
-             if (!_active)
-             {
-                 if(_turnOnWhen != InGameUiTurnOn.OnClick) return;
-                 StartInGameUi();
-                 return;
-             }
-
-             if (_active && _turnOffWhen == InGameUiTurnOff.Standard)
-             {
-                 ExitInGameUi();
-             }
+            if(_allowKeys) return;
+            SelectedGOUI();
         }
 
-        public void CursorEnter(){} /*=> _GOUIInput.EnterGO(_active);*/
+        private void SelectedGOUI()
+        {
+            if (CanNotDoAction) return;
 
-        public void CursorExit(){} /*=> _GOUIInput.ExitGO(_active);*/
+            if (!_active)
+            {
+                if (_turnOnWhen != InGameUiTurnOn.OnClick) return;
+                StartInGameUi();
+                return;
+            }
+
+            if (_active && _turnOffWhen == InGameUiTurnOff.OnClick)
+            {
+                ExitInGameUi();
+            }
+        }
+
+        public void CursorEnter()
+        {
+            EnterGOUI();
+        } 
+
+        public void CursorExit()
+        {
+            ExitGOUI();
+        } 
 
         public void CursorDown()
         {
+            SelectedGOUI();
         }
 
         public void NotInGame()

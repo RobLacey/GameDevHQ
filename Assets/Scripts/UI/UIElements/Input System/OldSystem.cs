@@ -12,13 +12,17 @@ public class OldSystem : InputScheme
     [Label("Pause / Option Button")] [InputAxis]
     private string _pauseOptionButton = default;
     [SerializeField]
-    [InputAxis] private string _posSwitchButton = default;
+    [InputAxis] [Label("Next UI Group Object")]
+    private string _posSwitchButton = default;
     [SerializeField] 
-    [InputAxis] private string _negSwitchButton = default;
+    [InputAxis] [Label("Previous UI Group Object")]
+    private string _negSwitchButton = default;
     [SerializeField] 
-    [InputAxis] private string _posNextGOUIButton = default;
+    [InputAxis] [Label("Next GOUI Object")]
+    private string _posNextGOUIButton = default;
     [SerializeField] 
-    [InputAxis] private string _negNextGOUIButton = default;
+    [InputAxis] [Label("Previous GOUI Object")]
+    private string _negNextGOUIButton = default;
     [SerializeField] 
     [InputAxis] private string _cancelButton = default;
     [SerializeField] 
@@ -102,34 +106,30 @@ public class OldSystem : InputScheme
     public override bool AnyMouseClicked => Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
     public override bool LeftMouseClicked => Input.GetMouseButtonDown(0);
     public override bool RightMouseClicked => Input.GetMouseButtonDown(1);
-    public override bool CanSwitchToKeysOrController
+    public override bool CanSwitchToKeysOrController(bool allowKeys)
     {
-        get
+        if (ControlType == ControlMethod.MouseOnly) return false;
+        
+        if (CanUseVirtualCursor == VirtualControl.Yes && !allowKeys)
         {
-            if (ControlType == ControlMethod.MouseOnly) return false;
-            if (CanUseVirtualCursor == VirtualControl.Yes)
-            {
-                return VCSwitchTo();
-            }
-            return Input.anyKeyDown;
+            return !PressSelect() && VCSwitchTo();
         }
+        return Input.anyKeyDown && !allowKeys;
     }
 
-    public override bool CanSwitchToMouseOrVC
+    public override bool CanSwitchToMouseOrVC(bool usingMouse)
     {
-        get
-        {
             if (ControlType == ControlMethod.KeysOrControllerOnly) return false;
-            if (CanUseVirtualCursor == VirtualControl.Yes)
+            
+            if (CanUseVirtualCursor == VirtualControl.Yes && !usingMouse)
             {
                 return VCSwitchTo();
             }
             
             return MouseXAxisValue() != 0 || MouseYAxisValue() != 0;
-        }
     }
 
-    public override Vector3 GetMousePosition()
+    public override Vector3 GetMouseOrVcPosition()
     {
         if (CanUseVirtualCursor == VirtualControl.Yes) return GetVirtualCursorPosition();
         return Input.mousePosition;
@@ -137,22 +137,6 @@ public class OldSystem : InputScheme
     public override void SetVirtualCursorPosition(Vector3 pos) => _virtualCursorPosition = pos;
     private protected override Vector3 GetVirtualCursorPosition() => _virtualCursorPosition;
 
-    public override bool CanCancelWhenClickedOff()
-    {
-        switch (_cancelClickOn)
-        {
-            case CancelClickLocation.Never:
-                return false;
-            case CancelClickLocation.Left:
-                return LeftMouseClicked;
-            case CancelClickLocation.Right:
-                return RightMouseClicked;
-            case CancelClickLocation.Either:
-                return AnyMouseClicked;
-            default:
-                return false;
-        }
-    }
 
     //Main
     protected override void SetUpUInputScheme()
@@ -196,8 +180,9 @@ public class OldSystem : InputScheme
     public override float VcVertical() =>  _hasVCursorVertical ? Input.GetAxis(VCursorVertical) : 0;
     public override float MouseXAxisValue() =>  _hasMouseXAxis ? Input.GetAxis(MouseXAxis) : 0;
     public override float MouseYAxisValue() =>  _hasMouseYAxis ? Input.GetAxis(MouseYAxis) : 0;
-    private protected override bool VCSwitchTo() =>  _hasSwitchToVCButton && Input.GetButtonDown(SwitchToVC);
-    public override bool PressSelect() =>  _hasSelectButton && Input.GetButtonDown(SelectedButton);
+    private protected override bool VCSwitchTo() => _hasSwitchToVCButton && Input.GetButtonDown(SwitchToVC); 
+    public override bool PressSelect() =>  _hasSelectButton && (Input.GetButtonDown(SelectedButton) 
+                                                                || Input.GetKeyDown(KeyCode.Return));
 
     public override bool HotKeyChecker(HotKey hotKey)
     {

@@ -39,7 +39,7 @@ public class InGameNode : NodeBase, IInGameNode, ICancelPressed
         base.Deactivate();
     }
 
-    public void DeactivateNodeByType()
+    public override void DeactivateNodeByType()
     {
         _myGOUIModule.ExitInGameUi();
         Deactivate();
