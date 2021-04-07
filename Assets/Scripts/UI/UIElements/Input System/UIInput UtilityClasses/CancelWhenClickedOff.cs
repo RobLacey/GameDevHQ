@@ -1,31 +1,24 @@
-﻿
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 
 public class CancelWhenClickedOff
 {
-    public static bool CanCancel(InputScheme scheme, bool onHomeScreen, bool allowKeys)
+    public static bool CanCancel(InputScheme scheme, bool onHomeScreen, bool allowKeys, IVirtualCursor virtualCursor)
     {
         if (allowKeys || !onHomeScreen) return false;
         
-        if (scheme.CanUseVirtualCursor == VirtualControl.Yes)
-        {
-            return VCCancel(scheme);
-        }
-
-        return MouseCancel(scheme);
+        return scheme.CanUseVirtualCursor ? VCCancel(scheme, virtualCursor) : MouseCancel(scheme);
     }
     
-    private static bool VCCancel(InputScheme scheme)
+    private static bool VCCancel(InputScheme scheme, IVirtualCursor virtualCursor)
     {
         if (!scheme.PressSelect()) return false;
-        
-        return !scheme.ReturnVirtualCursor.OverAnyObject
-               && scheme.CanCancelWhenClickedOff != CancelClickLocation.Never;
+
+        return !virtualCursor.OverAnyObject && scheme.CanCancelWhenClickedOff != CancelClickLocation.Never;
     }
 
     private static bool MouseCancel(InputScheme scheme)
     {
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (EventSystem.current.IsPointerOverGameObject() || !scheme.AnyMouseClicked)
         {
             return false;
         }

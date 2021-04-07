@@ -63,12 +63,12 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
                                                 .CurrentBuildList(_buildObjectsList)
                                                 .UpdateInspector();
 
-    public void ActivateTweens(Action callBack)
+    public void StartInTweens(Action callBack)
     {
         _tweenEvents.InTweenEventStart?.Invoke();
         StartProcessingTweens(TweenType.In, callBack, _tweenEvents.InTweenEventEnd);
     }
-    public void DeactivateTweens(Action callBack)
+    public void StartOutTweens(Action callBack)
     {
         StopAllCoroutines();
         _tweenEvents.OutTweenEventStart?.Invoke();

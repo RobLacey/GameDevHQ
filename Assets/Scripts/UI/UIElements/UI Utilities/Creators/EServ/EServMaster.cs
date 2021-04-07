@@ -31,7 +31,7 @@ public class EServMaster
         
         if(_services.ContainsKey(typeof(T)) && _locked)
         {
-            Debug.Log("Service already set. Unlock first to set");
+            Debug.Log($"Service : {typeof(T)} already set. Unlock first to set");
             return;
         }
         

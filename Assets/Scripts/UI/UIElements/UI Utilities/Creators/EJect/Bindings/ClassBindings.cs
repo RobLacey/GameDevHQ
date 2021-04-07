@@ -18,9 +18,11 @@ public class ClassBindings : BindBase
         
         //Hub Classes
         _eJectMaster.Bind<UIAudioManager>().To<IAudioService>().WithParameters();
-        _eJectMaster.Bind<UIHomeGroup>().To<IHomeGroup>().WithParameters();
+        _eJectMaster.Bind<UIHomeGroup>().To<IHomeGroup>();
         _eJectMaster.Bind<HistoryTracker>().To<IHistoryTrack>();
         _eJectMaster.Bind<UICancel>().To<ICancel>().WithParameters();
+        _eJectMaster.Bind<ReturnControlFromEditor>().To<IReturnFromEditor>().WithParameters();
+        _eJectMaster.Bind<SwitchGroups>().To<ISwitchGroup>().WithParameters();
 
         //Tweens
         _eJectMaster.Bind<PositionTween>().To<IPositionTween>();
@@ -34,6 +36,7 @@ public class ClassBindings : BindBase
         //ToolTips
         _eJectMaster.Bind<ToolTipFade>().To<IToolTipFade>().WithParameters();
         _eJectMaster.Bind<GetScreenPosition>().To<IGetScreenPosition>().WithParameters();
+        _eJectMaster.Bind<ToolTipsCalcs>().To<IToolTipCalcs>().WithParameters();
         
         //NodeBase Types
         _eJectMaster.Bind<Standard>().To<IStandard>().WithParameters();
@@ -83,7 +86,9 @@ public class ClassBindings : BindBase
         //InGameControl
         _eJectMaster.Bind<_2DRaycast>().To<I2DRaycast>().WithParameters();
         _eJectMaster.Bind<_3DRaycast>().To<I3DRaycast>().WithParameters();
-        _eJectMaster.Bind<MouseOnlySwitcher>().To<IMouseOnlySwitcher>().WithParameters();
-        _eJectMaster.Bind<Switcher>().To<ISwitcher>().WithParameters();
+        _eJectMaster.Bind<GOUISwitcher>().To<IGOUISwitcher>().WithParameters();
+        _eJectMaster.Bind<InteractWithUi>().To<IInteractWithUi>();
+        _eJectMaster.Bind<MoveVirtualCursor>().To<IMoveVirtualCursor>();
+        _eJectMaster.Bind<VirtualCursor>().To<IVirtualCursor>().WithParameters();
     }
 }

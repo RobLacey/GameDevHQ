@@ -2,34 +2,20 @@
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 
 public interface ICursorHandler
 {
-    void CursorEnter();
-    void CursorExit();
-    void CursorDown();
-    void NotInGame();
+    void VirtualCursorEnter();
+    void VirtualCursorExit();
+    void VirtualCursorDown();
     IsActive AlwaysOn { get; }
 }
 
 
 public interface IGOUIModule
 {
-    IBranch TargetBranch  { get; }
-    InGameUiTurnOn TurnOnWhen { get; }
-    InGameUiTurnOff TurnOffWhen { get; }
     void StartInGameUi();
     void ExitInGameUi();
-    void StartChild(bool startChild);
-    void HighlightBranch();
-    void UnHighlightBranch();
-    void CheckForSetLayerMask(LayerMask layerMask);
-}
-
-public interface IGOUIObject
-{
-    void ActivateObject(bool active);
 }
 
 public enum InGameUiTurnOn
@@ -48,33 +34,40 @@ namespace UIElements
     public class GOUIModule : MonoBehaviour, IEventUser, ICursorHandler, IEventDispatcher, 
                               IGOUIModule, ISetUpUIGOBranch, IStartBranch, ICloseBranch, IClearAll
     {
-        [SerializeField] private UIBranch _branch;
-        [SerializeField] private RectTransform _mainCanvasRect;
-
+        [SerializeField] 
+        private UIBranch _branch;
+        
+        [SerializeField] 
+        private RectTransform _mainCanvasRect;
+        
         [SerializeField] 
         [DisableIf(EConditionOperator.Or, AppIsRunning, WhenAlwaysOnSet)] 
         private InGameUiTurnOn _turnOnWhen;
+        
         [SerializeField] 
         [DisableIf(EConditionOperator.Or, AppIsRunning, WhenAlwaysOnSet)] 
         private InGameUiTurnOff _turnOffWhen;
-        [SerializeField] private IsActive _startChildOnSwitchPressed = IsActive.Yes;
-        [SerializeField] private IsActive _alwaysOnUI = IsActive.No;
+        
+        [SerializeField] 
+        private IsActive _startChildWhenActivated = IsActive.Yes;
+        
+        [SerializeField] 
+        private IsActive _alwaysOnUI = IsActive.No;
 
         [SerializeField] 
         [Space(10f, order = 1)] [InfoBox(GOUIModule.InfoBox, order = 2)] 
         private Transform _uiPosition;
 
-        [SerializeField] [Space(20f)] private UnityEvent<bool> _activeGOUI;
+        [SerializeField] 
+        [Space(20f)] 
+        private UnityEvent<bool> _activeGOUI;
 
         //Variables
         private bool _active;
         private bool _allowKeys;
-        private GOUIController _controller;
         private bool _onHomeScreen = true;
         private bool _gameIsPaused;
         private bool _canStart;
-        private bool _startChild;
-        private UINode _inGameUINode;
 
         //Editor
         private const string AppIsRunning = nameof(IsRunning);
@@ -84,7 +77,6 @@ namespace UIElements
         private Action<ISetUpUIGOBranch> SetUpUIGOBranch { get; set; }
         private Action<IStartBranch> StartBranch { get; set; }
         private Action<ICloseBranch> CloseBranch { get; set; }
-        private Action<IClearAll> ClearAll { get; set; }
 
 
         //Editor
@@ -93,40 +85,22 @@ namespace UIElements
         private const string WhenAlwaysOnSet = nameof(AlwaysOnSet);
 
         //Properties & Set / Getters
-        public IBranch TargetBranch { get; private set; }
+        public IBranch TargetBranch => _branch;
+        public IsActive StartChildWhenActivated => _startChildWhenActivated;
         public IsActive AlwaysOn => _alwaysOnUI;
-        public OutTweenType OutTweenType { get; } = OutTweenType.Cancel;
-        public Action EndOfExitAction { get; } = null;
+        public Transform UIGOTransform => _uiPosition;
+        public GOUIModule ReturnGOUIModule => this;
+        public RectTransform MainCanvas => _mainCanvasRect;
         private bool CanNotDoAction => _allowKeys || !_onHomeScreen || _gameIsPaused || !_canStart;
-        public InGameUiTurnOn TurnOnWhen => _turnOnWhen;
-        public InGameUiTurnOff TurnOffWhen => _turnOffWhen;
         private void SetAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
         private void CanStart(IOnStart args) => _canStart = true;
-        public Transform UIGOTransform => _uiPosition;
-       public GOUIModule UIGOModule => this;
-        public RectTransform MainCanvas => _mainCanvasRect;
         private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
         private void SaveIsGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
-        public void StartChild(bool startChild) => _startChild = startChild;
-
-
-        public void CheckForSetLayerMask(LayerMask layerMask)
-        {
-            var temp = LayerMask.LayerToName(gameObject.layer);
-            var thisLayerMask = LayerMask.GetMask(temp);
-            if ((thisLayerMask & layerMask) == 0)
-            {
-                throw new Exception
-                    ($"Set Layer on {gameObject.name} to _layerToHit found in UI GameObject Controller");
-            }
-        }
 
         //Main
         private void Awake()
         {
-            TargetBranch = _branch;
-            _inGameUINode = (UINode) TargetBranch.DefaultStartOnThisNode;
-            _controller = FindObjectOfType<GOUIController>();
+            Debug.Log("Upto : Check Through rest of In Game control to make sure works and tidy");
             
             if (_uiPosition == null)
             {
@@ -140,53 +114,45 @@ namespace UIElements
             SetUpUIGOBranch = EVent.Do.Fetch<ISetUpUIGOBranch>();
             StartBranch = EVent.Do.Fetch<IStartBranch>();
             CloseBranch = EVent.Do.Fetch<ICloseBranch>();
-            ClearAll = EVent.Do.Fetch<IClearAll>();
-            
         }
         
         private void OnEnable() => ObserveEvents();
 
-        private void Start()
-        {
-            SetUpUIGOBranch.Invoke(this);
-        }
+        private void Start() => SetUpUIGOBranch.Invoke(this);
 
         public void ObserveEvents()
         {
             EVent.Do.Subscribe<IClearAll>(ClearUI);
             EVent.Do.Subscribe<IAllowKeys>(SetAllowKeys);
-            EVent.Do.Subscribe<IClearScreen>(CancelUIForFullScreen);
-            EVent.Do.Subscribe<IInMenu>(CancelWhenInMenu);
             EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
             EVent.Do.Subscribe<IGameIsPaused>(SaveIsGamePaused);
             EVent.Do.Subscribe<IOnStart>(CanStart);
         }
 
-        public void SwitchGOUI_MouseOnly() => StartInGameUi();
-        
+        //TODO expland so can select many too
         /// <summary>
         /// For use by External scripts and Events to trigger GOUI
         /// </summary>
         public void ActivateGOUI() => StartInGameUi();
 
-        private void OnMouseEnter()
-        {
-            if(_allowKeys) return;
-            EnterGOUI();
-        }
+        private void OnMouseEnter() => EnterGOUI();
+        
+        private void OnMouseExit() => ExitGOUI();
+
+        private void OnMouseDown() => SelectedGOUI();
+
+        public void VirtualCursorEnter() => EnterGOUI();
+
+        public void VirtualCursorExit() => ExitGOUI();
+
+        public void VirtualCursorDown() => SelectedGOUI();
+
 
         private void EnterGOUI()
         {
             if (CanNotDoAction || _turnOnWhen != InGameUiTurnOn.OnEnter) return;
 
-            _startChild = true;
             StartInGameUi();
-        }
-
-        private void OnMouseExit()
-        {
-            if(_allowKeys) return;
-            ExitGOUI();
         }
 
         private void ExitGOUI()
@@ -194,21 +160,15 @@ namespace UIElements
             if (CanNotDoAction || _turnOffWhen != InGameUiTurnOff.OnExit) return;
             if (StayOnIfChildIsActive()) return;
 
-            ClearAll?.Invoke(this);
             ExitInGameUi();
         }
         
-        private bool StayOnIfChildIsActive() 
-            => _branch.GetStayOn() == IsActive.Yes && HasAnActiveChildBranch()/* 
-                                                   && _turnOffWhen != InGameUiTurnOff.AlsoOnPointerOnExit*/;
+        private bool StayOnIfChildIsActive()
+        {
+            return HasAnActiveChildBranch();
+        }
 
         private bool HasAnActiveChildBranch() => _branch.LastSelected.HasChildBranch.CanvasIsEnabled;
-
-        private void OnMouseDown()
-        {
-            if(_allowKeys) return;
-            SelectedGOUI();
-        }
 
         private void SelectedGOUI()
         {
@@ -226,87 +186,25 @@ namespace UIElements
                 ExitInGameUi();
             }
         }
-
-        public void CursorEnter()
-        {
-            EnterGOUI();
-        } 
-
-        public void CursorExit()
-        {
-            ExitGOUI();
-        } 
-
-        public void CursorDown()
-        {
-            SelectedGOUI();
-        }
-
-        public void NotInGame()
-        {
-            //_GOUIInput.ClearGOUIExceptHighlighted();
-        }
-
-        private void CancelUIForFullScreen(IClearScreen args) => CancelUi();
-
-        private void CancelWhenInMenu(IInMenu args)
-        {
-            // if (args.InTheMenu && _active)
-            // {
-            //     CancelUi();
-            // }
-        }
-
-        public void CancelUi()
-        {
-            if(!_active) return;
-            //_GOUIInput.ClearGOUI();
-           // ExitInGameUi();
-        }
-
+        
         private void ClearUI(IClearAll args = null)
         {
-           // Debug.Log("Clear All : UIGO");
             if(!_active ) return;
             ExitInGameUi();
         }
 
         public void StartInGameUi()
         {
-            if(_active) return;
-            _controller.SetIndex(this);
             _active = true;
-            StartBranch?.Invoke(this);
+             StartBranch?.Invoke(this);
             _activeGOUI.Invoke(_active);
-            
-            ActivateChildIfConditionAllows(_startChild);
-        }
-
-        private void ActivateChildIfConditionAllows(bool condition)
-        {
-            if (_startChildOnSwitchPressed == IsActive.No || !condition) return;
-            
-            _inGameUINode.OnPointerDown(new PointerEventData(EventSystem.current));
         }
 
         public void ExitInGameUi()
         {
-            if(!_active) return;
             _active = false;
-            _startChild = false;
             CloseBranch?.Invoke(this);
             _activeGOUI.Invoke(_active);
-        }
-
-        public void HighlightBranch()
-        {
-            _inGameUINode.SetNodeAsActive();
-        }
-
-        public void UnHighlightBranch()
-        {
-            ClearAll?.Invoke(this);
-            _inGameUINode.ClearNode();
         }
     }
 }

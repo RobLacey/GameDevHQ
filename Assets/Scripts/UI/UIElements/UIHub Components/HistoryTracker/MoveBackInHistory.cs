@@ -108,16 +108,12 @@ public class MoveBackInHistory : IMoveBackInHistory
 
         void WithTween()
         {
-            if (lastNode.MyBranch.IsInGameBranch()) return;
             lastNode.MyBranch.MoveToThisBranch();
         }
 
         void ParentVisible()
         {
             lastNode.DeactivateNode();
-            
-            if(lastNode.MyBranch.IsInGameBranch()) return;
-            
             lastNode.MyBranch.DoNotTween();
             lastNode.MyBranch.MoveToThisBranch();
         }

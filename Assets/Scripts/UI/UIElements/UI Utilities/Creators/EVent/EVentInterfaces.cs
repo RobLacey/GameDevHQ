@@ -18,6 +18,7 @@ public interface ISwitchGroupPressed // This one is test
 {
     SwitchType SwitchType { get; }
 }
+
 public interface IChangeControlsPressed { } // This one is test
 
 public interface IAllowKeys // This one is test
@@ -144,7 +145,7 @@ public interface IClearAll { }
 public interface ISetUpUIGOBranch
 {
     IBranch TargetBranch  { get; }
-    GOUIModule UIGOModule { get; }
+    GOUIModule ReturnGOUIModule { get; }
     RectTransform MainCanvas { get; }
     IsActive AlwaysOn { get; }
 }
@@ -152,13 +153,12 @@ public interface ISetUpUIGOBranch
 public interface IStartBranch
 {
     IBranch TargetBranch { get; }
+    GOUIModule ReturnGOUIModule { get; }
 }
 
 public interface ICloseBranch
 {
     IBranch TargetBranch { get; }
-    OutTweenType OutTweenType { get; }
-    Action EndOfExitAction { get; }
 }
 
 public interface ISetStartingCanvasOrder
@@ -175,7 +175,10 @@ public interface IReturnHomeGroupIndex
     INode TargetNode { set; }
 }
 
-public interface IVCActive { }
+public interface IVCSetUpOnStart
+{
+    bool ShowCursorOnStart { get; }
+}
 
 public interface IAddNewBranch
 {

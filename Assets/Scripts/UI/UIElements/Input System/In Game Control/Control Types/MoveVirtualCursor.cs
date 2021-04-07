@@ -1,7 +1,12 @@
 ﻿
 using UnityEngine;
 
-public class MoveVirtualCursor
+public interface IMoveVirtualCursor
+{
+    void Move(VirtualCursor cursor);
+}
+
+public class MoveVirtualCursor : IMoveVirtualCursor
 {
     private Vector2 _newCursorPos = Vector2.zero;
     private readonly int _screenLeft = -Screen.width / 2;

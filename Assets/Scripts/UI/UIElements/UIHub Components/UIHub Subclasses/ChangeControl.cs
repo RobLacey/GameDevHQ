@@ -8,9 +8,10 @@ using UnityEngine;
 public interface IChangeControl : IEventUser
 {
     void OnEnable();
+    void OnStart();
 }
 
-public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCActive
+public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSetUpOnStart
 {
     public ChangeControl(IInput input)
     {
@@ -22,20 +23,21 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCAc
     //Variables
     private readonly ControlMethod _controlMethod;
     private readonly bool _startInGame;
-    private bool _usingMouse, _sceneStarted;
+    private bool _sceneStarted;
     private readonly InputScheme _inputScheme;
     private IBranch _activeBranch;
     private INode _lastHighlighted;
 
     //Properties
     public bool CanAllowKeys { get; private set; }
-    private bool UsingVirtualCursor => _inputScheme.CanUseVirtualCursor == VirtualControl.Yes;
-    public bool VCActive => _usingMouse;
+    private bool UsingVirtualCursor => _inputScheme.CanUseVirtualCursor;
+    public bool ShowCursorOnStart { get; private set; }
 
     //Events
     private Action<IAllowKeys> AllowKeys { get; set; }
-    private Action<IVCActive> VCIsActive { get; set; }
+    private Action<IVCSetUpOnStart> VCStartSetUp { get; set; }
 
+    //Getters / Setters
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveHighlighted(IHighlightedNode args) => _lastHighlighted = args.Highlighted;
 
@@ -48,7 +50,7 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCAc
     public void FetchEvents()
     {
         AllowKeys = EVent.Do.Fetch<IAllowKeys>();
-        VCIsActive = EVent.Do.Fetch<IVCActive>();
+        VCStartSetUp = EVent.Do.Fetch<IVCSetUpOnStart>();
     }
 
     public void ObserveEvents()
@@ -57,6 +59,26 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCAc
         EVent.Do.Subscribe<IOnStart>(StartGame);
         EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
+    }
+
+    //Main
+    public void OnStart() => OnLevelSetUp();
+
+    private void OnLevelSetUp()
+    {
+        ShowCursorOnStart = (_inputScheme.ControlType == ControlMethod.MouseOnly
+                           || _inputScheme.ControlType == ControlMethod.AllowBothStartWithMouse) 
+                            || !_inputScheme.HideMouseCursor;
+
+        if (UsingVirtualCursor)
+        {
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.visible = ShowCursorOnStart;
+        }
+        VCStartSetUp?.Invoke(this);
     }
     
     private void StartGame(IOnStart onStart)
@@ -80,11 +102,12 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCAc
     {
         if (!_startInGame)
         {
+            CanAllowKeys = true;
             ActivateMouseOrVirtualCursor();
         }
         else
         {
-            _usingMouse = true;
+            CanAllowKeys = false;
             SetAllowKeys();
         }
     }
@@ -93,6 +116,7 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCAc
     {
         if (!_startInGame)
         {
+            CanAllowKeys = false;
             ActivateKeysOrControl();
         }
         else
@@ -104,7 +128,7 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCAc
 
     private void ChangeControlType(IChangeControlsPressed args)
     {
-        if (_inputScheme.CanSwitchToMouseOrVC(_usingMouse))
+        if (_inputScheme.CanSwitchToMouseOrVC(CanAllowKeys))
         {
             ActivateMouseOrVirtualCursor();
         }
@@ -126,12 +150,9 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCAc
             Cursor.visible = true;
         }
         
-        if (_usingMouse) return;
-        _usingMouse = true;
+        if (!CanAllowKeys) return;
         CanAllowKeys = false;
         SetAllowKeys();
-        if(UsingVirtualCursor) 
-            SetUpVcActivity();
     }
     
     private void ActivateKeysOrControl()
@@ -142,7 +163,6 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCAc
         }
         
         if (CanAllowKeys) return;
-        _usingMouse = false;
         CanAllowKeys = true;
         SetAllowKeys();
         if(!_sceneStarted) return;
@@ -167,6 +187,4 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCAc
             _activeBranch.MoveToThisBranch();
         }
     }
-    
-    private void SetUpVcActivity() => VCIsActive?.Invoke(this);
 }

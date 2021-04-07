@@ -60,7 +60,6 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     public IBranch IgnoreThisBranch => _myBranch;
     public IBranch MyBranch => _myBranch;
     public ScreenType MyScreenType { get; }
-    public IsActive AlwaysOn { get; protected set; } = IsActive.No;
 
     //Main
     public void OnEnable()
@@ -100,6 +99,7 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     }
 
     public virtual bool CanStartBranch() => true;
+    public virtual bool CanExitBranch() => true;
 
     public virtual void SetUpBranch(IBranch newParentController = null)
     {
@@ -132,7 +132,6 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     
     public virtual void SetCanvas(ActiveCanvas active)
     {
-        var temp = _myBranch.ThisGroupsUiNodes;
         if (active == ActiveCanvas.Yes)
         {
             AddThisBranch?.Invoke(this);

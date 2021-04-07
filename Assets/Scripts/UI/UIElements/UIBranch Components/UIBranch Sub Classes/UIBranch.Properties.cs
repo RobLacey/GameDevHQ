@@ -62,6 +62,7 @@ public partial class UIBranch
     public bool PointerOverBranch => AutoOpenCloseClass.PointerOverBranch;
     public List<UIBranch> HomeBranches { private get; set; }
     public float Timer => _timer;
+    public bool CanStartGOUI => _canStartGOUI;
     public IsActive SetSaveLastSelectionOnExit
     {
         set => _saveExitSelection = value;

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using NaughtyAttributes;
 
-public class MovementTest : MonoBehaviour, IEventUser, IGOUIObject
+public class MovementTest : MonoBehaviour, IEventUser
 {
     Transform _myTransform;
     [SerializeField] [InputAxis] string _horizontal;

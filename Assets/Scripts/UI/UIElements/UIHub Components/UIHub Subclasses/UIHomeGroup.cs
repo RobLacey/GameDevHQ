@@ -1,9 +1,8 @@
-﻿using System;
-using UnityEngine;
-
+﻿
 public interface IHomeGroup
 {
     void OnEnable();
+    void SetUpHomeGroup(IBranch[] homeGroupBranches);
 }
 
 /// <summary>
@@ -12,36 +11,22 @@ public interface IHomeGroup
 /// </summary>
 public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
 {
-    public UIHomeGroup(IHub hub)
-    {
-        _index = 0;
-        _homeGroup = hub.HomeBranches;
-
-        foreach (var branch in _homeGroup)
-        {
-            if(!branch.IsHomeScreenBranch())
-                throw new Exception(
-                    $"{branch.ThisBranchesGameObject.name} isn't a Home Screen or Control Bar branch");
-        }
-
-        _activeBranch = _homeGroup[_index];
-    }
-
     //Variables
-    private readonly IBranch[] _homeGroup;
+    private IBranch[] _homeGroup;
     private bool _onHomeScreen = true;
     private bool _gameIsPaused;
-    private int _index;
+    private int _index = 0;
     private IBranch _lastActiveHomeBranch;
     private bool _allowKeys;
     private IBranch _activeBranch;
 
-    //Properties
-
+    //Properties and Getters / Setters
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
-
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
+    private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
+
     
+    //Main
     public void OnEnable() => ObserveEvents();
 
     public void OnDisable() { }
@@ -58,8 +43,12 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
 
-    private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
-
+    public void SetUpHomeGroup(IBranch[] homeGroupBranches)
+    {
+        _homeGroup = homeGroupBranches;
+        _activeBranch = _homeGroup[_index];
+    }
+    
     private void SaveHighlighted(IHighlightedNode args)
     {
         if(_allowKeys) return;

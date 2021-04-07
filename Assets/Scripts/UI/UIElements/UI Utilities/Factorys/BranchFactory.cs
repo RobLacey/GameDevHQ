@@ -130,6 +130,7 @@ public class BranchFactory
         branch.CanvasOrder = OrderInCanvas.Manual;
         branch.SetSaveLastSelectionOnExit = IsActive.No;
         branch.AutoOpenClose = AutoOpenClose.No;
+        branch.SetStayOn = IsActive.Yes;
     }
 
 }

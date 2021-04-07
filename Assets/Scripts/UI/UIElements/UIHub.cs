@@ -17,6 +17,7 @@ public interface IHub : IParameters
     GameObject ThisGameObject { get; }
     IBranch[] HomeBranches { get; }
     InputScheme Scheme { get; }
+    RectTransform MainCanvas { get; }
 }
 
 namespace UIElements
@@ -62,7 +63,6 @@ namespace UIElements
         private EVentBindings _eVentBindings = new EVentBindings(new EVent());
         private IHistoryTrack _historyTrack;
         private IAudioService _audioService;
-        private IHomeGroup _homeGroup;
         private ICancel _cancelHandler;
 
         //Events
@@ -75,6 +75,7 @@ namespace UIElements
         public GameObject ThisGameObject => gameObject;
         public IBranch[] HomeBranches => _homeBranches.ToArray<IBranch>();
         public InputScheme Scheme => _inputScheme;
+        public RectTransform MainCanvas => GetComponent<RectTransform>();
 
         //Set / Getters
         private void SaveInMenu(IInMenu args)
@@ -89,13 +90,12 @@ namespace UIElements
         private void Awake()
         { 
             var uIInput = GetComponent<IInput>();
-            _inputScheme = uIInput.ReturnScheme;
+            _inputScheme = GetComponent<IInput>().ReturnScheme;
             _startingInGame = uIInput.StartInGame();
             GetHomeScreenBranches();
             _historyTrack = EJect.Class.NoParams<IHistoryTrack>();
             _cancelHandler = EJect.Class.WithParams<ICancel>(this);
             _audioService = EJect.Class.WithParams<IAudioService>(this);
-            _homeGroup = EJect.Class.WithParams<IHomeGroup>(this);
         }
 
         private void GetHomeScreenBranches()
@@ -123,7 +123,6 @@ namespace UIElements
             UseEServLocator();
             FetchEvents();
             _historyTrack.OnEnable();
-            _homeGroup.OnEnable();
             _cancelHandler.OnEnable();
             ObserveEvents();
         }
@@ -141,7 +140,7 @@ namespace UIElements
         {
             EServ.Locator.AddNew(_historyTrack);
             EServ.Locator.AddNew(_audioService);
-            EServ.Locator.AddNew(_homeGroup);
+            EServ.Locator.AddNew((IHub)this);
         }
 
         public void ObserveEvents()

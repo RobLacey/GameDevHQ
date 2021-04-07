@@ -24,13 +24,19 @@ public class ToolTipSettings : ITooltipSettings
     private LayoutGroup[] _listOfTooltips = new LayoutGroup[0];
 
     [SerializeField]
-    [AllowNesting] [ValidateInput("NeedFixedPos", "Make Sure a RectTransform For the Fixed Position is added")]
+    [AllowNesting] [ValidateInput("NeedFixedPos", FixedPosMessage)]
     private RectTransform _fixedPosition;
 
     //Editor Scripts
     private bool IsNull(ToolTipScheme scheme) => scheme;
-    private bool NeedFixedPos(RectTransform rect) => !_scheme.Fixed() || rect;
+    private bool NeedFixedPos(RectTransform rect)
+    {
+        if (!_scheme) return true;
+        return (!_scheme.MouseFixed() && !_scheme.KeysFixed()) || rect;
+    }
 
+    private const string FixedPosMessage = "Make Sure a RectTransform For the Fixed Position is added. " +
+                                            "If none added the OBJECT CENTRE will be used as DEFAULT";
     public Camera UiCamera => _uiCamera;
     public ToolTipScheme Scheme => _scheme;
     public LayoutGroup[] ToolTips => _listOfTooltips;

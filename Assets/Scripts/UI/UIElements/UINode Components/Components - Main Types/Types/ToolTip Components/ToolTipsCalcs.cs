@@ -1,17 +1,32 @@
 ﻿using UnityEngine;
 using static UnityEngine.Mathf;
 
-public class ToolTipsCalcs
+public interface IToolTipCalcs
 {
-    private readonly float _canvasWidth, _canvasHeight;
+    (Vector3 _toolTipData, Vector2 _newPivot)
+        CalculatePosition(Vector3 tooltipPos, Vector3 toolTipSize, ToolTipAnchor toolTipAnchor);
+}
+
+public class ToolTipsCalcs : IEServUser, IToolTipCalcs
+{
+    private float _canvasWidth, _canvasHeight;
     private Vector3 _toolTipPosition, _tooltipSize;
     private Vector2 _newPivot, _parentNodePosition, _offset;
+    private readonly float _safeZone;
     
-    public ToolTipsCalcs(RectTransform mainCanvas, float safeZone)
+    public ToolTipsCalcs(ITooltipCalcsData data)
+    {
+        _safeZone = data.SafeZone;
+        UseEServLocator();
+    }
+    
+    public void UseEServLocator() => SetUsableArea(EServ.Locator.Get<IHub>(this).MainCanvas);
+
+    private void SetUsableArea(RectTransform mainCanvas)
     {
         var rect = mainCanvas.rect;
-        _canvasWidth = (rect.width / 2) - safeZone;
-        _canvasHeight = (rect.height / 2) - safeZone;
+        _canvasWidth = (rect.width / 2) - _safeZone;
+        _canvasHeight = (rect.height / 2) - _safeZone;
     }
     
     public (Vector3 _toolTipData, Vector2 _newPivot) 

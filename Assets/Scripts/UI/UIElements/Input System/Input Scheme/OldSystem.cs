@@ -110,30 +110,28 @@ public class OldSystem : InputScheme
     {
         if (ControlType == ControlMethod.MouseOnly) return false;
         
-        if (CanUseVirtualCursor == VirtualControl.Yes && !allowKeys)
+        if (CanUseVirtualCursor && !allowKeys)
         {
-            return !PressSelect() && VCSwitchTo();
+            if (VCSwitchTo()) return true;
         }
         return Input.anyKeyDown && !allowKeys;
     }
 
-    public override bool CanSwitchToMouseOrVC(bool usingMouse)
+    public override bool CanSwitchToMouseOrVC(bool allowKeys)
     {
-            if (ControlType == ControlMethod.KeysOrControllerOnly) return false;
-            
-            if (CanUseVirtualCursor == VirtualControl.Yes && !usingMouse)
-            {
-                return VCSwitchTo();
-            }
-            
-            return MouseXAxisValue() != 0 || MouseYAxisValue() != 0;
+        if (ControlType == ControlMethod.KeysOrControllerOnly) return false;
+
+        if (CanUseVirtualCursor && allowKeys)
+        {
+            return VCSwitchTo();
+        }
+
+        return MouseXAxisValue() != 0 || MouseYAxisValue() != 0;
     }
 
-    public override Vector3 GetMouseOrVcPosition()
-    {
-        if (CanUseVirtualCursor == VirtualControl.Yes) return GetVirtualCursorPosition();
-        return Input.mousePosition;
-    }
+    public override Vector3 GetMouseOrVcPosition() 
+        => CanUseVirtualCursor ? GetVirtualCursorPosition() : Input.mousePosition;
+    
     public override void SetVirtualCursorPosition(Vector3 pos) => _virtualCursorPosition = pos;
     private protected override Vector3 GetVirtualCursorPosition() => _virtualCursorPosition;
 
@@ -175,7 +173,6 @@ public class OldSystem : InputScheme
     public override bool PressedPositiveGOUISwitch() => _hasPosGOUIAxis && Input.GetButtonDown(PositiveGOUISwitch);
 
     public override bool PressedNegativeGOUISwitch()=> _hasNegGOUIAxis && Input.GetButtonDown(NegativeGOUISwitch);
-
     public override float VcHorizontal() => _hasVCursorHorizontal ? Input.GetAxis(VCursorHorizontal) : 0;
     public override float VcVertical() =>  _hasVCursorVertical ? Input.GetAxis(VCursorVertical) : 0;
     public override float MouseXAxisValue() =>  _hasMouseXAxis ? Input.GetAxis(MouseXAxis) : 0;

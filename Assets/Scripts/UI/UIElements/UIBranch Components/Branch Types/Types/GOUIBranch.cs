@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UIElements;
 using UnityEngine;
 
@@ -12,7 +11,11 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     private RectTransform _mainCanvasRect;
     private Coroutine _coroutine;
     private GOUIModule _myGOUIModule;
+    private UINode _inGameUINode;
 
+    private IsActive AlwaysOn { get; set; } = IsActive.No;
+
+    private bool StartChildWhenActivated => _myGOUIModule.StartChildWhenActivated == IsActive.Yes;
     public GOUIBranch(IBranch branch) : base(branch)
     {
         _mainCamera = Camera.main;
@@ -38,14 +41,17 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         base.ObserveEvents();
         EVent.Do.Subscribe<ISetUpUIGOBranch>(SetUpGOUIParent);
     }
-    
+
     //Main
     protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
         SetCanvas(ActiveCanvas.No);
+        
         if(AlwaysOn == IsActive.Yes)
         {
+            _myBranch.DontSetBranchAsActive();
             _myBranch.MoveToThisBranch();
+            SetCanvas(ActiveCanvas.Yes);
         }        
         else
         {
@@ -57,8 +63,14 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     {
         if(args.TargetBranch != _myBranch || _myGOUIModule.IsNotNull()) return;
         AlwaysOn = args.AlwaysOn;
-        _myGOUIModule = args.UIGOModule;
+        _myGOUIModule = args.ReturnGOUIModule;
         _mainCanvasRect = args.MainCanvas;
+        _inGameUINode = (UINode) _myBranch.DefaultStartOnThisNode;
+    }
+
+    public bool CanStartBranch()
+    {
+        return !_myBranch.CanvasIsEnabled || !_myBranch.DefaultStartOnThisNode.HasChildBranch.CanvasIsEnabled;
     }
 
     public override void SetUpBranch(IBranch newParentController = null)
@@ -66,17 +78,25 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         base.SetUpBranch(newParentController);
         _canvasOrderCalculator.SetCanvasOrder();
         
-        if (AlwaysOn == IsActive.Yes)
+        if(AlwaysOn == IsActive.Yes && _canStart)
+            MyBranch.DoNotTween();
+        
+        if(_myBranch.CanStartGOUI)
         {
-            _myBranch.DontSetBranchAsActive();
+            if(StartChildWhenActivated)
+                _myBranch.DontSetBranchAsActive();
+            SetCanvas(ActiveCanvas.Yes);
+            ActivateChild();
         }
-        
-        if(_myBranch.CanvasIsEnabled)
+        else
         {
-            _myBranch.DoNotTween();
-        }        
-        SetCanvas(ActiveCanvas.Yes);
-        
+            if(_canStart)
+            {
+                _myGOUIModule.ExitInGameUi();
+                _canvasOrderCalculator.ResetCanvasOrder();
+            }        
+        }
+
         StartMyUIGO();
     }
 
@@ -93,10 +113,26 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         _coroutine = StaticCoroutine.StartCoroutine(SetMyScreenPosition(_myGOUIModule.UIGOTransform));
     }
     
+    private void ActivateChild()
+    {
+        if (!StartChildWhenActivated) return;
+            
+        _inGameUINode.OnPointerDown(null);
+    }
+
+    public override bool CanExitBranch() => AlwaysOn == IsActive.No;
+
     public override void StartBranchExit()
     {
         base.StartBranchExit();
         StopSettingPosition();
+        DeactivateChild();
+    }
+    
+    private void DeactivateChild()
+    {
+        if(_inGameUINode.HasChildBranch.CanvasIsEnabled)
+            _inGameUINode.OnPointerDown(null);
     }
 
     public override void EndOfBranchExit()

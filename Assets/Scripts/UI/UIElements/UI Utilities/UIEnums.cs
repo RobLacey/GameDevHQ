@@ -73,7 +73,7 @@ public enum BranchType { HomeScreen, Standard, ResolvePopUp, OptionalPopUp,
 public enum WhenToMove { Immediately, AfterEndOfTween }
 public enum PauseOptionsOnEscape { EnterPauseOrEscapeMenu, DoNothing }
 public  enum ControlMethod { MouseOnly, KeysOrControllerOnly, AllowBothStartWithMouse, AllowBothStartWithKeys }
-public enum SwitchType { Positive, Negative }
+public enum SwitchType { Positive, Negative, Activate }
 public enum TweenType { In, Out }
 public enum OutTweenType { Cancel, MoveToChild }
 public enum UseSide { ToTheRightOf, ToTheLeftOf, ToTheTopOf, ToTheBottomOf, CentreOf  }

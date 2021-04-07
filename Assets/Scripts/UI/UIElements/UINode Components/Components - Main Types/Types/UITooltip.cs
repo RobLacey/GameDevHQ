@@ -7,9 +7,7 @@ using UnityEngine.UI;
 
 public interface IToolTipData: IParameters
 {
-    RectTransform MainCanvas { get; }
     RectTransform FixedPosition { get; }
-    InputScheme InputScheme { get; }
     Camera UiCamera { get; }
     LayoutGroup[] ListOfTooltips { get; }
     int CurrentToolTipIndex { get; }
@@ -25,8 +23,6 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     public UITooltip(ITooltipSettings settings)
     {
         FixedPosition = settings.FixedPosition;
-        MainCanvas = settings.UiNodeEvents.ReturnMasterNode.MainCanvas;
-        InputScheme = settings.UiNodeEvents.ReturnMasterNode.InputScheme;
         UiCamera = settings.UiCamera;
         Scheme = settings.Scheme;
         ListOfTooltips = settings.ToolTips;
@@ -46,9 +42,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
 
     //Properties
     public ToolTipScheme Scheme { get; }
-    public InputScheme InputScheme { get; }
-    public RectTransform FixedPosition { get; }
-    public RectTransform MainCanvas { get; }
+    public RectTransform FixedPosition { get; private set; }
     public Camera UiCamera { get; }
     public int CurrentToolTipIndex { get; private set; }
     public LayoutGroup[] ListOfTooltips { get; }
@@ -76,7 +70,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     {
         base.OnAwake(uiEvents);
         SetUp();
-        SetCorners();
+        SetTooltipsVariables();
         _toolTipFade = EJect.Class.WithParams<IToolTipFade>(this);
     }
 
@@ -87,11 +81,18 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         CheckSetUpForError();
     }
     
-    private void SetCorners()
+    private void SetTooltipsVariables()
     {
         ParentRectTransform = _uiEvents.ReturnMasterNode.GetComponent<RectTransform>();
         _getScreenPosition = EJect.Class.WithParams<IGetScreenPosition>(this);
         ParentRectTransform.GetLocalCorners(MyCorners);
+        SetFixedPositionToDefault();
+    }
+
+    private void SetFixedPositionToDefault()
+    {
+        if (FixedPosition.Equals(null))
+            FixedPosition = ParentRectTransform;
     }
 
     public override void ObserveEvents()
@@ -208,5 +209,6 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         }
         yield return null;
     }
+
 }
 

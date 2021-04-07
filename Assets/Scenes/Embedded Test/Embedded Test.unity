@@ -1592,7 +1592,7 @@ MonoBehaviour:
   _mainCanvasRect: {fileID: 819564431}
   _turnOnWhen: 1
   _turnOffWhen: 1
-  _startChildOnSwitchPressed: 1
+  _startChildWhenActivated: 0
   _alwaysOnUI: 0
   _uiPosition: {fileID: 0}
   _activeGOUI:
@@ -7178,7 +7178,7 @@ Transform:
   - {fileID: 124459455}
   - {fileID: 2113496482}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &339928672
 GameObject:
@@ -11837,7 +11837,7 @@ MonoBehaviour:
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
   _canvasOrderSetting: 3
-  _moveType: 0
+  _moveType: 1
   _autoOpenClose: 0
   _timer: 2
   _screenType: 0
@@ -15540,7 +15540,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &669941710
 GameObject:
@@ -24973,7 +24973,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 10}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1123289092 stripped
 MonoBehaviour:
@@ -25537,21 +25537,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 4421614740842034665}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1185300377
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1185300371}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86bb58c54bbd4fb0a2bf58f6edbdb7b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cancelWhen: 1
-  _safeNodeList:
-  - {fileID: 6790820043816564219}
 --- !u!114 &1186721465 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8432195791396970355, guid: 1520ba3c28fb6824a8f5ecd400f5e649,
@@ -27001,8 +26986,8 @@ MonoBehaviour:
   _branch: {fileID: 2084390253}
   _mainCanvasRect: {fileID: 819564431}
   _turnOnWhen: 1
-  _turnOffWhen: 0
-  _startChildOnSwitchPressed: 1
+  _turnOffWhen: 1
+  _startChildWhenActivated: 0
   _alwaysOnUI: 0
   _uiPosition: {fileID: 0}
   _activeGOUI:
@@ -34891,7 +34876,7 @@ MonoBehaviour:
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
   _canvasOrderSetting: 3
-  _moveType: 0
+  _moveType: 1
   _autoOpenClose: 0
   _timer: 2
   _screenType: 0
@@ -41203,11 +41188,11 @@ MonoBehaviour:
   _orderInCanvas: 0
   _onlyAllowOnHomeScreen: 0
   _canvasOrderSetting: 3
-  _moveType: 0
+  _moveType: 1
   _autoOpenClose: 0
   _timer: 2
   _screenType: 0
-  _stayVisible: 1
+  _stayVisible: 0
   _storeOrResetOptional: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
@@ -42184,7 +42169,7 @@ MonoBehaviour:
   _mainCanvasRect: {fileID: 819564431}
   _turnOnWhen: 1
   _turnOffWhen: 1
-  _startChildOnSwitchPressed: 1
+  _startChildWhenActivated: 0
   _alwaysOnUI: 0
   _uiPosition: {fileID: 0}
   _activeGOUI:
@@ -45076,6 +45061,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
+      propertyPath: _alertWhenGameIsPaused.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
       propertyPath: _mainControlType
       value: 3
       objectReference: {fileID: 0}
@@ -45269,6 +45259,16 @@ PrefabInstance:
         type: 3}
       propertyPath: _switchBetweenMenuAndGame.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _alertWhenGameIsPaused.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5711224037595763713, guid: d4d4ae77ac7463a40afa29655e938f81,
+        type: 3}
+      propertyPath: _alertWhenGameIsPaused.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d4d4ae77ac7463a40afa29655e938f81, type: 3}

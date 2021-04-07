@@ -290,18 +290,15 @@
             <e p="UIActivator.cs" t="Include" />
             <e p="UIElements" t="Include">
               <e p="INput System" t="Include">
-                <e p="CancelWhenClickedOff.cs" t="Include" />
                 <e p="In Game Control" t="Include">
                   <e p="Control Types" t="Include">
+                    <e p="GOUISwitcher.cs" t="Include" />
                     <e p="InteractWithUi.cs" t="Include" />
-                    <e p="MouseOnlySwitcher.cs" t="Include" />
                     <e p="MOveVirtualCursor.cs" t="Include" />
                     <e p="ProcessBranchAndNodeLists.cs" t="Include" />
-                    <e p="Switcher.cs" t="Include" />
                     <e p="VirtualCursor.cs" t="Include" />
+                    <e p="VirtualCursorSettings.cs" t="Include" />
                   </e>
-                  <e p="GOUIController.cs" t="Include" />
-                  <e p="GOUIInput.cs" t="Include" />
                   <e p="GOUIModule.cs" t="Include" />
                   <e p="RayCast" t="Include">
                     <e p="_2DRaycast.cs" t="Include" />
@@ -310,12 +307,18 @@
                     <e p="IRaycastController.cs" t="Include" />
                     <e p="RaycastBase.cs" t="Include" />
                   </e>
-                  <e p="UIGOControllerEditor.cs" t="Include" />
                   <e p="ValidationCheck.cs" t="Include" />
                 </e>
-                <e p="InputScheme.cs" t="Include" />
-                <e p="NewSystem.cs" t="Include" />
-                <e p="OldSystem.cs" t="Include" />
+                <e p="Input Scheme" t="Include">
+                  <e p="InputScheme.cs" t="Include" />
+                  <e p="NewSystem.cs" t="Include" />
+                  <e p="OldSystem.cs" t="Include" />
+                </e>
+                <e p="UIInput UtilityClasses" t="Include">
+                  <e p="CancelWhenClickedOff.cs" t="Include" />
+                  <e p="ReturnControlFromEditor.cs" t="Include" />
+                  <e p="SwitchGroups.cs" t="Include" />
+                </e>
                 <e p="UIInput.cs" t="Include" />
               </e>
               <e p="MouseDraw.cs" t="Include" />

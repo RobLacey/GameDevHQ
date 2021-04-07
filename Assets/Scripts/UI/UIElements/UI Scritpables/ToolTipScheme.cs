@@ -90,7 +90,7 @@ public class ToolTipScheme : ScriptableObject
     public float FadeInTime => _fadeInTweenTime;
     public float FadeOutTime => _fadeOutTweenTime;
 
-    public bool Fixed() => _tooltipTypeMouse == TooltipType.FixedPosition;
-    public bool Follow() => _tooltipTypeMouse == TooltipType.Follow;
+    public bool MouseFixed() => _tooltipTypeMouse == TooltipType.FixedPosition;
+    public bool KeysFixed() => _tooltipTypeKeys == TooltipType.FixedPosition;
 
 }

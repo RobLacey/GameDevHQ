@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NaughtyAttributes;
 using UIElements;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 
 public interface IInput : IParameters
 {
@@ -12,11 +12,22 @@ public interface IInput : IParameters
     bool StartInGame();
 }
 
-public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitchGroupPressed, 
-                       ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, 
-                       IEServUser, IEventDispatcher, IClearAll
+public interface IVirtualCursorSettings : IInput
 {
-    //public UIInput() => _validationCheck = new ValidationCheck(this);
+    Transform GetParentTransform { get; }
+}
+
+public interface ISwitchGroupSettings
+{
+    InputScheme ReturnScheme { get; }
+    IGOUIModule[] GetPlayerObjects();
+}
+
+public class UIInput : MonoBehaviour, IEventUser, IPausePressed,  
+                       ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, 
+                       IEServUser, IEventDispatcher, IClearAll, IVirtualCursorSettings,
+                       ISwitchGroupSettings
+{
 
     [Header("Input Scheme", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
     [SerializeField] 
@@ -24,39 +35,31 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     [SerializeField] [Header("Switch Event", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
     [Space(20, order = 1)]
     private SwitchGameOrMenu _switchBetweenMenuAndGame  = default;
+    [SerializeField] [Header("Game Is Paused Event", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
+    private GameIsPaused _alertWhenGameIsPaused  = default;
     [SerializeField] 
     [ReorderableList] private List<HotKeys> _hotKeySettings = new List<HotKeys>();
-    
+
+    [Serializable] public class SwitchGameOrMenu : UnityEvent<InMenuOrGame> { }
+    [Serializable] public class GameIsPaused : UnityEvent<bool> { }
+
     //Variables
     private bool _canStart, _inMenu, _gameIsPaused, _allowKeys, _nothingSelected;
     private bool _noActivePopUps = true;
     private bool _onHomeScreen = true;
     private UINode _lastHomeScreenNode;
     private IBranch _activeBranch;
-    private IMenuAndGameSwitching _menuToGameSwitching;
-    private IChangeControl _changeControl;
-    private IHistoryTrack _historyTrack;
-    private readonly ValidationCheck _validationCheck;
-    private GOUIModule _activeGameUIModuleObject;
 
     //Events
+    private IReturnFromEditor ReturnControlFromEditor { get; set; }
     private Action<IPausePressed> OnPausedPressed { get; set; }
     private Action<IMenuGameSwitchingPressed> OnMenuAndGameSwitch { get; set; }
     private Action<ICancelPressed> OnCancelPressed { get; set; }
-    private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; set; }
     private Action<IChangeControlsPressed> OnChangeControlPressed { get; set; }
     private Action<IClearAll> OnClearAll { get; set; }
-    [Serializable] public class SwitchGameOrMenu : UnityEvent<InMenuOrGame> { }
 
-
-
-    //Properties
-    private bool MouseOnly()
-    {
-        if(_inputScheme.ControlType == ControlMethod.MouseOnly) _inputScheme.TurnOffInGameMenuSystem();
-         return _inputScheme.ControlType == ControlMethod.MouseOnly;
-    }
-
+    
+    //Properties and Getters / Setters
     public bool StartInGame()
     {
         if (_inputScheme.InGameMenuSystem == InGameSystem.On)
@@ -65,6 +68,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         }
         return false;
     }
+    
     private void SaveInMenu(IInMenu args)
     {
         _inMenu = args.InTheMenu;
@@ -77,41 +81,55 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
             _switchBetweenMenuAndGame?.Invoke(InMenuOrGame.InGameControl);
         }
     }
+
+    public Transform GetParentTransform => transform;
+    public IGOUIModule[] GetPlayerObjects() => FindObjectsOfType<GOUIModule>().ToArray<IGOUIModule>();
     private void SaveNoActivePopUps(INoPopUps args) => _noActivePopUps = args.NoActivePopUps;
     private void SaveOnStart(IOnStart onStart) => _canStart = true;
-    private void SaveGameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
+    private void SaveGameIsPaused(IGameIsPaused args)
+    {
+        _gameIsPaused = args.GameIsPaused;
+        _alertWhenGameIsPaused?.Invoke(_gameIsPaused);
+    }
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveOnHomeScreen (IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveAllowKeys (IAllowKeys args) => _allowKeys = args.CanAllowKeys;
-
-    public SwitchType SwitchType { get; private set; }
     public InputScheme ReturnScheme => _inputScheme;
     public EscapeKey EscapeKeySettings => _activeBranch.EscapeKeyType;
     private bool NothingSelectedAction => _inputScheme.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
+    private IMenuAndGameSwitching MenuToGameSwitching { get; set; }
+    private IChangeControl ChangeControl { get; set; }
+    private IHistoryTrack HistoryTracker { get; set; }
+    private ISwitchGroup SwitchGroups { get; set; }
+    private IVirtualCursor VirtualCursor { get; set; }
+
 
     //Main
     private void Awake()
     {
         _inputScheme.OnAwake();
-        _changeControl = EJect.Class.WithParams<IChangeControl>(this);
-        _menuToGameSwitching = EJect.Class.WithParams<IMenuAndGameSwitching>(this);
+        ChangeControl = EJect.Class.WithParams<IChangeControl>(this);
+        MenuToGameSwitching = EJect.Class.WithParams<IMenuAndGameSwitching>(this);
+        VirtualCursor = EJect.Class.WithParams<IVirtualCursor>(this);
+        SwitchGroups = EJect.Class.WithParams<ISwitchGroup>(this);
+        ReturnControlFromEditor = EJect.Class.WithParams<IReturnFromEditor>(this);
+        EServ.Locator.AddNew((IInput)this);
         UseEServLocator();
         _inputScheme.SetCursor();
     }
-
-    //TODO Remove this / sort out validation dialouge
-   // public void DoValidation() => _validationCheck.ValidateDialogue();
 
     private void OnEnable()
     {
         FetchEvents();
         SetUpHotKeys();
-        _changeControl.OnEnable();
-        _menuToGameSwitching.OnEnable();
+        ChangeControl.OnEnable();
+        MenuToGameSwitching.OnEnable();
+        SwitchGroups.OnEnable();
+        VirtualCursor.OnEnable();
         ObserveEvents();
     }
 
-    public void UseEServLocator() => _historyTrack = EServ.Locator.Get<IHistoryTrack>(this);
+    public void UseEServLocator() => HistoryTracker = EServ.Locator.Get<IHistoryTrack>(this);
 
     private void SetUpHotKeys()
     {
@@ -128,7 +146,6 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         OnPausedPressed = EVent.Do.Fetch<IPausePressed>();
         OnMenuAndGameSwitch = EVent.Do.Fetch<IMenuGameSwitchingPressed>();
         OnCancelPressed = EVent.Do.Fetch<ICancelPressed>();
-        OnSwitchGroupPressed  = EVent.Do.Fetch<ISwitchGroupPressed>();
         OnChangeControlPressed = EVent.Do.Fetch<IChangeControlsPressed>();
         OnClearAll = EVent.Do.Fetch<IClearAll>();
     }
@@ -144,13 +161,21 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
 
+    private void Start()   
+    {
+        ChangeControl.OnStart();
+        SwitchGroups.OnStart();
+    }
+
     private void Update()
     {
+        VirtualCursor.PreStartMovement();
+        
         if (!_canStart) return;
 
-        if(ReturnToGameFromEditorIfKeysOnly()) return;
+        if(ReturnControlFromEditor.CanReturn(_inMenu, _activeBranch)) return;
 
-        if (CancelWhenClickedOff.CanCancel(_inputScheme, _onHomeScreen, _allowKeys))
+        if (CancelWhenClickedOff.CanCancel(_inputScheme, _onHomeScreen, _allowKeys, VirtualCursor))
         {
             OnClearAll?.Invoke(this);
             return;
@@ -163,20 +188,12 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         }
         
         if (CanSwitchBetweenInGameAndMenu() && _onHomeScreen) return;
+        
         if (CheckIfHotKeyAllowed()) return;
-
+        
+        if(SwitchGroups.CanSwitchBranches() && SwitchGroups.GOUISwitchProcess()) return;
+        
         if (_inMenu) InMenuControls();
-    }
-
-    private bool ReturnToGameFromEditorIfKeysOnly()
-    {
-        if(!_inMenu) return false;
-        if (_inputScheme.LeftMouseClicked && _inputScheme.ControlType == ControlMethod.KeysOrControllerOnly)
-        {
-            EventSystem.current.SetSelectedGameObject(_activeBranch.LastSelected.ReturnGameObject);
-            return true;
-        }
-        return false;
     }
 
     private void InMenuControls()
@@ -187,9 +204,21 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
             return;
         }
         
-        if (CanSwitchBranches() && SwitchGroupProcess()) return;
+        if (SwitchGroups.CanSwitchBranches() && SwitchGroups.SwitchGroupProcess()) return;
         
-         OnChangeControlPressed?.Invoke(this);
+        if(VirtualCursor.CanMoveVirtualCursor())
+        {
+            VirtualCursor.Update();
+            return;
+        }
+
+        OnChangeControlPressed?.Invoke(this);
+    }
+
+    private void FixedUpdate()
+    {
+        if(VirtualCursor.CanMoveVirtualCursor())
+            VirtualCursor.FixedUpdate();
     }
 
     private bool CanPauseGame() => _inputScheme.PressPause();
@@ -212,21 +241,7 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
         return true;
     }
 
-    private bool HasMatchingHotKey()
-    {
-        bool hasHotKey = false;
-        for (var index = 0; index < _hotKeySettings.Count; index++)
-        {
-            var hotKeySetting = _hotKeySettings[index];
-            if (hotKeySetting.CheckHotKeys())
-            {
-                hasHotKey = true;
-                break;
-            }
-        }
-
-        return hasHotKey;
-    }
+    private bool HasMatchingHotKey() => _hotKeySettings.Any(hotKeySetting => hotKeySetting.CheckHotKeys());
 
     private bool CanDoCancel() => _inputScheme.PressedCancel();
 
@@ -247,27 +262,6 @@ public class UIInput : MonoBehaviour, IInput, IEventUser, IPausePressed, ISwitch
     private void CancelPressed() => OnCancelPressed?.Invoke(this);
 
     private bool CanEnterPauseWithNothingSelected() =>
-        (_noActivePopUps && !_gameIsPaused && _historyTrack.NoHistory)
+        (_noActivePopUps && !_gameIsPaused && HistoryTracker.NoHistory)
         && NothingSelectedAction;
-    
-    private bool CanSwitchBranches() => _noActivePopUps && !MouseOnly() && _allowKeys;
-
-    private bool SwitchGroupProcess()
-    {
-        if (_inputScheme.PressedPositiveSwitch())
-        {
-            SwitchType = SwitchType.Positive;
-            OnSwitchGroupPressed?.Invoke(this);
-            return true;
-        }
-
-        if (_inputScheme.PressedNegativeSwitch())
-        {
-            SwitchType = SwitchType.Negative;
-            OnSwitchGroupPressed?.Invoke(this);
-            return true;
-        }
-        return false;
-    }
-
 }

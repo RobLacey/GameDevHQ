@@ -23,7 +23,6 @@ namespace UIElements
         public void WhenInMenu()
         {
             if(_lastGameObject.IsNull()) return;
-            _lastGameObject.NotInGame();
             _lastGameObject = null;
         }
 
@@ -31,7 +30,7 @@ namespace UIElements
         {
             if (!_controller.SelectPressed || _lastGameObject.IsNull()) return false;
 
-            _lastGameObject.CursorDown();
+            _lastGameObject.VirtualCursorDown();
             return true;
         }
 
@@ -46,13 +45,13 @@ namespace UIElements
             if (_lastGameObject.IsNotNull())
             {
                 if (_lastGameObject == hit) return;
-                _lastGameObject.CursorExit();
+                _lastGameObject.VirtualCursorExit();
             }
             
             if(hit.AlwaysOn == IsActive.Yes) return;
 
             _lastGameObject = hit;
-            hit.CursorEnter();
+            hit.VirtualCursorEnter();
         }
 
         private bool IfNoGOUIHit(ICursorHandler hit)
@@ -66,7 +65,7 @@ namespace UIElements
         {
             if (_lastGameObject.IsNull()) return;
             
-            _lastGameObject.CursorExit();
+            _lastGameObject.VirtualCursorExit();
             _lastGameObject = null;
         }
     }

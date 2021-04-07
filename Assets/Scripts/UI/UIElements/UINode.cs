@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using UIElements;
 using NaughtyAttributes;
 using UnityEngine.EventSystems;
 
@@ -68,10 +67,8 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     private readonly List<NodeFunctionBase> _activeFunctions = new List<NodeFunctionBase>();
     private bool _canStart;
     private bool _allowKeys;
-    private InputScheme _inputScheme;
 
     //Properties
-    public RectTransform MainCanvas => FindObjectOfType<UIHub>().GetComponent<RectTransform>();
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
     private bool IsCancelOrBack => _buttonFunction == ButtonFunction.CancelOrBack;
@@ -92,7 +89,6 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public IsActive AutoOpenCloseOverride => _autoOpenCloseOverride;
     public float AutoOpenDelay => _autoOpenDelay;
     public IUiEvents UINodeEvents => _uiNodeEvents;
-    public InputScheme InputScheme => _inputScheme;
     
     //Setting / Getters
     private void CanStart(IOnStart args) => _canStart = true;
@@ -101,7 +97,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     //Main
     private void Awake()
     {
-        _inputScheme = FindObjectOfType<UIInput>().ReturnScheme;
+        //_inputScheme = FindObjectOfType<UIInput>().ReturnScheme;
         MyBranch = GetComponentInParent<IBranch>();
         _uiNodeEvents = new UiEvents(gameObject.GetInstanceID(), this);
         if (IsToggleGroup || IsToggleNotLinked)
@@ -209,4 +205,5 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     /// <param name="eventData"></param>
     /// <returns></returns>
     private static bool IsDragEvent(PointerEventData eventData) => eventData.pointerDrag;
+
 }

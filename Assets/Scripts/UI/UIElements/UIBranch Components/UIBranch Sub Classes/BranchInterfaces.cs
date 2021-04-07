@@ -33,9 +33,9 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     INode LastHighlighted { get; }
     GameObject ThisBranchesGameObject { get; }
     IsActive ReturnOnlyAllowOnHomeScreen { get; }
+    bool CanStartGOUI { get; }
 
 
-    
     IBranch[] FindAllBranches();
     IsActive GetStayOn();
     void MoveToThisBranch(IBranch newParentBranch = null);

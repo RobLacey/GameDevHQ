@@ -8,7 +8,12 @@ public interface IGetScreenPosition
     void SetExactPosition(bool isKeyboard);
 }
 
-public class GetScreenPosition : IGetScreenPosition
+public interface ITooltipCalcsData : IParameters
+{
+    float SafeZone { get; }
+}
+
+public class GetScreenPosition : IGetScreenPosition, IEServUser, ITooltipCalcsData
 {
     public GetScreenPosition(IToolTipData uiTooltip)
     {
@@ -17,18 +22,32 @@ public class GetScreenPosition : IGetScreenPosition
         _listOfTooltips = _tooltip.ListOfTooltips;
         _toolTipsRects = _tooltip.ToolTipsRects;
         _myCorners = _tooltip.MyCorners;
+        _uiCamera = _tooltip.UiCamera;
         _parentRectTransform = _tooltip.ParentRectTransform;
-        _calculation = new ToolTipsCalcs(_tooltip.MainCanvas, _scheme.ScreenSafeZone);
+        _calculation = EJect.Class.WithParams<IToolTipCalcs>(this);
+        UseEServLocator();
     }
 
     private readonly IToolTipData _tooltip;
-    private readonly ToolTipsCalcs _calculation;
+    private readonly IToolTipCalcs _calculation;
     private readonly ToolTipScheme _scheme;
     private readonly LayoutGroup[] _listOfTooltips;
     private readonly RectTransform[] _toolTipsRects;
     private readonly Vector3[] _myCorners;
     private readonly RectTransform _parentRectTransform;
+    private readonly Camera _uiCamera;
+    private RectTransform _mainCanvasRectTransform;
+    private InputScheme _inputScheme;
+
+    //Properties
+    public float SafeZone => _scheme.ScreenSafeZone;
     
+    public void UseEServLocator()
+    {
+        _inputScheme = EServ.Locator.Get<IInput>(this).ReturnScheme;
+        _mainCanvasRectTransform = EServ.Locator.Get<IHub>(this).MainCanvas;
+    }
+
     //Properties
     private Vector2 KeyboardPadding => new Vector2(_scheme.KeyboardXPadding, _scheme.KeyboardYPadding);
     private Vector2 MousePadding => new Vector2(_scheme.MouseXPadding, _scheme.MouseYPadding);
@@ -68,15 +87,13 @@ public class GetScreenPosition : IGetScreenPosition
     private Vector3 SetFixedToolTipPosition() => ReturnScreenPosition(_tooltip.FixedPosition.position);
 
     private Vector3 SetMouseToolTipPosition() 
-        => ReturnScreenPosition(_tooltip.InputScheme.GetMouseOrVcPosition()) + MousePadding;
+        => ReturnScreenPosition(_inputScheme.GetMouseOrVcPosition()) + MousePadding;
 
     private Vector3 SetKeyboardTooltipPosition()
     {
         var toolTipPosition = Vector3.zero;
         toolTipPosition = PositionBasedOnSettings(toolTipPosition);
-        
-        if (_scheme.Follow())
-            toolTipPosition += _parentRectTransform.transform.position;
+        toolTipPosition += _parentRectTransform.transform.position;
         
         return ReturnScreenPosition(toolTipPosition) + KeyboardPadding;
     }
@@ -110,9 +127,8 @@ public class GetScreenPosition : IGetScreenPosition
     private Vector2 ReturnScreenPosition(Vector3 screenPosition)
     {
         RectTransformUtility.ScreenPointToLocalPointInRectangle
-            (_tooltip.MainCanvas, screenPosition, _tooltip.UiCamera, out var toolTipPos);
+            (_mainCanvasRectTransform, screenPosition, _uiCamera, out var toolTipPos);
         return toolTipPos;
     }
-
 }
 

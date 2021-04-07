@@ -32,16 +32,17 @@ public abstract class InputScheme : ScriptableObject
     private IsActive _hideMouseCursor = IsActive.No;
     
     [SerializeField] 
-    [Label("Cancel When Clicked Off UI")] //TODO set to left if VC active (adjust Input Scheme)
+    [Label("Cancel When Clicked Off UI")] 
     protected CancelClickLocation _cancelClickOn = CancelClickLocation.Never;
     
     //TODO Create a custom cursor and virual cursor class so a hotspot can be set for a VC and just use a texture not a prefab
     
     [SerializeField] 
-    [HideIf(KeysOnly)] //TODO Hide for VC active
+    [HideIf(EConditionOperator.Or, KeysOnly, VirtualCursor)]
     private IsActive _customMouseCursor = IsActive.No;
 
     [SerializeField] 
+    [HideIf(EConditionOperator.Or, KeysOnly, VirtualCursor)]
     [EnableIf(UseCustomCursor)]
     private CursorSettings _cursorSettings = default;
 
@@ -50,12 +51,13 @@ public abstract class InputScheme : ScriptableObject
     protected InGameSystem _inGameMenuSystem = InGameSystem.Off;
     
     [SerializeField] 
-    [Space(EditorSpace)] [DisableIf(IsPlaying)]
+    [Space(EditorSpace)]
+    [DisableIf(EConditionOperator.Or, IsPlaying, UseCustomCursor)]
     private VirtualControl _useVirtualCursor = VirtualControl.No;
 
     [SerializeField] 
     [ShowIf(VirtualCursor)] 
-    private VirtualCursor _virtualCursor;
+    private VirtualCursorSettings _virtualCursorSettings;
     
     [SerializeField] [Space(EditorSpace)] [DisableIf(IsPlaying)]
     protected InMenuOrGame _startGameWhere = InMenuOrGame.InGameControl;
@@ -95,7 +97,6 @@ public abstract class InputScheme : ScriptableObject
     private const int EditorSpace = 20;
     private static bool AppIsPlaying => Application.isPlaying;
     private const string IsPlaying = nameof(AppIsPlaying);
-
     private const string KeysOnly = nameof(KeyboardOnly);
     private bool KeyboardOnly
     {
@@ -113,7 +114,6 @@ public abstract class InputScheme : ScriptableObject
             return keysOnly;
         }
     }
-
 
     public void SetCursor()
     {
@@ -135,10 +135,10 @@ public abstract class InputScheme : ScriptableObject
     public float DelayUIStart => _delayUIStart;
     public InGameSystem InGameMenuSystem => _inGameMenuSystem;
     public InMenuOrGame WhereToStartGame => _startGameWhere;
-    public VirtualControl CanUseVirtualCursor => _useVirtualCursor;
+    public bool CanUseVirtualCursor => _useVirtualCursor == VirtualControl.Yes;
     public bool HideMouseCursor => _hideMouseCursor == IsActive.Yes;
 
-    public VirtualCursor ReturnVirtualCursor => _virtualCursor;
+    public VirtualCursorSettings ReturnVirtualCursorSettings => _virtualCursorSettings;
     public CancelClickLocation CanCancelWhenClickedOff => _cancelClickOn;
 
     protected abstract string PauseButton { get; }

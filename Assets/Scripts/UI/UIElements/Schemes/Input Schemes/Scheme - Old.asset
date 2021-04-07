@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Scheme - Old
   m_EditorClassIdentifier: 
   _mainControlType: 2
-  _hideMouseCursor: 1
+  _hideMouseCursor: 0
   _cancelClickOn: 1
   _customMouseCursor: 1
   _cursorSettings:
@@ -21,14 +21,15 @@ MonoBehaviour:
     _hotSpot: {x: 0, y: 0}
   _inGameMenuSystem: 1
   _useVirtualCursor: 1
-  _virtualCursor:
+  _virtualCursorSettings:
     _restrictRaycastTo: 2
     _virtualCursorPrefab: {fileID: 766753675201208392, guid: c68b6dd03c66fa94b8c11ef4d321378c,
       type: 3}
-    _cursorSpeed: 5
-    _layerToHit:
+    _onlyHitInGameUi: 1
+    _cursorSpeed: 7
+    _inGameObjectLayersToHit:
       serializedVersion: 2
-      m_Bits: 544
+      m_Bits: 512
     _raycastLength: 1000
   _startGameWhere: 0
   _pauseOptionsOnEscape: 0

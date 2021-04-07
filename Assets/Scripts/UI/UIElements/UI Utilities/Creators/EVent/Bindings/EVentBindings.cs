@@ -43,7 +43,7 @@ public class EVentBindings : IEVentBindings
         //ChangeControl
         AutoRemove().CreateEvent<IAllowKeys>();
         AutoRemove().CreateEvent<IChangeControlsPressed>();
-        AutoRemove().CreateEvent<IVCActive>();
+        AutoRemove().CreateEvent<IVCSetUpOnStart>();
 
         
         //Cancel

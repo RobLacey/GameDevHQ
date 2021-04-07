@@ -59,7 +59,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     private ScreenType _screenType = ScreenType.Normal;
     
     [SerializeField] 
-    [HideIf(EConditionOperator.Or, AnyPopUpBranch, Fullscreen, ControlBarBranch)]
+    [HideIf(EConditionOperator.Or, AnyPopUpBranch, Fullscreen, ControlBarBranch, InGamUIBranch)]
     [ValidateInput(ValidInAndOutTweens, MessageINAndOutTweens)]
     private IsActive _stayVisible = IsActive.No;
     
@@ -103,14 +103,14 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     private UITweener _uiTweener;
     private int _groupIndex;
     private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
-    private bool _activePopUp, _isTabBranch;
+    private bool _activePopUp, _isTabBranch, _canStartGOUI;
     private IBranchBase _branchTypeClass;
     private INode _lastHighlighted;
     
     
     //Delegates & Events
     private Action TweenFinishedCallBack { get; set; }
-    private  Action<IActiveBranch> SetActiveBranch { get; set; }
+    private  Action<IActiveBranch> SetAsActiveBranch { get; set; }
     private  Action<IGetHomeBranches> GetHomeBranches { get; set; }
 
     //Main
@@ -178,7 +178,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
 
     public void FetchEvents()
     {
-        SetActiveBranch = EVent.Do.Fetch<IActiveBranch>();
+        SetAsActiveBranch = EVent.Do.Fetch<IActiveBranch>();
         GetHomeBranches = EVent.Do.Fetch<IGetHomeBranches>();
     }
 
@@ -188,8 +188,8 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Subscribe<ISelectedNode>(SaveSelected);
         EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
-        EVent.Do.Subscribe<IStartBranch>(StartBranch_EventCall);
-        EVent.Do.Subscribe<ICloseBranch>(ExitBranch_EventCall);
+        EVent.Do.Subscribe<IStartBranch>(StartBranch_GOUIEventCall);
+        EVent.Do.Subscribe<ICloseBranch>(ExitBranch_GOUIEventCall);
     }
 
     private void Start() => CheckForControlBar();
@@ -200,22 +200,28 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         BranchGroups.AddControlBarToGroupList(_groupsList, HomeBranches, this);
     }
 
-    private void StartBranch_EventCall(IStartBranch args)
+    private void StartBranch_GOUIEventCall(IStartBranch args)
     {
-        if(args.TargetBranch != this) return;
+        if(!ReferenceEquals(args.TargetBranch, this)) return;
+        if (_branchType == BranchType.InGameUi)
+            _canStartGOUI = true;
         MoveToThisBranch();
     }
     
-    private void ExitBranch_EventCall(ICloseBranch args)
+    private void ExitBranch_GOUIEventCall(ICloseBranch args)
     {
-        if(args.TargetBranch != this) return;
+        if(!ReferenceEquals(args.TargetBranch, this)) return;
         if(!CanvasIsEnabled) return;
-        StartBranchExitProcess(args.OutTweenType, args.EndOfExitAction);
+        StartBranchExitProcess(OutTweenType.Cancel);
     }
 
     public void StartBranch_InspectorCall()
     {
-        if (!_branchTypeClass.CanStartBranch()) return;
+        if (IsInGameBranch())
+        {
+            Debug.Log("Can't Start GOUI like this: Call ActivateGOUI in GOUIModule");
+            return;
+        }
         MoveToThisBranch();
     }
 
@@ -226,11 +232,12 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         _branchTypeClass.SetUpBranch(newParentBranch);
         SetHighlightedNode();
         
-        if (_canActivateBranch) SetAsActiveBranch();
+        if (_canActivateBranch) 
+            SetAsActiveBranch?.Invoke(this);
         
         if (_tweenOnChange)
         {
-            StartInTweens();
+            _uiTweener.StartInTweens(callBack: InTweenCallback);
         }
         else
         {
@@ -238,12 +245,9 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         }
 
         _tweenOnChange = true;
+        _canStartGOUI = false;
     }
     
-    private void SetAsActiveBranch() => SetActiveBranch?.Invoke(this);
-
-    private void StartInTweens() => _uiTweener.ActivateTweens(callBack: InTweenCallback);
-
     private void InTweenCallback()
     {
         _branchTypeClass.EndOfBranchStart();
@@ -274,33 +278,29 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         }
 
         bool DontExitBranch() => _stayVisible == IsActive.Yes && outTweenType == OutTweenType.MoveToChild 
-                                 || _branchTypeClass.AlwaysOn == IsActive.Yes;
+                                 || !_branchTypeClass.CanExitBranch();
     }
 
     private void StartOutTween(Action endOfTweenCallback = null)
     {
         TweenFinishedCallBack = endOfTweenCallback;
-        SetUpBranchForTween();
-        _uiTweener.DeactivateTweens(OutTweenCallback);
-    }
-
-    private void SetUpBranchForTween()
-    {
+        
         _branchEvents.OnBranchExit();
         _branchTypeClass.StartBranchExit();
-    }
-
-    private void OutTweenCallback()
-    {
-        _branchTypeClass.EndOfBranchExit();
-        TweenFinishedCallBack?.Invoke();
+        _uiTweener.StartOutTweens(OutTweenCallback);
+        
+        void OutTweenCallback()
+        {
+            _branchTypeClass.EndOfBranchExit();
+            TweenFinishedCallBack?.Invoke();
+        }
     }
 
     private void SwitchBranchGroup(ISwitchGroupPressed args)
     {
-        var canSwitchGroups = _onHomeScreen || !CanvasIsEnabled || _groupsList.Count <= 1;
+        var cannotSwitchGroups = _onHomeScreen || !CanvasIsEnabled || _groupsList.Count <= 1;
         
-        if (canSwitchGroups) return;
+        if (cannotSwitchGroups) return;
         _groupIndex = BranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, args.SwitchType);
     }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using NaughtyAttributes;
+using UIElements;
 
 public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
 {
@@ -34,6 +35,7 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
     
     private void SaveLastHighlighted(IHighlightedNode args)
     {
+        //Debug.Log(args.Highlighted);
         _lastHighlighted = (UINode) args.Highlighted;
     }
     private void SaveLastSelected(ISelectedNode args)  
@@ -141,6 +143,7 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
     }
 
     public IBranch TargetBranch { get; private set; }
+    public GOUIModule ReturnGOUIModule { get; }
 }
 
 
