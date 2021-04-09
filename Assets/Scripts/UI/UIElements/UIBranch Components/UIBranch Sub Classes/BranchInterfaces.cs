@@ -33,11 +33,12 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     INode LastHighlighted { get; }
     GameObject ThisBranchesGameObject { get; }
     IsActive ReturnOnlyAllowOnHomeScreen { get; }
-    bool CanStartGOUI { get; }
+    IsActive CloseIfClickedOff { get; set; }
 
 
     IBranch[] FindAllBranches();
     IsActive GetStayOn();
+    void SetNotAControlBar();
     void MoveToThisBranch(IBranch newParentBranch = null);
     void DontSetBranchAsActive();
     void DoNotTween();
@@ -50,8 +51,6 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
 public interface IAutoOpenClose
 {
     void OnEnable();
-    bool CanAutoClose();
-    bool CanAutoOpen();
     void OnPointerEnter();
     void OnPointerExit();
     bool PointerOverBranch { get;}
@@ -61,7 +60,8 @@ public interface IAutoOpenClose
 public interface IAutoOpenCloseData
 {
     IBranch ThisBranch { get; }
-    AutoOpenClose AutoOpenClose { get; set; }
+    IsActive AutoClose { get; set; }
+    float AutoCloseDelay { get; }
 }
 
 public interface ICanvasOrder

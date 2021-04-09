@@ -20,7 +20,6 @@ namespace UIElements
         private void CanStart(IOnStart obj) => _canStart = true;
         private bool CanSwitch => _canStart && _onHomeScreen;
 
-
         //Variables
         private bool _canStart;
         private bool _onHomeScreen = true;
@@ -28,11 +27,8 @@ namespace UIElements
         private readonly IGOUIModule[] _playerObjects;
 
         //Main
-        public void OnEnable()
-        {
-            ObserveEvents();
-        }
-        
+        public void OnEnable() => ObserveEvents();
+
         public void ObserveEvents()
         {
             EVent.Do.Subscribe<IStartBranch>(SetIndex);

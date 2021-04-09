@@ -19,6 +19,8 @@ public interface ISwitchGroupPressed // This one is test
     SwitchType SwitchType { get; }
 }
 
+public interface IGOUISwitchPressed { }
+
 public interface IChangeControlsPressed { } // This one is test
 
 public interface IAllowKeys // This one is test
@@ -146,8 +148,8 @@ public interface ISetUpUIGOBranch
 {
     IBranch TargetBranch  { get; }
     GOUIModule ReturnGOUIModule { get; }
-    RectTransform MainCanvas { get; }
     IsActive AlwaysOn { get; }
+    Transform UIGOTransform { get; }
 }
 
 public interface IStartBranch

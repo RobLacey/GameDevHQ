@@ -5,16 +5,24 @@ using Object = UnityEngine.Object;
 
 public interface IVirtualCursor
 {
+    IBranch OverAnyObject { get; set; }
+    Vector3 Position { get; }
     void OnEnable();
     bool CanMoveVirtualCursor();
     void PreStartMovement();
     void Update();
     void FixedUpdate();
-    GameObject OverAnyObject { get; }
+}
+
+public interface ICursorSettings
+{
+    RectTransform CursorRect { get; }
+    float Speed { get; }
+    Vector3 Position { get; }
 }
 
 [Serializable]
-public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtualCursor
+public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtualCursor, ICursorSettings
 {
     public VirtualCursor(IVirtualCursorSettings settings)
     {
@@ -42,21 +50,23 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
     private IRaycast _raycastTo2D, _raycastTo3D;
     private Canvas _cursorCanvas;
     private bool _allowKeys;
-    private IInteractWithUi _interactWithUi = EJect.Class.NoParams<IInteractWithUi>();
-    private IMoveVirtualCursor _moveVirtualCursor = EJect.Class.NoParams<IMoveVirtualCursor>();
+    private IInteractWithUi _interactWithUi;
+    private IMoveVirtualCursor _moveVirtualCursor;
     private VirtualCursorSettings _virtualCursorSetting;
 
     //Properties & Setters / Getters
     public LayerMask LayerToHit => _virtualCursorSetting.LayerToHit;
     public float LaserLength => _virtualCursorSetting.RaycastLength;
     public bool SelectPressed => Scheme.PressSelect();
-    private GameObject VirtualCursorPrefab => _virtualCursorSetting.VirtualCursorPrefab;
-    public GameObject OverAnyObject { get; set; }
+    public IBranch OverAnyObject { get; set; }
     public Vector3 Position => CursorRect.transform.position;
-    public InputScheme Scheme { get; private set; }
     public RectTransform CursorRect { get; private set; }
-    private bool HasInput => Scheme.VcHorizontal() != 0 || Scheme.VcVertical() != 0 || Scheme.PressSelect();
     public float Speed => _virtualCursorSetting.CursorSpeed;
+    
+    private GameObject VirtualCursorPrefab => _virtualCursorSetting.VirtualCursorPrefab;
+    private InputScheme Scheme { get; set; }
+    private bool HasInput => (Scheme.VcHorizontalPressed() || Scheme.VcVerticalPressed()) 
+                             || Scheme.VcHorizontal() != 0 || Scheme.VcVertical() != 0 || Scheme.PressSelect();
     private bool Allow2D => _virtualCursorSetting.RestrictRaycastTo == GameType._2D 
                             || _virtualCursorSetting.RestrictRaycastTo == GameType.NoRestrictions;
     private bool Allow3D => _virtualCursorSetting.RestrictRaycastTo == GameType._3D 
@@ -67,15 +77,18 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
     {
         _raycastTo2D = EJect.Class.WithParams<I2DRaycast>(this);
         _raycastTo3D = EJect.Class.WithParams<I3DRaycast>(this);
+        _moveVirtualCursor = EJect.Class.NoParams<IMoveVirtualCursor>();
+        _interactWithUi = EJect.Class.NoParams<IInteractWithUi>();
         
         if(_virtualCursorSetting.OnlyHitInGameUi == IsActive.Yes)
-            _interactWithUi.CanOnlyHitInGameObjects();
+            _interactWithUi.SetCanOnlyHitInGameObjects();
     }
 
     public void OnEnable()
     {
         ObserveEvents();
         _interactWithUi.OnEnable();
+        _moveVirtualCursor.OnEnable();
     }
 
     public void ObserveEvents()
@@ -101,18 +114,23 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
         
         if (_allowKeys)
         {
-            if(Scheme.HideMouseCursor)
-                _cursorCanvas.enabled = false;
-            _raycastTo2D.WhenInMenu();
-            _raycastTo3D.WhenInMenu();
-            OverAnyObject = null;
-            _interactWithUi.CloseLastHitNodeAsDifferent();
+            SetUpForKeysOrController();
         }
         else
         {
             _cursorCanvas.enabled = true;
             ActivateCursor();
         }
+    }
+
+    private void SetUpForKeysOrController()
+    {
+        if (Scheme.HideMouseCursor)
+            _cursorCanvas.enabled = false;
+        _raycastTo2D.WhenInMenu();
+        _raycastTo3D.WhenInMenu();
+        OverAnyObject = null;
+        _interactWithUi.CloseLastHitNodeAsDifferent();
     }
 
     private void SetCursorForStartUp(IVCSetUpOnStart args)
@@ -157,7 +175,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
 
     public void FixedUpdate()
     {
-        if(OverAnyObject) return;
+        if(OverAnyObject.IsNull()) return;
         CheckIfCursorOverGOUI();
     }
 

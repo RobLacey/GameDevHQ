@@ -36,6 +36,7 @@ public class EVentBindings : IEVentBindings
         //Input
         AutoRemove().CreateEvent<IPausePressed>();
         AutoRemove().CreateEvent<ISwitchGroupPressed>();
+        AutoRemove().CreateEvent<IGOUISwitchPressed>();
         AutoRemove().CreateEvent<IHotKeyPressed>();
         AutoRemove().CreateEvent<IMenuGameSwitchingPressed>();
         AutoRemove().CreateEvent<IClearAll>();

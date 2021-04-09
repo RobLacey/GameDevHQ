@@ -217,8 +217,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
 
     private void FixedUpdate()
     {
-        if(VirtualCursor.CanMoveVirtualCursor())
-            VirtualCursor.FixedUpdate();
+        VirtualCursor.FixedUpdate();
     }
 
     private bool CanPauseGame() => _inputScheme.PressPause();

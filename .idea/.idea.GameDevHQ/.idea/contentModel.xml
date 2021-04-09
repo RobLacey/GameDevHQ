@@ -293,6 +293,7 @@
                 <e p="In Game Control" t="Include">
                   <e p="Control Types" t="Include">
                     <e p="GOUISwitcher.cs" t="Include" />
+                    <e p="InGameUiExtensionMethod.cs" t="Include" />
                     <e p="InteractWithUi.cs" t="Include" />
                     <e p="MOveVirtualCursor.cs" t="Include" />
                     <e p="ProcessBranchAndNodeLists.cs" t="Include" />
@@ -404,6 +405,7 @@
                     <e p="CustomEvent.cs" t="Include" />
                     <e p="EventLocator.cs" t="Include" />
                   </e>
+                  <e p="IMono.cs" t="Include" />
                   <e p="UI Event Callers (Depreciated)" t="Include">
                     <e p="CustomEventHandler.cs" t="Include" />
                     <e p="UIDataEvents.cs" t="Include" />
@@ -450,6 +452,7 @@
                 <e p="UIBranch Sub Classes" t="Include">
                   <e p="AutoOpenCloseController.cs" t="Include" />
                   <e p="BranchInterfaces.cs" t="Include" />
+                  <e p="UIBranch.Editor.cs" t="Include" />
                   <e p="UIBranch.Properties.cs" t="Include" />
                   <e p="UIBranchEvents.cs" t="Include" />
                 </e>

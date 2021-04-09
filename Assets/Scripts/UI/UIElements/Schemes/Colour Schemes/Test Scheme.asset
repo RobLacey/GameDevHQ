@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613e35cf264b3f847980c74f4b660d92, type: 3}
   m_Name: Test Scheme
   m_EditorClassIdentifier: 
-  _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
-  _selected: {r: 0.3580614, g: 0.2470588, b: 0.98039216, a: 1}
-  _highlighted: {r: 0.41388392, g: 1, b: 0, a: 1}
+  _disabled: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _selected: {r: 0, g: 0, b: 1, a: 1}
+  _highlighted: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   _pressedFlash: {r: 0, g: 0, b: 0, a: 1}
   _coloursToUse: 3
-  _tweenTime: 0.3
+  _tweenTime: 0.4
   _selectedHighlightPerc: 0.5
   _pressedFlashTime: 0.1

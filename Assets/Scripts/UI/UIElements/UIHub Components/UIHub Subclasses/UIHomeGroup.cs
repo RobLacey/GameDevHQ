@@ -1,4 +1,7 @@
 ﻿
+using System;
+using UnityEngine;
+
 public interface IHomeGroup
 {
     void OnEnable();
@@ -80,6 +83,8 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
                 break;
             case SwitchType.Negative:
                 _index = _index.NegativeIterate(_homeGroup.Length);
+                break;
+            case SwitchType.Activate:
                 break;
         }
         _lastActiveHomeBranch = _homeGroup[_index];

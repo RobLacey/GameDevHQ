@@ -17,11 +17,10 @@ public partial class UINode
 
     private bool CheckAutoOpenCloseStatus()
     {
-        var autoOpenClosActive = GetComponentInParent<IBranch>().AutoOpenClose != AutoOpenClose.No;
-
          return (_buttonFunction == ButtonFunction. ToggleGroup 
-                 || _buttonFunction == ButtonFunction. Standard) 
-                 && autoOpenClosActive;
+                 || _buttonFunction == ButtonFunction. Standard
+                 || _buttonFunction == ButtonFunction.InGameUi) 
+                 && _autoOpen == IsActive.Yes;
     }
 
     private bool UseNavigation()

@@ -13,47 +13,54 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(UITweener))]
 
 
-public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranch, IEventDispatcher,
-                                IPointerEnterHandler, IPointerExitHandler, IGetHomeBranches
+public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranch, IEventDispatcher, IGetHomeBranches,
+                                IPointerEnterHandler, IPointerExitHandler
 {
     [Header("Branch Main Settings")] [HorizontalLine(1f, EColor.Blue, order = 1)]
     [SerializeField]
     private BranchType _branchType = BranchType.Standard;
-    
-    [SerializeField] 
+
+    [SerializeField]
     [ShowIf(EConditionOperator.Or, HomeScreenBranch)] [Label("Is Control Bar")]
     private IsActive _controlBar = IsActive.No;
 
     [SerializeField]
     [Label("Start On (Optional)")] 
     private UINode _startOnThisNode;
-    
-    [SerializeField] 
-    [ShowIf(ManualOrder)] 
-    [OnValueChanged(SetUpCanvasOrder)] 
-    private int _orderInCanvas;
 
     [SerializeField]
     [ShowIf(EConditionOperator.Or, TimedBranch, ResolveBranch)]
     private IsActive _onlyAllowOnHomeScreen = IsActive.Yes;
-    
-    [SerializeField] 
-    [ShowIf(EConditionOperator.Or, HomeScreenBranch, StandardBranch)] 
-    private OrderInCanvas _canvasOrderSetting = OrderInCanvas.Default;
-    
-    [SerializeField]
-    [Label("Move To Next Branch...")] [HideIf(InGamUIBranch)] 
-    private WhenToMove _moveType = WhenToMove.Immediately;
-    
-    [SerializeField] 
-    [HideIf(EConditionOperator.Or, ControlBarBranch, AnyPopUpBranch, InGamUIBranch)] 
-    [Label("Auto Open/Close")]
-    private AutoOpenClose _autoOpenClose = AutoOpenClose.No;
-    
+
     [SerializeField] 
     [ShowIf(TimedBranch)] [Range(0f,20f)] 
     private float _timer = 5f;
+
+    [SerializeField] 
+    [ShowIf(OptionalBranch)] 
+    private StoreAndRestorePopUps _storeOrResetOptional = StoreAndRestorePopUps.Reset;
     
+    [SerializeField] 
+    [ShowIf(CanAutoOpenClose)] [Label("Auto Close Branch")]
+    private IsActive _autoClose = IsActive.No;
+
+    [SerializeField]
+    [ShowIf(CanAutoOpenClose)] [Label("Auto Close Delay")]
+    [Range(0.25f, 1f)]private float _autoCloseDelay = 0.25f;
+
+    [SerializeField]
+    [Label("Move To Next Branch...")] [HideIf(InGamUIBranch)] 
+    private WhenToMove _moveType = WhenToMove.Immediately;
+
+    [SerializeField] 
+    [ShowIf(EConditionOperator.Or, HomeScreenBranch, StandardBranch)] 
+    private OrderInCanvas _canvasOrderSetting = OrderInCanvas.Default;
+
+    [SerializeField] 
+    [ShowIf(ShowManualOrder)] 
+    [OnValueChanged(SetUpCanvasOrder)] 
+    private int _orderInCanvas;
+
     [SerializeField] 
     [HideIf(EConditionOperator.Or, OptionalBranch, TimedBranch, HomeScreenBranch, ControlBarBranch, InGamUIBranch)]
     private ScreenType _screenType = ScreenType.Normal;
@@ -62,23 +69,23 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     [HideIf(EConditionOperator.Or, AnyPopUpBranch, Fullscreen, ControlBarBranch, InGamUIBranch)]
     [ValidateInput(ValidInAndOutTweens, MessageINAndOutTweens)]
     private IsActive _stayVisible = IsActive.No;
-    
-    [SerializeField] 
-    [ShowIf(OptionalBranch)] 
-    private StoreAndRestorePopUps _storeOrResetOptional = StoreAndRestorePopUps.Reset;
-    
+
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, HomeScreenButNotControl, Stored)] 
     [Label("On Return To Home Screen")]
     private DoTween _tweenOnHome = DoTween.Tween;
-    
+
     [SerializeField] 
     [Label("Save Position On Exit")] [HideIf(EConditionOperator.Or,AnyPopUpBranch, InGamUIBranch)] 
     private IsActive _saveExitSelection = IsActive.Yes;
-    
+
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, StandardBranch)]
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
+
+    [SerializeField] 
+    [HideIf(Fullscreen)]
+    private IsActive _closeIfClickedOff = IsActive.Yes;
 
     [SerializeField]
     [HideIf(EConditionOperator.Or, AnyPopUpBranch, HomeScreenBranch, InGamUIBranch)] 
@@ -103,11 +110,10 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     private UITweener _uiTweener;
     private int _groupIndex;
     private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
-    private bool _activePopUp, _isTabBranch, _canStartGOUI;
+    private bool _activePopUp, _isTabBranch;
     private IBranchBase _branchTypeClass;
     private INode _lastHighlighted;
-    
-    
+
     //Delegates & Events
     private Action TweenFinishedCallBack { get; set; }
     private  Action<IActiveBranch> SetAsActiveBranch { get; set; }
@@ -188,8 +194,6 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Subscribe<ISelectedNode>(SaveSelected);
         EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
-        EVent.Do.Subscribe<IStartBranch>(StartBranch_GOUIEventCall);
-        EVent.Do.Subscribe<ICloseBranch>(ExitBranch_GOUIEventCall);
     }
 
     private void Start() => CheckForControlBar();
@@ -199,22 +203,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         GetHomeBranches?.Invoke(this);
         BranchGroups.AddControlBarToGroupList(_groupsList, HomeBranches, this);
     }
-
-    private void StartBranch_GOUIEventCall(IStartBranch args)
-    {
-        if(!ReferenceEquals(args.TargetBranch, this)) return;
-        if (_branchType == BranchType.InGameUi)
-            _canStartGOUI = true;
-        MoveToThisBranch();
-    }
     
-    private void ExitBranch_GOUIEventCall(ICloseBranch args)
-    {
-        if(!ReferenceEquals(args.TargetBranch, this)) return;
-        if(!CanvasIsEnabled) return;
-        StartBranchExitProcess(OutTweenType.Cancel);
-    }
-
     public void StartBranch_InspectorCall()
     {
         if (IsInGameBranch())
@@ -245,7 +234,6 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         }
 
         _tweenOnChange = true;
-        _canStartGOUI = false;
     }
     
     private void InTweenCallback()
@@ -315,7 +303,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     public void SetCanvas(ActiveCanvas activeCanvas) => _branchTypeClass.SetCanvas(activeCanvas);
     public void SetBlockRaycast(BlockRaycast blockRaycast) => _branchTypeClass.SetBlockRaycast(blockRaycast);
     public void SetUpAsTabBranch() => _branchTypeClass.SetUpAsTabBranch();
-
+    
     public void OnPointerEnter(PointerEventData eventData) => AutoOpenCloseClass.OnPointerEnter();
 
     public void OnPointerExit(PointerEventData eventData) => AutoOpenCloseClass.OnPointerExit();

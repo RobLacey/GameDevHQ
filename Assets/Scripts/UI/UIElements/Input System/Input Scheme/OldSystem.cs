@@ -171,8 +171,9 @@ public class OldSystem : InputScheme
     public override bool PressedPositiveSwitch() => _hasPosSwitchAxis && Input.GetButtonDown(PositiveSwitch);
     public override bool PressedNegativeSwitch() => _hasNegSwitchAxis && Input.GetButtonDown(NegativeSwitch);
     public override bool PressedPositiveGOUISwitch() => _hasPosGOUIAxis && Input.GetButtonDown(PositiveGOUISwitch);
-
     public override bool PressedNegativeGOUISwitch()=> _hasNegGOUIAxis && Input.GetButtonDown(NegativeGOUISwitch);
+    public override bool VcHorizontalPressed() => _hasVCursorHorizontal && Input.GetButtonDown(VCursorHorizontal);
+    public override bool VcVerticalPressed() =>  _hasVCursorVertical && Input.GetButtonDown(VCursorVertical);
     public override float VcHorizontal() => _hasVCursorHorizontal ? Input.GetAxis(VCursorHorizontal) : 0;
     public override float VcVertical() =>  _hasVCursorVertical ? Input.GetAxis(VCursorVertical) : 0;
     public override float MouseXAxisValue() =>  _hasMouseXAxis ? Input.GetAxis(MouseXAxis) : 0;

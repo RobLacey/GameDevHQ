@@ -33,7 +33,6 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     private readonly List<INode> _toggleGroupMembers = new List<INode>();
     private IBranch _tabBranch;
     private bool _hasATabBranch;
-    private bool _canAutoOpen;
     private int _hasAGroupStartPoint;
     private ToggleGroup _myToggleGroupId;
     private bool _startAsSelected;
@@ -47,7 +46,6 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     public override void Start()
     {
         base.Start();
-        _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
         SetUpToggleGroup();
         SetUpTabBranch();
         if (_startAsSelected)
@@ -105,9 +103,8 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     public override void OnEnter()
     {
         base.OnEnter();
-        if(_uiNode.AutoOpenCloseOverride == IsActive.Yes) return;
         
-        if (_canAutoOpen && !IsSelected)
+        if (_uiNode.CanAutoOpen && !IsSelected)
         {
             _delayTimer.SetDelay(_autoOpenDelay)
                        .StartTimer(StartAutoOpen);
@@ -119,7 +116,7 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     public override void OnExit()
     {
         base.OnExit();
-        if (_canAutoOpen)
+        if (_uiNode.CanAutoOpen)
         {
             _delayTimer.StopTimer();
         }

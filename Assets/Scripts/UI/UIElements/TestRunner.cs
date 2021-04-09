@@ -5,12 +5,14 @@ using UnityEngine;
 using UnityEngine.Events;
 using NaughtyAttributes;
 using UIElements;
+using UnityEngine.SceneManagement;
 
-public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
+public class TestRunner : MonoBehaviour, IEventUser
 {
     [SerializeField] private UINode _lastHighlighted = default;
     [SerializeField] private UINode _lastSelected = default;
     [SerializeField] private UIBranch _activeBranch = default;
+    [SerializeField] [Space(20, order = 1)] private int _nextScene  = 6;
     [SerializeField] private List<UINode> _history = default;
     [SerializeField] [ReadOnly] private bool _onHomeScreen = true;
     [SerializeField] [ReadOnly] private bool _allowKeys = default;
@@ -47,8 +49,6 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
     private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
     private void SaveInMenu(IInMenu args) => _inMenu = args.InTheMenu;
 
-    private Action<IStartBranch> StartBranch { get; set; }
-
     private void Awake() => _onHomeScreen = true;
 
     private void OnEnable() => ObserveEvents();
@@ -62,8 +62,6 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
         EVent.Do.Subscribe<ITestList>(ManageHistory);
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<IInMenu>(SaveInMenu);
-
-        StartBranch = EVent.Do.Fetch<IStartBranch>();
     }
 
 
@@ -135,15 +133,20 @@ public class TestRunner : MonoBehaviour, IEventUser, IStartBranch
     {
         Debug.Log(_test5Test + " : " + value);
     }
-
-    public void TestEventTrigger(UIBranch branch)
+    
+    /// <summary>
+    /// Used by UnityEvent in Inspector
+    /// </summary>
+    public void LoadNextScene()
     {
-        TargetBranch = branch;
-        StartBranch.Invoke(this);
+        StartCoroutine(StartOut());
     }
 
-    public IBranch TargetBranch { get; private set; }
-    public GOUIModule ReturnGOUIModule { get; }
+    private IEnumerator StartOut()
+    {
+        yield return new WaitForSeconds(0.5f);
+        SceneManager.LoadScene(_nextScene);
+    }
 }
 
 

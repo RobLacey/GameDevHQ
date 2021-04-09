@@ -24,7 +24,7 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     protected readonly CanvasOrderCalculator _canvasOrderCalculator;
     private readonly Canvas _myCanvas;
     private bool _allowKeys;
-    private readonly CanvasGroup _myCanvasGroup;
+    protected readonly CanvasGroup _myCanvasGroup;
 
     //Events
     private Action<IOnHomeScreen> SetIsOnHomeScreen { get; set; }
@@ -88,7 +88,7 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
         EVent.Do.Subscribe<IAllowKeys>(AllowKeys);
     }
 
-    public void UseEServLocator() => _historyTrack = EServ.Locator.Get<IHistoryTrack>(this);
+    public virtual void UseEServLocator() => _historyTrack = EServ.Locator.Get<IHistoryTrack>(this);
 
     public void SetUpAsTabBranch() => _isTabBranch = true;
 

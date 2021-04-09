@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NaughtyAttributes;
 using UnityEngine;
 
 /// <summary>
@@ -19,13 +20,14 @@ public partial class UIBranch
     public bool IsInternalBranch() => _branchType == BranchType.Internal;
     public bool IsHomeScreenBranch() => _branchType == BranchType.HomeScreen;
     public bool IsStandardBranch() => _branchType == BranchType.Standard;
-    public bool IsInGameBranch() => _branchType == BranchType.InGameUi;
+    public bool IsInGameBranch() => _branchType == BranchType.InGameObject;
 
     public void DoNotTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
     public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
     public bool IsTimedPopUp() => _branchType == BranchType.TimedPopUp;
     public IsActive GetStayOn() => _stayVisible;
+    public void SetNotAControlBar() => _controlBar = IsActive.No;
     public IsActive SetStayOn { set => _stayVisible = value; }
 
     private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
@@ -41,8 +43,6 @@ public partial class UIBranch
                                  .DefaultReturn(LastSelected)
                                  .RunOn(ThisGroupsUiNodes);
     }    
-
-
     
    //Properties
     public BranchType ReturnBranchType => _branchType;
@@ -62,12 +62,16 @@ public partial class UIBranch
     public bool PointerOverBranch => AutoOpenCloseClass.PointerOverBranch;
     public List<UIBranch> HomeBranches { private get; set; }
     public float Timer => _timer;
-    public bool CanStartGOUI => _canStartGOUI;
+    public IsActive CloseIfClickedOff
+    {
+        get => _closeIfClickedOff;
+        set => _closeIfClickedOff = value;
+    }
+
     public IsActive SetSaveLastSelectionOnExit
     {
         set => _saveExitSelection = value;
     }
-
 
     public EscapeKey EscapeKeyType
     {
@@ -93,12 +97,14 @@ public partial class UIBranch
         set => _tweenOnHome = value;
     }
     
-    public AutoOpenClose AutoOpenClose
+    public IsActive AutoClose
     {
-        get => _autoOpenClose;
-        set => _autoOpenClose = value;
+        get =>_autoClose; 
+        set => _autoClose = value;
     }
-    
+
+    public float AutoCloseDelay => _autoCloseDelay;
+
     public OrderInCanvas CanvasOrder
     {
         get => _canvasOrderSetting;
@@ -107,65 +113,4 @@ public partial class UIBranch
     
     public int ReturnManualCanvasOrder => _orderInCanvas;
     public IsActive ReturnOnlyAllowOnHomeScreen => _onlyAllowOnHomeScreen;
-    
-    //Editor Properties
-    private const string HomeScreenBranch = nameof(IsHomeScreenBranch);
-    private const string StandardBranch = nameof(IsStandardBranch);
-    private const string ControlBarBranch = nameof(IsControlBar);
-    private const string OptionalBranch = nameof(IsOptional);
-    private const string InGamUIBranch = nameof(InGameUI);
-    private const string TimedBranch = nameof(IsTimedPopUp);
-    private const string ResolveBranch = nameof(IsResolve);
-    private const string AnyPopUpBranch = nameof(IsAPopUpEditor);
-    private const string HomeScreenButNotControl = nameof(IsHomeAndNotControl);
-    private const string Stored = nameof(IsStored);
-    private const string Fullscreen = nameof(IsFullScreen);
-    private const string ManualOrder = nameof(IsManualOrder);
-    private const string ValidInAndOutTweens = nameof(AllowableInAndOutTweens);
-    private const string SetUpCanvasOrder = nameof(ChangeCanvasOrder);
-
-    private void ChangeCanvasOrder()
-    {
-        var temp = GetComponent<Canvas>();
-        temp.overrideSorting = true;
-        temp.sortingOrder = _orderInCanvas;
-    }
-    private bool InGameUI => _branchType == BranchType.InGameUi;
-    private bool IsManualOrder => _canvasOrderSetting == OrderInCanvas.Manual;
-    private bool IsResolve => _branchType == BranchType.ResolvePopUp;
-
-    private bool IsOptional() => _branchType == BranchType.OptionalPopUp;
-
-    private bool IsStored() =>
-        _branchType == BranchType.OptionalPopUp && _storeOrResetOptional == StoreAndRestorePopUps.StoreAndRestore; 
-
-    private bool IsHomeAndNotControl() => _branchType == BranchType.HomeScreen && _controlBar == IsActive.No;
-    private bool IsFullScreen()
-    {
-        if (_screenType != ScreenType.FullScreen) return false;
-        
-        _stayVisible = IsActive.No;
-        return true;
-    }
-    private bool IsAPopUpEditor()
-    {
-        return _branchType == BranchType.OptionalPopUp
-               || _branchType == BranchType.ResolvePopUp
-               || _branchType == BranchType.TimedPopUp;
-    }
-    
-    private bool AllowableInAndOutTweens(IsActive active)
-    {
-        if(active == IsActive.Yes)
-        {
-            var tweener = GetComponent<UITweener>();
-            if(tweener.HasInAndOutTween())
-            {
-                return false;
-            }        
-        }
-        return true;
-    }
-
-    private const string MessageINAndOutTweens = "Can't have IN And Out tweens and Stay Visible set";
 }

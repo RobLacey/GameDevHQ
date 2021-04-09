@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UIElements;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -122,7 +123,14 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         }
     }
 
-    public void ClearAll(IClearAll args) => BackToHome();
+    private void ClearAll(IClearAll args)
+    {
+        if (_activeBranch.CloseIfClickedOff == IsActive.No)
+        {
+            return;
+        }
+        BackToHome();
+    }
 
     public void BackToHome()
     {

@@ -50,7 +50,8 @@ public abstract class InputScheme : ScriptableObject
     [ShowIf(KeysOnly)]
     protected InGameSystem _inGameMenuSystem = InGameSystem.Off;
     
-    [SerializeField] 
+    [SerializeField]
+    [Header("Virtual Cursor", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)]
     [Space(EditorSpace)]
     [DisableIf(EConditionOperator.Or, IsPlaying, UseCustomCursor)]
     private VirtualControl _useVirtualCursor = VirtualControl.No;
@@ -180,6 +181,9 @@ public abstract class InputScheme : ScriptableObject
     public abstract bool PressedNegativeGOUISwitch();
     public abstract float VcHorizontal();
     public abstract float VcVertical();
+    public abstract bool VcHorizontalPressed();
+    public abstract bool VcVerticalPressed();
+
     private protected abstract bool VCSwitchTo();
     public abstract bool PressSelect();
     public abstract bool HotKeyChecker(HotKey hotKey);

@@ -1,5 +1,6 @@
 ﻿using System;
 using UIElements;
+using UnityEngine;
 
 public interface IGOUISwitchSettings
 {
@@ -16,7 +17,7 @@ public interface ISwitchGroup
 }
 
 public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGroupPressed,
-                            IEServUser, IGOUISwitchSettings, ISwitchGroup
+                            IEServUser, IGOUISwitchSettings, ISwitchGroup, IGOUISwitchPressed
 {
     public SwitchGroups(ISwitchGroupSettings settings)
     { 
@@ -28,7 +29,12 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
         UseEServLocator();
     }
 
-    public void FetchEvents() => OnSwitchGroupPressed  = EVent.Do.Fetch<ISwitchGroupPressed>();
+    public void FetchEvents()
+    {
+        OnSwitchGroupPressed = EVent.Do.Fetch<ISwitchGroupPressed>();
+        OnGOUISwitchPressed = EVent.Do.Fetch<IGOUISwitchPressed>();
+    }
+    
     public void UseEServLocator() => _uiHub = EServ.Locator.Get<IHub>(this);
 
     //Variables
@@ -39,17 +45,26 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
     private bool _noActivePopUps = true;
     private readonly IHomeGroup _homeGroup;
     private IHub _uiHub;
+    private INode _lastHighlighted;
 
     //Enum
     private enum SwitchFunction {  GOUI, UI }
 
+    //Events
+    private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; set; }
+    private Action<IGOUISwitchPressed> OnGOUISwitchPressed { get; set; }
+    
     //Properties Getters / Setters
     public IGOUIModule[] GetPlayerObjects { get; }
     public SwitchType SwitchType { get; private set; }
-    private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; set; }
-    private void SaveAllowKeys (IAllowKeys args) => _allowKeys = args.CanAllowKeys;
+    private void SaveAllowKeys (IAllowKeys args)
+    {
+        _allowKeys = args.CanAllowKeys;
+        if(!_allowKeys) return;
+        _currentSwitchFunction = _lastHighlighted.MyBranch.IsInGameBranch() ? SwitchFunction.GOUI : SwitchFunction.UI;
+    }
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
-
+    private void SaveLastHighlighted(IHighlightedNode args) => _lastHighlighted = args.Highlighted;
     private void SaveNoActivePopUps(INoPopUps args) => _noActivePopUps = args.NoActivePopUps;
 
     private bool MouseOnly()
@@ -72,6 +87,7 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<INoPopUps>(SaveNoActivePopUps);
         EVent.Do.Subscribe<IGameIsPaused>(GameIsPaused);
+        EVent.Do.Subscribe<IHighlightedNode>(SaveLastHighlighted);
     }
     
     public void OnStart() => _homeGroup.SetUpHomeGroup(_uiHub.HomeBranches);
@@ -115,7 +131,11 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
             return true;
         }
 
-        void GOUISwitch() => _switcher.UseGOUISwitcher(SwitchType);
+        void GOUISwitch()
+        {
+            OnGOUISwitchPressed?.Invoke(this);
+            _switcher.UseGOUISwitcher(SwitchType);
+        }
 
         return false;
     }

@@ -6,13 +6,13 @@ namespace UIElements
     [Serializable]
     public class CanvasOrderData : IEventDispatcher, ISetStartingCanvasOrder
     {
-        [SerializeField] private int _pauseMenuCanvasOrder = 10;
-        [SerializeField] private int _toolTipCanvasOrder = 20;
-        [SerializeField] private int _resolvePopUpCanvasOrder = 5;
-        [SerializeField] private int _timedPopUpCanvasOrder = 5;
-        [SerializeField] private int _optionalPopUpCanvasOrder = 5;
-        [SerializeField] private int _virtualCursorCanvasOrder = 5;
-        [SerializeField] private int _GOUICanvasOrder = -3;
+        [SerializeField] private int _pauseMenu = 20;
+        [SerializeField] private int _toolTip = 25;
+        [SerializeField] private int _resolvePopUp = 20;
+        [SerializeField] private int _timedPopUp = 15;
+        [SerializeField] private int _optionalPopUp = 15;
+        [SerializeField] private int _virtualCursor = 30;
+        [SerializeField] private int _inGameObject = -3;
 
         //Events
         private Action<ISetStartingCanvasOrder> SetStartingCanvasOrder { get; set; }
@@ -22,8 +22,8 @@ namespace UIElements
         public void OnEnable() => FetchEvents();
         public void OnStart() => SetStartingCanvasOrder?.Invoke(this);
         public void FetchEvents() => SetStartingCanvasOrder = EVent.Do.Fetch<ISetStartingCanvasOrder>();
-        public int ReturnToolTipCanvasOrder() => _toolTipCanvasOrder;
-        public int ReturnVirtualCursorCanvasOrder() => _virtualCursorCanvasOrder;
+        public int ReturnToolTipCanvasOrder() => _toolTip;
+        public int ReturnVirtualCursorCanvasOrder() => _virtualCursor;
         
         //Main
         public int ReturnPresetCanvasOrder(CanvasOrderCalculator calculator)
@@ -31,19 +31,19 @@ namespace UIElements
             switch (calculator.GetBranchType)
             {
                 case BranchType.ResolvePopUp:
-                    return _resolvePopUpCanvasOrder;
+                    return _resolvePopUp;
                 case BranchType.OptionalPopUp:
-                    return _optionalPopUpCanvasOrder;
+                    return _optionalPopUp;
                 case BranchType.TimedPopUp:
-                    return _timedPopUpCanvasOrder;
+                    return _timedPopUp;
                 case BranchType.PauseMenu:
-                    return _pauseMenuCanvasOrder;
+                    return _pauseMenu;
                 case BranchType.Standard:
                     return SetStandardCanvasOrder(calculator);
                 case BranchType.Internal:
                     return SetStandardCanvasOrder(calculator);
-                case BranchType.InGameUi:
-                    return _GOUICanvasOrder;
+                case BranchType.InGameObject:
+                    return _inGameObject;
                 case BranchType.HomeScreen:
                     return SetStandardCanvasOrder(calculator);
                 default:

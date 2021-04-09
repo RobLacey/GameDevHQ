@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _changeSizeOn: 2
   _tweenEffect: 0
+  _time: 0.5
   _pixelsToMoveBy: {x: 25, y: 0, z: 0}
   _changeBy: {x: 0, y: 0, z: 0}
-  _time: 0.5
   _loop: 1
   _vibrato: 6
   _elasticity: 0.5

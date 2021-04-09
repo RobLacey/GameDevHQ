@@ -18,12 +18,14 @@ public static class ProcessBranchAndNodeLists
         return needSort;
     }
 
-    public static void CheckAndAddNewBranch(IBranch newBranch, IDictionary<IBranch, RectTransform> activeBranches)
+    public static bool CheckAndAddNewBranch(IBranch newBranch, IDictionary<IBranch, RectTransform> activeBranches)
     {
         if (!activeBranches.ContainsKey(newBranch))
         {
             activeBranches.Add(newBranch, newBranch.ThisBranchesGameObject.GetComponent<RectTransform>());
+            return true;
         }
+        return false;
     }
 
     public static bool RemoveNodeFromList(IEnumerable<UINode> list, IDictionary<UINode, RectTransform> activeNodes)
@@ -47,7 +49,8 @@ public static class ProcessBranchAndNodeLists
         }
     }
 
-    public static void SortNodeList(IDictionary<UINode, RectTransform> sortedNodesDict, IDictionary<UINode, RectTransform> activeNodes)
+    public static void SortNodeList(IDictionary<UINode, RectTransform> sortedNodesDict, 
+                                    IDictionary<UINode, RectTransform> activeNodes)
     {
         sortedNodesDict.Clear();
         var sortedNodeList = activeNodes.Keys.OrderByDescending(node => node.MyBranch.MyCanvas.sortingOrder).ToList();
@@ -55,6 +58,18 @@ public static class ProcessBranchAndNodeLists
         foreach (var node in sortedNodeList)
         {
             sortedNodesDict.Add(node, activeNodes[node]);
+        }
+    }
+    
+    public static void SortBranchList(IDictionary<IBranch, RectTransform> sortedBranchDict, 
+                                      IDictionary<IBranch, RectTransform> activeBranches)
+    {
+        sortedBranchDict.Clear();
+        var sortedBranchList = activeBranches.Keys.OrderByDescending(branch => branch.MyCanvas.sortingOrder).ToList();
+        
+        foreach (var branch in sortedBranchList)
+        {
+            sortedBranchDict.Add(branch, activeBranches[branch]);
         }
     }
 }

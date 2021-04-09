@@ -14,12 +14,12 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     
     //Variables
     protected readonly INode _uiNode;
-    protected IDisabledNode _disabledNode;
-    protected bool _inMenu;
+    private IDisabledNode _disabledNode;
+    private bool _inMenu;
     private bool _hasFinishedSetUp;
     protected bool _allowKeys;
     private INode _lastHighlighted;
-    protected readonly IUiEvents _uiFunctionEvents;
+    private readonly IUiEvents _uiFunctionEvents;
     private bool _fromHotKey;
 
     //Events
@@ -27,9 +27,9 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     private Action<ISelectedNode> DoSelected { get; set; }
 
     //Properties
-    protected bool PointerOverNode { get; set; }
+    private bool PointerOverNode { get; set; }
     public IBranch MyBranch { get; protected set; }
-    protected bool IsDisabled => _disabledNode.IsDisabled;
+    private bool IsDisabled => _disabledNode.IsDisabled;
     public UINavigation Navigation { get; set; }
     protected bool IsSelected { get; private set; }
     public INode Highlighted => _uiNode;
@@ -159,7 +159,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         _uiFunctionEvents.DoWhenPointerOver(PointerOverNode);
     }
 
-    private void SetNotHighlighted()
+    protected void SetNotHighlighted()
     {
         PointerOverNode = false;
         _uiFunctionEvents.DoWhenPointerOver(PointerOverNode);

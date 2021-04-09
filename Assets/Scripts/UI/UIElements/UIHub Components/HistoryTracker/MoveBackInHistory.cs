@@ -101,13 +101,14 @@ public class MoveBackInHistory : IMoveBackInHistory
         }
         else
         {
-            if (activeBranch.AutoOpenClose == AutoOpenClose.No)
-                lastNode.DeactivateNode();
             activeBranch.StartBranchExitProcess(OutTweenType.Cancel, WithTween);
         }
 
         void WithTween()
         {
+            //TODO Check This is needed
+            if (activeBranch.AutoClose == IsActive.No)
+                lastNode.DeactivateNode();
             lastNode.MyBranch.MoveToThisBranch();
         }
 

@@ -13,7 +13,7 @@ public class CancelWhenClickedOff
     {
         if (!scheme.PressSelect()) return false;
 
-        return !virtualCursor.OverAnyObject && scheme.CanCancelWhenClickedOff != CancelClickLocation.Never;
+        return virtualCursor.OverAnyObject.IsNotNull() && scheme.CanCancelWhenClickedOff != CancelClickLocation.Never;
     }
 
     private static bool MouseCancel(InputScheme scheme)

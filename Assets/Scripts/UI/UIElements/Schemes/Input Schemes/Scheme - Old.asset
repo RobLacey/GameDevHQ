@@ -20,7 +20,7 @@ MonoBehaviour:
     _cursor: {fileID: 0}
     _hotSpot: {x: 0, y: 0}
   _inGameMenuSystem: 1
-  _useVirtualCursor: 1
+  _useVirtualCursor: 0
   _virtualCursorSettings:
     _restrictRaycastTo: 2
     _virtualCursorPrefab: {fileID: 766753675201208392, guid: c68b6dd03c66fa94b8c11ef4d321378c,

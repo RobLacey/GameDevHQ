@@ -1,4 +1,6 @@
-﻿public interface IStandard : INodeBase { }
+﻿using UnityEngine;
+
+public interface IStandard : INodeBase { }
 
 public class Standard : NodeBase, IStandard
 {
@@ -9,35 +11,29 @@ public class Standard : NodeBase, IStandard
 
     private bool _isToggle;
     private bool _justCancelled;
-    private bool _canAutoOpen;
-    private bool _canAutoClose;
     private readonly IDelayTimer _delayTimer = EJect.Class.NoParams<IDelayTimer>();
     private readonly float _autoOpenDelay;
 
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        if(_canAutoClose)
+        if(_uiNode.CanAutoOpen)
+        {
             EVent.Do.Subscribe<ISwitchGroupPressed>(ClearJustCancelledFlag);
-    }
-
-    public override void Start()
-    {
-        base.Start();
-        _canAutoOpen = MyBranch.AutoOpenCloseClass.CanAutoOpen();
-        _canAutoClose = MyBranch.AutoOpenCloseClass.CanAutoClose();
+            EVent.Do.Subscribe<IGOUISwitchPressed>(ClearJustCancelledFlag);
+        }    
     }
 
     private void ClearJustCancelledFlag(ISwitchGroupPressed args) => _justCancelled = false;
+    private void ClearJustCancelledFlag(IGOUISwitchPressed args) => _justCancelled = false;
 
     public override void OnEnter()
     {
         base.OnEnter();
-        if(_uiNode.AutoOpenCloseOverride == IsActive.Yes) return;
 
         if (CheckIfHasJustBeenCancelled()) return;
-        
-        if (_canAutoOpen && !IsSelected)
+
+        if (_uiNode.CanAutoOpen && !IsSelected)
         {
             _delayTimer.SetDelay(_autoOpenDelay)
                        .StartTimer(StartAutoOpen);
@@ -47,7 +43,7 @@ public class Standard : NodeBase, IStandard
     public override void OnExit()
     {
         base.OnExit();
-        if (_canAutoOpen)
+        if (_uiNode.CanAutoOpen)
         {
             _delayTimer.StopTimer();
         }
@@ -72,10 +68,10 @@ public class Standard : NodeBase, IStandard
         if (!IsSelected) return;
         Deactivate();
         
-        if (_canAutoClose && _allowKeys)
+        if (_uiNode.CanAutoOpen && _allowKeys)
         {
             _justCancelled = true;
-            SetAsHighlighted();
+            SetNotHighlighted();
         }
         else
         {

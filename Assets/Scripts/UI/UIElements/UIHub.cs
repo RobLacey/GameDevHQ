@@ -32,12 +32,11 @@ namespace UIElements
     {
         [SerializeField] private UIBranch _startOnThisBranch;
 
-        [Header("Canvas Offsets for Branch Types", order = 2)]
+        [Header("Canvas Sorting Order Setting for Branch Types", order = 2)]
         [HorizontalLine(1f, EColor.Blue, order = 3)]
         [Space(10, order = 1)]
         [SerializeField]
-        private CanvasOrderData _canvasData; 
-        [SerializeField] [Space(20, order = 1)] private int _nextScene  = default;
+        private CanvasOrderData _canvasSortingOrderSettings; 
         
         //Editor
         [Button("Add a New Tree Structure")]
@@ -119,7 +118,7 @@ namespace UIElements
 
         private void OnEnable()
         {
-            _canvasData.OnEnable();
+            _canvasSortingOrderSettings.OnEnable();
             UseEServLocator();
             FetchEvents();
             _historyTrack.OnEnable();
@@ -127,7 +126,11 @@ namespace UIElements
             ObserveEvents();
         }
 
-        private void OnDisable() => _audioService.OnDisable();
+        private void OnDisable()
+        {
+            _audioService.OnDisable();
+            SceneChanging?.Invoke(this);
+        }
 
         public void FetchEvents()
         {
@@ -153,7 +156,7 @@ namespace UIElements
 
         private void Start()
         {
-            _canvasData.OnStart();
+            _canvasSortingOrderSettings.OnStart();
             StartCoroutine(StartUIDelay());
         }
 
@@ -216,20 +219,5 @@ namespace UIElements
         {
             EventSystem.current.SetSelectedGameObject(newGameObject);
         }    
-        /// <summary>
-        /// Used by UnityEvent in Inspector
-        /// </summary>
-        public void LoadNextScene()
-        {
-            StartCoroutine(StartOut());
-        }
-
-        private IEnumerator StartOut()
-        {
-            yield return new WaitForSeconds(0.5f);
-            SceneChanging?.Invoke(this);
-            SceneManager.LoadScene(_nextScene);
-        }
-
     }
 }

@@ -94,6 +94,16 @@ public class NewSystem : InputScheme
         return 0;
     }
 
+    public override bool VcHorizontalPressed()
+    {
+        return false;
+    }
+
+    public override bool VcVerticalPressed()
+    {
+        return false;
+    }
+
     private protected override bool VCSwitchTo()
     {
         return false;

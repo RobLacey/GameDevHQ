@@ -11,13 +11,13 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     [Header("Main Settings")]
     [HorizontalLine(1, color: EColor.Blue, order = 1)]
     [SerializeField] 
-    [Label("Button/Toggle Function")] 
+    [Label("Node Function")] 
     private ButtonFunction _buttonFunction;
+    [SerializeField] 
+    [Label("Auto Open")]
+    private IsActive _autoOpen = IsActive.No;
     [SerializeField]
-    [ShowIf(CanAutoOpenClose)] [Label("Auto Open/Close Override")]
-    private IsActive _autoOpenCloseOverride = IsActive.No;
-    [SerializeField]
-    [ShowIf(CanAutoOpenClose)] [Label("Auto Open/Close Delay")]
+    [ShowIf(CanAutoOpenClose)] [Label("Auto Open Delay")]
     [Range(0, 1)]private float _autoOpenDelay = 0;
     [SerializeField] 
     [ShowIf(CancelOrBack)] 
@@ -26,7 +26,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     [HideIf(EConditionOperator.Or, ShowGroupSettings, CancelOrBack)]
     private ToggleData _toggleData;
 
-    [Header("Tween Data", order = 2)] [Space(20, order = 1)]
+    [Header("Function Settings", order = 2)] [Space(20, order = 1)]
     [HorizontalLine(1, EColor.Blue , order = 3)]
 
     [SerializeField] 
@@ -86,8 +86,8 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     public EscapeKey EscapeKeyType => _escapeKeyFunction;
     public GameObject ReturnGameObject => gameObject;
-    public IsActive AutoOpenCloseOverride => _autoOpenCloseOverride;
     public float AutoOpenDelay => _autoOpenDelay;
+    public bool CanAutoOpen => _autoOpen == IsActive.Yes;
     public IUiEvents UINodeEvents => _uiNodeEvents;
     
     //Setting / Getters
@@ -97,7 +97,6 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     //Main
     private void Awake()
     {
-        //_inputScheme = FindObjectOfType<UIInput>().ReturnScheme;
         MyBranch = GetComponentInParent<IBranch>();
         _uiNodeEvents = new UiEvents(gameObject.GetInstanceID(), this);
         if (IsToggleGroup || IsToggleNotLinked)

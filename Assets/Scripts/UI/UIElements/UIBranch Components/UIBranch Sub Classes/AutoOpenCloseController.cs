@@ -7,26 +7,21 @@ public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelH
 {
     public AutoOpenCloseController(IAutoOpenCloseData data)
     {
-        AutoOpenCloseSettings = data.AutoOpenClose;
         _branch = data.ThisBranch;
         FetchEvents();
     }
     
+    //Variables
     private readonly IBranch _branch;
     private bool _hotKeyPressed;
 
     //Properties
-    private AutoOpenClose AutoOpenCloseSettings {get; }
     public bool PointerOverBranch { get; private set; }
     public EscapeKey EscapeKeyType => EscapeKey.BackToHome;
     public IBranch ChildNodeHasOpenChild { private get; set; }
     
     //Set / Getters
     private void HotKeyPressed(IHotKeyPressed args) => _hotKeyPressed = true;
-    public bool CanAutoClose() => AutoOpenCloseSettings == AutoOpenClose.Both 
-                                  || AutoOpenCloseSettings == AutoOpenClose.Close;
-    public bool CanAutoOpen() => AutoOpenCloseSettings == AutoOpenClose.Both 
-                                 || AutoOpenCloseSettings == AutoOpenClose.Open;
     public void OnPointerEnter() => PointerOverBranch = true;
 
     //Events
@@ -47,7 +42,7 @@ public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelH
     {
         PointerOverBranch = false;
         
-        if(!CanAutoClose()) return;
+        if(_branch.AutoClose == IsActive.No) return;
         if (HasHotKeyBeenPressed()) return;
         
         if (ChildNodeHasOpenChild != null)
@@ -57,7 +52,6 @@ public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelH
         }
 
         StaticCoroutine.StartCoroutine(WaitForPointerNoChild());
-
     }
 
     private bool HasHotKeyBeenPressed()
@@ -72,7 +66,7 @@ public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelH
 
     private IEnumerator WaitForPointer()
     {
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(_branch.AutoCloseDelay);
         if (!ChildNodeHasOpenChild.PointerOverBranch && !_branch.MyParentBranch.PointerOverBranch)
             CloseBranch();
     }
