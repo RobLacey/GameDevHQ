@@ -20,7 +20,7 @@ public class ToolTipsCalcs : IEServUser, IToolTipCalcs
         UseEServLocator();
     }
     
-    public void UseEServLocator() => SetUsableArea(EServ.Locator.Get<IHub>(this).MainCanvas);
+    public void UseEServLocator() => SetUsableArea(EServ.Locator.Get<IHub>(this).MainCanvasRect);
 
     private void SetUsableArea(RectTransform mainCanvas)
     {

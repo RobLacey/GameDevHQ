@@ -38,10 +38,10 @@ public static class BranchGroups
     {
         var newGroup = new GroupList
         {
-            _startNode = (UINode) branch.DefaultStartOnThisNode,
-            _nodes = new UINode[branch.ThisGroupsUiNodes.Length]
+            StartNode = (UINode) branch.DefaultStartOnThisNode,
+            GroupNodes = new UINode[branch.ThisGroupsUiNodes.Length]
         };
-        newGroup._nodes = branch.ThisGroupsUiNodes.Cast<UINode>().ToArray();
+        newGroup.GroupNodes = branch.ThisGroupsUiNodes.Cast<UINode>().ToArray();
         return newGroup;
     }
 
@@ -51,7 +51,7 @@ public static class BranchGroups
         index = 0;
         foreach (var branchGroup in branchGroupsList)
         {
-            if (branchGroup._nodes.Any(node => ReferenceEquals(node, defaultStartPosition)))
+            if (branchGroup.GroupNodes.Any(node => ReferenceEquals(node, defaultStartPosition)))
             {
                 groupIndex = index;
                 return groupIndex;
@@ -73,7 +73,7 @@ public static class BranchGroups
         {
            newIndex = passedIndex.NegativeIterate(groupsList.Count);
         }
-        groupsList[newIndex]._startNode.SetNodeAsActive();
+        groupsList[newIndex].StartNode.SetNodeAsActive();
         return newIndex;
     }
 }

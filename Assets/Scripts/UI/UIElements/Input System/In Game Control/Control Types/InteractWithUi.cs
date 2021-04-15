@@ -19,11 +19,7 @@ public class InteractWithUi : IInteractWithUi, IEventUser
     private readonly Dictionary<IBranch, RectTransform> _sortedBranches = new Dictionary<IBranch, RectTransform>();
     private (UINode node, RectTransform rect) _lastHit;
     private bool _canStart = false;
-    private INode _lastHighlighted;
     private bool _onlyHitInGameObjects;
-
-    //Properties & Getters / Setters
-    private void SaveHighlighted(IHighlightedNode args) => _lastHighlighted = args.Highlighted;
 
     private void OnStart(IOnStart args)
     {
@@ -48,7 +44,12 @@ public class InteractWithUi : IInteractWithUi, IEventUser
         EVent.Do.Subscribe<IOnStart>(OnStart);
         EVent.Do.Subscribe<IAddNewBranch>(AddNodes);
         EVent.Do.Subscribe<IRemoveBranch>(RemoveNodes);
-        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Subscribe<ICancelPressed>(CancelPressed);
+    }
+
+    private void CancelPressed(ICancelPressed args)
+    {
+        _lastHit = (null, null);
     }
 
     public void CheckIfCursorOverUI(IVirtualCursor virtualCursor)
@@ -58,32 +59,45 @@ public class InteractWithUi : IInteractWithUi, IEventUser
         if (pointerOverNode.Key)
         {
             if (UnderAnotherUIObject(pointerOverNode, virtualCursor)) return;
-            if (pointerOverNode.Key == _lastHit.node) return;
-            
-            CloseLastHitNodeAsDifferent();
+            if(pointerOverNode.Key == _lastHit.node) return;
             StartNewNode(virtualCursor, pointerOverNode);
             return;
         }
         CheckIfNotOverLastHitNode(virtualCursor);
     }
 
-    private void StartNewNode(IVirtualCursor virtualCursor, KeyValuePair<UINode, RectTransform> node)
+    private bool UnderAnotherUIObject(KeyValuePair<UINode, RectTransform> node, IVirtualCursor virtualCursor)
     {
-        node.Key.OnPointerEnter(null);
-        _lastHit = (node.Key, node.Value);
-        
-        NotOverLastBranch(virtualCursor, _lastHit.node.MyBranch);
-        
-        virtualCursor.OverAnyObject = _lastHit.node.MyBranch;
-        virtualCursor.OverAnyObject.AutoOpenCloseClass.OnPointerEnter();
+        foreach (var activeBranch in _sortedBranches)
+        {
+            if (PointerInsideUIObject(activeBranch.Value, virtualCursor))
+            {
+                return OverBranchButActiveNodeBelow(node, activeBranch.Key);
+            }
+        }
+        return false;
     }
 
-    private void NotOverLastBranch(IVirtualCursor virtualCursor, IBranch currentBranch)
+    private bool OverBranchButActiveNodeBelow(KeyValuePair<UINode, RectTransform> nodeCursorIsOver, 
+                                              IBranch branchCursorIsOver)
     {
-        if (virtualCursor.OverAnyObject.IsNotNull() && virtualCursor.OverAnyObject != currentBranch)
-        {
-            virtualCursor.OverAnyObject.AutoOpenCloseClass.OnPointerExit();
-        }
+         if (nodeCursorIsOver.Key.MyBranch.MyCanvas.sortingOrder < branchCursorIsOver.MyCanvas.sortingOrder)
+         {
+             nodeCursorIsOver.Key.OnPointerExit(null);
+             CloseLastHitAsNotOver(); 
+             return true;
+         }
+         return false;
+    }
+
+    private void StartNewNode(IVirtualCursor virtualCursor, KeyValuePair<UINode, RectTransform> node)
+    {
+        CloseLastHitNodeAsDifferent();
+        node.Key.OnPointerEnter(null);
+        CloseLastBranchIfNotRelated(virtualCursor, node.Key.MyBranch);
+        _lastHit = (node.Key, node.Value);
+        virtualCursor.OverAnyObject = _lastHit.node.MyBranch;
+        virtualCursor.OverAnyObject.AutoOpenCloseClass.OnPointerEnter();
     }
 
     public void CloseLastHitNodeAsDifferent()
@@ -92,34 +106,22 @@ public class InteractWithUi : IInteractWithUi, IEventUser
         _lastHit.node.OnPointerExit(null);
     }
 
-    private static bool PointerInsideUIObject(RectTransform nodeRect, IVirtualCursor virtualCursor)
+    private void CloseLastBranchIfDifferent(IVirtualCursor virtualCursor, IBranch currentBranch)
     {
-        return RectTransformUtility.RectangleContainsScreenPoint(nodeRect,
-                                                                 virtualCursor.Position,
-                                                                 null);
-    }
-
-    private bool UnderAnotherUIObject(KeyValuePair<UINode, RectTransform> node, IVirtualCursor virtualCursor)
-    {
-        foreach (var activeBranch in _sortedBranches)
+        if (virtualCursor.OverAnyObject.IsNotNull() && virtualCursor.OverAnyObject != currentBranch)
         {
-            if (node.Key.MyBranch == activeBranch.Key || !node.Value.DoBranchesOverlap(activeBranch.Value)) continue;
-            
-            if (PointerInsideUIObject(activeBranch.Value, virtualCursor))
-            {
-                OverBranchButActiveNodeBelow(node);
-                return true;
-            }
+            virtualCursor.OverAnyObject.AutoOpenCloseClass.OnPointerExit();
         }
-        return false;
     }
-
-    private void OverBranchButActiveNodeBelow(KeyValuePair<UINode, RectTransform> node)
+    
+    private void CloseLastBranchIfNotRelated(IVirtualCursor virtualCursor, IBranch currentBranch)
     {
-        if (!ReferenceEquals(_lastHighlighted, node.Key)) return;
+        if(virtualCursor.OverAnyObject.IsNull() || currentBranch.IsNull()) return;
         
-        node.Key.OnPointerExit(null);
-        _lastHighlighted = null;
+        if (virtualCursor.OverAnyObject.MyCanvas.sortingOrder > currentBranch.MyCanvas.sortingOrder)
+        {
+            virtualCursor.OverAnyObject.AutoOpenCloseClass.OnPointerExit();
+        }
     }
 
     private void CheckIfNotOverLastHitNode(IVirtualCursor virtualCursor)
@@ -128,9 +130,15 @@ public class InteractWithUi : IInteractWithUi, IEventUser
         
         if (SetOverAnActiveBranch(virtualCursor)) return;
         
-        NotOverLastBranch(virtualCursor, null);
-        
+        CloseLastBranchIfDifferent(virtualCursor, null);
         virtualCursor.OverAnyObject = null;
+    }
+
+    private static bool PointerInsideUIObject(RectTransform nodeRect, IVirtualCursor virtualCursor)
+    {
+        return RectTransformUtility.RectangleContainsScreenPoint(nodeRect,
+                                                                 virtualCursor.CursorRect.position,
+                                                                 null);
     }
 
     private void CloseLastHitAsNotOver()
@@ -146,7 +154,7 @@ public class InteractWithUi : IInteractWithUi, IEventUser
         {
             if (PointerInsideUIObject(branch.Value, virtualCursor))
             {
-                NotOverLastBranch(virtualCursor, branch.Key);
+                CloseLastBranchIfDifferent(virtualCursor, branch.Key);
                 if(virtualCursor.OverAnyObject != branch.Key)
                 {
                     branch.Key.AutoOpenCloseClass.OnPointerEnter();
@@ -161,7 +169,6 @@ public class InteractWithUi : IInteractWithUi, IEventUser
     public bool UIObjectSelected(bool selected)
     {
         if (!_lastHit.node || !selected) return false;
-        
         _lastHit.node.OnPointerDown(null);
         return true;
     }
@@ -178,7 +185,6 @@ public class InteractWithUi : IInteractWithUi, IEventUser
         if(needToSort && _canStart) 
             ProcessBranchAndNodeLists.SortNodeList(_sortedNodesDict, _activeNodes);
         
-            
         if(branchesNeedSort && _canStart)
         {
             ProcessBranchAndNodeLists.SortBranchList(_sortedBranches, _activeBranches);

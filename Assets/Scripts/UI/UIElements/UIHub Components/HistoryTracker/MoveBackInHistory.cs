@@ -106,7 +106,6 @@ public class MoveBackInHistory : IMoveBackInHistory
 
         void WithTween()
         {
-            //TODO Check This is needed
             if (activeBranch.AutoClose == IsActive.No)
                 lastNode.DeactivateNode();
             lastNode.MyBranch.MoveToThisBranch();
@@ -129,7 +128,7 @@ public class MoveBackInHistory : IMoveBackInHistory
         return lastSelected;
 
         void CallBack() => BackHomeCallBack(_history);
-        void StopNodeFlash() => lastSelected.DeactivateNode();
+        void StopNodeFlash() { lastSelected.DeactivateNode(); }
     }
 
     private void BackHomeCallBack(List<INode> history)

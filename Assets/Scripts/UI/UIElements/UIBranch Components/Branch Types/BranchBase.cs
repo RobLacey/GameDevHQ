@@ -13,6 +13,8 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
         _myCanvasGroup = _myBranch.MyCanvasGroup;
         MyScreenType = _myBranch.ScreenType;
         _screenData = EJect.Class.WithParams<IScreenData>(this);
+        SetCanvas(ActiveCanvas.No);
+        SetBlockRaycast(BlockRaycast.No);
     }
     
     //Variables

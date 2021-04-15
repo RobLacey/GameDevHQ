@@ -13,6 +13,8 @@ namespace UIElements
         [SerializeField] private int _optionalPopUp = 15;
         [SerializeField] private int _virtualCursor = 30;
         [SerializeField] private int _inGameObject = -3;
+        [SerializeField] private int _offScreenMarker = 10;
+        [SerializeField] private int _controlBar = 12;
 
         //Events
         private Action<ISetStartingCanvasOrder> SetStartingCanvasOrder { get; set; }
@@ -24,6 +26,8 @@ namespace UIElements
         public void FetchEvents() => SetStartingCanvasOrder = EVent.Do.Fetch<ISetStartingCanvasOrder>();
         public int ReturnToolTipCanvasOrder() => _toolTip;
         public int ReturnVirtualCursorCanvasOrder() => _virtualCursor;
+        public int ReturnOffScreenMarkerCanvasOrder() => _offScreenMarker;
+        public int ReturnControlBarCanvasOrder() => _controlBar;
         
         //Main
         public int ReturnPresetCanvasOrder(CanvasOrderCalculator calculator)

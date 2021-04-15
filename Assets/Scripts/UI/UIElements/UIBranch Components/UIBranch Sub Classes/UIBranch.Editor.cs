@@ -8,6 +8,7 @@ public partial class UIBranch
     private const string ControlBarBranch = nameof(IsControlBar);
     private const string OptionalBranch = nameof(IsOptional);
     private const string InGamUIBranch = nameof(InGameUI);
+    private const string IsPauseMenu = nameof(PauseMenu);
     private const string TimedBranch = nameof(IsTimedPopUp);
     private const string ResolveBranch = nameof(IsResolve);
     private const string AnyPopUpBranch = nameof(IsAPopUpEditor);
@@ -27,6 +28,7 @@ public partial class UIBranch
     }
 
     private bool InGameUI => _branchType == BranchType.InGameObject;
+    private bool PauseMenu => _branchType == BranchType.PauseMenu;
     private bool IsManualOrder => _canvasOrderSetting == OrderInCanvas.Manual 
                                   && (IsStandardBranch() || IsInternalBranch() || IsHomeScreenBranch());
     private bool IsResolve => _branchType == BranchType.ResolvePopUp;

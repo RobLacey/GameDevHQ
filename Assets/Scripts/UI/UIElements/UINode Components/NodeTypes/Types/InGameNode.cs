@@ -1,44 +1,42 @@
-﻿
-using UnityEngine;
+﻿using System;
 
 public interface IInGameNode : INodeBase { }
 
-public class InGameNode : NodeBase, IInGameNode
+public class InGameNode : NodeBase, IInGameNode, ICloseGOUIModule
 {
-    private INode _parentNode;
-    private float _autoOpenDelay;
-
     public InGameNode(INode node) : base(node)
     {
         _autoOpenDelay = _uiNode.AutoOpenDelay;
     }
-    
+
+    private INode _parentNode;
+    private readonly float _autoOpenDelay;
     private readonly IDelayTimer _delayTimer = EJect.Class.NoParams<IDelayTimer>();
     private bool _justCancelled;
+    
+    //Properties
+    public IBranch TargetBranch => MyBranch.MyParentBranch;
+
+    //Events
+    private Action<ICloseGOUIModule> CloseGOUIModule { get; set; }
+
+    public override void FetchEvents()
+    {
+        base.FetchEvents();
+        CloseGOUIModule = EVent.Do.Fetch<ICloseGOUIModule>();
+    }
 
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        
-        //************
-        if(_uiNode.CanAutoOpen)
-        {
-            EVent.Do.Subscribe<ISwitchGroupPressed>(ClearJustCancelledFlag);
-            EVent.Do.Subscribe<IGOUISwitchPressed>(ClearJustCancelledFlag);
-        }    
+        EVent.Do.Subscribe<ICloseInGameNode>(CloseThisNode);
     }
     
-    //********
-    private void ClearJustCancelledFlag(ISwitchGroupPressed args) => _justCancelled = false;
-    private void ClearJustCancelledFlag(IGOUISwitchPressed args) => _justCancelled = false;
-
-
-    public override void Start()
+    private void CloseThisNode(ICloseInGameNode args)
     {
-        base.Start();
-        if (MyBranch.CloseIfClickedOff == IsActive.Yes && _uiNode.HasChildBranch.IsNotNull())
+        if (args.TargetBranch == MyBranch && IsSelected)
         {
-            _uiNode.HasChildBranch.CloseIfClickedOff = IsActive.Yes;
+            _justCancelled = true;
         }
     }
 
@@ -47,7 +45,7 @@ public class InGameNode : NodeBase, IInGameNode
         base.OnEnter();
         
         if (CheckIfHasJustBeenCancelled()) return;
-        
+
         if (_uiNode.CanAutoOpen && !IsSelected)
         {
             _delayTimer.SetDelay(_autoOpenDelay)
@@ -69,6 +67,8 @@ public class InGameNode : NodeBase, IInGameNode
         {
             _delayTimer.StopTimer();
         }
+
+        _justCancelled = false;
     }
     
     private bool CheckIfHasJustBeenCancelled()
@@ -84,15 +84,17 @@ public class InGameNode : NodeBase, IInGameNode
         if (!IsSelected) return;
         Deactivate();
         
-        if (_uiNode.CanAutoOpen && _allowKeys)
+        CloseGOUIModule?.Invoke(this);
+        
+        if (_uiNode.CanAutoOpen)
         {
             _justCancelled = true;
-            SetNotHighlighted();
+            OnExit();
         }
         else
         {
             OnExit();
         }
     }
-
 }
+

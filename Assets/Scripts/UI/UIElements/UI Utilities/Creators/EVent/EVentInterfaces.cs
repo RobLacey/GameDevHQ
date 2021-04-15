@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UIElements;
+using UIElements;using UnityEngine.UIElements;
 
 public interface IReturnToHome // This one is test
 {
@@ -19,7 +19,6 @@ public interface ISwitchGroupPressed // This one is test
     SwitchType SwitchType { get; }
 }
 
-public interface IGOUISwitchPressed { }
 
 public interface IChangeControlsPressed { } // This one is test
 
@@ -148,19 +147,30 @@ public interface ISetUpUIGOBranch
 {
     IBranch TargetBranch  { get; }
     GOUIModule ReturnGOUIModule { get; }
-    IsActive AlwaysOn { get; }
-    Transform UIGOTransform { get; }
+    bool AlwaysOnIsActive { get; }
+    Transform GOUITransform { get; }
 }
 
-public interface IStartBranch
+public interface IStartGOUIBranch
 {
     IBranch TargetBranch { get; }
     GOUIModule ReturnGOUIModule { get; }
 }
 
-public interface ICloseBranch
+public interface ICloseInGameNode
 {
     IBranch TargetBranch { get; }
+}
+
+public interface ICloseGOUIModule
+{
+    IBranch TargetBranch { get; }
+}
+
+public interface IOffscreen
+{
+    IBranch TargetBranch { get; }
+    bool IsOffscreen { get; }
 }
 
 public interface ISetStartingCanvasOrder
@@ -169,7 +179,8 @@ public interface ISetStartingCanvasOrder
     int ReturnPresetCanvasOrder(CanvasOrderCalculator canvasOrderCalculator);
     int ReturnToolTipCanvasOrder();
     int ReturnVirtualCursorCanvasOrder();
-
+    int ReturnOffScreenMarkerCanvasOrder();
+    int ReturnControlBarCanvasOrder();
 }
 
 public interface IReturnHomeGroupIndex

@@ -8,7 +8,7 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
 {
     
     [SerializeField] 
-    [ReorderableList] [Label("List Of Objects To Tween")]
+    [ReorderableList] [Label(BuildListName)]
     private List<BuildTweenData> _buildObjectsList = new List<BuildTweenData>();
     
     [SerializeField] 
@@ -33,6 +33,9 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
     private Action<IEndTween> EndTweenEffect { get; set; }
     private TweenTrigger CurrentUserEvent{ get; set; }
     public bool HasInAndOutTween() => !(_scheme is null) && _scheme.InAndOutTween();
+    
+    //Editor
+    private const string BuildListName = "List Of Objects To Tween"; 
 
     //Main
     public void Awake()

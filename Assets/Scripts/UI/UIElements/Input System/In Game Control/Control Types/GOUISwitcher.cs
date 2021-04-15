@@ -6,6 +6,7 @@ namespace UIElements
     {
         void OnEnable();
         void UseGOUISwitcher(SwitchType switchType);
+        bool BranchNotAlreadyActive();
     }
     
     public class GOUISwitcher : IGOUISwitcher, IEventUser
@@ -19,6 +20,8 @@ namespace UIElements
         private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
         private void CanStart(IOnStart obj) => _canStart = true;
         private bool CanSwitch => _canStart && _onHomeScreen;
+        public bool BranchNotAlreadyActive() => !_playerObjects[_index].TargetBranch.CanvasIsEnabled;
+
 
         //Variables
         private bool _canStart;
@@ -31,7 +34,7 @@ namespace UIElements
 
         public void ObserveEvents()
         {
-            EVent.Do.Subscribe<IStartBranch>(SetIndex);
+            EVent.Do.Subscribe<IStartGOUIBranch>(SetIndex);
             EVent.Do.Subscribe<IOnStart>(CanStart);
             EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
         }
@@ -61,7 +64,7 @@ namespace UIElements
             _playerObjects[_index].StartInGameUi();
         }
 
-        private void SetIndex(IStartBranch args)
+        private void SetIndex(IStartGOUIBranch args)
         {
             int index = 0;
             foreach (var inGameObjectUI in _playerObjects)

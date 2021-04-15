@@ -4,11 +4,14 @@ using NaughtyAttributes;
 using UnityEngine;
 
 [Serializable]
-public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IReturnHomeGroupIndex
+public partial class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IReturnHomeGroupIndex
 {
     [SerializeField] 
+    private string _name = SetName;
+    [SerializeField] 
     private HotKey _hotKeyInput  = default;
-    [SerializeField] [AllowNesting] [OnValueChanged("IsAllowedType")]
+    [SerializeField] 
+    [AllowNesting] [OnValueChanged(IsAllowed)]
     private UIBranch _myBranch  = default;
     
     //Variables
@@ -17,11 +20,11 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IReturnHome
     private IBranch _activeBranch;
     private InputScheme _inputScheme;
     private bool _makeParentActive;
-    
+    private const string SetName = "Set My Name";
+
     //Events
     private Action<IHotKeyPressed> HotKeyPressed { get; set; }
     private Action<IReturnHomeGroupIndex> ReturnHomeGroupIndex { get; set; }
-
 
     //Properties
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
@@ -50,22 +53,6 @@ public class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IReturnHome
     }
 
     public void ObserveEvents() => EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
-    
-    private void IsAllowedType()
-    {
-        string message = $"Can't have \"{_myBranch.name}\" as a Hot Key. " +
-                         $"{Environment.NewLine}" +
-                         $"{Environment.NewLine}" +
-                         "Only Standard or HomeScreen branch Types allowed";
-        
-        const string title = "Invalid Hot Key Type";
-
-        if (_myBranch.ReturnBranchType == BranchType.Standard 
-            || _myBranch.ReturnBranchType == BranchType.HomeScreen) return;
-        
-        UIEditorDialogue.WarningDialogue(title, message, "OK");
-        _myBranch = null;
-    }
 
     public bool CheckHotKeys()
     {

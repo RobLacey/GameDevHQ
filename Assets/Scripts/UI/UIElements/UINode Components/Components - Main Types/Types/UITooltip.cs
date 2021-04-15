@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using DG.Tweening;
+using UIElements;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -100,6 +101,9 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         base.ObserveEvents();
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetToolTipCanvasOrder);
+        EVent.Do.Subscribe<ISwitchGroupPressed>(CloseTooltipImmediately);
+        EVent.Do.Subscribe<IClearScreen>(CloseTooltipImmediately);
+        EVent.Do.Subscribe<IHotKeyPressed>(CloseTooltipImmediately);
     }
 
     //Main
@@ -107,10 +111,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     {
         foreach (var canvas in _cachedToolTipCanvasList)
         {
-            canvas.enabled = true;
-            canvas.overrideSorting = true;
-            canvas.sortingOrder = args.ReturnToolTipCanvasOrder();
-            canvas.enabled = false;
+            SetCanvasOrderUtil.Set(args.ReturnToolTipCanvasOrder, canvas);
         }
     }
 
@@ -153,6 +154,16 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         }
     }
     
+    private void CloseTooltipImmediately(ISwitchGroupPressed args) => ImmediateClose();
+    private void CloseTooltipImmediately(IClearScreen args) => ImmediateClose();
+    private void CloseTooltipImmediately(IHotKeyPressed args) => ImmediateClose();
+
+    private void ImmediateClose()
+    {
+        if (_pointerOver)
+            SavePointerStatus(false);
+    }
+
     private void HideToolTip()
     {
         if (!CanActivate) return;

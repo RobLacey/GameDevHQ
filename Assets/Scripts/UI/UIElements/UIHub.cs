@@ -17,7 +17,7 @@ public interface IHub : IParameters
     GameObject ThisGameObject { get; }
     IBranch[] HomeBranches { get; }
     InputScheme Scheme { get; }
-    RectTransform MainCanvas { get; }
+    RectTransform MainCanvasRect { get; }
 }
 
 namespace UIElements
@@ -30,12 +30,17 @@ namespace UIElements
     public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnStart, ISceneChange, 
                          IEServUser, IEventDispatcher
     {
-        [SerializeField] private UIBranch _startOnThisBranch;
+        [Space(10f, order = 1)]
+        [Header(StartOnTitle, order = 2)] [HorizontalLine(1f, EColor.Blue, order = 3)]
+        
+        [SerializeField] 
+        [Tooltip(StartOnInfoBox)]
+        private UIBranch _startOnThisBranch;
 
-        [Header("Canvas Sorting Order Setting for Branch Types", order = 2)]
-        [HorizontalLine(1f, EColor.Blue, order = 3)]
-        [Space(10, order = 1)]
-        [SerializeField]
+        [Space(10f, order = 1)] 
+        [Header(CanvasOrderTitle, order = 2)] [HorizontalLine(1f, EColor.Blue, order = 3)]
+        
+        [SerializeField] 
         private CanvasOrderData _canvasSortingOrderSettings; 
         
         //Editor
@@ -63,6 +68,9 @@ namespace UIElements
         private IHistoryTrack _historyTrack;
         private IAudioService _audioService;
         private ICancel _cancelHandler;
+        private const string StartOnTitle = "Set On Which Branch To Start On";
+        private const string StartOnInfoBox = "If left blank a random Home Group will be used";
+        private const string CanvasOrderTitle = "Canvas Sorting Order Setting for Branch Types";
 
         //Events
         private Action<IOnStart> OnStart { get; set; }
@@ -74,7 +82,7 @@ namespace UIElements
         public GameObject ThisGameObject => gameObject;
         public IBranch[] HomeBranches => _homeBranches.ToArray<IBranch>();
         public InputScheme Scheme => _inputScheme;
-        public RectTransform MainCanvas => GetComponent<RectTransform>();
+        public RectTransform MainCanvasRect => GetComponent<RectTransform>();
 
         //Set / Getters
         private void SaveInMenu(IInMenu args)

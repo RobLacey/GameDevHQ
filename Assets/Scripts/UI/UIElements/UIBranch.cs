@@ -84,8 +84,8 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
 
     [SerializeField] 
-    [HideIf(Fullscreen)]
-    private IsActive _closeIfClickedOff = IsActive.Yes;
+    [HideIf(EConditionOperator.Or, Fullscreen, HomeScreenBranch, IsPauseMenu)]
+    private IsActive _closeWhenClickedOff = IsActive.Yes;
 
     [SerializeField]
     [HideIf(EConditionOperator.Or, AnyPopUpBranch, HomeScreenBranch, InGamUIBranch)] 
@@ -118,6 +118,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     private Action TweenFinishedCallBack { get; set; }
     private  Action<IActiveBranch> SetAsActiveBranch { get; set; }
     private  Action<IGetHomeBranches> GetHomeBranches { get; set; }
+    public static event Action EndInTween; 
 
     //Main
     private void Awake()
@@ -155,7 +156,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         if (_startOnThisNode) return;
         if (_groupsList.Count > 0)
         {
-            _startOnThisNode = _groupsList.First()._startNode;
+            _startOnThisNode = _groupsList.First().StartNode;
         }
         else
         {
@@ -194,6 +195,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Subscribe<ISelectedNode>(SaveSelected);
         EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
+        
     }
 
     private void Start() => CheckForControlBar();
@@ -217,7 +219,6 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     public void MoveToThisBranch(IBranch newParentBranch = null)
     {
         if(!_branchTypeClass.CanStartBranch()) return;
-        
         _branchTypeClass.SetUpBranch(newParentBranch);
         SetHighlightedNode();
         
@@ -239,10 +240,11 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     private void InTweenCallback()
     {
         _branchTypeClass.EndOfBranchStart();
-        
+        EndInTween?.Invoke();
+
         if (_canActivateBranch)
             _lastHighlighted.SetNodeAsActive();
-
+        
         _branchEvents.OnBranchEnter();
         _canActivateBranch = true;
     }

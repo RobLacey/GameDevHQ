@@ -27,6 +27,7 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
     private readonly InputScheme _inputScheme;
     private IBranch _activeBranch;
     private INode _lastHighlighted;
+    private bool _switchJustPressed;
 
     //Properties
     public bool CanAllowKeys { get; private set; }
@@ -59,6 +60,13 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
         EVent.Do.Subscribe<IOnStart>(StartGame);
         EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
+        EVent.Do.Subscribe<ISwitchGroupPressed>(SwitchGroupPressed);
+    }
+
+    private void SwitchGroupPressed(ISwitchGroupPressed obj)
+    {
+        if (!CanAllowKeys)
+            _switchJustPressed = true;
     }
 
     //Main
@@ -174,12 +182,21 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
     private void SetNextHighlightedForKeys()
     {
         if(UsingVirtualCursor)
+        {
             _lastHighlighted.ClearNode();
+        }
         
+        if (_switchJustPressed)
+        {
+            _switchJustPressed = false;
+            return;
+        }
+
         if (_activeBranch.IsHomeScreenBranch())
         {
+        
             _lastHighlighted.MyBranch.DoNotTween();
-            _lastHighlighted.MyBranch.MoveToThisBranch();
+           _lastHighlighted.MyBranch.MoveToThisBranch();
         }
         else
         {

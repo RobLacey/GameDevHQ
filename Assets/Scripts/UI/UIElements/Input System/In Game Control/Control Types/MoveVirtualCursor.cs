@@ -28,7 +28,7 @@ public class MoveVirtualCursor : IMoveVirtualCursor, IEServUser
         _hub = EServ.Locator.Get<IHub>(this);
         if(_hub.IsNotNull())
         {
-            SetScreenSize(_hub.MainCanvas);
+            SetScreenSize(_hub.MainCanvasRect);
         }    
     }
 

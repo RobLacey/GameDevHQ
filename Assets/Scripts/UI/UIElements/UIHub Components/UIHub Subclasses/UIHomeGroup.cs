@@ -1,11 +1,10 @@
 ﻿
-using System;
-using UnityEngine;
 
 public interface IHomeGroup
 {
     void OnEnable();
     void SetUpHomeGroup(IBranch[] homeGroupBranches);
+    void SwitchHomeGroups(SwitchType switchType);
 }
 
 /// <summary>
@@ -27,8 +26,6 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
-
-    
     //Main
     public void OnEnable() => ObserveEvents();
 
@@ -37,7 +34,6 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
     public void ObserveEvents()
     {
         EVent.Do.Subscribe<IReturnToHome>(ActivateHomeGroupBranch);
-        EVent.Do.Subscribe<ISwitchGroupPressed>(SwitchHomeGroups);
         EVent.Do.Subscribe<IActiveBranch>(SetActiveHomeBranch);
         EVent.Do.Subscribe<IGameIsPaused>(GameIsPaused);
         EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
@@ -67,11 +63,11 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
 
     private void ReturnHomeGroup(IReturnHomeGroupIndex args) => args.TargetNode = _homeGroup[_index].LastHighlighted;
 
-    private void SwitchHomeGroups(ISwitchGroupPressed args)
+    public void SwitchHomeGroups(SwitchType switchType)
     {
         if (!_onHomeScreen) return;
         if(_homeGroup.Length == 1) return;
-        SetNewIndex(args.SwitchType);
+        SetNewIndex(switchType);
     }
 
     private void SetNewIndex(SwitchType switchType)

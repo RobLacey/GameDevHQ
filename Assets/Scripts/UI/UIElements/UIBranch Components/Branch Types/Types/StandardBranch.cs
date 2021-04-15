@@ -11,12 +11,6 @@ public class StandardBranch : BranchBase, IStandardBranch
 
     private readonly IBranch[] _allBranches;
 
-    protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
-    {
-        SetBlockRaycast(BlockRaycast.No);
-        SetCanvas(ActiveCanvas.No);
-    }
-
     public override void SetUpBranch(IBranch newParentController = null)
     {
         base.SetUpBranch(newParentController);

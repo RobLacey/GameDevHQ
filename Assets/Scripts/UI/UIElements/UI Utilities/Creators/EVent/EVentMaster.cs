@@ -35,7 +35,7 @@ public class EVentMaster
 
     private static void HandleNoEvent<TType>([CallerMemberName]string from = null)
     {
-        Debug.Log($"No Event Bound in {from} : {Environment.NewLine} Please Bind {typeof(TType)}");
+        Debug.Log($"{typeof(TType)} Event Not Bound in {from} : {Environment.NewLine} Please Bind {typeof(TType)}");
     }
 
     public static void Unsubscribe<TType>(Action<TType> listener, Hashtable events)

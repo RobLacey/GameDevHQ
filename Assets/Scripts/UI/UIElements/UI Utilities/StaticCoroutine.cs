@@ -1,10 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public static class StaticCoroutine
 {
-    private class CoroutineHolder : MonoBehaviour { }
+    private class CoroutineHolder : MonoBehaviour
+    {
+        private void OnDisable()
+        {
+            StopAllCoroutines();
+            Clear();
+        }
+
+        private void OnApplicationQuit()
+        {
+            StopAllCoroutines();
+            Clear();
+        }
+    }
 
     //lazy singleton pattern. Note it's not set to dontdestroyonload - you usually want corotuines to stop when you load a new scene.
     private static CoroutineHolder runner;
@@ -29,6 +42,11 @@ public static class StaticCoroutine
     {
         if (coroutine is null) return;
         Runner.StopCoroutine(coroutine);
+    }
+
+    private static void Clear()
+    {
+        runner.StopAllCoroutines();
     }
 }
 

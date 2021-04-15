@@ -22,8 +22,6 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<INoResolvePopUp>();
         AutoRemove().CreateEvent<INoPopUps>();
         AutoRemove().CreateEvent<ILastRemovedPopUp>();
-        AutoRemove().CreateEvent<IStartBranch>();
-        AutoRemove().CreateEvent<ICloseBranch>();
         
         //History
         AutoRemove().CreateEvent<IReturnToHome>();
@@ -36,7 +34,6 @@ public class EVentBindings : IEVentBindings
         //Input
         AutoRemove().CreateEvent<IPausePressed>();
         AutoRemove().CreateEvent<ISwitchGroupPressed>();
-        AutoRemove().CreateEvent<IGOUISwitchPressed>();
         AutoRemove().CreateEvent<IHotKeyPressed>();
         AutoRemove().CreateEvent<IMenuGameSwitchingPressed>();
         AutoRemove().CreateEvent<IClearAll>();
@@ -76,7 +73,11 @@ public class EVentBindings : IEVentBindings
         
         //UIGO System
         AutoRemove().CreateEvent<ISetUpUIGOBranch>();
-        
+        AutoRemove().CreateEvent<ICloseGOUIModule>();
+        AutoRemove().CreateEvent<IStartGOUIBranch>();
+        AutoRemove().CreateEvent<ICloseInGameNode>();
+        AutoRemove().CreateEvent<IOffscreen>();
+
         //HotKey
         AutoRemove().CreateEvent<IReturnHomeGroupIndex>();
     }

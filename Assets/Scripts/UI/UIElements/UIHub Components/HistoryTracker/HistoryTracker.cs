@@ -88,6 +88,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         EVent.Do.Subscribe<ICancelPopUp>(CancelPopUpFromButton);
         EVent.Do.Subscribe<ISelectedNode>(SetSelected);
         EVent.Do.Subscribe<IClearAll>(ClearAll);
+        EVent.Do.Subscribe<ICloseInGameNode>(ClearAllHistory);
     }
 
     private void SetCanStart(IOnStart onStart) => _canStart = true;
@@ -123,14 +124,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         }
     }
 
-    private void ClearAll(IClearAll args)
-    {
-        if (_activeBranch.CloseIfClickedOff == IsActive.No)
-        {
-            return;
-        }
-        BackToHome();
-    }
+    private void ClearAll(IClearAll args) => ClearAllHistory();
 
     public void BackToHome()
     {
@@ -148,17 +142,21 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         }
         else if(_onHomeScreen)
         {
-            HistoryListManagement.CurrentHistory(_history)
-                                 .ClearAllHistory();
+            ClearAllHistory();
         }
+    }
+
+    private void ClearAllHistory(ICloseInGameNode args = null)
+    {
+        HistoryListManagement.CurrentHistory(_history)
+                             .ClearAllHistory();
     }
     
     private void SetFromHotkey(IHotKeyPressed args)
     {
         HotKeyReturnsToHomeScreen(args.MyBranch.ScreenType);
         
-        HistoryListManagement.CurrentHistory(_history)
-                             .ClearAllHistory();
+        ClearAllHistory();
         _lastSelected = args.ParentNode;
     }
     

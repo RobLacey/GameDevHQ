@@ -64,8 +64,8 @@ public partial class UIBranch
     public float Timer => _timer;
     public IsActive CloseIfClickedOff
     {
-        get => _closeIfClickedOff;
-        set => _closeIfClickedOff = value;
+        get => _closeWhenClickedOff;
+        set => _closeWhenClickedOff = value;
     }
 
     public IsActive SetSaveLastSelectionOnExit

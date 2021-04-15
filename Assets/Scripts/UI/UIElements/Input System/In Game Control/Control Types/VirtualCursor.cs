@@ -7,11 +7,11 @@ public interface IVirtualCursor
 {
     IBranch OverAnyObject { get; set; }
     Vector3 Position { get; }
+    RectTransform CursorRect { get; }
     void OnEnable();
     bool CanMoveVirtualCursor();
     void PreStartMovement();
     void Update();
-    void FixedUpdate();
 }
 
 public interface ICursorSettings
@@ -32,7 +32,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
         OnAwake();
     }
     
-    public void SetUpVirtualCursor(Transform transform)
+    private void SetUpVirtualCursor(Transform transform)
     {
         var newVirtualCursor = Object.Instantiate(VirtualCursorPrefab, transform, true);
         CursorRect = newVirtualCursor.GetComponent<RectTransform>();
@@ -53,6 +53,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
     private IInteractWithUi _interactWithUi;
     private IMoveVirtualCursor _moveVirtualCursor;
     private VirtualCursorSettings _virtualCursorSetting;
+    private bool _canStart;
 
     //Properties & Setters / Getters
     public LayerMask LayerToHit => _virtualCursorSetting.LayerToHit;
@@ -62,15 +63,16 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
     public Vector3 Position => CursorRect.transform.position;
     public RectTransform CursorRect { get; private set; }
     public float Speed => _virtualCursorSetting.CursorSpeed;
-    
     private GameObject VirtualCursorPrefab => _virtualCursorSetting.VirtualCursorPrefab;
     private InputScheme Scheme { get; set; }
     private bool HasInput => (Scheme.VcHorizontalPressed() || Scheme.VcVerticalPressed()) 
-                             || Scheme.VcHorizontal() != 0 || Scheme.VcVertical() != 0 || Scheme.PressSelect();
+                             || Scheme.VcHorizontal() != 0 || Scheme.VcVertical() != 0;
     private bool Allow2D => _virtualCursorSetting.RestrictRaycastTo == GameType._2D 
                             || _virtualCursorSetting.RestrictRaycastTo == GameType.NoRestrictions;
     private bool Allow3D => _virtualCursorSetting.RestrictRaycastTo == GameType._3D 
                             || _virtualCursorSetting.RestrictRaycastTo == GameType.NoRestrictions;
+
+    private void CanStart(IOnStart args) => _canStart = true;
 
     //Main
     private void OnAwake()
@@ -96,16 +98,18 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
         EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetStartingCanvasOrder);
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<IVCSetUpOnStart>(SetCursorForStartUp);
+        EVent.Do.Subscribe<IOnStart>(CanStart);
+        UIBranch.EndInTween += DoBranchStartCheck;
     }
 
-    private void SetStartingCanvasOrder(ISetStartingCanvasOrder args)
+    private void DoBranchStartCheck()
     {
-        var storedCondition = _cursorCanvas.enabled;
-        _cursorCanvas.enabled = true;
-        _cursorCanvas.overrideSorting = true;
-        _cursorCanvas.sortingOrder = args.ReturnVirtualCursorCanvasOrder();
-        _cursorCanvas.enabled = storedCondition;
+        if(Scheme.CanUseVirtualCursor)
+            _interactWithUi.CheckIfCursorOverUI(this);
     }
+
+    private void SetStartingCanvasOrder(ISetStartingCanvasOrder args) 
+        => SetCanvasOrderUtil.Set(args.ReturnVirtualCursorCanvasOrder, _cursorCanvas);
 
     private void SaveAllowKeys(IAllowKeys args)
     {
@@ -156,7 +160,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
 
     public bool CanMoveVirtualCursor()
     {
-        var canUseVirtualCursor = Scheme.CanUseVirtualCursor && !_allowKeys && HasInput;
+        var canUseVirtualCursor = Scheme.CanUseVirtualCursor && !_allowKeys && (HasInput || SelectPressed);
         return canUseVirtualCursor;
     }
 
@@ -164,19 +168,18 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
     {
         if(HasSelectedBeenPressed()) return;
         _moveVirtualCursor.Move(this);
+        if(OverAnyObject.IsNull())
+            CheckIfCursorOverGOUI();
         _interactWithUi.CheckIfCursorOverUI(this);
     }
+    
+    private bool HasSelectedBeenPressed() => _interactWithUi.UIObjectSelected(SelectPressed);
 
     public void PreStartMovement()
     {
+        if(_canStart) return;
         if (Scheme.CanUseVirtualCursor && !HasInput)
             _moveVirtualCursor.Move(this);
-    }
-
-    public void FixedUpdate()
-    {
-        if(OverAnyObject.IsNull()) return;
-        CheckIfCursorOverGOUI();
     }
 
     private void CheckIfCursorOverGOUI()
@@ -185,18 +188,5 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
             _raycastTo2D.DoRaycast(CursorRect.position);
         if (Allow3D)
             _raycastTo3D.DoRaycast(CursorRect.position);
-    }
-
-    private bool HasSelectedBeenPressed()
-    {
-        if (_interactWithUi.UIObjectSelected(SelectPressed))
-            return true;
-        
-        if (Allow2D)
-            return _raycastTo2D.DoSelectedInGameObj();
-        if (Allow3D)
-            return _raycastTo3D.DoSelectedInGameObj();
-        
-        return false;
     }
 }

@@ -18,17 +18,19 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     private Coroutine _coroutine;
     private IGOUIModule _myGOUIModule;
     private Transform _inGameObjectPosition;
-    private Vector3 _inGameObjectLastFramePosition;
+    private Vector3 _inGameObjectLastFrameScreenPosition;
+    private bool _canStartGOUI;
 
-    
+
     //Properties & Getters / Setters
-    private IsActive AlwaysOn { get; set; } = IsActive.No;
+    private bool AlwaysOn => _myGOUIModule.AlwaysOnIsActive;
+    
 
     protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
     {
         if(args.OnHomeScreen)
         {
-            if(AlwaysOn == IsActive.Yes)
+            if(AlwaysOn)
             {
                 SetCanvas(ActiveCanvas.Yes);
                 SetBlockRaycast(BlockRaycast.Yes);
@@ -40,18 +42,26 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         }
     }
     
+    private void StartGOUIBranch(IStartGOUIBranch args)
+    {
+        if (ReferenceEquals(args.TargetBranch, _myBranch))
+        {
+            _canStartGOUI = true;
+        }
+    }
+    
     //Main
     public override void ObserveEvents()
     {
         base.ObserveEvents();
         EVent.Do.Subscribe<ISetUpUIGOBranch>(SetUpGOUIParent);
+        EVent.Do.Subscribe<IStartGOUIBranch>(StartGOUIBranch);
+        EVent.Do.Subscribe<IOffscreen>(SetPositionWhenOffScreen);
     }
 
     protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
-        SetCanvas(ActiveCanvas.No);
-        
-        if(AlwaysOn == IsActive.Yes)
+        if(AlwaysOn)
         {
             _myBranch.DontSetBranchAsActive();
             _myBranch.MoveToThisBranch();
@@ -67,20 +77,14 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     private void SetUpGOUIParent(ISetUpUIGOBranch args)
     {
         if(args.TargetBranch != _myBranch || _myGOUIModule.IsNotNull()) return;
-        AlwaysOn = args.AlwaysOn;
         _myGOUIModule = args.ReturnGOUIModule;
-        _inGameObjectPosition = args.UIGOTransform;
+        _inGameObjectPosition = args.GOUITransform;
     }
 
     public override void UseEServLocator()
     {
         base.UseEServLocator();
-        _mainCanvasRect = EServ.Locator.Get<IHub>(this).MainCanvas;
-    }
-
-    public override bool CanStartBranch()
-    {
-        return !_myBranch.CanvasIsEnabled || !_myBranch.DefaultStartOnThisNode.HasChildBranch.CanvasIsEnabled;
+        _mainCanvasRect = EServ.Locator.Get<IHub>(this).MainCanvasRect;
     }
 
     public override void SetUpBranch(IBranch newParentController = null)
@@ -88,11 +92,14 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         base.SetUpBranch(newParentController);
         _canvasOrderCalculator.SetCanvasOrder();
         
-        if(AlwaysOn == IsActive.Yes && _canStart)
-            MyBranch.DoNotTween();
+        if(_myBranch.CanvasIsEnabled)
+            _myBranch.DoNotTween();
         
         SetCanvas(ActiveCanvas.Yes);
         SetBlockRaycast(BlockRaycast.Yes);
+        
+        if((AlwaysOn || !_canStartGOUI) && _canStart)
+            MyBranch.DoNotTween();
 
         StartMyUIGO();
     }
@@ -100,7 +107,6 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     protected override void ClearBranchForFullscreen(IClearScreen args)
     {
         base.ClearBranchForFullscreen(args);
-        _myGOUIModule.ExitInGameUi();
         _canvasOrderCalculator.ResetCanvasOrder();
     }
 
@@ -109,8 +115,14 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         StaticCoroutine.StopCoroutines(_coroutine);
         _coroutine = StaticCoroutine.StartCoroutine(SetMyScreenPosition(_inGameObjectPosition));
     }
-    
-    public override bool CanExitBranch() => AlwaysOn == IsActive.No;
+
+    public override void EndOfBranchStart()
+    {
+        base.EndOfBranchStart();
+        _canStartGOUI = false;
+    }
+
+    public override bool CanExitBranch() => !AlwaysOn;
 
     public override void StartBranchExit()
     {
@@ -131,8 +143,22 @@ public class GOUIBranch : BranchBase, IGOUIBranch
             _myCanvasGroup.blocksRaycasts = active == BlockRaycast.Yes;
         }
     }
-
+    
     private void StopSettingPosition() => StaticCoroutine.StopCoroutines(_coroutine);
+    
+    private void SetPositionWhenOffScreen(IOffscreen args)
+    {
+        if(args.TargetBranch.NotEqualTo(_myBranch)) return;
+        
+        if(args.IsOffscreen)
+        {
+            StaticCoroutine.StopCoroutines(_coroutine);
+        }        
+        else
+        {
+            StartMyUIGO();
+        }
+    }
 
     private IEnumerator SetMyScreenPosition(Transform objTransform)
     {
@@ -145,15 +171,15 @@ public class GOUIBranch : BranchBase, IGOUIBranch
 
     private void SetPosition(Transform objTransform)
     {
-        if(objTransform.position == _inGameObjectLastFramePosition) return;
-
         var position = objTransform.position;
-        var temp = _mainCamera.WorldToScreenPoint(position);
+        var currentScreenPos = _mainCamera.WorldToScreenPoint(position);
         
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvasRect, temp, 
+        if(currentScreenPos == _inGameObjectLastFrameScreenPosition) return;
+        
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvasRect, currentScreenPos, 
                                                                 null, out var canvasPos);
         
         _myRectTransform.localPosition = canvasPos;
-        _inGameObjectLastFramePosition = position;
+        _inGameObjectLastFrameScreenPosition = currentScreenPos;
     }
 }

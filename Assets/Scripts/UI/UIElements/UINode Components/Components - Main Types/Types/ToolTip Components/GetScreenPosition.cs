@@ -45,7 +45,7 @@ public class GetScreenPosition : IGetScreenPosition, IEServUser, ITooltipCalcsDa
     public void UseEServLocator()
     {
         _inputScheme = EServ.Locator.Get<IInput>(this).ReturnScheme;
-        _mainCanvasRectTransform = EServ.Locator.Get<IHub>(this).MainCanvas;
+        _mainCanvasRectTransform = EServ.Locator.Get<IHub>(this).MainCanvasRect;
     }
 
     //Properties

@@ -6,13 +6,11 @@ namespace UIElements
     {
         protected RaycastBase(IRaycastController parent)
         {
-            _controller = parent;
             _layerToHit = parent.LayerToHit;
         }
 
         //Variables
         private ICursorHandler _lastGameObject;
-        private readonly IRaycastController _controller;
         protected LayerMask _layerToHit;
         protected readonly Camera _mainCamera = Camera.main;
         
@@ -24,14 +22,6 @@ namespace UIElements
         {
             if(_lastGameObject.IsNull()) return;
             _lastGameObject = null;
-        }
-
-        public bool DoSelectedInGameObj()
-        {
-            if (!_controller.SelectPressed || _lastGameObject.IsNull()) return false;
-
-            _lastGameObject.VirtualCursorDown();
-            return true;
         }
 
         public void DoRaycast(Vector3 virtualCursorPos) => OverGameObj(RaycastToObj(virtualCursorPos));
@@ -48,7 +38,7 @@ namespace UIElements
                 _lastGameObject.VirtualCursorExit();
             }
             
-            if(hit.AlwaysOn == IsActive.Yes) return;
+            if(hit.AlwaysOnIsActive) return;
 
             _lastGameObject = hit;
             hit.VirtualCursorEnter();

@@ -301,6 +301,7 @@
                     <e p="VirtualCursorSettings.cs" t="Include" />
                   </e>
                   <e p="GOUIModule.cs" t="Include" />
+                  <e p="OffScreenMarker.cs" t="Include" />
                   <e p="RayCast" t="Include">
                     <e p="_2DRaycast.cs" t="Include" />
                     <e p="_3DRaycast.cs" t="Include" />
@@ -315,8 +316,10 @@
                   <e p="NewSystem.cs" t="Include" />
                   <e p="OldSystem.cs" t="Include" />
                 </e>
+                <e p="InputEvents.cs" t="Include" />
                 <e p="UIInput UtilityClasses" t="Include">
                   <e p="CancelWhenClickedOff.cs" t="Include" />
+                  <e p="MakeFolderUtil.cs" t="Include" />
                   <e p="ReturnControlFromEditor.cs" t="Include" />
                   <e p="SwitchGroups.cs" t="Include" />
                 </e>
@@ -363,6 +366,11 @@
                   <e p="Attributes.cs" t="Include" />
                 </e>
                 <e p="Attributes.cs" t="Include" />
+                <e p="CanvasOrderUtil" t="Include">
+                  <e p="CanvasOrderCalculator.cs" t="Include" />
+                  <e p="CanvasOrderData.cs" t="Include" />
+                  <e p="SetCanvasOrderUtil.cs" t="Include" />
+                </e>
                 <e p="CreateNewObjects.cs" t="Include" />
                 <e p="Creators" t="Include">
                   <e p="BindBase.cs" t="Include" />
@@ -426,6 +434,7 @@
                 <e p="StaticCoroutine.cs" t="Include" />
                 <e p="UIEditorDialogue.cs" t="Include" />
                 <e p="UIEnums.cs" t="Include" />
+                <e p="WaitFrameCustom.cs" t="Include" />
               </e>
               <e p="UIBranch Components" t="Include">
                 <e p="Branch Types" t="Include">
@@ -443,7 +452,6 @@
                 </e>
                 <e p="BranchUtilityClasses" t="Include">
                   <e p="BranchGroups.cs" t="Include" />
-                  <e p="CanvasOrderCalculator.cs" t="Include" />
                   <e p="GroupList.cs" t="Include" />
                   <e p="NodeSearch.cs" t="Include" />
                   <e p="ScreenData.cs" t="Include" />
@@ -468,9 +476,9 @@
                   <e p="NewSelectionProcess.cs" t="Include" />
                 </e>
                 <e p="UIHub Subclasses" t="Include">
-                  <e p="CanvasOrderData.cs" t="Include" />
                   <e p="ChangeControl.cs" t="Include" />
                   <e p="HotKeys.cs" t="Include" />
+                  <e p="HotKeysEditor.cs" t="Include" />
                   <e p="MenuAndGameSwitching.cs" t="Include" />
                   <e p="PopUpController.cs" t="Include" />
                   <e p="UIAudioManager.cs" t="Include" />

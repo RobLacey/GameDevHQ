@@ -17,7 +17,7 @@ public interface ISwitchGroup
 }
 
 public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGroupPressed,
-                            IEServUser, IGOUISwitchSettings, ISwitchGroup, IGOUISwitchPressed
+                            IEServUser, IGOUISwitchSettings, ISwitchGroup, IChangeControlsPressed
 {
     public SwitchGroups(ISwitchGroupSettings settings)
     { 
@@ -32,7 +32,7 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
     public void FetchEvents()
     {
         OnSwitchGroupPressed = EVent.Do.Fetch<ISwitchGroupPressed>();
-        OnGOUISwitchPressed = EVent.Do.Fetch<IGOUISwitchPressed>();
+        OnChangeControlPressed = EVent.Do.Fetch<IChangeControlsPressed>();
     }
     
     public void UseEServLocator() => _uiHub = EServ.Locator.Get<IHub>(this);
@@ -45,27 +45,23 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
     private bool _noActivePopUps = true;
     private readonly IHomeGroup _homeGroup;
     private IHub _uiHub;
-    private INode _lastHighlighted;
+    private bool _onHomeScreen = true;
 
     //Enum
     private enum SwitchFunction {  GOUI, UI }
 
     //Events
     private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; set; }
-    private Action<IGOUISwitchPressed> OnGOUISwitchPressed { get; set; }
+    private Action<IChangeControlsPressed> OnChangeControlPressed { get; set; }
     
     //Properties Getters / Setters
     public IGOUIModule[] GetPlayerObjects { get; }
     public SwitchType SwitchType { get; private set; }
-    private void SaveAllowKeys (IAllowKeys args)
-    {
-        _allowKeys = args.CanAllowKeys;
-        if(!_allowKeys) return;
-        _currentSwitchFunction = _lastHighlighted.MyBranch.IsInGameBranch() ? SwitchFunction.GOUI : SwitchFunction.UI;
-    }
+    private void SaveAllowKeys (IAllowKeys args) { _allowKeys = args.CanAllowKeys;  }
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
-    private void SaveLastHighlighted(IHighlightedNode args) => _lastHighlighted = args.Highlighted;
     private void SaveNoActivePopUps(INoPopUps args) => _noActivePopUps = args.NoActivePopUps;
+    private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
+    public bool CanSwitchBranches() => _noActivePopUps && !MouseOnly() && !_gameIsPaused;
 
     private bool MouseOnly()
     {
@@ -87,53 +83,58 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<INoPopUps>(SaveNoActivePopUps);
         EVent.Do.Subscribe<IGameIsPaused>(GameIsPaused);
-        EVent.Do.Subscribe<IHighlightedNode>(SaveLastHighlighted);
+        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
     }
-    
+
     public void OnStart() => _homeGroup.SetUpHomeGroup(_uiHub.HomeBranches);
     
-    public bool CanSwitchBranches() => _noActivePopUps && !MouseOnly() && !_gameIsPaused;
-
     public bool SwitchGroupProcess()
     {
         if (_inputScheme.PressedPositiveSwitch())
         {
-            if (MustActivateKeysFirst_Switch()) return false;
+            if (MustActivateKeysFirst_Switch()) return true;
             DoSwitch(SwitchType.Positive, HomeGroupSwitch);
             return true;
         }
 
         if (_inputScheme.PressedNegativeSwitch())
         {
-            if (MustActivateKeysFirst_Switch()) return false;
+            if (MustActivateKeysFirst_Switch()) return true;
             DoSwitch(SwitchType.Negative, HomeGroupSwitch);
             return true;
         }
         
-        void HomeGroupSwitch() => OnSwitchGroupPressed?.Invoke(this);
+        void HomeGroupSwitch()
+        {
+            OnSwitchGroupPressed?.Invoke(this);
+            _homeGroup.SwitchHomeGroups(SwitchType);
+        }
         
         return false;
     }
 
     public bool GOUISwitchProcess()
     {
+        
         if (_inputScheme.PressedPositiveGOUISwitch())
         {
-            if (MustActivateKeysFirst_GOUI()) return false;
+            if (!_onHomeScreen) return false;
+            if (MustActivateKeysFirst_GOUI()) return true;
             DoSwitch(SwitchType.Positive, GOUISwitch);
             return true;
         }
 
         if (_inputScheme.PressedNegativeGOUISwitch())
         {
-            if (MustActivateKeysFirst_GOUI()) return false;
+            if (!_onHomeScreen) return false;
+            if (MustActivateKeysFirst_GOUI()) return true;
             DoSwitch(SwitchType.Negative, GOUISwitch);
             return true;
         }
 
         void GOUISwitch()
         {
-            OnGOUISwitchPressed?.Invoke(this);
+            OnSwitchGroupPressed?.Invoke(this);
             _switcher.UseGOUISwitcher(SwitchType);
         }
 
@@ -152,7 +153,11 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
         {
             _currentSwitchFunction = SwitchFunction.UI;
             SwitchType = SwitchType.Activate;
+            
             OnSwitchGroupPressed?.Invoke(this);
+            OnChangeControlPressed?.Invoke(this);
+            
+            _homeGroup.SwitchHomeGroups(SwitchType);
             return true;
         }
         return false;
@@ -164,6 +169,11 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
         {
             _currentSwitchFunction = SwitchFunction.GOUI;
             SwitchType = SwitchType.Activate;
+            
+            if(_switcher.BranchNotAlreadyActive())
+                OnSwitchGroupPressed?.Invoke(this);
+            
+            OnChangeControlPressed?.Invoke(this);
             _switcher.UseGOUISwitcher(SwitchType);
             return true;
         }

@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-
+﻿
 public interface IStandard : INodeBase { }
 
 public class Standard : NodeBase, IStandard
@@ -18,14 +17,10 @@ public class Standard : NodeBase, IStandard
     {
         base.ObserveEvents();
         if(_uiNode.CanAutoOpen)
-        {
             EVent.Do.Subscribe<ISwitchGroupPressed>(ClearJustCancelledFlag);
-            EVent.Do.Subscribe<IGOUISwitchPressed>(ClearJustCancelledFlag);
-        }    
     }
 
     private void ClearJustCancelledFlag(ISwitchGroupPressed args) => _justCancelled = false;
-    private void ClearJustCancelledFlag(IGOUISwitchPressed args) => _justCancelled = false;
 
     public override void OnEnter()
     {

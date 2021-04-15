@@ -101,6 +101,10 @@ public static class ExtensionsMethods
     {
         return to.position - from.position;
     }
+    public static Vector2 Direction(this Vector2 from, Vector2 to)
+    {
+        return to - from;
+    }
 
     public static Vector3 Direction(this Transform from, Vector3 to)
     {
@@ -191,5 +195,14 @@ public static class ExtensionsMethods
     public static bool IsNull(this object obj)
     {
         return obj is null;
+    }
+    public static bool NotEqualTo(this object obj, object compareTo)
+    {
+        return !Equals(obj, compareTo);
+    }
+    
+    public static bool IsEqualTo(this object obj, object compareTo)
+    {
+        return Equals(obj, compareTo);
     }
 }

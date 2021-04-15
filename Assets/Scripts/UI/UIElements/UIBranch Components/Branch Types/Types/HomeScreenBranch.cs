@@ -5,12 +5,32 @@ public interface IHomeScreenBranch : IBranchBase { }
 
 public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 {
-    public HomeScreenBranch(IBranch branch) : base(branch) { }
+    public HomeScreenBranch(IBranch branch) : base(branch)
+    {
+        SetCanvas(ActiveCanvas.Yes);
+    }
     
     //Properties
     private bool CannotTweenOnHome => _myBranch.TweenOnHome == DoTween.DoNothing;
     private bool IsControlBar => _myBranch.IsControlBar();
-    
+
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetControlBarCanvasOrder);
+    }
+
+    private void SetControlBarCanvasOrder(ISetStartingCanvasOrder args)
+    {
+        if(!IsControlBar) return;
+        
+        var storedCondition = _myBranch.MyCanvas.enabled;
+        _myBranch.MyCanvas.enabled = true;
+        _myBranch.MyCanvas.overrideSorting = true;
+        _myBranch.MyCanvas.sortingOrder = args.ReturnControlBarCanvasOrder();
+        _myBranch.MyCanvas.enabled = storedCondition;
+    }
+
     //Main
     protected override void SaveInMenu(IInMenu args)
     {
@@ -41,9 +61,6 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
     //Main
     protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
-        SetCanvas(ActiveCanvas.Yes);
-        SetBlockRaycast(BlockRaycast.No);
-
         if (args.StartBranch == _myBranch)
         {
             _myBranch.DefaultStartOnThisNode.ThisNodeIsHighLighted();
@@ -61,7 +78,9 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
         
         if(!_canStart || !_inMenu) return;
         
-        _canvasOrderCalculator.SetCanvasOrder();
+        if(!IsControlBar)
+            _canvasOrderCalculator.SetCanvasOrder();
+        
         SetCanvas(ActiveCanvas.Yes);
         
         if (CannotTweenOnHome && !OnHomeScreen)

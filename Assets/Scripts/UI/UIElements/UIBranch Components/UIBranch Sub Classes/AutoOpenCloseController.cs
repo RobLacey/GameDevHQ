@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
+
 public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelHoverOver, IEventUser
 {
     public AutoOpenCloseController(IAutoOpenCloseData data)
@@ -15,14 +16,23 @@ public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelH
     private readonly IBranch _branch;
     private bool _hotKeyPressed;
 
+    private static Coroutine runningCoroutine;
+
     //Properties
     public bool PointerOverBranch { get; private set; }
     public EscapeKey EscapeKeyType => EscapeKey.BackToHome;
     public IBranch ChildNodeHasOpenChild { private get; set; }
-    
+
     //Set / Getters
     private void HotKeyPressed(IHotKeyPressed args) => _hotKeyPressed = true;
-    public void OnPointerEnter() => PointerOverBranch = true;
+    public void OnPointerEnter()
+    {
+        if (runningCoroutine.IsNotNull())
+        {
+            StaticCoroutine.StopCoroutines(runningCoroutine);
+        }
+        PointerOverBranch = true;
+    }
 
     //Events
     private  Action<ICancelHoverOver> CancelHooverOver { get; set; }
@@ -43,15 +53,16 @@ public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelH
         PointerOverBranch = false;
         
         if(_branch.AutoClose == IsActive.No) return;
+        
         if (HasHotKeyBeenPressed()) return;
         
         if (ChildNodeHasOpenChild != null)
         {
-            StaticCoroutine.StartCoroutine(WaitForPointer());
+            runningCoroutine = StaticCoroutine.StartCoroutine(WaitForPointer());
             return;
         }
 
-        StaticCoroutine.StartCoroutine(WaitForPointerNoChild());
+        runningCoroutine = StaticCoroutine.StartCoroutine(WaitForPointerNoChild());
     }
 
     private bool HasHotKeyBeenPressed()
@@ -83,5 +94,6 @@ public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelH
         ChildNodeHasOpenChild = null;
         CancelHooverOver?.Invoke(this);
     }
+
 }
 

@@ -1,10 +1,14 @@
 ﻿using System;
+using NaughtyAttributes;
 using UnityEngine;
 
 [Serializable]
 public class BuildTweenData
 {
-    [SerializeField] private RectTransform _element;
+    [HideInInspector] public string _name = defaultName;
+    [SerializeField] 
+    [AllowNesting] [ValidateInput(SetClassName)] 
+    private RectTransform _element;
     [SerializeField] public PositionSettings _positionSettings;
     [SerializeField] public ScaleSettings _scaleSettings;
     [SerializeField] public RotationSettings _rotationSettings;
@@ -15,6 +19,24 @@ public class BuildTweenData
     [HideInInspector] public Vector3 _punchStartScale;
     [HideInInspector] public Vector3 _shakeStartScale;
 
+    //Editor
+    private const string SetClassName = nameof(SetName);
+    private const string defaultName = "Set Me";
+    private bool SetName()
+    {
+        if (_element != null)
+        {
+            Debug.Log("Here");
+            _name = $"{_element.name} Tween";
+        }
+        else
+        {
+            _name = defaultName;
+        }
+
+        return true;
+    }
+    
     public PositionSettings PositionSettings => _positionSettings;
     public ScaleSettings ScaleSettings => _scaleSettings;
     public RotationSettings RotationSettings => _rotationSettings;

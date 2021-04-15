@@ -4,7 +4,6 @@ using System.Linq;
 using NaughtyAttributes;
 using UIElements;
 using UnityEngine;
-using UnityEngine.Events;
 
 public interface IInput : IParameters
 {
@@ -28,20 +27,19 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
                        IEServUser, IEventDispatcher, IClearAll, IVirtualCursorSettings,
                        ISwitchGroupSettings
 {
-
-    [Header("Input Scheme", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
+    [Header(MainTitle, order = 1)][HorizontalLine(1f, EColor.Blue, order = 2)] 
+    
     [SerializeField] 
+    [InfoBox(InfoBox)]
     private InputScheme _inputScheme  = default;
-    [SerializeField] [Header("Switch Event", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
-    [Space(20, order = 1)]
-    private SwitchGameOrMenu _switchBetweenMenuAndGame  = default;
-    [SerializeField] [Header("Game Is Paused Event", order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
-    private GameIsPaused _alertWhenGameIsPaused  = default;
-    [SerializeField] 
+    
+    [SerializeField] [Foldout("Hot Keys")]    
     [ReorderableList] private List<HotKeys> _hotKeySettings = new List<HotKeys>();
-
-    [Serializable] public class SwitchGameOrMenu : UnityEvent<InMenuOrGame> { }
-    [Serializable] public class GameIsPaused : UnityEvent<bool> { }
+    
+    [Header(Settings, order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
+    
+    [SerializeField] 
+    private InputEvents _inputEvents  = default;
 
     //Variables
     private bool _canStart, _inMenu, _gameIsPaused, _allowKeys, _nothingSelected;
@@ -49,6 +47,11 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
     private bool _onHomeScreen = true;
     private UINode _lastHomeScreenNode;
     private IBranch _activeBranch;
+    
+    //Editor
+    private const string MainTitle = "Input Scheme";
+    private const string InfoBox = "Must Assign an Input Scheme";
+    private const string Settings = "Other Settings ";
 
     //Events
     private IReturnFromEditor ReturnControlFromEditor { get; set; }
@@ -74,11 +77,11 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
         _inMenu = args.InTheMenu;
         if(_inMenu)
         {
-            _switchBetweenMenuAndGame?.Invoke(InMenuOrGame.InMenu);
+            _inputEvents.SwitchBetweenGameAndMenuPressed(InMenuOrGame.InMenu);
         }
         else
         {
-            _switchBetweenMenuAndGame?.Invoke(InMenuOrGame.InGameControl);
+            _inputEvents.SwitchBetweenGameAndMenuPressed(InMenuOrGame.InGameControl);
         }
     }
 
@@ -89,7 +92,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
     private void SaveGameIsPaused(IGameIsPaused args)
     {
         _gameIsPaused = args.GameIsPaused;
-        _alertWhenGameIsPaused?.Invoke(_gameIsPaused);
+        _inputEvents.GamePausedStatus(_gameIsPaused);
     }
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveOnHomeScreen (IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
@@ -174,10 +177,13 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
         if (!_canStart) return;
 
         if(ReturnControlFromEditor.CanReturn(_inMenu, _activeBranch)) return;
-
+        
         if (CancelWhenClickedOff.CanCancel(_inputScheme, _onHomeScreen, _allowKeys, VirtualCursor))
         {
-            OnClearAll?.Invoke(this);
+            if (_activeBranch.CloseIfClickedOff == IsActive.Yes)
+            {
+                OnClearAll?.Invoke(this);
+            }
             return;
         }
 
@@ -191,8 +197,6 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
         
         if (CheckIfHotKeyAllowed()) return;
         
-        if(SwitchGroups.CanSwitchBranches() && SwitchGroups.GOUISwitchProcess()) return;
-        
         if (_inMenu) InMenuControls();
     }
 
@@ -204,7 +208,8 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
             return;
         }
         
-        if (SwitchGroups.CanSwitchBranches() && SwitchGroups.SwitchGroupProcess()) return;
+        if(SwitchGroups.CanSwitchBranches())
+            if(SwitchGroups.GOUISwitchProcess() || SwitchGroups.SwitchGroupProcess()) return;       
         
         if(VirtualCursor.CanMoveVirtualCursor())
         {
@@ -213,11 +218,6 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
         }
 
         OnChangeControlPressed?.Invoke(this);
-    }
-
-    private void FixedUpdate()
-    {
-        VirtualCursor.FixedUpdate();
     }
 
     private bool CanPauseGame() => _inputScheme.PressPause();
@@ -240,7 +240,14 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
         return true;
     }
 
-    private bool HasMatchingHotKey() => _hotKeySettings.Any(hotKeySetting => hotKeySetting.CheckHotKeys());
+    private bool HasMatchingHotKey()
+    {
+        foreach (var hotKeySetting in _hotKeySettings)
+        {
+            if (hotKeySetting.CheckHotKeys()) return true;
+        }
+        return false;
+    }
 
     private bool CanDoCancel() => _inputScheme.PressedCancel();
 
