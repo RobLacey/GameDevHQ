@@ -26,7 +26,6 @@ public class BuildTweenData
     {
         if (_element != null)
         {
-            Debug.Log("Here");
             _name = $"{_element.name} Tween";
         }
         else
@@ -58,6 +57,7 @@ public class BuildTweenData
             _positionSettings.SetRectTransform(_element);
             _scaleSettings.SetRectTransform(_element);
             _rotationSettings.SetRectTransform(_element);
+            SetName();
         }
     }
 

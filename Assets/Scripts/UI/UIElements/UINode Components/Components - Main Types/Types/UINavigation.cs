@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 
-public class UINavigation : NodeFunctionBase
+public class UINavigation : NodeFunctionBase, IEServUser
 {
     public UINavigation(INavigationSettings settings, IUiEvents uiEvents)
     {
@@ -24,21 +23,28 @@ public class UINavigation : NodeFunctionBase
     private readonly UINode _right;
     private IBranch _myBranch;
     private INode _myNode;
+    private IHub _uiHub;
 
     //Properties
-   
     protected override bool CanBeHighlighted() => false;
     protected override bool CanBePressed() => !(_childBranch is null);
     protected override bool FunctionNotActive() => !CanActivate;
     protected override void SavePointerStatus(bool pointerOver) { }
+    private bool MultiSelectAllowed => _uiHub.Scheme.MultiSelectPressed() &&
+                                       _myNode.MultiSelectSettings.OpenChildBranch == IsActive.No
+                                        && _myNode.MultiSelectSettings.AllowMultiSelect == IsActive.Yes ;
 
+    //Main
     protected sealed override void OnAwake(IUiEvents events)
     {
         base.OnAwake(events);
         _myNode = events.ReturnMasterNode;
         _myBranch = _myNode.MyBranch;
+        UseEServLocator();
     }
     
+    public void UseEServLocator() => _uiHub = EServ.Locator.Get<IHub>(this);
+
     protected override void AxisMoveDirection(MoveDirection moveDirection)
     {
         base.AxisMoveDirection(moveDirection);
@@ -84,6 +90,8 @@ public class UINavigation : NodeFunctionBase
 
     private void NavigateToChildBranch(IBranch moveToo)
     {
+        if(MultiSelectAllowed) return;
+        
         if (moveToo.IsInternalBranch())
         {
             ToChildBranchProcess();
@@ -117,5 +125,4 @@ public class UINavigation : NodeFunctionBase
         }
         return null;
     }
-
 }

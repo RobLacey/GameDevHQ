@@ -45,6 +45,8 @@ public class OldSystem : InputScheme
     private string _vCursorVertical = default;
     [SerializeField] [InputAxis] 
     private string _selectButton = default;
+    [SerializeField] [InputAxis] 
+    private string _multiSelectButton = default;
 
     [Space(10f, order = 1)]
     [Header("HotKey Settings", order = 2)] [HorizontalLine(1, color: EColor.Blue, order = 3)]
@@ -83,7 +85,8 @@ public class OldSystem : InputScheme
                  _hasSwitchToVCButton,
                  _hasVCursorHorizontal,
                  _hasVCursorVertical,
-                 _hasSelectButton;
+                 _hasSelectButton,
+                 _hasMultiSelectButton;
 
     private bool _hasHotKey6, _hasHotKey7, _hasHotKey8, _hasHotKey9, _hasHotKey0 
                  , _hasHotKey1, _hasHotKey2, _hasHotKey3, _hasHotKey4, _hasHotKey5;
@@ -103,6 +106,7 @@ public class OldSystem : InputScheme
     protected override string MouseYAxis => _mouseYAxis;
     protected override string VCursorVertical => _vCursorVertical;
     protected override string SelectedButton => _selectButton;
+    protected override string MultiSelectButton => _multiSelectButton;
     public override bool AnyMouseClicked => Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
     public override bool LeftMouseClicked => Input.GetMouseButtonDown(0);
     public override bool RightMouseClicked => Input.GetMouseButtonDown(1);
@@ -152,6 +156,7 @@ public class OldSystem : InputScheme
         _hasMouseXAxis = MouseXAxis != string.Empty;
         _hasMouseYAxis = MouseYAxis != string.Empty;
         _hasSelectButton = SelectedButton != string.Empty;
+        _hasMultiSelectButton = MultiSelectButton != string.Empty;
         _hasHotKey1 = _hotKey1 != string.Empty;
         _hasHotKey2 = _hotKey2 != string.Empty;
         _hasHotKey3 = _hotKey3 != string.Empty;
@@ -174,6 +179,7 @@ public class OldSystem : InputScheme
     public override bool PressedNegativeGOUISwitch()=> _hasNegGOUIAxis && Input.GetButtonDown(NegativeGOUISwitch);
     public override bool VcHorizontalPressed() => _hasVCursorHorizontal && Input.GetButtonDown(VCursorHorizontal);
     public override bool VcVerticalPressed() =>  _hasVCursorVertical && Input.GetButtonDown(VCursorVertical);
+    public override bool MultiSelectPressed() => _hasMultiSelectButton && Input.GetButton(MultiSelectButton);
     public override float VcHorizontal() => _hasVCursorHorizontal ? Input.GetAxis(VCursorHorizontal) : 0;
     public override float VcVertical() =>  _hasVCursorVertical ? Input.GetAxis(VCursorVertical) : 0;
     public override float MouseXAxisValue() =>  _hasMouseXAxis ? Input.GetAxis(MouseXAxis) : 0;

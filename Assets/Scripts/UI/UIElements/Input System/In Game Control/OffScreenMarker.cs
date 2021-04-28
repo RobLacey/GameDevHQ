@@ -1,23 +1,12 @@
-﻿using System;
-using System.Collections;
-using NaughtyAttributes;
+﻿using System.Collections;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace UIElements
 {
-    [Serializable]
-    public class OffScreenMarker : IEServUser, IMono
+    public class OffScreenMarker : IEServUser, IMono, IEventUser
     {
-        [SerializeField] 
-        private GameObject _offScreenMarker;
-        [SerializeField] 
-        private Vector2 _screenSafeMargin = Vector2.zero;
-        [SerializeField] 
-        [Range(0, 10)] private int _frameFrequency = 5;
-        [SerializeField]
-        [Label(MarkerFolderName)]
-        private Transform _markerFolder;
+        public OffScreenMarker(OffscreenMarkerData data) => _offscreenMarkerData = data;
 
         //Variables
         private int _screenLeft, _screenRight, _screenTop, _screenBottom;
@@ -30,15 +19,20 @@ namespace UIElements
         private readonly WaitFrameCustom _waitFrameCustom = new WaitFrameCustom();
         private Transform _parentTransform;
         private GOUIModule _gouiModule;
+        private ISetStartingCanvasOrder _savedSetCanvasOrderEvent;
+        private readonly OffscreenMarkerData _offscreenMarkerData;
 
         //Editor
         private const string OffScreenMarkerFolderName = "Off Screen Marker";
-        private const string MarkerFolderName = "Marker Folder(Optional)";
         
         //TODO Add Max Distance from Camera cull process and setting
 
         //Properties & Getters / Setters
-        private bool UseOffScreen => _gouiModule.CanUseOffScreen;
+        private GameObject ScreenMarker => _offscreenMarkerData.ScreenMarker;
+        private StartOffscreen WhenToStartOffScreenMarker => _offscreenMarkerData.WhenToStartOffScreenMarker;
+        private Vector2 ScreenSafeMargin { get; set; }
+        private int FrameFrequency => _offscreenMarkerData.FrameFrequency;
+        private Transform MarkerFolder => _offscreenMarkerData.MarkerFolder;
 
         public void SetParent(GOUIModule parent)
         {
@@ -48,7 +42,6 @@ namespace UIElements
 
         public void OnAwake()
         {
-            if(!UseOffScreen) return;
             _camera = Camera.main;
             UseEServLocator();
         }
@@ -58,41 +51,51 @@ namespace UIElements
         public void OnEnable() => ObserveEvents();
 
         public void ObserveEvents() => EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetStartingCanvasOrder);
-        
-        public void OnDisable() => StaticCoroutine.StopCoroutines(_offScreenMarkerCoroutine);
+
+        public void OnDisable()
+        {
+            EVent.Do.Unsubscribe<ISetStartingCanvasOrder>(SetStartingCanvasOrder);
+            StopOffScreenMarker();
+        }
 
         public void OnStart()
         {
-            if(!UseOffScreen) return;
             SetUpOffScreenMarker();
+            SetUpCursorCanvas();
             SetScreenSize(_hub.MainCanvasRect.sizeDelta);
         }
 
         private void SetUpOffScreenMarker()
         {
-            var newOffScreenMarker = Object.Instantiate(_offScreenMarker, 
+            var newOffScreenMarker = Object.Instantiate(ScreenMarker, 
                                                         _hub.MainCanvasRect.transform, 
                                                         true);
             _offScreenMarkerRect = newOffScreenMarker.GetComponent<RectTransform>();
             _offScreenMarkerRect.anchoredPosition3D = Vector3.zero;
-            newOffScreenMarker.transform.parent 
-                = MakeFolderUtil.MakeANewFolder(OffScreenMarkerFolderName, _hub.MainCanvasRect, _markerFolder);
-            SetUpCursorCanvas();
+            _offScreenMarkerRect.name = $"OffScreen - {_gouiModule.TargetBranch.ThisBranchesGameObject.name}";
+            
+            _offScreenMarkerRect.transform.parent = MakeFolderUtil.MakeANewFolder(OffScreenMarkerFolderName, 
+                                                                                        _hub.MainCanvasRect, 
+                                                                                        MarkerFolder);
         }
 
         private void SetUpCursorCanvas()
         {
             _offScreenMarkerCanvas = _offScreenMarkerRect.GetComponent<Canvas>();
             _offScreenMarkerCanvas.enabled = false;
+            
+            if(_savedSetCanvasOrderEvent.IsNotNull())
+                SetCanvasOrderUtil.Set(_savedSetCanvasOrderEvent.ReturnOffScreenMarkerCanvasOrder,
+                                       _offScreenMarkerCanvas);
         }
 
         private void SetScreenSize(Vector2 mainCanvasSize)
         {
             SetScreenSafeMargin();
-            _screenLeft = Mathf.RoundToInt((mainCanvasSize.x - _screenSafeMargin.x) * -0.5f);
-            _screenRight = Mathf.RoundToInt((mainCanvasSize.x - _screenSafeMargin.x)  * 0.5f);
-            _screenBottom = Mathf.RoundToInt((mainCanvasSize.y - _screenSafeMargin.y) * -0.5f);
-            _screenTop = Mathf.RoundToInt((mainCanvasSize.y - _screenSafeMargin.y)  * 0.5f);
+            _screenLeft = Mathf.RoundToInt((mainCanvasSize.x - ScreenSafeMargin.x) * -0.5f);
+            _screenRight = Mathf.RoundToInt((mainCanvasSize.x - ScreenSafeMargin.x)  * 0.5f);
+            _screenBottom = Mathf.RoundToInt((mainCanvasSize.y - ScreenSafeMargin.y) * -0.5f);
+            _screenTop = Mathf.RoundToInt((mainCanvasSize.y - ScreenSafeMargin.y)  * 0.5f);
         }
 
         private void SetScreenSafeMargin()
@@ -100,15 +103,20 @@ namespace UIElements
             var sizeDelta = _offScreenMarkerRect.sizeDelta;
             var xSize = sizeDelta.x;
             var ySize = sizeDelta.y;
-            _screenSafeMargin = new Vector2(Mathf.RoundToInt(xSize * 0.75f),
-                                            Mathf.RoundToInt(ySize * 0.75f)) + _screenSafeMargin;
+            ScreenSafeMargin = new Vector2(Mathf.RoundToInt(xSize * 0.75f),
+                                            Mathf.RoundToInt(ySize * 0.75f)) + _offscreenMarkerData.ScreenSafeMargin;
         }
 
         private void SetStartingCanvasOrder(ISetStartingCanvasOrder args)
         {
-            if(!UseOffScreen) return;
-
-            SetCanvasOrderUtil.Set(args.ReturnOffScreenMarkerCanvasOrder, _offScreenMarkerCanvas);
+            if(_offScreenMarkerCanvas)
+            {
+                SetCanvasOrderUtil.Set(args.ReturnOffScreenMarkerCanvasOrder, _offScreenMarkerCanvas);
+            }
+            else
+            {
+                _savedSetCanvasOrderEvent = args;
+            }
         }
 
         private IEnumerator SetOffScreenMarkerPosition(Transform moduleTransform)
@@ -116,7 +124,7 @@ namespace UIElements
             while (true)
             {
                 SetPosition(moduleTransform);
-                yield return _waitFrameCustom.SetFrameTarget(_frameFrequency);
+                yield return _waitFrameCustom.SetFrameTarget(FrameFrequency);
             }
         }
 
@@ -164,14 +172,14 @@ namespace UIElements
 
         public void StopOffScreenMarker()
         {
-            if(!UseOffScreen) return;
             StaticCoroutine.StopCoroutines(_offScreenMarkerCoroutine);
             _offScreenMarkerCanvas.enabled = false;
         }
 
-        public void StartOffScreenMarker()
+        public void StartOffScreenMarker(IGOUIModule myGoui)
         {
-            if(!UseOffScreen) return;
+            if(WhenToStartOffScreenMarker == StartOffscreen.OnlyWhenSelected && !myGoui.NodeIsSelected) return;
+            
             _offScreenMarkerCanvas.enabled = true;
             StaticCoroutine.StopCoroutines(_offScreenMarkerCoroutine);
             _offScreenMarkerCoroutine = StaticCoroutine.StartCoroutine(SetOffScreenMarkerPosition(_parentTransform));

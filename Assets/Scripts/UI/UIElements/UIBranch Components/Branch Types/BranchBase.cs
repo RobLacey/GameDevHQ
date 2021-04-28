@@ -62,6 +62,7 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     public IBranch IgnoreThisBranch => _myBranch;
     public IBranch MyBranch => _myBranch;
     public ScreenType MyScreenType { get; }
+    public bool CanAllowKeys => _allowKeys;
 
     //Main
     public void OnEnable()
@@ -88,6 +89,16 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
         EVent.Do.Subscribe<IInMenu>(SaveInMenu);
         EVent.Do.Subscribe<IClearScreen>(ClearBranchForFullscreen);
         EVent.Do.Subscribe<IAllowKeys>(AllowKeys);
+        EVent.Do.Subscribe<IActivateBranchOnControlsChange>(WhenControlsChange);
+    }
+
+    protected virtual void WhenControlsChange(IActivateBranchOnControlsChange args)
+    {
+        if(args.ActiveBranch.NotEqualTo(_myBranch)) return;
+        
+        if(_myBranch.CanvasIsEnabled)
+            _myBranch.DoNotTween();
+        _myBranch.MoveToThisBranch();
     }
 
     public virtual void UseEServLocator() => _historyTrack = EServ.Locator.Get<IHistoryTrack>(this);
@@ -101,7 +112,8 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     }
 
     public virtual bool CanStartBranch() => true;
-    public virtual bool CanExitBranch() => true;
+    public virtual bool CanExitBranch(OutTweenType outTweenType) 
+        => _myBranch.GetStayOn() != IsActive.Yes || outTweenType != OutTweenType.MoveToChild;
 
     public virtual void SetUpBranch(IBranch newParentController = null)
     {

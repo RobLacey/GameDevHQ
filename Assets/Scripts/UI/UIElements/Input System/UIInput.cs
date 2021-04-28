@@ -20,6 +20,7 @@ public interface ISwitchGroupSettings
 {
     InputScheme ReturnScheme { get; }
     IGOUIModule[] GetPlayerObjects();
+    void DoChangeControlPressed();
 }
 
 public class UIInput : MonoBehaviour, IEventUser, IPausePressed,  
@@ -27,10 +28,8 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
                        IEServUser, IEventDispatcher, IClearAll, IVirtualCursorSettings,
                        ISwitchGroupSettings
 {
-    [Header(MainTitle, order = 1)][HorizontalLine(1f, EColor.Blue, order = 2)] 
-    
-    [SerializeField] 
-    [InfoBox(InfoBox)]
+    [SerializeField] [Space(10f)]
+    [ValidateInput(CheckForScheme, InfoBox)]
     private InputScheme _inputScheme  = default;
     
     [SerializeField] [Foldout("Hot Keys")]    
@@ -49,9 +48,10 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
     private IBranch _activeBranch;
     
     //Editor
-    private const string MainTitle = "Input Scheme";
-    private const string InfoBox = "Must Assign an Input Scheme";
     private const string Settings = "Other Settings ";
+    private bool HasScheme(InputScheme scheme) => scheme != null;
+    private const string InfoBox = "Must Assign an Input Scheme";
+    private const string CheckForScheme = nameof(HasScheme);
 
     //Events
     private IReturnFromEditor ReturnControlFromEditor { get; set; }
@@ -207,20 +207,27 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
             WhenCancelPressed();
             return;
         }
-        
+
         if(SwitchGroups.CanSwitchBranches())
-            if(SwitchGroups.GOUISwitchProcess() || SwitchGroups.SwitchGroupProcess()) return;       
-        
+        {
+            if (SwitchGroups.GOUISwitchProcess() || SwitchGroups.SwitchGroupProcess()) return;
+        }
+
         if(VirtualCursor.CanMoveVirtualCursor())
         {
             VirtualCursor.Update();
             return;
         }
 
-        OnChangeControlPressed?.Invoke(this);
+        if(MultiSelectPressed) return;
+        DoChangeControlPressed();
     }
 
-    private bool CanPauseGame() => _inputScheme.PressPause();
+    public void DoChangeControlPressed() => OnChangeControlPressed?.Invoke(this);
+
+    private bool MultiSelectPressed => _inputScheme.MultiSelectPressed() && !_allowKeys;
+
+    private bool CanPauseGame() => _inputScheme.PressPause() && !MultiSelectPressed;
 
     private void PausedPressedActions() => OnPausedPressed?.Invoke(this);
 
@@ -233,7 +240,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
 
     private bool CheckIfHotKeyAllowed()
     {
-        if (_gameIsPaused || !_noActivePopUps) return false;
+        if (_gameIsPaused || !_noActivePopUps || MultiSelectPressed) return false;
         if (!HasMatchingHotKey()) return false;
         if(!_inMenu)
             OnMenuAndGameSwitch?.Invoke(this);
@@ -249,7 +256,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
         return false;
     }
 
-    private bool CanDoCancel() => _inputScheme.PressedCancel();
+    private bool CanDoCancel() => _inputScheme.PressedCancel() && !MultiSelectPressed;
 
     private void WhenCancelPressed()
     {

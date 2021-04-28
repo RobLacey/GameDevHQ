@@ -42,7 +42,8 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<IAllowKeys>();
         AutoRemove().CreateEvent<IChangeControlsPressed>();
         AutoRemove().CreateEvent<IVCSetUpOnStart>();
-
+        AutoRemove().CreateEvent<IVcChangeControlSetUp>();
+        AutoRemove().CreateEvent<IActivateBranchOnControlsChange>();
         
         //Cancel
         AutoRemove().CreateEvent<ICancelHoverOverButton>();
@@ -75,7 +76,7 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<ISetUpUIGOBranch>();
         AutoRemove().CreateEvent<ICloseGOUIModule>();
         AutoRemove().CreateEvent<IStartGOUIBranch>();
-        AutoRemove().CreateEvent<ICloseInGameNode>();
+        AutoRemove().CreateEvent<ICloseGOUIBranch>();
         AutoRemove().CreateEvent<IOffscreen>();
 
         //HotKey

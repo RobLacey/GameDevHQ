@@ -6,7 +6,6 @@ using Object = UnityEngine.Object;
 public interface IVirtualCursor
 {
     IBranch OverAnyObject { get; set; }
-    Vector3 Position { get; }
     RectTransform CursorRect { get; }
     void OnEnable();
     bool CanMoveVirtualCursor();
@@ -71,8 +70,8 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
                             || _virtualCursorSetting.RestrictRaycastTo == GameType.NoRestrictions;
     private bool Allow3D => _virtualCursorSetting.RestrictRaycastTo == GameType._3D 
                             || _virtualCursorSetting.RestrictRaycastTo == GameType.NoRestrictions;
-
     private void CanStart(IOnStart args) => _canStart = true;
+    private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
 
     //Main
     private void OnAwake()
@@ -99,42 +98,34 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<IVCSetUpOnStart>(SetCursorForStartUp);
         EVent.Do.Subscribe<IOnStart>(CanStart);
-        UIBranch.EndInTween += DoBranchStartCheck;
+        EVent.Do.Subscribe<IVcChangeControlSetUp>(DoVCStartCheck);
     }
 
-    private void DoBranchStartCheck()
+    private void DoVCStartCheck(IVcChangeControlSetUp args)
     {
-        if(Scheme.CanUseVirtualCursor)
-            _interactWithUi.CheckIfCursorOverUI(this);
+        if(!Scheme.CanUseVirtualCursor) return;
+        
+        if (_allowKeys)
+        {
+            TurnOffAndResetCursor();
+        }
+        else
+        {
+            ActivateCursor();
+        }
     }
 
     private void SetStartingCanvasOrder(ISetStartingCanvasOrder args) 
         => SetCanvasOrderUtil.Set(args.ReturnVirtualCursorCanvasOrder, _cursorCanvas);
 
-    private void SaveAllowKeys(IAllowKeys args)
-    {
-        _allowKeys = args.CanAllowKeys;
-        if(!Scheme.CanUseVirtualCursor) return;
-        
-        if (_allowKeys)
-        {
-            SetUpForKeysOrController();
-        }
-        else
-        {
-            _cursorCanvas.enabled = true;
-            ActivateCursor();
-        }
-    }
 
-    private void SetUpForKeysOrController()
+    private void TurnOffAndResetCursor()
     {
         if (Scheme.HideMouseCursor)
             _cursorCanvas.enabled = false;
         _raycastTo2D.WhenInMenu();
         _raycastTo3D.WhenInMenu();
         OverAnyObject = null;
-        _interactWithUi.CloseLastHitNodeAsDifferent();
     }
 
     private void SetCursorForStartUp(IVCSetUpOnStart args)

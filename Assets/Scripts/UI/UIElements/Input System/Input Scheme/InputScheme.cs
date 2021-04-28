@@ -153,6 +153,7 @@ public abstract class InputScheme : ScriptableObject
     protected abstract string VCursorHorizontal { get; }
     protected abstract string VCursorVertical { get; }
     protected abstract string SelectedButton { get; }
+    protected abstract string MultiSelectButton { get; }
     public abstract bool  AnyMouseClicked { get; }
     public abstract bool  LeftMouseClicked { get; }
     public abstract bool  RightMouseClicked { get; }
@@ -183,7 +184,7 @@ public abstract class InputScheme : ScriptableObject
     public abstract float VcVertical();
     public abstract bool VcHorizontalPressed();
     public abstract bool VcVerticalPressed();
-
+    public abstract bool MultiSelectPressed();
     private protected abstract bool VCSwitchTo();
     public abstract bool PressSelect();
     public abstract bool HotKeyChecker(HotKey hotKey);

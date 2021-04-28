@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using NaughtyAttributes;
+using UIElements.Input_System;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(RectTransform))]
@@ -25,7 +26,8 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     [SerializeField] 
     [HideIf(EConditionOperator.Or, ShowGroupSettings, CancelOrBack)]
     private ToggleData _toggleData;
-
+    [SerializeField] 
+    private MultiSelectSettings _multiSelectSettings;
     [Header("Function Settings", order = 2)] [Space(20, order = 1)]
     [HorizontalLine(1, EColor.Blue , order = 3)]
 
@@ -89,6 +91,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public float AutoOpenDelay => _autoOpenDelay;
     public bool CanAutoOpen => _autoOpen == IsActive.Yes;
     public IUiEvents UINodeEvents => _uiNodeEvents;
+    public MultiSelectSettings MultiSelectSettings => _multiSelectSettings;
     
     //Setting / Getters
     private void CanStart(IOnStart args) => _canStart = true;
@@ -112,8 +115,11 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     private void OnEnable()
     {
-        SetUpUiFunctions();
-        StartNodeFactory();
+        if(!_canStart)
+        {
+            SetUpUiFunctions();
+            StartNodeFactory();
+        }        
         _nodeBase.OnEnable();
     }
 
@@ -143,9 +149,9 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
         SetChildParentBranch();        
         _nodeBase.Start();
         
-        foreach (var func in _activeFunctions)
+        foreach (var nodeFunctionBase in _activeFunctions)
         {
-            func.Start();
+            nodeFunctionBase.Start();
         }
     }
 

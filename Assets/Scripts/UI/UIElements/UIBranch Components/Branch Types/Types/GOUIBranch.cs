@@ -25,9 +25,9 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     //Properties & Getters / Setters
     private bool AlwaysOn => _myGOUIModule.AlwaysOnIsActive;
     
-
     protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
     {
+        base.SaveIfOnHomeScreen(args);
         if(args.OnHomeScreen)
         {
             if(AlwaysOn)
@@ -50,32 +50,41 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         }
     }
     
+    private void CloseAndReset(ICloseGOUIBranch args)
+    {
+        _canStartGOUI = false;
+        _myCanvasGroup.blocksRaycasts = false;
+        SetCanvas(ActiveCanvas.No);
+        StopSettingPosition();
+    }
+    
     //Main
     public override void ObserveEvents()
     {
         base.ObserveEvents();
         EVent.Do.Subscribe<ISetUpUIGOBranch>(SetUpGOUIParent);
         EVent.Do.Subscribe<IStartGOUIBranch>(StartGOUIBranch);
+        EVent.Do.Subscribe<ICloseGOUIBranch>(CloseAndReset);
         EVent.Do.Subscribe<IOffscreen>(SetPositionWhenOffScreen);
     }
-
-    protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
+    
+    public override void SetBlockRaycast(BlockRaycast active)
     {
-        if(AlwaysOn)
+        if (OnHomeScreen)
         {
-            _myBranch.DontSetBranchAsActive();
-            _myBranch.MoveToThisBranch();
-            SetCanvas(ActiveCanvas.Yes);
-            SetBlockRaycast(BlockRaycast.Yes);
-        }        
-        else
-        {
-            base.SetUpBranchesOnStart(args);
+            _myCanvasGroup.blocksRaycasts = active == BlockRaycast.Yes;
         }
+    }
+
+    public override void SetCanvas(ActiveCanvas active)
+    {
+        if(!OnHomeScreen) return;
+        base.SetCanvas(active);
     }
 
     private void SetUpGOUIParent(ISetUpUIGOBranch args)
     {
+        _canStartGOUI = true;
         if(args.TargetBranch != _myBranch || _myGOUIModule.IsNotNull()) return;
         _myGOUIModule = args.ReturnGOUIModule;
         _inGameObjectPosition = args.GOUITransform;
@@ -87,20 +96,28 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         _mainCanvasRect = EServ.Locator.Get<IHub>(this).MainCanvasRect;
     }
 
+    public override bool CanStartBranch() => _canStartGOUI || AlwaysOn || CanAllowKeys;
+
     public override void SetUpBranch(IBranch newParentController = null)
     {
+        bool AlwaysOnActivated() => AlwaysOn && _myBranch.CanvasIsEnabled;
+
         base.SetUpBranch(newParentController);
         _canvasOrderCalculator.SetCanvasOrder();
         
-        if(_myBranch.CanvasIsEnabled)
+        Debug.Log($"{_myBranch.CanvasIsEnabled} : {_canStartGOUI} : {AlwaysOnActivated()}");
+        
+        if(_myBranch.CanvasIsEnabled || AlwaysOnActivated() || !_canStartGOUI )
+        {
             _myBranch.DoNotTween();
+        }
         
-        SetCanvas(ActiveCanvas.Yes);
-        SetBlockRaycast(BlockRaycast.Yes);
+        if(_myGOUIModule.PointerOver)
+        {
+            SetCanvas(ActiveCanvas.Yes);
+            SetBlockRaycast(BlockRaycast.Yes);
+        }  
         
-        if((AlwaysOn || !_canStartGOUI) && _canStart)
-            MyBranch.DoNotTween();
-
         StartMyUIGO();
     }
 
@@ -122,7 +139,15 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         _canStartGOUI = false;
     }
 
-    public override bool CanExitBranch() => !AlwaysOn;
+    public override bool CanExitBranch(OutTweenType outTweenType)
+    {
+        base.CanExitBranch(outTweenType);
+        if (outTweenType == OutTweenType.Cancel)
+        {
+            _canStartGOUI = true;
+        }
+        return !AlwaysOn && !_myGOUIModule.PointerOver;
+    }
 
     public override void StartBranchExit()
     {
@@ -136,11 +161,25 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         _canvasOrderCalculator.ResetCanvasOrder();
     }
 
-    public override void SetBlockRaycast(BlockRaycast active)
+    protected override void WhenControlsChange(IActivateBranchOnControlsChange args)
     {
-        if (OnHomeScreen)
+        if(args.ActiveBranch != _myBranch) return;
+        
+        if (CanAllowKeys)
         {
-            _myCanvasGroup.blocksRaycasts = active == BlockRaycast.Yes;
+            if(_myBranch.CanvasIsEnabled)
+            {
+                _myBranch.MoveToThisBranch();
+            }
+            else
+            {
+                _myGOUIModule.SwitchEnter();
+            }
+        }
+        else
+        {
+            if(_myBranch.CanvasIsEnabled)
+                _myGOUIModule.SwitchExit();
         }
     }
     

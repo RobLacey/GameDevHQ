@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace UIElements
 {
@@ -6,7 +7,6 @@ namespace UIElements
     {
         void OnEnable();
         void UseGOUISwitcher(SwitchType switchType);
-        bool BranchNotAlreadyActive();
     }
     
     public class GOUISwitcher : IGOUISwitcher, IEventUser
@@ -20,7 +20,6 @@ namespace UIElements
         private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
         private void CanStart(IOnStart obj) => _canStart = true;
         private bool CanSwitch => _canStart && _onHomeScreen;
-        public bool BranchNotAlreadyActive() => !_playerObjects[_index].TargetBranch.CanvasIsEnabled;
 
 
         //Variables
@@ -52,16 +51,16 @@ namespace UIElements
                     DoSwitchProcess(x => _index.NegativeIterate(x));
                     break;
                 case SwitchType.Activate:
-                    _playerObjects[_index].StartInGameUi();
+                    _playerObjects[_index].SwitchEnter();
                     break;
             }
         }
 
         private void DoSwitchProcess(Func<int, int> switchAction)
         {
-             _playerObjects[_index].ExitInGameUi();
+             _playerObjects[_index].SwitchExit();
             _index = switchAction(_playerObjects.Length);
-            _playerObjects[_index].StartInGameUi();
+            _playerObjects[_index].SwitchEnter();
         }
 
         private void SetIndex(IStartGOUIBranch args)

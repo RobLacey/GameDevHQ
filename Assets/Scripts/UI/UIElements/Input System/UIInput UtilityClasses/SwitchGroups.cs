@@ -1,6 +1,5 @@
 ﻿using System;
 using UIElements;
-using UnityEngine;
 
 public interface IGOUISwitchSettings
 {
@@ -17,7 +16,7 @@ public interface ISwitchGroup
 }
 
 public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGroupPressed,
-                            IEServUser, IGOUISwitchSettings, ISwitchGroup, IChangeControlsPressed
+                            IEServUser, IGOUISwitchSettings, ISwitchGroup
 {
     public SwitchGroups(ISwitchGroupSettings settings)
     { 
@@ -25,16 +24,13 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
         _inputScheme = settings.ReturnScheme;
         _switcher = EJect.Class.WithParams<IGOUISwitcher>(this);
         _homeGroup = EJect.Class.NoParams<IHomeGroup>();
+        ChangeControls = settings.DoChangeControlPressed;
         FetchEvents();
         UseEServLocator();
     }
 
-    public void FetchEvents()
-    {
-        OnSwitchGroupPressed = EVent.Do.Fetch<ISwitchGroupPressed>();
-        OnChangeControlPressed = EVent.Do.Fetch<IChangeControlsPressed>();
-    }
-    
+    public void FetchEvents() => OnSwitchGroupPressed = EVent.Do.Fetch<ISwitchGroupPressed>();
+
     public void UseEServLocator() => _uiHub = EServ.Locator.Get<IHub>(this);
 
     //Variables
@@ -51,8 +47,8 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
     private enum SwitchFunction {  GOUI, UI }
 
     //Events
+    private Action ChangeControls { get; }
     private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; set; }
-    private Action<IChangeControlsPressed> OnChangeControlPressed { get; set; }
     
     //Properties Getters / Setters
     public IGOUIModule[] GetPlayerObjects { get; }
@@ -61,7 +57,9 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     private void SaveNoActivePopUps(INoPopUps args) => _noActivePopUps = args.NoActivePopUps;
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
-    public bool CanSwitchBranches() => _noActivePopUps && !MouseOnly() && !_gameIsPaused;
+    public bool CanSwitchBranches() => _noActivePopUps && !MouseOnly() 
+                                                       && !_gameIsPaused 
+                                                       && !_inputScheme.MultiSelectPressed();
 
     private bool MouseOnly()
     {
@@ -115,7 +113,6 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
 
     public bool GOUISwitchProcess()
     {
-        
         if (_inputScheme.PressedPositiveGOUISwitch())
         {
             if (!_onHomeScreen) return false;
@@ -155,7 +152,7 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
             SwitchType = SwitchType.Activate;
             
             OnSwitchGroupPressed?.Invoke(this);
-            OnChangeControlPressed?.Invoke(this);
+            ChangeControls?.Invoke();
             
             _homeGroup.SwitchHomeGroups(SwitchType);
             return true;
@@ -170,10 +167,9 @@ public class SwitchGroups : IEventUser, IEventDispatcher, IParameters, ISwitchGr
             _currentSwitchFunction = SwitchFunction.GOUI;
             SwitchType = SwitchType.Activate;
             
-            if(_switcher.BranchNotAlreadyActive())
-                OnSwitchGroupPressed?.Invoke(this);
+            OnSwitchGroupPressed?.Invoke(this);
+            ChangeControls?.Invoke();
             
-            OnChangeControlPressed?.Invoke(this);
             _switcher.UseGOUISwitcher(SwitchType);
             return true;
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public interface IHistoryManagement
 {
@@ -24,7 +23,7 @@ public class HistoryListManagement : IHistoryManagement
     private INode _targetNode;
     private bool _hasHistory;
     private List<INode> _history = new List<INode>();
-
+    
     public IHistoryManagement CloseToThisPoint(INode node)
     {
         _targetNode = node;
@@ -77,7 +76,7 @@ public class HistoryListManagement : IHistoryManagement
 
         void EndOfTweenActions() => node.MyBranch.MoveToThisBranch();
     }
-    
+
     public void ClearAllHistory()
     {
         CheckForMissingHistory();
@@ -122,7 +121,6 @@ public class HistoryListManagement : IHistoryManagement
         _historyTracker.AddNodeToTestRunner(currentNode);
         _history.Remove(currentNode);
         return true;
-
     }
 
     private static void ResetNode(INode currentNode, INode firstInHistory)

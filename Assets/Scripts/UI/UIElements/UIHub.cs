@@ -5,7 +5,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using NaughtyAttributes;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -18,6 +17,7 @@ public interface IHub : IParameters
     IBranch[] HomeBranches { get; }
     InputScheme Scheme { get; }
     RectTransform MainCanvasRect { get; }
+    bool CanStart { get; }
 }
 
 namespace UIElements
@@ -83,6 +83,7 @@ namespace UIElements
         public IBranch[] HomeBranches => _homeBranches.ToArray<IBranch>();
         public InputScheme Scheme => _inputScheme;
         public RectTransform MainCanvasRect => GetComponent<RectTransform>();
+        public bool CanStart { get; private set; }
 
         //Set / Getters
         private void SaveInMenu(IInMenu args)
@@ -179,13 +180,12 @@ namespace UIElements
             StartCoroutine(EnableStartControls());
         }
 
-        private void SetStartPositionsAndSettings() => SetUpBranchesAtStart?.Invoke(this);
-
         private void CheckIfStartingInGame()
         {
             if (_startingInGame)
             {
                 OnStart?.Invoke(this);
+                CanStart = true;
                 _inMenu = false;
             }
             else
@@ -194,6 +194,8 @@ namespace UIElements
                 _inMenu = true;
             }
         }
+
+        private void SetStartPositionsAndSettings() => SetUpBranchesAtStart?.Invoke(this);
 
         private GameObject GetFirstHighlightedNodeInHomeGroup()
         {
@@ -205,7 +207,10 @@ namespace UIElements
             if(_inputScheme.ControlActivateDelay != 0)
                 yield return new WaitForSeconds(Scheme.ControlActivateDelay);
             if(!_startingInGame)
+            {
                 OnStart?.Invoke(this);
+                CanStart = true;
+            }            
             SetEventSystem(GetFirstHighlightedNodeInHomeGroup());
         }
     

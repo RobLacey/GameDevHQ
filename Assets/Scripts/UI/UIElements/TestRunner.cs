@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using NaughtyAttributes;
 using UIElements;
+using UIElements.Input_System;
 using UnityEngine.SceneManagement;
 
 public class TestRunner : MonoBehaviour, IEventUser
@@ -14,6 +15,7 @@ public class TestRunner : MonoBehaviour, IEventUser
     [SerializeField] private UIBranch _activeBranch = default;
     [SerializeField] [Space(20, order = 1)] private int _nextScene  = 6;
     [SerializeField] private List<UINode> _history = default;
+    [SerializeField] private List<UINode> _multiSelect = default;
     [SerializeField] [ReadOnly] private bool _onHomeScreen = true;
     [SerializeField] [ReadOnly] private bool _allowKeys = default;
     [SerializeField] [ReadOnly] private bool _inMenu;
@@ -62,6 +64,8 @@ public class TestRunner : MonoBehaviour, IEventUser
         EVent.Do.Subscribe<ITestList>(ManageHistory);
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<IInMenu>(SaveInMenu);
+
+        MultiSelectSystem.MultiSelectChange += ManageMultiSelect;
     }
 
 
@@ -79,6 +83,23 @@ public class TestRunner : MonoBehaviour, IEventUser
         else
         {
             _history.Add((UINode) args.AddNode);
+        }
+    }
+    
+    private void ManageMultiSelect(INode newNode)
+    {
+        if (newNode is null)
+        {
+            _multiSelect.Clear();
+            return;
+        }
+        if (_multiSelect.Contains((UINode)newNode))
+        {
+            _multiSelect.Remove((UINode) newNode);
+        }
+        else
+        {
+            _multiSelect.Add((UINode) newNode);
         }
     }
 

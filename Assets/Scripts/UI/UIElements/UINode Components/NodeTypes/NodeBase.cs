@@ -27,7 +27,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     private Action<ISelectedNode> DoSelected { get; set; }
 
     //Properties
-    private bool PointerOverNode { get; set; }
+    protected bool PointerOverNode { get; set; }
     public IBranch MyBranch { get; protected set; }
     private bool IsDisabled => _disabledNode.IsDisabled;
     public UINavigation Navigation { get; set; }
@@ -51,17 +51,19 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
 
     private void UnHighlightThisNode(IHighlightedNode args)
     {
-        if (_allowKeys && _lastHighlighted == _uiNode && args.Highlighted != _uiNode)
+        if (_allowKeys && PointerOverNode && args.Highlighted != _uiNode)
             OnExit();
     }
     private void SaveAllowKeys(IAllowKeys args)
     {
         _allowKeys = args.CanAllowKeys;
-        if(!_allowKeys && ReferenceEquals(_lastHighlighted, _uiNode))
+        var thisNode = ReferenceEquals(_lastHighlighted, _uiNode);
+
+        if(thisNode)
             OnExit();
     }
-    
-    protected virtual void SaveInMenuOrInGame(IInMenu args)
+
+    private void SaveInMenuOrInGame(IInMenu args)
     {
         _inMenu = args.InTheMenu;
         if (HasNotFinishedSetUp()) return;
@@ -114,7 +116,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
 
     public virtual void DeactivateNodeByType() => OnExit();
 
-    public void ClearNodeCompletely()
+    public virtual void ClearNodeCompletely()
     {
         SetNodeAsNotSelected_NoEffects();
         OnExit();
@@ -151,7 +153,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         }
     }
 
-    protected virtual void SetAsHighlighted() 
+    private void SetAsHighlighted() 
     {
         if (IsDisabled) return;
         ThisNodeIsHighLighted();
@@ -159,15 +161,15 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         _uiFunctionEvents.DoWhenPointerOver(PointerOverNode);
     }
 
-    protected void SetNotHighlighted()
+    private void SetNotHighlighted()
     {
         PointerOverNode = false;
         _uiFunctionEvents.DoWhenPointerOver(PointerOverNode);
     }
 
-    protected void ThisNodeIsSelected() => DoSelected?.Invoke(this);
+    protected virtual void ThisNodeIsSelected() => DoSelected?.Invoke(this);
 
-    public void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this);
+    public virtual void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this);
 
     protected void DoPressOnNode() => _uiFunctionEvents.DoIsPressed();
 
@@ -229,6 +231,8 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
 
     protected virtual void TurnNodeOnOff()
     {
+        ThisNodeIsSelected();
+        
         if (IsSelected)
         {
             Deactivate();
@@ -237,7 +241,6 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         {
             Activate();
         }
-        ThisNodeIsSelected();
     }
 
     protected virtual void Activate() => SetSelectedStatus(true, DoPressOnNode);

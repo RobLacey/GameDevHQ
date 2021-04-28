@@ -11,7 +11,7 @@ public interface IChangeControl : IEventUser
     void OnStart();
 }
 
-public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSetUpOnStart
+public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSetUpOnStart, IVcChangeControlSetUp, IActivateBranchOnControlsChange
 {
     public ChangeControl(IInput input)
     {
@@ -25,22 +25,23 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
     private readonly bool _startInGame;
     private bool _sceneStarted;
     private readonly InputScheme _inputScheme;
-    private IBranch _activeBranch;
-    private INode _lastHighlighted;
     private bool _switchJustPressed;
+    private IBranch _activeBranch;
 
     //Properties
     public bool CanAllowKeys { get; private set; }
     private bool UsingVirtualCursor => _inputScheme.CanUseVirtualCursor;
     public bool ShowCursorOnStart { get; private set; }
+    public IBranch ActiveBranch => _activeBranch;
 
     //Events
     private Action<IAllowKeys> AllowKeys { get; set; }
     private Action<IVCSetUpOnStart> VCStartSetUp { get; set; }
+    private Action<IVcChangeControlSetUp> SetVCUsage { get; set; }
+    private Action<IActivateBranchOnControlsChange> ActivateBranchOnControlsChanged { get; set; }
 
     //Getters / Setters
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
-    private void SaveHighlighted(IHighlightedNode args) => _lastHighlighted = args.Highlighted;
 
     public void OnEnable()
     {
@@ -52,6 +53,8 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
     {
         AllowKeys = EVent.Do.Fetch<IAllowKeys>();
         VCStartSetUp = EVent.Do.Fetch<IVCSetUpOnStart>();
+        SetVCUsage = EVent.Do.Fetch<IVcChangeControlSetUp>();
+        ActivateBranchOnControlsChanged = EVent.Do.Fetch<IActivateBranchOnControlsChange>();
     }
 
     public void ObserveEvents()
@@ -59,11 +62,10 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
         EVent.Do.Subscribe<IChangeControlsPressed>(ChangeControlType);
         EVent.Do.Subscribe<IOnStart>(StartGame);
         EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
-        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Subscribe<ISwitchGroupPressed>(SwitchGroupPressed);
     }
 
-    private void SwitchGroupPressed(ISwitchGroupPressed obj)
+    private void SwitchGroupPressed(ISwitchGroupPressed args)
     {
         if (!CanAllowKeys)
             _switchJustPressed = true;
@@ -88,7 +90,7 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
         }
         VCStartSetUp?.Invoke(this);
     }
-    
+
     private void StartGame(IOnStart onStart)
     {
         if (MousePreferredControlMethod())
@@ -99,7 +101,8 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
         {
             SetUpKeysOrCtrl();
         }
-
+        
+        SetUpVCCorrectly();
         _sceneStarted = true;
     }
 
@@ -145,6 +148,14 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
             if (_inputScheme.AnyMouseClicked) return;
             ActivateKeysOrControl();
         }
+        
+        SetUpVCCorrectly();
+    }
+    
+    private void SetUpVCCorrectly()
+    {
+        if(!UsingVirtualCursor) return;
+        SetVCUsage?.Invoke(this);
     }
 
     private void ActivateMouseOrVirtualCursor()
@@ -160,9 +171,10 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
         
         if (!CanAllowKeys) return;
         CanAllowKeys = false;
+        _switchJustPressed = false;
         SetAllowKeys();
     }
-    
+
     private void ActivateKeysOrControl()
     {
         if (_inputScheme.HideMouseCursor)
@@ -181,27 +193,11 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
 
     private void SetNextHighlightedForKeys()
     {
-        if(UsingVirtualCursor)
-        {
-            _lastHighlighted.ClearNode();
-        }
-        
         if (_switchJustPressed)
         {
             _switchJustPressed = false;
             return;
         }
-
-        if (_activeBranch.IsHomeScreenBranch())
-        {
-        
-            _lastHighlighted.MyBranch.DoNotTween();
-           _lastHighlighted.MyBranch.MoveToThisBranch();
-        }
-        else
-        {
-            _activeBranch.DoNotTween();
-            _activeBranch.MoveToThisBranch();
-        }
+        ActivateBranchOnControlsChanged?.Invoke(this);
     }
 }

@@ -9,7 +9,7 @@
     void SetCanvas(ActiveCanvas active);
     void SetBlockRaycast(BlockRaycast active);
     bool CanStartBranch();
-    bool CanExitBranch();
+    bool CanExitBranch(OutTweenType outTweenType);
 }
 
 public interface IBranchParams

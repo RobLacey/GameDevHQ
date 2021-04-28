@@ -13,14 +13,13 @@ MonoBehaviour:
   m_Name: ShakeSceme
   m_EditorClassIdentifier: 
   _changeSizeOn: 1
-  _tweenEffect: 2
-  _pixelsToMoveBy: {x: 0, y: 0, z: 0}
+  _tweenEffect: 3
+  _time: 0.24
+  _pixelsToMoveBy: {x: 20, y: 0, z: 0}
   _changeBy: {x: 0.2, y: 0.5, z: 0}
-  _time: 1
   _loop: 1
   _vibrato: 8
   _elasticity: 1
   _shakeRandomness: 45
   _fadeOut: 1
-  _snapping: 0
-  _ease: 0
+  _ease: 7

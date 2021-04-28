@@ -7,7 +7,6 @@ public interface IInteractWithUi
     void OnEnable();
     void SetCanOnlyHitInGameObjects();
     void CheckIfCursorOverUI(IVirtualCursor virtualCursor);
-    void CloseLastHitNodeAsDifferent();
     bool UIObjectSelected(bool selected);
 }
 
@@ -47,15 +46,11 @@ public class InteractWithUi : IInteractWithUi, IEventUser
         EVent.Do.Subscribe<ICancelPressed>(CancelPressed);
     }
 
-    private void CancelPressed(ICancelPressed args)
-    {
-        _lastHit = (null, null);
-    }
+    private void CancelPressed(ICancelPressed args) => _lastHit = (null, null);
 
     public void CheckIfCursorOverUI(IVirtualCursor virtualCursor)
     {
         var pointerOverNode = _sortedNodesDict.FirstOrDefault(node => PointerInsideUIObject(node.Value, virtualCursor));
-
         if (pointerOverNode.Key)
         {
             if (UnderAnotherUIObject(pointerOverNode, virtualCursor)) return;
@@ -100,13 +95,13 @@ public class InteractWithUi : IInteractWithUi, IEventUser
         virtualCursor.OverAnyObject.AutoOpenCloseClass.OnPointerEnter();
     }
 
-    public void CloseLastHitNodeAsDifferent()
+    private void CloseLastHitNodeAsDifferent()
     {
         if (!_lastHit.node) return;
         _lastHit.node.OnPointerExit(null);
     }
 
-    private void CloseLastBranchIfDifferent(IVirtualCursor virtualCursor, IBranch currentBranch)
+    private static void CloseLastBranchIfDifferent(IVirtualCursor virtualCursor, IBranch currentBranch)
     {
         if (virtualCursor.OverAnyObject.IsNotNull() && virtualCursor.OverAnyObject != currentBranch)
         {
@@ -114,7 +109,7 @@ public class InteractWithUi : IInteractWithUi, IEventUser
         }
     }
     
-    private void CloseLastBranchIfNotRelated(IVirtualCursor virtualCursor, IBranch currentBranch)
+    private static void CloseLastBranchIfNotRelated(IVirtualCursor virtualCursor, IBranch currentBranch)
     {
         if(virtualCursor.OverAnyObject.IsNull() || currentBranch.IsNull()) return;
         

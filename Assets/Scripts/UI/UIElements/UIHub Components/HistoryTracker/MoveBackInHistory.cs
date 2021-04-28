@@ -91,7 +91,6 @@ public class MoveBackInHistory : IMoveBackInHistory
     }
 
     private bool IsHomeScreenBranch(INode lastNode) => lastNode.MyBranch.IsHomeScreenBranch() && !_onHomeScreen;
-
     
     private static void DoMoveBackOneLevel(INode lastNode, IBranch activeBranch)
     {

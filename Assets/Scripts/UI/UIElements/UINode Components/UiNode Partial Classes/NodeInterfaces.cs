@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using UIElements.Input_System;
 using UnityEngine;
 
 public interface INode : IToggles, IParameters
@@ -15,6 +16,7 @@ public interface INode : IToggles, IParameters
     void DeactivateNode();
     void ThisNodeIsHighLighted();
     IUiEvents UINodeEvents { get; }
+    MultiSelectSettings MultiSelectSettings { get; }
     void ClearNode();
     float AutoOpenDelay { get; }
     bool CanAutoOpen { get; }

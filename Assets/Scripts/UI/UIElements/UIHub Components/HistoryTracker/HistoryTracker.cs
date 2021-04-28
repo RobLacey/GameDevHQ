@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UIElements;
-using UnityEngine;
-using UnityEngine.EventSystems;
+using UIElements.Input_System;
 
 public interface ITestList //TODO Remove
 {
@@ -19,6 +17,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         SelectionProcess = EJect.Class.WithParams<INewSelectionProcess> (this);
         MoveBackInHistory = EJect.Class.WithParams<IMoveBackInHistory>(this);
         PopUpHistory = EJect.Class.WithParams<IManagePopUpHistory>(this);
+        _multiSelectSystem = new MultiSelectSystem(this);
     }
 
     //Variables
@@ -28,6 +27,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
     private bool _onHomeScreen = true, _noPopUps = true;
     private IBranch _activeBranch;
     private ICancel _cancel;
+    private MultiSelectSystem _multiSelectSystem;
 
     //Properties
     private IManagePopUpHistory PopUpHistory { get; }
@@ -39,7 +39,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
     private void SaveIsGamePaused(IGameIsPaused args) => _isPaused = args.GameIsPaused;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void NoPopUps(INoPopUps args) => _noPopUps = args.NoActivePopUps;
-    public bool NoHistory => _history.Count == 0;
+    public bool NoHistory => _history.Count == 0 && !_multiSelectSystem.MultiSelectActive;
     public bool IsPaused => _isPaused;
 
     //Events
@@ -88,7 +88,6 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         EVent.Do.Subscribe<ICancelPopUp>(CancelPopUpFromButton);
         EVent.Do.Subscribe<ISelectedNode>(SetSelected);
         EVent.Do.Subscribe<IClearAll>(ClearAll);
-        EVent.Do.Subscribe<ICloseInGameNode>(ClearAllHistory);
     }
 
     private void SetCanStart(IOnStart onStart) => _canStart = true;
@@ -99,10 +98,30 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         if(!_canStart) return;
         if(newNode.UINode.CanNotStoreNodeInHistory) return;
         
+        if (IfMultiSelectPressed(newNode)) return;
+       
+        if(_multiSelectSystem.MultiSelectActive)
+            _multiSelectSystem.ClearAllMultiSelect();
+        
+        AddNewSelectedNode(newNode);
+    }
+
+    private bool IfMultiSelectPressed(ISelectedNode newNode)
+    {
+        if (_multiSelectSystem.MultiSelectPressed(_history, newNode.UINode))
+        {
+            _lastSelected = newNode.UINode;
+            return true;
+        }
+        return false;
+    }
+
+    private void AddNewSelectedNode(ISelectedNode newNode)
+    {
         _lastSelected = SelectionProcess.NewNode(newNode.UINode)
-                                       .CurrentHistory(_history)
-                                       .LastSelectedNode(_lastSelected)
-                                       .Run();
+                                        .CurrentHistory(_history)
+                                        .LastSelectedNode(_lastSelected)
+                                        .Run();
     }
 
     private void CloseNodesAfterDisabledNode(IDisabledNode args)
@@ -110,11 +129,20 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
                                  .CloseToThisPoint(args.ToThisDisabledNode)
                                  .Run();
 
-    public void BackOneLevel() 
-        => _lastSelected = MoveBackInHistory.AddHistory(_history)
-                                            .ActiveBranch(_activeBranch)
-                                            .IsOnHomeScreen(_onHomeScreen)
-                                            .BackOneLevelProcess();
+    public void BackOneLevel()
+    {
+        if (_multiSelectSystem.MultiSelectActive)
+        {
+            _lastSelected = _multiSelectSystem.CloseAlMultiSelectONCancelPressed();
+        }
+        else
+        {
+            _lastSelected = MoveBackInHistory.AddHistory(_history)
+                                             .ActiveBranch(_activeBranch)
+                                             .IsOnHomeScreen(_onHomeScreen)
+                                             .BackOneLevelProcess();
+        }
+    }
 
     private void SwitchToGame(IInMenu args)
     {
@@ -140,14 +168,19 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         {
             BackOneLevel();
         }
-        else if(_onHomeScreen)
+        else
         {
             ClearAllHistory();
         }
     }
 
-    private void ClearAllHistory(ICloseInGameNode args = null)
+    private void ClearAllHistory()
     {
+        if(_multiSelectSystem.MultiSelectActive)
+        {
+            _multiSelectSystem.ClearAllMultiSelect();
+        }        
+
         HistoryListManagement.CurrentHistory(_history)
                              .ClearAllHistory();
     }

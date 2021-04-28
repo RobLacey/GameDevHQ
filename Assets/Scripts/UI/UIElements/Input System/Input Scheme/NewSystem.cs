@@ -16,6 +16,7 @@ public class NewSystem : InputScheme
     protected override string MouseXAxis { get; } = " ";
     protected override string MouseYAxis { get; } = " ";
     protected override string SelectedButton { get; } = " ";
+    protected override string MultiSelectButton { get; } = " ";
     public override bool AnyMouseClicked { get; } = false;
     public override bool LeftMouseClicked { get; } = false;
     public override bool RightMouseClicked { get; } = false;
@@ -100,6 +101,11 @@ public class NewSystem : InputScheme
     }
 
     public override bool VcVerticalPressed()
+    {
+        return false;
+    }
+
+    public override bool MultiSelectPressed()
     {
         return false;
     }

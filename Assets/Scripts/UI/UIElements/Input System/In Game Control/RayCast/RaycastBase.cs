@@ -31,14 +31,12 @@ namespace UIElements
         private void OverGameObj(ICursorHandler hit)
         {
             if (IfNoGOUIHit(hit)) return;
-
+            
             if (_lastGameObject.IsNotNull())
             {
                 if (_lastGameObject == hit) return;
                 _lastGameObject.VirtualCursorExit();
             }
-            
-            if(hit.AlwaysOnIsActive) return;
 
             _lastGameObject = hit;
             hit.VirtualCursorEnter();

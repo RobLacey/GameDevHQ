@@ -119,4 +119,14 @@ public enum CancelClickLocation
     Never, Left, Right, Either
 }
 
+public enum MultiSelectGroup
+{
+    One, Two, Three, Four, Five
+}
+
+public enum StartOffscreen
+{
+    OnlyWhenSelected, Always
+}
+
 

@@ -1234,6 +1234,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 375905088}
@@ -1575,7 +1579,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &124459451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1590,15 +1594,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _startHow: 0
   _myGOUIBranch: {fileID: 1718085406}
-  _myRenderer: {fileID: 2145405054}
-  _checkFrequency: 3
   _useOffsetPosition: {fileID: 0}
-  _useOffScreenMarker: 0
+  _checkVisibility:
+    _myRenderer: {fileID: 2145405054}
+    _checkFrequency: 10
   _offScreenMarker:
     _offScreenMarker: {fileID: 766753675201208392, guid: 699ef6af90eeb714aa8be2c5939d24fc,
       type: 3}
-    _screenSafeMargin: {x: 0, y: 0}
+    _whenToStartOffScreenMarker: 1
     _frameFrequency: 7
+    _screenSafeMargin: {x: 0, y: 0}
     _markerFolder: {fileID: 0}
   _activeGOUI:
     m_PersistentCalls:
@@ -1630,7 +1635,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0.08, y: 0}
   serializedVersion: 2
-  m_Radius: 3
+  m_Radius: 2
 --- !u!82 &124459453
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1750,7 +1755,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 124459450}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.81, y: 0.57, z: 0}
+  m_LocalPosition: {x: 6.48, y: 0.57, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_Children:
   - {fileID: 339928673}
@@ -2658,6 +2663,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 0
     _tabBranch: {fileID: 246213780}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 246213780}
@@ -2949,6 +2958,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 1712214354}
@@ -3038,6 +3051,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
@@ -3825,6 +3842,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 0
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
@@ -5233,6 +5254,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 634434330}
@@ -11314,7 +11339,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList:
-  - _name: Set Me
+  - _name: Drop Menu Tween
     _element: {fileID: 504002777}
     _positionSettings:
       _grabStartPosition: 1
@@ -11908,7 +11933,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList:
-  - _name: Set Me
+  - _name: Info 3 Tween
     _element: {fileID: 1608135887}
     _positionSettings:
       _grabStartPosition: 0
@@ -11996,7 +12021,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &559061287 stripped
 MonoBehaviour:
@@ -12991,7 +13016,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 3
+  _branchType: 2
   _controlBar: 1
   _startOnThisNode: {fileID: 0}
   _onlyAllowOnHomeScreen: 0
@@ -13029,7 +13054,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList:
-  - _name: Set Me
+  - _name: Resolve Tween
     _element: {fileID: 620683489}
     _positionSettings:
       _grabStartPosition: 0
@@ -13298,7 +13323,7 @@ PrefabInstance:
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 997165033627275142, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
@@ -13743,7 +13768,7 @@ PrefabInstance:
     - target: {fileID: 997165033627275259, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -1860
+      value: -1882.37
       objectReference: {fileID: 0}
     - target: {fileID: 997165033627275259, guid: 8e09348a0583a7e4b875cd1513db467b,
         type: 3}
@@ -15485,6 +15510,7 @@ MonoBehaviour:
   _activeBranch: {fileID: 0}
   _nextScene: 6
   _history: []
+  _multiSelect: []
   _onHomeScreen: 0
   _allowKeys: 1
   _inMenu: 0
@@ -15594,7 +15620,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1128487031}
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -18602,6 +18629,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 1154447021}
@@ -21728,6 +21759,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 477428662}
@@ -23771,7 +23806,11 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
-  _enabledFunctions: 131
+  _multiSelectSettings:
+    _allowMultiSelect: 0
+    _openChildBranch: 0
+    _multiSelectGroup: 0
+  _enabledFunctions: 195
   _navigation:
     _childBranch: {fileID: 984987784}
     _setKeyNavigation: 3
@@ -23804,7 +23843,7 @@ MonoBehaviour:
     _outlinesToUse: []
     _dropShadowsToUse: []
   _audio:
-    _audioScheme: {fileID: 0}
+    _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 11400000, guid: bef112396d015b743891691837bd61dd, type: 2}
@@ -25078,6 +25117,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1128487030
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1128487031}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1128487031
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1128487030}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 663133645}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1131391999
 GameObject:
   m_ObjectHideFlags: 0
@@ -25345,6 +25414,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
@@ -25460,6 +25533,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 1064311445}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 1064311445}
@@ -26000,6 +26077,11 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _moveType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _escapeKeyFunction
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
@@ -27059,14 +27141,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _startHow: 1
   _myGOUIBranch: {fileID: 2084390253}
-  _myRenderer: {fileID: 1259628776}
-  _checkFrequency: 5
   _useOffsetPosition: {fileID: 0}
-  _useOffScreenMarker: 1
+  _checkVisibility:
+    _myRenderer: {fileID: 1259628776}
+    _checkFrequency: 10
   _offScreenMarker:
-    _offScreenMarker: {fileID: 0}
+    _offScreenMarker: {fileID: 766753675201208392, guid: 699ef6af90eeb714aa8be2c5939d24fc,
+      type: 3}
+    _whenToStartOffScreenMarker: 1
+    _frameFrequency: 7
     _screenSafeMargin: {x: 0, y: 0}
-    _frameFrequency: 0
     _markerFolder: {fileID: 0}
   _activeGOUI:
     m_PersistentCalls:
@@ -27167,12 +27251,22 @@ PrefabInstance:
     - target: {fileID: 850220440206107201, guid: f0572eb1dfdbca14382c5c3285ebbe86,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0
+      value: -110.3
       objectReference: {fileID: 0}
     - target: {fileID: 850220440206107201, guid: f0572eb1dfdbca14382c5c3285ebbe86,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 150.6
+      value: 371.14365
+      objectReference: {fileID: 0}
+    - target: {fileID: 850220440206107201, guid: f0572eb1dfdbca14382c5c3285ebbe86,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 41.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 850220440206107201, guid: f0572eb1dfdbca14382c5c3285ebbe86,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 783.449
       objectReference: {fileID: 0}
     - target: {fileID: 850220440206107202, guid: f0572eb1dfdbca14382c5c3285ebbe86,
         type: 3}
@@ -27183,6 +27277,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3372132547534964501, guid: f0572eb1dfdbca14382c5c3285ebbe86,
+        type: 3}
+      propertyPath: m_RaycastTarget
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0572eb1dfdbca14382c5c3285ebbe86, type: 3}
@@ -30518,7 +30617,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea81367c5e5dac4d926ec6e71b431b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _branchType: 3
+  _branchType: 4
   _controlBar: 1
   _startOnThisNode: {fileID: 0}
   _onlyAllowOnHomeScreen: 0
@@ -30556,7 +30655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList:
-  - _name: Set Me
+  - _name: Timed Tween
     _element: {fileID: 1478859608}
     _positionSettings:
       _grabStartPosition: 0
@@ -32474,6 +32573,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 504002778}
@@ -32893,7 +32996,7 @@ PrefabInstance:
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: _buttonFunction
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
@@ -32978,6 +33081,11 @@ PrefabInstance:
       propertyPath: _coloursTest._imageElements.Array.data[0]
       value: 
       objectReference: {fileID: 1496973824}
+    - target: {fileID: 7713156616522297100, guid: 883e6b769f6167a4794fc142b77d057b,
+        type: 3}
+      propertyPath: _navigation._childBranch
+      value: 
+      objectReference: {fileID: 1450462822}
     - target: {fileID: 7713156616522297102, guid: 883e6b769f6167a4794fc142b77d057b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -33105,7 +33213,11 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
-  _enabledFunctions: 131
+  _multiSelectSettings:
+    _allowMultiSelect: 0
+    _openChildBranch: 0
+    _multiSelectGroup: 1
+  _enabledFunctions: 195
   _navigation:
     _childBranch: {fileID: 1885071253}
     _setKeyNavigation: 3
@@ -33138,7 +33250,7 @@ MonoBehaviour:
     _outlinesToUse: []
     _dropShadowsToUse: []
   _audio:
-    _audioScheme: {fileID: 0}
+    _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 11400000, guid: bef112396d015b743891691837bd61dd, type: 2}
@@ -34663,6 +34775,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 1712214354}
@@ -34992,7 +35108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList:
-  - _name: Set Me
+  - _name: Info 2 Tween
     _element: {fileID: 1025744423}
     _positionSettings:
       _grabStartPosition: 0
@@ -36055,7 +36171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList:
-  - _name: Set Me
+  - _name: Pause Menu Tween
     _element: {fileID: 1743252782}
     _positionSettings:
       _grabStartPosition: 0
@@ -36177,6 +36293,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
@@ -37957,6 +38077,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 323
   _navigation:
     _childBranch: {fileID: 0}
@@ -38084,7 +38208,11 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
-  _enabledFunctions: 131
+  _multiSelectSettings:
+    _allowMultiSelect: 0
+    _openChildBranch: 1
+    _multiSelectGroup: 0
+  _enabledFunctions: 195
   _navigation:
     _childBranch: {fileID: 616071579}
     _setKeyNavigation: 3
@@ -38117,7 +38245,7 @@ MonoBehaviour:
     _outlinesToUse: []
     _dropShadowsToUse: []
   _audio:
-    _audioScheme: {fileID: 0}
+    _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 11400000, guid: bef112396d015b743891691837bd61dd, type: 2}
@@ -40336,6 +40464,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 1248739661}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 1248739661}
@@ -40486,7 +40618,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList:
-  - _name: Set Me
+  - _name: Optional Tween
     _element: {fileID: 2018220710}
     _positionSettings:
       _grabStartPosition: 0
@@ -40602,6 +40734,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 634434330}
@@ -41382,7 +41518,7 @@ MonoBehaviour:
   _canvasOrderSetting: 3
   _orderInCanvas: 0
   _screenType: 0
-  _stayVisible: 0
+  _stayVisible: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
   _escapeKeyFunction: 2
@@ -41429,7 +41565,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList:
-  - _name: Set Me
+  - _name: Info 1 Tween
     _element: {fileID: 1883439849}
     _positionSettings:
       _grabStartPosition: 0
@@ -41563,6 +41699,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
@@ -41685,6 +41825,11 @@ PrefabInstance:
     - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
         type: 3}
       propertyPath: _closeIfClickedOff
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5905019687427038913, guid: d4907883a84abe54e902c13951db25b4,
+        type: 3}
+      propertyPath: _escapeKeyFunction
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6032785956394875965, guid: d4907883a84abe54e902c13951db25b4,
@@ -42363,14 +42508,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _startHow: 1
   _myGOUIBranch: {fileID: 553494885}
-  _myRenderer: {fileID: 898203770}
-  _checkFrequency: 5
   _useOffsetPosition: {fileID: 0}
-  _useOffScreenMarker: 1
+  _checkVisibility:
+    _myRenderer: {fileID: 898203770}
+    _checkFrequency: 10
   _offScreenMarker:
-    _offScreenMarker: {fileID: 0}
+    _offScreenMarker: {fileID: 766753675201208392, guid: 699ef6af90eeb714aa8be2c5939d24fc,
+      type: 3}
+    _whenToStartOffScreenMarker: 1
+    _frameFrequency: 7
     _screenSafeMargin: {x: 0, y: 0}
-    _frameFrequency: 0
     _markerFolder: {fileID: 0}
   _activeGOUI:
     m_PersistentCalls:
@@ -42514,7 +42661,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0.08, y: 0}
   serializedVersion: 2
-  m_Radius: 3
+  m_Radius: 2
 --- !u!1001 &2121397649
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -43642,6 +43789,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
@@ -45746,6 +45897,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 0}
@@ -46093,13 +46248,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonFunction: 0
-  _autoOpen: 0
+  _autoOpen: 1
   _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 231
   _navigation:
     _childBranch: {fileID: 1096179286}
@@ -46335,6 +46494,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 231
   _navigation:
     _childBranch: {fileID: 1096179286}
@@ -46451,6 +46614,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 487
   _navigation:
     _childBranch: {fileID: 1450462822}
@@ -46702,6 +46869,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 327
   _navigation:
     _childBranch: {fileID: 0}
@@ -46951,6 +47122,10 @@ MonoBehaviour:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 327
   _navigation:
     _childBranch: {fileID: 0}

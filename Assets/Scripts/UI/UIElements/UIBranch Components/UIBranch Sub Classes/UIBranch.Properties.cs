@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NaughtyAttributes;
 using UnityEngine;
 
 /// <summary>
@@ -22,7 +21,11 @@ public partial class UIBranch
     public bool IsStandardBranch() => _branchType == BranchType.Standard;
     public bool IsInGameBranch() => _branchType == BranchType.InGameObject;
 
-    public void DoNotTween() => _tweenOnChange = false;
+    public void DoNotTween()
+    {
+        Debug.Log(this);
+        _tweenOnChange = false;
+    }
     public void DontSetBranchAsActive() => _canActivateBranch = false;
     public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
     public bool IsTimedPopUp() => _branchType == BranchType.TimedPopUp;
@@ -33,12 +36,16 @@ public partial class UIBranch
     private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveHighlighted(IHighlightedNode args)
     {
+        if(args.Highlighted.MyBranch.NotEqualTo(this) || _saveExitSelection == IsActive.No) return;
+        
         _lastHighlighted = NodeSearch.Find(args.Highlighted)
                                     .DefaultReturn(LastSelected)
                                     .RunOn(ThisGroupsUiNodes);
     }
     private void SaveSelected(ISelectedNode args)
     {
+        if(args.UINode.MyBranch.NotEqualTo(this)) return;
+
         LastSelected = NodeSearch.Find(args.UINode)
                                  .DefaultReturn(LastSelected)
                                  .RunOn(ThisGroupsUiNodes);

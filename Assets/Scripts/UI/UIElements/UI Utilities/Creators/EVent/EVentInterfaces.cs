@@ -22,6 +22,11 @@ public interface ISwitchGroupPressed // This one is test
 
 public interface IChangeControlsPressed { } // This one is test
 
+public interface IActivateBranchOnControlsChange
+{
+    IBranch ActiveBranch { get; }
+}
+
 public interface IAllowKeys // This one is test
 {
     bool CanAllowKeys { get; }
@@ -147,7 +152,6 @@ public interface ISetUpUIGOBranch
 {
     IBranch TargetBranch  { get; }
     GOUIModule ReturnGOUIModule { get; }
-    bool AlwaysOnIsActive { get; }
     Transform GOUITransform { get; }
 }
 
@@ -157,9 +161,9 @@ public interface IStartGOUIBranch
     GOUIModule ReturnGOUIModule { get; }
 }
 
-public interface ICloseInGameNode
+public interface ICloseGOUIBranch
 {
-    IBranch TargetBranch { get; }
+    
 }
 
 public interface ICloseGOUIModule
@@ -202,6 +206,7 @@ public interface IRemoveBranch
     IBranch MyBranch { get; }
 }
 
+public interface IVcChangeControlSetUp{ }
 
 
 

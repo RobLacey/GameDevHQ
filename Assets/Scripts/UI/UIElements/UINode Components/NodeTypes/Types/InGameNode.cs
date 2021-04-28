@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public interface IInGameNode : INodeBase { }
 
@@ -9,10 +10,10 @@ public class InGameNode : NodeBase, IInGameNode, ICloseGOUIModule
         _autoOpenDelay = _uiNode.AutoOpenDelay;
     }
 
+    //Variables
     private INode _parentNode;
     private readonly float _autoOpenDelay;
     private readonly IDelayTimer _delayTimer = EJect.Class.NoParams<IDelayTimer>();
-    private bool _justCancelled;
     
     //Properties
     public IBranch TargetBranch => MyBranch.MyParentBranch;
@@ -26,39 +27,22 @@ public class InGameNode : NodeBase, IInGameNode, ICloseGOUIModule
         CloseGOUIModule = EVent.Do.Fetch<ICloseGOUIModule>();
     }
 
-    public override void ObserveEvents()
-    {
-        base.ObserveEvents();
-        EVent.Do.Subscribe<ICloseInGameNode>(CloseThisNode);
-    }
-    
-    private void CloseThisNode(ICloseInGameNode args)
-    {
-        if (args.TargetBranch == MyBranch && IsSelected)
-        {
-            _justCancelled = true;
-        }
-    }
-
     public override void OnEnter()
     {
         base.OnEnter();
         
-        if (CheckIfHasJustBeenCancelled()) return;
-
         if (_uiNode.CanAutoOpen && !IsSelected)
         {
             _delayTimer.SetDelay(_autoOpenDelay)
                        .StartTimer(StartAutoOpen);
         }
     }
-    
+
     private void StartAutoOpen()
     {
         MyBranch.AutoOpenCloseClass.ChildNodeHasOpenChild = _uiNode.HasChildBranch;
         TurnNodeOnOff();
     }
-
 
     public override void OnExit()
     {
@@ -67,16 +51,6 @@ public class InGameNode : NodeBase, IInGameNode, ICloseGOUIModule
         {
             _delayTimer.StopTimer();
         }
-
-        _justCancelled = false;
-    }
-    
-    private bool CheckIfHasJustBeenCancelled()
-    {
-        if (!_justCancelled) return false;
-        
-        _justCancelled = false;
-        return true;
     }
     
     public override void DeactivateNodeByType()
@@ -85,16 +59,14 @@ public class InGameNode : NodeBase, IInGameNode, ICloseGOUIModule
         Deactivate();
         
         CloseGOUIModule?.Invoke(this);
-        
-        if (_uiNode.CanAutoOpen)
-        {
-            _justCancelled = true;
-            OnExit();
-        }
-        else
-        {
-            OnExit();
-        }
+        if(PointerOverNode && !_allowKeys) return;
+        OnExit();
+    }
+
+    public override void ClearNodeCompletely()
+    {
+        base.ClearNodeCompletely();
+        CloseGOUIModule?.Invoke(this);
     }
 }
 
