@@ -86,7 +86,7 @@ public class ClassBindings : BindBase
         //InGameControl
         _eJectMaster.Bind<_2DRaycast>().To<I2DRaycast>().WithParameters();
         _eJectMaster.Bind<_3DRaycast>().To<I3DRaycast>().WithParameters();
-        _eJectMaster.Bind<GOUISwitcher>().To<IGOUISwitcher>().WithParameters();
+        _eJectMaster.Bind<GOUISwitcher>().To<IGOUISwitcher>();
         _eJectMaster.Bind<InteractWithUi>().To<IInteractWithUi>();
         _eJectMaster.Bind<MoveVirtualCursor>().To<IMoveVirtualCursor>();
         _eJectMaster.Bind<VirtualCursor>().To<IVirtualCursor>().WithParameters();

@@ -18,9 +18,9 @@ namespace UIElements
         private RectTransform _offScreenMarkerRect;
         private readonly WaitFrameCustom _waitFrameCustom = new WaitFrameCustom();
         private Transform _parentTransform;
-        private GOUIModule _gouiModule;
         private ISetStartingCanvasOrder _savedSetCanvasOrderEvent;
         private readonly OffscreenMarkerData _offscreenMarkerData;
+        private string _targetBranchesName;
 
         //Editor
         private const string OffScreenMarkerFolderName = "Off Screen Marker";
@@ -33,11 +33,14 @@ namespace UIElements
         private Vector2 ScreenSafeMargin { get; set; }
         private int FrameFrequency => _offscreenMarkerData.FrameFrequency;
         private Transform MarkerFolder => _offscreenMarkerData.MarkerFolder;
+        
 
-        public void SetParent(GOUIModule parent)
+        //Main
+        public void OnAwake(GOUIModule parentGOUI)
         {
-            _gouiModule = parent;
-            _parentTransform = parent.transform;
+            _parentTransform = parentGOUI.transform;
+            _targetBranchesName = parentGOUI.TargetBranch.ThisBranchesGameObject.name;
+            OnAwake();
         }
 
         public void OnAwake()
@@ -52,11 +55,7 @@ namespace UIElements
 
         public void ObserveEvents() => EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetStartingCanvasOrder);
 
-        public void OnDisable()
-        {
-            EVent.Do.Unsubscribe<ISetStartingCanvasOrder>(SetStartingCanvasOrder);
-            StopOffScreenMarker();
-        }
+        public void OnDisable() => StopOffScreenMarker();
 
         public void OnStart()
         {
@@ -72,7 +71,7 @@ namespace UIElements
                                                         true);
             _offScreenMarkerRect = newOffScreenMarker.GetComponent<RectTransform>();
             _offScreenMarkerRect.anchoredPosition3D = Vector3.zero;
-            _offScreenMarkerRect.name = $"OffScreen - {_gouiModule.TargetBranch.ThisBranchesGameObject.name}";
+            _offScreenMarkerRect.name = $"OffScreen - {_targetBranchesName}";
             
             _offScreenMarkerRect.transform.parent = MakeFolderUtil.MakeANewFolder(OffScreenMarkerFolderName, 
                                                                                         _hub.MainCanvasRect, 
@@ -173,6 +172,7 @@ namespace UIElements
         public void StopOffScreenMarker()
         {
             StaticCoroutine.StopCoroutines(_offScreenMarkerCoroutine);
+            if(_offScreenMarkerCanvas == null) return;
             _offScreenMarkerCanvas.enabled = false;
         }
 

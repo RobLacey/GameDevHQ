@@ -42,9 +42,17 @@ public class EJectMaster
     private T WithParameters<T>(IParameters args, Type typeOfNewClass, object newClass, bool hasParams)
     {
         if (!hasParams)
-            ThrowParameterException("Class DOESN'T HAVE Parameters or no Binding", typeOfNewClass);
-
-        return (T) System.Activator.CreateInstance((Type) newClass, args);
+            ThrowParameterException($"Class DOESN'T HAVE Parameters or no Binding", typeOfNewClass);
+        try
+        {
+            return (T) System.Activator.CreateInstance((Type) newClass, args);
+        }
+        catch (Exception e)
+        {
+            ThrowParameterException("classes constructor has NO Parameters " +
+                                    "but is set up in Bindings as requiring them", typeOfNewClass);
+            return default;
+        }
     }
 
     private T NoParameters<T>(Type typeOfNewClass, object newClass, bool hasParams)

@@ -11,6 +11,7 @@ public interface ICursorHandler
 
 public interface IGOUIModule
 {
+    bool GOUIModuleCanBeUsed { get; }
     void SwitchEnter();
     void SwitchExit();
     bool AlwaysOnIsActive { get; }
@@ -64,7 +65,8 @@ namespace UIElements
         //Properties & Set / Getters
         public IBranch TargetBranch => _myGOUIBranch;
         public OffscreenMarkerData OffScreenMarkerData => _offScreenMarker;
-        public bool GOUIIsActive => _active; 
+        public bool GOUIIsActive => _active;
+        public bool GOUIModuleCanBeUsed => enabled; 
         public bool AlwaysOnIsActive => _startHow == StartGOUI.AlwaysOn;
         public Transform GOUITransform => _useOffsetPosition;
         public GOUIModule ReturnGOUIModule => this;
@@ -82,12 +84,24 @@ namespace UIElements
         //Main
         private void Awake()
         {
+            if (DisableIfNotInUse()) return;
+            
             if (_useOffsetPosition == null)
                 _useOffsetPosition = transform;
 
             FetchEvents();
             _checkVisibility.SetUp(this);
             _checkVisibility.OnAwake();
+        }
+
+        private bool DisableIfNotInUse()
+        {
+            if (_myGOUIBranch.IsNull())
+            {
+                enabled = false;
+                return true;
+            }
+            return false;
         }
 
         public void FetchEvents()
@@ -102,14 +116,18 @@ namespace UIElements
             UseEServLocator();
             ObserveEvents();
             _checkVisibility.OnEnable();
-
-            if(_canStart)
-            {
-                StartUpAlwaysOnBranch();
-                SetUpUIGOBranch.Invoke(this);
-            }        
+            StartBranch?.Invoke(this);
+            EnabledAfterSceneStart();        
         }
-        
+
+        private void EnabledAfterSceneStart()
+        {
+            if (!_canStart) return;
+            
+            _checkVisibility.OnDelayedStart();
+            StartUpAlwaysOnBranch();
+        }
+
         public void UseEServLocator()
         {
             _iHub = EServ.Locator.Get<IHub>(this);
@@ -143,19 +161,21 @@ namespace UIElements
         {
             _checkVisibility.OnStart();
             SetUpUIGOBranch.Invoke(this);
-
-            if(_iHub.CanStart && !_canStart)
-            {
-                Debug.Log("Delayed");
-                _checkVisibility.CanStart();
-                _canStart = true;
-                StartUpAlwaysOnBranch();
-            }
+            DidntStartOnSceneLoad();
         }
-        
+
+        private void DidntStartOnSceneLoad()
+        {
+            if (!_iHub.CanStart) return;
+            
+            _canStart = true;
+            _checkVisibility.OnDelayedStart();
+            StartUpAlwaysOnBranch();
+        }
+
         private void StartUpAlwaysOnBranch()
         {
-            if (AlwaysOnIsActive && _canStart)
+            if (AlwaysOnIsActive)
             {
                 PointerOver = true;
                 _myGOUIBranch.DontSetBranchAsActive();

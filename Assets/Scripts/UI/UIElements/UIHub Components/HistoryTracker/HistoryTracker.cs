@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UIElements.Input_System;
+using UnityEngine;
 
 public interface ITestList //TODO Remove
 {
@@ -34,7 +35,6 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
     private IMoveBackInHistory MoveBackInHistory { get; }
     public IHistoryManagement HistoryListManagement { get; }
     private INewSelectionProcess SelectionProcess { get; }
-    public ActivateNodeOnReturnHome ActivateOnReturnHome { get; private set; }
     private void SaveOnHomScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveIsGamePaused(IGameIsPaused args) => _isPaused = args.GameIsPaused;
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
@@ -197,15 +197,11 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
     {
         if (hotKeyScreenType != ScreenType.FullScreen && !_onHomeScreen)
         {
-            BackToHomeScreen(ActivateNodeOnReturnHome.No);
+            BackToHomeScreen();
         }
     }
 
-    public void BackToHomeScreen(ActivateNodeOnReturnHome activate)
-    {
-        ActivateOnReturnHome = activate;
-        ReturnHome?.Invoke(this);
-    }
+    public void BackToHomeScreen() => ReturnHome?.Invoke(this);
 
     public void MoveToLastBranchInHistory()
     {
@@ -235,7 +231,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         }
         else
         {
-            BackToHomeScreen(ActivateNodeOnReturnHome.Yes);
+            BackToHomeScreen();
         }
     }
     

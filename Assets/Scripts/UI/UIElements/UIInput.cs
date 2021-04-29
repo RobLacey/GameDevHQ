@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using NaughtyAttributes;
-using UIElements;
 using UnityEngine;
 
 public interface IInput : IParameters
@@ -19,7 +17,6 @@ public interface IVirtualCursorSettings : IInput
 public interface ISwitchGroupSettings
 {
     InputScheme ReturnScheme { get; }
-    IGOUIModule[] GetPlayerObjects();
     void DoChangeControlPressed();
 }
 
@@ -86,7 +83,6 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
     }
 
     public Transform GetParentTransform => transform;
-    public IGOUIModule[] GetPlayerObjects() => FindObjectsOfType<GOUIModule>().ToArray<IGOUIModule>();
     private void SaveNoActivePopUps(INoPopUps args) => _noActivePopUps = args.NoActivePopUps;
     private void SaveOnStart(IOnStart onStart) => _canStart = true;
     private void SaveGameIsPaused(IGameIsPaused args)
@@ -210,7 +206,9 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
 
         if(SwitchGroups.CanSwitchBranches())
         {
-            if (SwitchGroups.GOUISwitchProcess() || SwitchGroups.SwitchGroupProcess()) return;
+            if (SwitchGroups.GOUISwitchProcess() || 
+                SwitchGroups.SwitchGroupProcess() || 
+                SwitchGroups.BranchGroupSwitchProcess()) return;
         }
 
         if(VirtualCursor.CanMoveVirtualCursor())

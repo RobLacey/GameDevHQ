@@ -78,7 +78,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     [SerializeField] 
     [Label("Save Position On Exit")] [HideIf(EConditionOperator.Or,AnyPopUpBranch, InGamUIBranch)] 
     private IsActive _saveExitSelection = IsActive.Yes;
-
+    
     [SerializeField] 
     [ShowIf(EConditionOperator.Or, StandardBranch)]
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
@@ -108,8 +108,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     
     //Variables
     private UITweener _uiTweener;
-    private int _groupIndex;
-    private bool _onHomeScreen = true, _tweenOnChange = true, _canActivateBranch = true;
+    private bool _tweenOnChange = true, _canActivateBranch = true;
     private bool _activePopUp, _isTabBranch;
     private IBranchBase _branchTypeClass;
     private INode _lastHighlighted;
@@ -147,7 +146,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         _lastHighlighted = DefaultStartOnThisNode;
         LastSelected = DefaultStartOnThisNode;
         if(_groupsList.Count <= 1) return;
-        _groupIndex = BranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
+        GroupIndex = BranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
     }
 
     private void SetDefaultStartPosition()
@@ -190,10 +189,8 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<ISwitchGroupPressed>(SwitchBranchGroup);
         EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
         EVent.Do.Subscribe<ISelectedNode>(SaveSelected);
-        EVent.Do.Subscribe<IOnHomeScreen>(SaveIfOnHomeScreen);
     }
 
     private void Start() => CheckForControlBar();
@@ -217,13 +214,11 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     public void MoveToThisBranch(IBranch newParentBranch = null)
     {
         if(!_branchTypeClass.CanStartBranch()) return;
-        
+
         _branchTypeClass.SetUpBranch(newParentBranch);
-        
+
         if (_canActivateBranch) 
             SetAsActiveBranch?.Invoke(this);
-        
-        Debug.Log($"{this} : {_tweenOnChange}");
         
         if (_tweenOnChange)
         {
@@ -252,12 +247,11 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         if (_canActivateBranch)
             _lastHighlighted.SetNodeAsActive();
 
-        _groupIndex = BranchGroups.SetGroupIndex(_lastHighlighted, _groupsList);
+        GroupIndex = BranchGroups.SetGroupIndex(_lastHighlighted, _groupsList);
     }
 
     public void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null)
     {
-        Debug.Log($"{this} : Exit");
         if(!CanvasIsEnabled || DontExitBranch())
         {
             endOfTweenCallback?.Invoke();
@@ -290,14 +284,6 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
             _branchTypeClass.EndOfBranchExit();
             TweenFinishedCallBack?.Invoke();
         }
-    }
-
-    private void SwitchBranchGroup(ISwitchGroupPressed args)
-    {
-        var cannotSwitchGroups = _onHomeScreen || !CanvasIsEnabled || _groupsList.Count <= 1;
-        
-        if (cannotSwitchGroups) return;
-        _groupIndex = BranchGroups.SwitchBranchGroup(_groupsList, _groupIndex, args.SwitchType);
     }
 
     public void SetCanvas(ActiveCanvas activeCanvas) => _branchTypeClass.SetCanvas(activeCanvas);

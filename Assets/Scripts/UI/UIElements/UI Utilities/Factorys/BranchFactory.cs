@@ -85,7 +85,6 @@ public class BranchFactory
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.TweenOnHome = DoTween.DoNothing;
         branch.SetStayOn = IsActive.No;
-        branch.AutoClose = IsActive.No;
         branch.CanvasOrder = OrderInCanvas.Manual;
         branch.SetSaveLastSelectionOnExit = IsActive.No;
     }
@@ -96,7 +95,6 @@ public class BranchFactory
         branch.ScreenType = ScreenType.Normal;
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.SetStayOn = IsActive.No;
-        branch.AutoClose = IsActive.No;
         branch.CanvasOrder = OrderInCanvas.Manual;
         branch.SetSaveLastSelectionOnExit = IsActive.No;
     }
@@ -108,7 +106,6 @@ public class BranchFactory
         branch.TweenOnHome = DoTween.DoNothing;
         branch.WhenToMove = WhenToMove.Immediately;
         branch.SetStayOn = IsActive.No;
-        branch.AutoClose = IsActive.No;
         branch.CanvasOrder = OrderInCanvas.Manual;
         branch.SetSaveLastSelectionOnExit = IsActive.No;
     }

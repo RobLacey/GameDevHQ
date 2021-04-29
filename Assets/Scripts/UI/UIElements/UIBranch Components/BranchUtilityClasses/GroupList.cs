@@ -17,6 +17,14 @@ public class GroupList
 
     private bool NameGroup()
     {
+        if (_startNode.IsNotNull())
+        {
+            _nodes = new[] {_startNode};
+        }
+        else
+        {
+            _nodes = new UINode[0];
+        }
         _name = _startNode.IsNotNull() ? "Group Staring with : " + _startNode.name : DefaultName;
         return true;
     }

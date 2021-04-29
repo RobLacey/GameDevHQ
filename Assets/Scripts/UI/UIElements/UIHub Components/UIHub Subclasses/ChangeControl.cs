@@ -62,13 +62,6 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
         EVent.Do.Subscribe<IChangeControlsPressed>(ChangeControlType);
         EVent.Do.Subscribe<IOnStart>(StartGame);
         EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
-        EVent.Do.Subscribe<ISwitchGroupPressed>(SwitchGroupPressed);
-    }
-
-    private void SwitchGroupPressed(ISwitchGroupPressed args)
-    {
-        if (!CanAllowKeys)
-            _switchJustPressed = true;
     }
 
     //Main
@@ -191,13 +184,5 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
 
     private void SetAllowKeys() => AllowKeys?.Invoke(this);
 
-    private void SetNextHighlightedForKeys()
-    {
-        if (_switchJustPressed)
-        {
-            _switchJustPressed = false;
-            return;
-        }
-        ActivateBranchOnControlsChanged?.Invoke(this);
-    }
+    private void SetNextHighlightedForKeys() => ActivateBranchOnControlsChanged?.Invoke(this);
 }

@@ -15,6 +15,7 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
         _screenData = EJect.Class.WithParams<IScreenData>(this);
         SetCanvas(ActiveCanvas.No);
         SetBlockRaycast(BlockRaycast.No);
+        FetchEvents();
     }
     
     //Variables
@@ -58,7 +59,7 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
         var blockRaycast = _allowKeys ? BlockRaycast.No : BlockRaycast.Yes;
         SetBlockRaycast(blockRaycast);
     }
-    public bool OnHomeScreen { get; private set; } = true;
+    public bool OnHomeScreen { get; protected set; } = true;
     public IBranch IgnoreThisBranch => _myBranch;
     public IBranch MyBranch => _myBranch;
     public ScreenType MyScreenType { get; }
@@ -67,7 +68,6 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     //Main
     public void OnEnable()
     {
-        FetchEvents();
         ObserveEvents();
         UseEServLocator();
         _screenData.OnEnable();

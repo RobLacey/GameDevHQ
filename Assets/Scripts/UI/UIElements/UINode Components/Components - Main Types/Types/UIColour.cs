@@ -76,7 +76,6 @@ public class UIColour : NodeFunctionBase
         {
             PointerNotOver();
         }    
-
     }
 
     private void PointerOverSetUp()
@@ -107,7 +106,6 @@ public class UIColour : NodeFunctionBase
 
     private void NotSelectedHighlight()
     {
-        
         if (CanBeHighlighted())
         {
             DoHighlighted();

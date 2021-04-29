@@ -135,6 +135,6 @@ public class MoveBackInHistory : IMoveBackInHistory
         if (history.Count <= 0) return;
         _historyListManagement.CurrentHistory(history)
                               .ClearAllHistory();
-        _historyTracker.BackToHomeScreen(ActivateNodeOnReturnHome.Yes);
+        _historyTracker.BackToHomeScreen();
     }
 }

@@ -141,6 +141,7 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         if (_disabledNode.IsThisNodeIsDisabled()) return;
 
         ThisNodeIsHighLighted();
+        
 
         if (_allowKeys && _inMenu)
         {

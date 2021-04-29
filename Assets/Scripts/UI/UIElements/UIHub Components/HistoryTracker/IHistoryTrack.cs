@@ -11,5 +11,5 @@ public interface IHistoryTrack : IParameters, IIsAService
     void MoveToLastBranchInHistory();
     void CheckForPopUpsWhenCancelPressed(Action endOfCancelAction);
     void AddNodeToTestRunner(INode node);
-    void BackToHomeScreen(ActivateNodeOnReturnHome activate);
+    void BackToHomeScreen();
 }

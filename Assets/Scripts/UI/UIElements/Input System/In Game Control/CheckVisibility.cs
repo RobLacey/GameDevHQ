@@ -35,13 +35,11 @@ public class CheckVisibility : IEventDispatcher, IMono, IOffscreen, IEventUser
 
     public Action<IOffscreen> GOUIOffScreen { get; set; }
     
-    public void CanStart(IOnStart args = null)
+    public void CanStart(IOnStart args)
     {
         _canStart = true;
         _coroutine = StaticCoroutine.StartCoroutine(IsVisible(false));
     }
-
-    //Check if Close GOUIModule can be moved to GOUIBranch
 
     public void SetUp(GOUIModule goui)
     {
@@ -57,23 +55,26 @@ public class CheckVisibility : IEventDispatcher, IMono, IOffscreen, IEventUser
         if (!CanUseOffScreenMarker) return;
         
         _offScreenMarker = new OffScreenMarker(_myGOUI.OffScreenMarkerData);
-        _offScreenMarker.SetParent(_myGOUI);
-        _offScreenMarker.OnAwake();
+        _offScreenMarker.OnAwake(_myGOUI);
         FetchEvents();
     }
 
     public void OnEnable()
     {
+        if(_canStart) return;
+
         ObserveEvents();
-        
-        if(CanUseOffScreenMarker && !_canStart)
+        if(CanUseOffScreenMarker)
             _offScreenMarker.OnEnable();
     }
 
-    public void ObserveEvents()
+    public void ObserveEvents() => EVent.Do.Subscribe<IOnStart>(CanStart);
+
+    public void OnDelayedStart()
     {
-        if(_canStart) return;
-        EVent.Do.Subscribe<IOnStart>(CanStart);
+        _canStart = true;
+        if(CanUseOffScreenMarker)
+            _coroutine = StaticCoroutine.StartCoroutine(IsVisible(true));
     }
 
     public void OnDisable()
@@ -82,6 +83,7 @@ public class CheckVisibility : IEventDispatcher, IMono, IOffscreen, IEventUser
             _offScreenMarker.OnDisable();
         StaticCoroutine.StopCoroutines(_coroutine);
         _coroutine = null;
+        IsOffscreen = false;
     }
     
     public void OnStart()
@@ -108,18 +110,12 @@ public class CheckVisibility : IEventDispatcher, IMono, IOffscreen, IEventUser
             if (_myRenderer.isVisible)
             {
                 if(IsOffscreen)
-                {
-                    IsOffscreen = false;
                     DoTurnOn();
-                }                
             }
             else
             {
                 if(!IsOffscreen)
-                {
-                    IsOffscreen = true;
                     DoTurnOff();
-                }                
             }
 
             yield return _waitFrame.SetFrameTarget(_checkFrequency);
@@ -128,18 +124,20 @@ public class CheckVisibility : IEventDispatcher, IMono, IOffscreen, IEventUser
 
     private void DoTurnOff()
     {
+        IsOffscreen = true;
         GOUIOffScreen?.Invoke(this);
-
         TargetBranch.MyCanvas.enabled = false;
+        
         if(CanUseOffScreenMarker)
             _offScreenMarker.StartOffScreenMarker(_myGOUI);
     }
 
     private void DoTurnOn()
     {
+        IsOffscreen = false;
         GOUIOffScreen?.Invoke(this);
-
         TargetBranch.MyCanvas.enabled = _myGOUI.GOUIIsActive || _myGOUI.AlwaysOnIsActive;
+        
         if(CanUseOffScreenMarker)
             _offScreenMarker.StopOffScreenMarker();
     }

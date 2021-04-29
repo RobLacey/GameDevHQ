@@ -1,4 +1,7 @@
 ﻿
+using System;
+using UnityEngine;
+
 public interface IHomeGroup
 {
     void OnEnable();
@@ -10,7 +13,7 @@ public interface IHomeGroup
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
 /// is for keyboard or controller. Differ from internal branch groups as involve Branches not Nodes
 /// </summary>
-public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
+public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService, ISwitchGroupPressed, IEventDispatcher
 {
     //Variables
     private IBranch[] _homeGroup;
@@ -25,10 +28,21 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
+    public SwitchType SwitchType { get; }
+
+    //Events
+    private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; set; }
+
     //Main
-    public void OnEnable() => ObserveEvents();
+    public void OnEnable()
+    {
+        FetchEvents();
+        ObserveEvents();
+    }
 
     public void OnDisable() { }
+
+    public void FetchEvents() => OnSwitchGroupPressed = EVent.Do.Fetch<ISwitchGroupPressed>();
 
     public void ObserveEvents()
     {
@@ -65,7 +79,8 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
     public void SwitchHomeGroups(SwitchType switchType)
     {
         if (!_onHomeScreen) return;
-        if(_homeGroup.Length == 1) return;
+        if(_homeGroup.Length == 1)
+            OnSwitchGroupPressed?.Invoke(this);
         SetNewIndex(switchType);
     }
 
@@ -125,10 +140,14 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService
 
     private void ActivateHomeGroupBranch(IReturnToHome args)
     {
-        if (args.ActivateOnReturnHome == ActivateNodeOnReturnHome.No)
-        {
-            _homeGroup[_index].DontSetBranchAsActive();
-        }
         _homeGroup[_index].MoveToThisBranch();
+        
+        foreach (var branch in _homeGroup)
+        {
+            if(branch == _homeGroup[_index]) continue;
+            branch.DontSetBranchAsActive();
+            branch.MoveToThisBranch();
+        }
     }
+
 }

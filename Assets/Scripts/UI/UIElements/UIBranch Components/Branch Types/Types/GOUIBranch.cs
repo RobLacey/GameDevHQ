@@ -28,6 +28,9 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
     {
         base.SaveIfOnHomeScreen(args);
+        
+        if(_myGOUIModule.IsNull()) return;
+        
         if(args.OnHomeScreen)
         {
             if(AlwaysOn)
@@ -52,6 +55,8 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     
     private void CloseAndReset(ICloseGOUIBranch args)
     {
+        if(args.TargetBranch.NotEqualTo(_myBranch)) return;
+        
         _canStartGOUI = false;
         _myCanvasGroup.blocksRaycasts = false;
         SetCanvas(ActiveCanvas.No);
@@ -84,7 +89,6 @@ public class GOUIBranch : BranchBase, IGOUIBranch
 
     private void SetUpGOUIParent(ISetUpUIGOBranch args)
     {
-        _canStartGOUI = true;
         if(args.TargetBranch != _myBranch || _myGOUIModule.IsNotNull()) return;
         _myGOUIModule = args.ReturnGOUIModule;
         _inGameObjectPosition = args.GOUITransform;
@@ -104,8 +108,6 @@ public class GOUIBranch : BranchBase, IGOUIBranch
 
         base.SetUpBranch(newParentController);
         _canvasOrderCalculator.SetCanvasOrder();
-        
-        Debug.Log($"{_myBranch.CanvasIsEnabled} : {_canStartGOUI} : {AlwaysOnActivated()}");
         
         if(_myBranch.CanvasIsEnabled || AlwaysOnActivated() || !_canStartGOUI )
         {

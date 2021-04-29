@@ -44,20 +44,6 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
         SetBlockRaycast(BlockRaycast.Yes);
     }
 
-    protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
-    {
-        if (!OnHomeScreen && args.OnHomeScreen)
-        {
-            base.SaveIfOnHomeScreen(args);
-            _myBranch.DontSetBranchAsActive();
-            _myBranch.MoveToThisBranch();
-        }
-        else
-        {
-            base.SaveIfOnHomeScreen(args);
-        }
-    }
-
     //Main
     protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
     {
@@ -88,9 +74,9 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
         
         if (OnHomeScreen && _myBranch.GetStayOn() == IsActive.Yes)
             _myBranch.DoNotTween();
-
+        
         if(!OnHomeScreen)
-             InvokeOnHomeScreen(true);
+            InvokeOnHomeScreen(true);
     }
 
     public override void SetBlockRaycast(BlockRaycast active)

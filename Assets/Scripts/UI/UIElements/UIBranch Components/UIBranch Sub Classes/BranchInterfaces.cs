@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UIElements;
 using UnityEngine;
 
@@ -34,6 +35,8 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     GameObject ThisBranchesGameObject { get; }
     IsActive ReturnOnlyAllowOnHomeScreen { get; }
     IsActive CloseIfClickedOff { get; set; }
+    List<GroupList> BranchGroupsList { get; }
+    int GroupIndex { get; set; }
 
 
     IBranch[] FindAllBranches();

@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UIElements;using UnityEngine.UIElements;
 
-public interface IReturnToHome // This one is test
-{
-    ActivateNodeOnReturnHome ActivateOnReturnHome { get; }
-} 
+public interface IReturnToHome { }// This one is test
 public interface IPausePressed { } // This one is test
 
 public interface ICancelPressed // This one is test
@@ -163,7 +160,8 @@ public interface IStartGOUIBranch
 
 public interface ICloseGOUIBranch
 {
-    
+    IBranch TargetBranch { get; }
+    GOUIModule ReturnGOUIModule { get; }
 }
 
 public interface ICloseGOUIModule

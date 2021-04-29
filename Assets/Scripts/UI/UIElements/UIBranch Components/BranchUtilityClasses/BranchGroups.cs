@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public static class BranchGroups
 {
@@ -63,16 +64,17 @@ public static class BranchGroups
 
     public static int SwitchBranchGroup(List<GroupList> groupsList, int passedIndex, SwitchType switchType)
     {
-        int newIndex;
+        int newIndex = passedIndex;
         
         if (switchType == SwitchType.Positive)
         {
             newIndex = passedIndex.PositiveIterate(groupsList.Count);
         }
-        else
+        if (switchType == SwitchType.Negative)
         {
            newIndex = passedIndex.NegativeIterate(groupsList.Count);
         }
+
         groupsList[newIndex].StartNode.SetNodeAsActive();
         return newIndex;
     }

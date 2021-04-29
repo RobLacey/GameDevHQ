@@ -20,20 +20,13 @@ public partial class UIBranch
     public bool IsHomeScreenBranch() => _branchType == BranchType.HomeScreen;
     public bool IsStandardBranch() => _branchType == BranchType.Standard;
     public bool IsInGameBranch() => _branchType == BranchType.InGameObject;
-
-    public void DoNotTween()
-    {
-        Debug.Log(this);
-        _tweenOnChange = false;
-    }
+    public void DoNotTween() => _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
     public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
     public bool IsTimedPopUp() => _branchType == BranchType.TimedPopUp;
     public IsActive GetStayOn() => _stayVisible;
     public void SetNotAControlBar() => _controlBar = IsActive.No;
     public IsActive SetStayOn { set => _stayVisible = value; }
-
-    private void SaveIfOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveHighlighted(IHighlightedNode args)
     {
         if(args.Highlighted.MyBranch.NotEqualTo(this) || _saveExitSelection == IsActive.No) return;
@@ -59,6 +52,9 @@ public partial class UIBranch
     public INode LastSelected { get; private set; }
     public INode LastHighlighted => _lastHighlighted;
     public INode[] ThisGroupsUiNodes { get; private set; }
+    public List<GroupList> BranchGroupsList => _groupsList;
+    public int GroupIndex { get; set; }
+
     public Canvas MyCanvas { get; private set; } 
     public CanvasGroup MyCanvasGroup { get; private set; }
     public IBranch MyParentBranch { get; set; }

@@ -18,7 +18,16 @@ public partial class UIBranch
     private const string ShowManualOrder = nameof(IsManualOrder);
     private const string ValidInAndOutTweens = nameof(AllowableInAndOutTweens);
     private const string SetUpCanvasOrder = nameof(ChangeCanvasOrder);
-    private bool CheckAutoOpenCloseStatus() => !IsAPopUpBranch() && !IsPauseMenuBranch() && !IsTimedPopUp();
+    private bool CheckAutoOpenCloseStatus()
+    {
+        if (!IsStandardBranch() && !IsInGameBranch() || IsFullScreen())
+        {
+            _autoClose = IsActive.No;
+            return false;
+        }
+
+        return true;
+    } 
 
     private void ChangeCanvasOrder()
     {
