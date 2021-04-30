@@ -2,6 +2,7 @@
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public interface ICursorHandler
 {
@@ -22,17 +23,20 @@ public interface IGOUIModule
 namespace UIElements
 {
     public class GOUIModule : MonoBehaviour, IEventUser, ICursorHandler, IEventDispatcher, 
-                              IGOUIModule, ISetUpUIGOBranch, IStartGOUIBranch, ICloseGOUIBranch, IEServUser
+                              IGOUIModule, ISetUpUIGOBranch, IStartGOUIBranch, ICloseAndResetBranch, IEServUser
     {
         [SerializeField]
         private StartGOUI _startHow = StartGOUI.OnPointerEnter;
         
         [SerializeField] 
-        private UIBranch _myGOUIBranch;
+        private UIBranch _myGOUIPrefab;
 
         [SerializeField]
         [Tooltip(InfoBox)]
         private Transform _useOffsetPosition = null;
+        
+        [SerializeField]
+        private RectTransform _toolTipWorldPos = null;
         
         [SerializeField]
         [Space(10f)]
@@ -50,6 +54,8 @@ namespace UIElements
         private bool _onHomeScreen = true;
         private readonly CheckIfUnderUI _checkIfUnderUI = new CheckIfUnderUI();
         private IHub _iHub;
+        private bool _allowKeys;
+        private IBranch _myGOUIBranch;
 
         //Enums
         private enum StartGOUI { AlwaysOn, OnPointerEnter }
@@ -57,7 +63,7 @@ namespace UIElements
         //Events
         private Action<ISetUpUIGOBranch> SetUpUIGOBranch { get; set; }
         private Action<IStartGOUIBranch> StartBranch { get; set; }
-        private Action<ICloseGOUIBranch> CloseAndResetBranch { get; set; }
+        private Action<ICloseAndResetBranch> CloseAndResetBranch { get; set; }
         
         //Editor
         private const string InfoBox = "If left blank the centre of object will be used";
@@ -88,7 +94,10 @@ namespace UIElements
             
             if (_useOffsetPosition == null)
                 _useOffsetPosition = transform;
-
+            
+            _myGOUIBranch= Instantiate(_myGOUIPrefab, FindObjectOfType<UIHub>().transform);
+            _myGOUIBranch.ThisBranchesGameObject.name = $"{name} - In Game Ui";
+            
             FetchEvents();
             _checkVisibility.SetUp(this);
             _checkVisibility.OnAwake();
@@ -96,7 +105,7 @@ namespace UIElements
 
         private bool DisableIfNotInUse()
         {
-            if (_myGOUIBranch.IsNull())
+            if (_myGOUIPrefab.IsNull())
             {
                 enabled = false;
                 return true;
@@ -108,7 +117,7 @@ namespace UIElements
         {
             SetUpUIGOBranch = EVent.Do.Fetch<ISetUpUIGOBranch>();
             StartBranch = EVent.Do.Fetch<IStartGOUIBranch>();
-            CloseAndResetBranch = EVent.Do.Fetch<ICloseGOUIBranch>();
+            CloseAndResetBranch = EVent.Do.Fetch<ICloseAndResetBranch>();
         }
         
         private void OnEnable()
@@ -116,7 +125,6 @@ namespace UIElements
             UseEServLocator();
             ObserveEvents();
             _checkVisibility.OnEnable();
-            StartBranch?.Invoke(this);
             EnabledAfterSceneStart();        
         }
 
@@ -128,10 +136,7 @@ namespace UIElements
             StartUpAlwaysOnBranch();
         }
 
-        public void UseEServLocator()
-        {
-            _iHub = EServ.Locator.Get<IHub>(this);
-        }
+        public void UseEServLocator() => _iHub = EServ.Locator.Get<IHub>(this);
 
         public void ObserveEvents()
         {
@@ -159,6 +164,15 @@ namespace UIElements
 
         private void Start()
         {
+            var tooltips = _myGOUIBranch.DefaultStartOnThisNode.MyRunTimeSetter;
+            var counter = 1;
+            foreach (var tip in tooltips.ReturnToolTipObjects())
+            {
+                tip.GetComponentInChildren<Text>().text = $"I'm set to be Number {counter}";
+                counter++;
+            }
+            tooltips.SetWorldFixedPosition?.Invoke(_toolTipWorldPos);
+
             _checkVisibility.OnStart();
             SetUpUIGOBranch.Invoke(this);
             DidntStartOnSceneLoad();
@@ -177,6 +191,7 @@ namespace UIElements
         {
             if (AlwaysOnIsActive)
             {
+                StartBranch?.Invoke(this);
                 PointerOver = true;
                 _myGOUIBranch.DontSetBranchAsActive();
                 _myGOUIBranch.MoveToThisBranch();
@@ -186,6 +201,8 @@ namespace UIElements
 
         private void AllowKeys(IAllowKeys args)
         {
+            _allowKeys = args.CanAllowKeys;
+            
             if(PointerOver)
                 ExitGOUI();
             
@@ -273,6 +290,8 @@ namespace UIElements
             
             _active = true;
             StartBranch?.Invoke(this);
+            if(!_allowKeys)
+                _myGOUIBranch.DontSetBranchAsActive();
             _myGOUIBranch.MoveToThisBranch();
             _activeGOUI.Invoke(_active);
         }

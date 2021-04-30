@@ -10,7 +10,7 @@ public interface ITestList //TODO Remove
 }
 
 public class HistoryTracker : IHistoryTrack, IEventUser, 
-                              IReturnToHome, ITestList, ICancelHoverOverButton, IEventDispatcher
+                              IReturnToHome, ITestList, ICancelHoverOverButton, IEventDispatcher, IReturnHomeGroupIndex
 {
     public HistoryTracker()
     {
@@ -41,10 +41,12 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
     private void NoPopUps(INoPopUps args) => _noPopUps = args.NoActivePopUps;
     public bool NoHistory => _history.Count == 0 && !_multiSelectSystem.MultiSelectActive;
     public bool IsPaused => _isPaused;
+    public INode TargetNode { get; set; }
 
     //Events
     private Action<IReturnToHome> ReturnHome { get; set; }
     private Action<ICancelHoverOverButton> CancelHoverToActivate { get; set; }
+    private Action<IReturnHomeGroupIndex> ReturnHomeGroupBranch { get; set; }
     
     //TODO Remove Test Rig
     private Action<ITestList> DoAddANode { get; set; }
@@ -71,6 +73,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
     {
         ReturnHome = EVent.Do.Fetch<IReturnToHome>();
         CancelHoverToActivate = EVent.Do.Fetch<ICancelHoverOverButton>();
+        ReturnHomeGroupBranch = EVent.Do.Fetch<IReturnHomeGroupIndex>();
         DoAddANode = EVent.Do.Fetch<ITestList>();
     }
 
@@ -88,6 +91,33 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         EVent.Do.Subscribe<ICancelPopUp>(CancelPopUpFromButton);
         EVent.Do.Subscribe<ISelectedNode>(SetSelected);
         EVent.Do.Subscribe<IClearAll>(ClearAll);
+        EVent.Do.Subscribe<ICloseAndResetBranch>(BranchHasClosed);
+    }
+
+    private void BranchHasClosed(ICloseAndResetBranch args)
+    {
+        CheckListsForBranch(args.TargetBranch.LastSelected);
+
+        if(_isPaused || !_onHomeScreen) return;
+        
+        if (!_noPopUps)
+        {
+            PopUpHistory.MoveToNextPopUp();
+            return;
+        }
+        
+        ReturnHomeGroupBranch?.Invoke(this);
+        TargetNode.MyBranch.MoveToThisBranch();
+    }
+
+    private void CheckListsForBranch(INode targetBranchLastSelected)
+    {
+        HistoryListManagement.CurrentHistory(_history)
+                             .CloseToThisPoint(targetBranchLastSelected)
+                             .Run();
+
+        _multiSelectSystem.NodeHasBeenDestroyed(targetBranchLastSelected);
+        targetBranchLastSelected.DeactivateNode();
     }
 
     private void SetCanStart(IOnStart onStart) => _canStart = true;
@@ -243,4 +273,5 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
                     .NoPopUpAction(endOfCancelAction)
                     .DoPopUpCheckAndHandle();
     }
+
 }

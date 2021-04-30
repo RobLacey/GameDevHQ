@@ -21,6 +21,10 @@ public abstract class NodeFunctionBase : IEventUser
         _uiEvents.IsPressed += ProcessPress;
         _uiEvents.IsDisabled += IsDisabled;
         _uiEvents.OnMove += AxisMoveDirection;
+    }
+
+    public virtual void OnEnable()
+    {
         ObserveEvents();
     }
 

@@ -205,4 +205,10 @@ public static class ExtensionsMethods
     {
         return Equals(obj, compareTo);
     }
+    
+    public static bool GetIsAPrefab(this GameObject obj)
+    {
+        return obj.gameObject.scene.rootCount == 0;
+    }
+
 }

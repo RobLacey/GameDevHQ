@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace UIElements
@@ -40,7 +39,7 @@ namespace UIElements
             EVent.Do.Subscribe<IStartGOUIBranch>(SetIndex);
             EVent.Do.Subscribe<IOnStart>(CanStart);
             EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
-            EVent.Do.Subscribe<ICloseGOUIBranch>(RemovePlayerObject);
+            EVent.Do.Subscribe<ICloseAndResetBranch>(RemovePlayerObject);
         }
         
         public void OnStart() => FindActiveGameObjectsOnStart();
@@ -126,7 +125,7 @@ namespace UIElements
         //Object is in position 0 safe guards
         //Change Event in GOUITo Sent branch
 
-        private void RemovePlayerObject(ICloseGOUIBranch args)
+        private void RemovePlayerObject(ICloseAndResetBranch args)
         {
             if (_playerObjects.Contains(args.ReturnGOUIModule))
             {

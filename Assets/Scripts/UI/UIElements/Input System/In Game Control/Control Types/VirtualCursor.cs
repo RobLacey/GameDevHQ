@@ -3,11 +3,10 @@ using UIElements;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public interface IVirtualCursor
+public interface IVirtualCursor :IMonoEnable, IMonoStart
 {
     IBranch OverAnyObject { get; set; }
     RectTransform CursorRect { get; }
-    void OnEnable();
     bool CanMoveVirtualCursor();
     void PreStartMovement();
     void Update();
@@ -100,6 +99,12 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
         EVent.Do.Subscribe<IOnStart>(CanStart);
         EVent.Do.Subscribe<IVcChangeControlSetUp>(DoVCStartCheck);
     }
+    
+    public void OnStart()
+    {
+        _moveVirtualCursor.OnStart();
+    }
+
 
     private void DoVCStartCheck(IVcChangeControlSetUp args)
     {

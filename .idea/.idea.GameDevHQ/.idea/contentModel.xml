@@ -502,6 +502,7 @@
                   <e p="InvertColoursSettings.cs" t="Include" />
                   <e p="NavigationSettings.cs" t="Include" />
                   <e p="NullFunction.cs" t="Include" />
+                  <e p="RunTimeSetter.cs" t="Include" />
                   <e p="SizeAndPositionSettings.cs" t="Include" />
                   <e p="SwapImageOrTextSettings.cs" t="Include" />
                   <e p="ToolTipSettings.cs" t="Include" />

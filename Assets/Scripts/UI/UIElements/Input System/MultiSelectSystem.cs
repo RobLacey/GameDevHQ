@@ -98,6 +98,13 @@ namespace UIElements.Input_System
             MultiSelectChange?.Invoke(newNode);
         }
 
+        public void NodeHasBeenDestroyed(INode oldNode)
+        {
+            if(!_multiSelected.Contains(oldNode)) return;
+            oldNode.DeactivateNode();
+            RemoveFromMultiSelect(oldNode);
+        }
+
         private void RemoveFromMultiSelect(INode oldNode)
         {
             _multiSelected.Remove(oldNode);

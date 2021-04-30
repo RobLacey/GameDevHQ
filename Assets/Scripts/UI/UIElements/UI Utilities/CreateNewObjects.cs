@@ -9,31 +9,48 @@ public class CreateNewObjects
     }
 
     private CreateNewObjects Create { get; }
+
     private GameObject _newTree;
-    private GameObject _newTooltipBin;
+    private GameObject _mainBinName;
     private GameObject _newBranch;
     private GameObject _newNode;
     private GameObject _newFixedPos;
     private GameObject _newToolTips;
-
-    public void CreateToolTipFolder(Transform hubTransform)
+    
+    private const string FixedPositionsBin ="Fixed Positions Here";
+    private const string ToolTipBin ="Tooltips Here";
+    private const string MainBinName = "ToolTips & Fixed Positions Go Here";
+    
+    public CreateNewObjects CreateToolTipFolder(Transform hubTransform)
     {
-        _newTooltipBin = new GameObject();
-        _newTooltipBin.transform.parent = hubTransform;
-        _newTooltipBin.name = $"ToolTips & Fixed Positions Go Here";
-        _newTooltipBin.AddComponent<RectTransform>();
-        _newTooltipBin.transform.position = hubTransform.position;
-        CreateTooltipSubFolders(_newFixedPos, "Fixed Positions Here");
-        CreateTooltipSubFolders(_newToolTips, "ToolTips Here");
+        if (hubTransform.Find(MainBinName))
+        {
+            _mainBinName = hubTransform.Find(MainBinName).gameObject;
+            return Create;
+        }
+        
+        _mainBinName = new GameObject();
+        _mainBinName.AddComponent<RectTransform>();
+        _mainBinName.transform.parent = hubTransform;
+        _mainBinName.transform.position = hubTransform.position;
+        _mainBinName.name = MainBinName;
+        CreateTooltipSubFolders(_newFixedPos, FixedPositionsBin);
+        CreateTooltipSubFolders(_newToolTips, ToolTipBin);
+        return Create;
     }
 
+    public Transform GetTooltipBin()
+    {
+        return _mainBinName.transform.Find(ToolTipBin);
+    }
+    
     private void CreateTooltipSubFolders(GameObject newFolder, string name)
     {
         newFolder = new GameObject();
-        newFolder.transform.parent = _newTooltipBin.transform;
+        newFolder.transform.parent = _mainBinName.transform;
         newFolder.name = name;
         newFolder.AddComponent<RectTransform>();
-        newFolder.transform.position = _newTooltipBin.transform.position;
+        newFolder.transform.position = _mainBinName.transform.position;
     }
 
     public CreateNewObjects CreateMainFolder(Transform hubTransform)

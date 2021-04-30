@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UIElements;
 using UnityEngine;
 
-public interface IInteractWithUi
+public interface IInteractWithUi: IMonoEnable
 {
-    void OnEnable();
     void SetCanOnlyHitInGameObjects();
     void CheckIfCursorOverUI(IVirtualCursor virtualCursor);
     bool UIObjectSelected(bool selected);

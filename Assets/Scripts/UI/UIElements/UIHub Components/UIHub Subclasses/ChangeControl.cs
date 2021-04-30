@@ -1,17 +1,15 @@
 ﻿using System;
+using UIElements;
 using UnityEngine;
 
 /// <summary>
 /// Class that handles switching control from the mouse to a keyboard or controller
 /// </summary>
 
-public interface IChangeControl : IEventUser
-{
-    void OnEnable();
-    void OnStart();
-}
+public interface IChangeControl : IEventUser, IMonoEnable, IMonoStart { }
 
-public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSetUpOnStart, IVcChangeControlSetUp, IActivateBranchOnControlsChange
+public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSetUpOnStart, 
+                             IVcChangeControlSetUp, IActivateBranchOnControlsChange
 {
     public ChangeControl(IInput input)
     {

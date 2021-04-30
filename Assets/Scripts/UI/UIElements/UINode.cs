@@ -5,6 +5,7 @@ using UIElements.Input_System;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(RectTransform))]
+[RequireComponent(typeof(RunTimeSetter))]
 
 public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPointerDownHandler,
                               IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler, IEventUser
@@ -92,6 +93,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public bool CanAutoOpen => _autoOpen == IsActive.Yes;
     public IUiEvents UINodeEvents => _uiNodeEvents;
     public MultiSelectSettings MultiSelectSettings => _multiSelectSettings;
+    public IRunTimeSetter MyRunTimeSetter { get; private set; }
     
     //Setting / Getters
     private void CanStart(IOnStart args) => _canStart = true;
@@ -101,26 +103,12 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     private void Awake()
     {
         MyBranch = GetComponentInParent<IBranch>();
+        MyRunTimeSetter = GetComponent<IRunTimeSetter>();
         _uiNodeEvents = new UiEvents(gameObject.GetInstanceID(), this);
         if (IsToggleGroup || IsToggleNotLinked)
             HasChildBranch = null;
-        ObserveEvents();
-    }
-    
-    public void ObserveEvents()
-    {
-        EVent.Do.Subscribe<IOnStart>(CanStart);
-        EVent.Do.Subscribe<IAllowKeys>(AllowKeys);
-    }
-
-    private void OnEnable()
-    {
-        if(!_canStart)
-        {
-            SetUpUiFunctions();
-            StartNodeFactory();
-        }        
-        _nodeBase.OnEnable();
+        SetUpUiFunctions();
+        StartNodeFactory();
     }
 
     private void SetUpUiFunctions()
@@ -134,6 +122,23 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
         _activeFunctions.Add(_tooltips.SetUp(_uiNodeEvents, _enabledFunctions));
         _activeFunctions.Add(_navigation.SetUp(_uiNodeEvents, _enabledFunctions));
         _activeFunctions.Add(_audio.SetUp(_uiNodeEvents, _enabledFunctions));
+    }
+
+    private void OnEnable()
+    {
+        ObserveEvents();
+        _nodeBase.OnEnable();
+        
+        foreach (var nodeFunctionBase in _activeFunctions)
+        {
+            nodeFunctionBase.OnEnable();
+        }
+    }
+
+    public void ObserveEvents()
+    {
+        EVent.Do.Subscribe<IOnStart>(CanStart);
+        EVent.Do.Subscribe<IAllowKeys>(AllowKeys);
     }
 
     private void OnDisable()

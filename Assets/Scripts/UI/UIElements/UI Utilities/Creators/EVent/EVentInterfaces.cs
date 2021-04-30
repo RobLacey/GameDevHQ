@@ -158,7 +158,7 @@ public interface IStartGOUIBranch
     GOUIModule ReturnGOUIModule { get; }
 }
 
-public interface ICloseGOUIBranch
+public interface ICloseAndResetBranch
 {
     IBranch TargetBranch { get; }
     GOUIModule ReturnGOUIModule { get; }

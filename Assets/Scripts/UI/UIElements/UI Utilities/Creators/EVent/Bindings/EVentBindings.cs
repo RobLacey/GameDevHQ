@@ -76,7 +76,7 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<ISetUpUIGOBranch>();
         AutoRemove().CreateEvent<ICloseGOUIModule>();
         AutoRemove().CreateEvent<IStartGOUIBranch>();
-        AutoRemove().CreateEvent<ICloseGOUIBranch>();
+        AutoRemove().CreateEvent<ICloseAndResetBranch>();
         AutoRemove().CreateEvent<IOffscreen>();
 
         //HotKey

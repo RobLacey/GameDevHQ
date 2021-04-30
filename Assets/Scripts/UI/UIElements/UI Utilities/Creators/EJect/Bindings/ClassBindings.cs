@@ -79,10 +79,6 @@ public class ClassBindings : BindBase
         _eJectMaster.Bind<MenuAndGameSwitching>().To<IMenuAndGameSwitching>().WithParameters();
         _eJectMaster.Bind<ChangeControl>().To<IChangeControl>().WithParameters();
         
-        //AutoOpenClose
-        _eJectMaster.Bind<AutoOpenCloseController>().To<IAutoOpenClose>().WithParameters();
-        _eJectMaster.Bind<DelayTimer>().To<IDelayTimer>();
-        
         //InGameControl
         _eJectMaster.Bind<_2DRaycast>().To<I2DRaycast>().WithParameters();
         _eJectMaster.Bind<_3DRaycast>().To<I3DRaycast>().WithParameters();
@@ -90,5 +86,10 @@ public class ClassBindings : BindBase
         _eJectMaster.Bind<InteractWithUi>().To<IInteractWithUi>();
         _eJectMaster.Bind<MoveVirtualCursor>().To<IMoveVirtualCursor>();
         _eJectMaster.Bind<VirtualCursor>().To<IVirtualCursor>().WithParameters();
+        
+        //AutoOpenClose
+        _eJectMaster.Bind<AutoOpenCloseController>().To<IAutoOpenClose>().WithParameters();
+        _eJectMaster.Bind<DelayTimer>().To<IDelayTimer>();
+        
     }
 }

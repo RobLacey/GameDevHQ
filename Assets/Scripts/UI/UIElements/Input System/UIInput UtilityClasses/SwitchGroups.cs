@@ -28,7 +28,7 @@ public class SwitchGroups : IEventUser, IParameters, ISwitchGroupPressed, IEServ
 
     //Variables
     private readonly InputScheme _inputScheme;
-    private SwitchFunction _currentSwitchFunction;
+    private SwitchFunction _currentSwitchFunction = SwitchFunction.Unset;
     private bool _allowKeys, _gameIsPaused;
     private readonly IGOUISwitcher _switcher;
     private bool _noActivePopUps = true;
@@ -147,6 +147,7 @@ public class SwitchGroups : IEventUser, IParameters, ISwitchGroupPressed, IEServ
 
     public bool GOUISwitchProcess()
     {
+        
         if (!_onHomeScreen) return false;
 
         if (_inputScheme.PressedPositiveGOUISwitch())
@@ -180,8 +181,8 @@ public class SwitchGroups : IEventUser, IParameters, ISwitchGroupPressed, IEServ
         {
             _currentSwitchFunction = SwitchFunction.UI;
             SwitchType = SwitchType.Activate;
-            _homeGroup.SwitchHomeGroups(SwitchType);
             ChangeControls?.Invoke();
+            _homeGroup.SwitchHomeGroups(SwitchType);
             return true;
         }
         return false;
@@ -193,8 +194,8 @@ public class SwitchGroups : IEventUser, IParameters, ISwitchGroupPressed, IEServ
         {
             _currentSwitchFunction = SwitchFunction.GOUI;
             SwitchType = SwitchType.Activate;
-            _switcher.UseGOUISwitcher(SwitchType);
             ChangeControls?.Invoke();
+            _switcher.UseGOUISwitcher(SwitchType);
             return true;
         }
         return false;

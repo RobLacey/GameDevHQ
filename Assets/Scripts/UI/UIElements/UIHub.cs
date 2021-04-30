@@ -50,7 +50,6 @@ namespace UIElements
             new CreateNewObjects().CreateMainFolder(transform)
                                   .CreateBranch()
                                   .CreateNode();
-            MakeTooltipFolder();
         }
         
         [Button("Add a ToolTip Bin")]

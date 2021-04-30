@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using UIElements;
+using UnityEngine;
 using static UnityEngine.Mathf;
 
-public interface IToolTipCalcs
+public interface IToolTipCalcs : IMonoStart
 {
     (Vector3 _toolTipData, Vector2 _newPivot)
         CalculatePosition(Vector3 tooltipPos, Vector3 toolTipSize, ToolTipAnchor toolTipAnchor);
@@ -13,6 +14,7 @@ public class ToolTipsCalcs : IEServUser, IToolTipCalcs
     private Vector3 _toolTipPosition, _tooltipSize;
     private Vector2 _newPivot, _parentNodePosition, _offset;
     private readonly float _safeZone;
+    private IHub _myUiHub;
     
     public ToolTipsCalcs(ITooltipCalcsData data)
     {
@@ -20,7 +22,9 @@ public class ToolTipsCalcs : IEServUser, IToolTipCalcs
         UseEServLocator();
     }
     
-    public void UseEServLocator() => SetUsableArea(EServ.Locator.Get<IHub>(this).MainCanvasRect);
+    public void UseEServLocator() => _myUiHub = EServ.Locator.Get<IHub>(this);
+
+    public void OnStart() => SetUsableArea(_myUiHub.MainCanvasRect);
 
     private void SetUsableArea(RectTransform mainCanvas)
     {
@@ -28,7 +32,8 @@ public class ToolTipsCalcs : IEServUser, IToolTipCalcs
         _canvasWidth = (rect.width / 2) - _safeZone;
         _canvasHeight = (rect.height / 2) - _safeZone;
     }
-    
+
+    //Main
     public (Vector3 _toolTipData, Vector2 _newPivot) 
         CalculatePosition (Vector3 tooltipPos, Vector3 toolTipSize, ToolTipAnchor toolTipAnchor)
     {

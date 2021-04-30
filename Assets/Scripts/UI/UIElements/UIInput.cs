@@ -164,6 +164,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
     {
         ChangeControl.OnStart();
         SwitchGroups.OnStart();
+        VirtualCursor.OnStart();
     }
 
     private void Update()

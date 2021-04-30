@@ -1,10 +1,9 @@
 ﻿
+using UIElements;
 using UnityEngine;
 
-public interface IMoveVirtualCursor
+public interface IMoveVirtualCursor : IMonoEnable, IMonoStart
 {
-    void OnEnable();
-
     void Move(ICursorSettings cursor);
 }
 
@@ -18,18 +17,21 @@ public class MoveVirtualCursor : IMoveVirtualCursor, IEServUser
     private int _screenTop;
     private InputScheme _inputScheme;
     private IHub _hub;
+    private IInput _myInput;
 
     //Main
     public void OnEnable() => UseEServLocator();
 
     public void UseEServLocator()
     {
-        _inputScheme = EServ.Locator.Get<IInput>(this).ReturnScheme;
+        _myInput = EServ.Locator.Get<IInput>(this);
         _hub = EServ.Locator.Get<IHub>(this);
-        if(_hub.IsNotNull())
-        {
-            SetScreenSize(_hub.MainCanvasRect);
-        }    
+    }
+    
+    public void OnStart()
+    {
+        _inputScheme = _myInput.ReturnScheme;
+        SetScreenSize(_hub.MainCanvasRect);
     }
 
     private void SetScreenSize(RectTransform hubMainCanvas)
@@ -58,4 +60,5 @@ public class MoveVirtualCursor : IMoveVirtualCursor, IEServUser
           temp.y = Mathf.Clamp(temp.y, _screenBottom, _screenTop);
           cursorRect.anchoredPosition = temp;
     }
+
 }

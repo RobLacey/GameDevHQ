@@ -1,9 +1,11 @@
 ﻿
 using System;
+using UIElements;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
-public interface IGetScreenPosition
+public interface IGetScreenPosition : IMonoStart
 {
     void SetExactPosition(bool isKeyboard);
 }
@@ -24,12 +26,18 @@ public class GetScreenPosition : IGetScreenPosition, IEServUser, ITooltipCalcsDa
         _myCorners = _tooltip.MyCorners;
         _uiCamera = _tooltip.UiCamera;
         _parentRectTransform = _tooltip.ParentRectTransform;
-        _calculation = EJect.Class.WithParams<IToolTipCalcs>(this);
+        _toolTipCalcs = EJect.Class.WithParams<IToolTipCalcs>(this);
         UseEServLocator();
     }
 
+    public void UseEServLocator()
+    {
+        _myInput = EServ.Locator.Get<IInput>(this);
+        _myUiHUb = EServ.Locator.Get<IHub>(this);
+    }
+
     private readonly IToolTipData _tooltip;
-    private readonly IToolTipCalcs _calculation;
+    private readonly IToolTipCalcs _toolTipCalcs;
     private readonly ToolTipScheme _scheme;
     private readonly LayoutGroup[] _listOfTooltips;
     private readonly RectTransform[] _toolTipsRects;
@@ -38,19 +46,22 @@ public class GetScreenPosition : IGetScreenPosition, IEServUser, ITooltipCalcsDa
     private readonly Camera _uiCamera;
     private RectTransform _mainCanvasRectTransform;
     private InputScheme _inputScheme;
+    private IInput _myInput;
+    private IHub _myUiHUb;
 
     //Properties
     public float SafeZone => _scheme.ScreenSafeZone;
-    
-    public void UseEServLocator()
-    {
-        _inputScheme = EServ.Locator.Get<IInput>(this).ReturnScheme;
-        _mainCanvasRectTransform = EServ.Locator.Get<IHub>(this).MainCanvasRect;
-    }
 
     //Properties
     private Vector2 KeyboardPadding => new Vector2(_scheme.KeyboardXPadding, _scheme.KeyboardYPadding);
     private Vector2 MousePadding => new Vector2(_scheme.MouseXPadding, _scheme.MouseYPadding);
+
+    public void OnStart()
+    {
+        _inputScheme = _myInput.ReturnScheme;
+        _mainCanvasRectTransform = _myUiHUb.MainCanvasRect;
+        _toolTipCalcs.OnStart();
+    }
 
     public void SetExactPosition(bool isKeyboard)
     {
@@ -66,7 +77,7 @@ public class GetScreenPosition : IGetScreenPosition, IEServUser, ITooltipCalcsDa
         var toolTipPos = GetToolTipsScreenPosition(isKeyboard, tooTipType);
 
         (_toolTipsRects[index].anchoredPosition, _toolTipsRects[index].pivot)
-            = _calculation.CalculatePosition(toolTipPos, toolTipSize, toolTipAnchorPos);
+            = _toolTipCalcs.CalculatePosition(toolTipPos, toolTipSize, toolTipAnchorPos);
     }
 
     private Vector3 GetToolTipsScreenPosition(bool isKeyboard, TooltipType toolTipType)

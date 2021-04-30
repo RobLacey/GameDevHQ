@@ -79,7 +79,7 @@ public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService, ISwitchGroupPres
     public void SwitchHomeGroups(SwitchType switchType)
     {
         if (!_onHomeScreen) return;
-        if(_homeGroup.Length == 1)
+        if(_homeGroup.Length > 1)
             OnSwitchGroupPressed?.Invoke(this);
         SetNewIndex(switchType);
     }

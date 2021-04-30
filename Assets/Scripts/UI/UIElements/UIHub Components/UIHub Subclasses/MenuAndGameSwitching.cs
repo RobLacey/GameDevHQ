@@ -1,11 +1,9 @@
 ﻿
 using System;
+using UIElements;
 using UnityEngine;
 
-public interface IMenuAndGameSwitching : IEventUser
-{
-    void OnEnable();
-}
+public interface IMenuAndGameSwitching : IEventUser, IMonoEnable { }
 
 public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispatcher
 {

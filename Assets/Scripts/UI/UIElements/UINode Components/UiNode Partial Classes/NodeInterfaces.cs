@@ -20,6 +20,7 @@ public interface INode : IToggles, IParameters
     void ClearNode();
     float AutoOpenDelay { get; }
     bool CanAutoOpen { get; }
+    IRunTimeSetter MyRunTimeSetter { get; }
 }
 
 public interface IToggles

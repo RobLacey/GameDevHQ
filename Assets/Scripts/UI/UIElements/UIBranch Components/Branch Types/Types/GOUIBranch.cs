@@ -14,17 +14,26 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     //Variables
     private readonly Camera _mainCamera;
     private readonly RectTransform _myRectTransform;
-    private RectTransform _mainCanvasRect;
     private Coroutine _coroutine;
     private IGOUIModule _myGOUIModule;
     private Transform _inGameObjectPosition;
     private Vector3 _inGameObjectLastFrameScreenPosition;
     private bool _canStartGOUI;
+    private IHub _myUiHub;
 
 
     //Properties & Getters / Setters
     private bool AlwaysOn => _myGOUIModule.AlwaysOnIsActive;
-    
+
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EVent.Do.Subscribe<ISetUpUIGOBranch>(SetUpGOUIParent);
+        EVent.Do.Subscribe<IStartGOUIBranch>(StartGOUIBranch);
+        EVent.Do.Subscribe<ICloseAndResetBranch>(CloseAndReset);
+        EVent.Do.Subscribe<IOffscreen>(SetPositionWhenOffScreen);
+    }
+
     protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
     {
         base.SaveIfOnHomeScreen(args);
@@ -44,7 +53,7 @@ public class GOUIBranch : BranchBase, IGOUIBranch
             SetBlockRaycast(BlockRaycast.No);
         }
     }
-    
+
     private void StartGOUIBranch(IStartGOUIBranch args)
     {
         if (ReferenceEquals(args.TargetBranch, _myBranch))
@@ -52,8 +61,8 @@ public class GOUIBranch : BranchBase, IGOUIBranch
             _canStartGOUI = true;
         }
     }
-    
-    private void CloseAndReset(ICloseGOUIBranch args)
+
+    private void CloseAndReset(ICloseAndResetBranch args)
     {
         if(args.TargetBranch.NotEqualTo(_myBranch)) return;
         
@@ -62,17 +71,7 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         SetCanvas(ActiveCanvas.No);
         StopSettingPosition();
     }
-    
-    //Main
-    public override void ObserveEvents()
-    {
-        base.ObserveEvents();
-        EVent.Do.Subscribe<ISetUpUIGOBranch>(SetUpGOUIParent);
-        EVent.Do.Subscribe<IStartGOUIBranch>(StartGOUIBranch);
-        EVent.Do.Subscribe<ICloseGOUIBranch>(CloseAndReset);
-        EVent.Do.Subscribe<IOffscreen>(SetPositionWhenOffScreen);
-    }
-    
+
     public override void SetBlockRaycast(BlockRaycast active)
     {
         if (OnHomeScreen)
@@ -97,9 +96,10 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     public override void UseEServLocator()
     {
         base.UseEServLocator();
-        _mainCanvasRect = EServ.Locator.Get<IHub>(this).MainCanvasRect;
+        _myUiHub = EServ.Locator.Get<IHub>(this);
     }
 
+    //Main
     public override bool CanStartBranch() => _canStartGOUI || AlwaysOn || CanAllowKeys;
 
     public override void SetUpBranch(IBranch newParentController = null)
@@ -214,10 +214,11 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     {
         var position = objTransform.position;
         var currentScreenPos = _mainCamera.WorldToScreenPoint(position);
+        var mainCanvasRectTransform = _myUiHub.MainCanvasRect;
         
         if(currentScreenPos == _inGameObjectLastFrameScreenPosition) return;
         
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainCanvasRect, currentScreenPos, 
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(mainCanvasRectTransform, currentScreenPos, 
                                                                 null, out var canvasPos);
         
         _myRectTransform.localPosition = canvasPos;

@@ -73,19 +73,43 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         SetUp();
         SetTooltipsVariables();
         _toolTipFade = EJect.Class.WithParams<IToolTipFade>(this);
+        _getScreenPosition = EJect.Class.WithParams<IGetScreenPosition>(this);
     }
 
     private void SetUp()
     {
         if (FunctionNotActive()) return;
-        SetUpTooltips();
         CheckSetUpForError();
+        SetUpTooltips();
     }
-    
+
+    public void SetFixedPositionAtRuntime(RectTransform fixPos) => FixedPosition = fixPos;
+
+    private void SetUpTooltips()
+    {
+        if (ListOfTooltips.Length > 1)
+            _buildDelay = Scheme.BuildDelay;
+        
+        ToolTipsRects = new RectTransform[ListOfTooltips.Length];
+        _cachedToolTipCanvasList = new Canvas[ListOfTooltips.Length];
+
+        for (int index = 0; index < ListOfTooltips.Length; index++)
+        {
+            ToolTipsRects[index] = ListOfTooltips[index].GetComponent<RectTransform>();
+            _cachedToolTipCanvasList[index] = ListOfTooltips[index].GetComponent<Canvas>();
+            _cachedToolTipCanvasList[index].enabled = false;
+        }
+    }
+
+    private void CheckSetUpForError()
+    {
+        if (ListOfTooltips.Length == 0)
+            throw new Exception("No tooltips set");
+    }
+
     private void SetTooltipsVariables()
     {
         ParentRectTransform = _uiEvents.ReturnMasterNode.GetComponent<RectTransform>();
-        _getScreenPosition = EJect.Class.WithParams<IGetScreenPosition>(this);
         ParentRectTransform.GetLocalCorners(MyCorners);
         SetFixedPositionToDefault();
     }
@@ -104,6 +128,12 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         EVent.Do.Subscribe<ISwitchGroupPressed>(CloseTooltipImmediately);
         EVent.Do.Subscribe<IClearScreen>(CloseTooltipImmediately);
         EVent.Do.Subscribe<IHotKeyPressed>(CloseTooltipImmediately);
+    }
+
+    public override void Start()
+    {
+        base.Start();
+        _getScreenPosition.OnStart();
     }
 
     //Main
@@ -132,28 +162,6 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         _pointerOver = pointerOver;
     }
 
-    private void CheckSetUpForError()
-    {
-        if (ListOfTooltips.Length == 0)
-            throw new Exception("No tooltips set");
-    }
-
-    private void SetUpTooltips()
-    {
-        if (ListOfTooltips.Length > 1)
-            _buildDelay = Scheme.BuildDelay;
-        
-        ToolTipsRects = new RectTransform[ListOfTooltips.Length];
-        _cachedToolTipCanvasList = new Canvas[ListOfTooltips.Length];
-
-        for (int index = 0; index < ListOfTooltips.Length; index++)
-        {
-            ToolTipsRects[index] = ListOfTooltips[index].GetComponent<RectTransform>();
-            _cachedToolTipCanvasList[index] = ListOfTooltips[index].GetComponent<Canvas>();
-            _cachedToolTipCanvasList[index].enabled = false;
-        }
-    }
-    
     private void CloseTooltipImmediately(ISwitchGroupPressed args) => ImmediateClose();
     private void CloseTooltipImmediately(IClearScreen args) => ImmediateClose();
     private void CloseTooltipImmediately(IHotKeyPressed args) => ImmediateClose();

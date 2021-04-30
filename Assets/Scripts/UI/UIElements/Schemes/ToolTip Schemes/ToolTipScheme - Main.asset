@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ToolTipScheme - Main
   m_EditorClassIdentifier: 
   _tooltipTypeMouse: 1
-  _toolTipPosition: 1
+  _toolTipPosition: 2
   _mousePaddingX: 0
   _mousePaddingY: 0
   _tooltipTypeKeys: 1
