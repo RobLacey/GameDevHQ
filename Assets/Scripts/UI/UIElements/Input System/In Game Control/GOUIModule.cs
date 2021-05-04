@@ -22,6 +22,7 @@ public interface IGOUIModule
 
 namespace UIElements
 {
+    [RequireComponent(typeof(RunTimeGetter))]
     public class GOUIModule : MonoBehaviour, IEventUser, ICursorHandler, IEventDispatcher, 
                               IGOUIModule, ISetUpUIGOBranch, IStartGOUIBranch, ICloseAndResetBranch, IEServUser
     {
@@ -34,9 +35,6 @@ namespace UIElements
         [SerializeField]
         [Tooltip(InfoBox)]
         private Transform _useOffsetPosition = null;
-        
-        [SerializeField]
-        private RectTransform _toolTipWorldPos = null;
         
         [SerializeField]
         [Space(10f)]
@@ -94,13 +92,8 @@ namespace UIElements
             
             if (_useOffsetPosition == null)
                 _useOffsetPosition = transform;
-            
-            _myGOUIBranch= Instantiate(_myGOUIPrefab, FindObjectOfType<UIHub>().transform);
-            _myGOUIBranch.ThisBranchesGameObject.name = $"{name} - In Game Ui";
-            
+
             FetchEvents();
-            _checkVisibility.SetUp(this);
-            _checkVisibility.OnAwake();
         }
 
         private bool DisableIfNotInUse()
@@ -164,14 +157,15 @@ namespace UIElements
 
         private void Start()
         {
-            var tooltips = _myGOUIBranch.DefaultStartOnThisNode.MyRunTimeSetter;
-            var counter = 1;
-            foreach (var tip in tooltips.ReturnToolTipObjects())
-            {
-                tip.GetComponentInChildren<Text>().text = $"I'm set to be Number {counter}";
-                counter++;
-            }
-            tooltips.SetWorldFixedPosition?.Invoke(_toolTipWorldPos);
+            //TODO Fix this to match name wise
+            //TODO see why events are not calling to change canvas or adding to multi
+            //TODO Add ability to change initial InGameUi from Setter (have variables just needs methods)
+            
+            Debug.Log("I am UpTo here");
+            _myGOUIBranch = GetComponent<IRunTimeGetter>().CreateBranch(_myGOUIPrefab);
+            _checkVisibility.SetUp(this);
+            _checkVisibility.OnAwake();
+            
 
             _checkVisibility.OnStart();
             SetUpUIGOBranch.Invoke(this);

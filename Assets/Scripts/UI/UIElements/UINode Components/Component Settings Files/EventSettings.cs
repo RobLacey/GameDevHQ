@@ -3,17 +3,17 @@ using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
 
-public interface IEventSetttings : IComponentSettings
+public interface IEventSettings : IComponentSettings
 {
-    UnityEvent OnEnterEvent { get; }
-    UnityEvent OnExitEvent { get; }
-    UnityEvent OnButtonClickEvent { get; }
-    OnToggleEvent ToggleEvent { get; }
-    OnDisabledEvent DisableEvent { get; }
+    UnityEvent OnEnterEvent { get; set; }
+    UnityEvent OnExitEvent { get; set; }
+    UnityEvent OnButtonClickEvent { get; set; }
+    OnToggleEvent ToggleEvent { get; set; }
+    OnDisabledEvent DisableEvent { get; set; }
 }
 
 [Serializable]
-public class EventSettings : IEventSetttings
+public class EventSettings : IEventSettings
 {
     [Header("Highlight Events")] [HorizontalLine(4, color: EColor.Blue, order = 1)] 
     [SerializeField] private HighlightEvents _highlightEvents;
@@ -36,16 +36,42 @@ public class EventSettings : IEventSetttings
         public OnDisabledEvent _onDisable;
         public OnToggleEvent _onToggleEvent;
     }
-    public UnityEvent OnEnterEvent => _highlightEvents._onEnterEvent;
-    public UnityEvent OnExitEvent => _highlightEvents._onExitEvent;
-    public UnityEvent OnButtonClickEvent => _selectClickEvents._onButtonClickEvent;
-    public OnToggleEvent ToggleEvent => _selectClickEvents._onToggleEvent;
-    public OnDisabledEvent DisableEvent => _selectClickEvents._onDisable;
     
+    public UnityEvent OnEnterEvent
+    {
+        get => _highlightEvents._onEnterEvent;
+        set => _highlightEvents._onEnterEvent = value;
+    }
+
+    public UnityEvent OnExitEvent
+    {
+        get => _highlightEvents._onExitEvent;
+        set => _highlightEvents._onExitEvent = value;
+    }
+
+    public UnityEvent OnButtonClickEvent
+    {
+        get => _selectClickEvents._onButtonClickEvent;
+        set => _selectClickEvents._onButtonClickEvent = value;
+    }
+
+    public OnToggleEvent ToggleEvent
+    {
+        get => _selectClickEvents._onToggleEvent;
+        set => _selectClickEvents._onToggleEvent = value;
+    }
+
+    public OnDisabledEvent DisableEvent
+    {
+        get => _selectClickEvents._onDisable;
+        set => _selectClickEvents._onDisable = value;
+    }
+
     public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
         if ((functions & Setting.Events) != 0)
         {
+            uiNodeEvents.ReturnMasterNode.MyRunTimeSetter.SetEvents(this);
             return new UIEvents(this, uiNodeEvents);
         }
         return new NullFunction();

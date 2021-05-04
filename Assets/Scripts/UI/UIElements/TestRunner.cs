@@ -7,6 +7,7 @@ using NaughtyAttributes;
 using UIElements;
 using UIElements.Input_System;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class TestRunner : MonoBehaviour, IEventUser
 {
@@ -25,6 +26,15 @@ public class TestRunner : MonoBehaviour, IEventUser
     [SerializeField] private string _test3Test = default;
     [SerializeField] private string _test4Test = default;
     [SerializeField] private string _test5Test = default;
+    [SerializeField] private GameObject _newObject;
+    [SerializeField] private Transform _parentFolder;
+    
+    
+    private int minV = -5;
+    private int maxV = 5;
+    private int minH = -9;
+    private int maxH = 9;
+    private int _counter;
 
     [Serializable]
     private class EventsForTest
@@ -132,6 +142,15 @@ public class TestRunner : MonoBehaviour, IEventUser
     public void Button_Event6()
     {
         _eventsForTest._event6?.Invoke();
+    }
+    [Button]
+    public void AddANewInGameObject()
+    {
+        Vector2 randomPos = new Vector2(Random.Range(minH, maxH), Random.Range(minV, maxV));
+        var newObject = Instantiate(_newObject, randomPos, Quaternion.identity, _parentFolder);
+        newObject.name = "New Object : " + _counter;
+        newObject.GetComponent<RunTimeGetter>().BufferMainTextFroCreation(_counter.ToString());
+        _counter++;
     }
 
     public void PrintTest1()

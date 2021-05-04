@@ -57,6 +57,12 @@ namespace UIElements
         {
             new CreateNewObjects().CreateToolTipFolder(transform);
         }
+        
+        [Button("Add a In Game Object UI Bin")]
+        private void MakeInGameUiFolder()
+        {
+            new CreateNewObjects().CreateInGameUIBin(transform);
+        }
     
         //Variables
         private List<UIBranch> _homeBranches;

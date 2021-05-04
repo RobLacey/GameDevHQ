@@ -14,12 +14,11 @@ public class CreateNewObjects
     private GameObject _mainBinName;
     private GameObject _newBranch;
     private GameObject _newNode;
-    private GameObject _newFixedPos;
-    private GameObject _newToolTips;
     
     private const string FixedPositionsBin ="Fixed Positions Here";
     private const string ToolTipBin ="Tooltips Here";
     private const string MainBinName = "ToolTips & Fixed Positions Go Here";
+    private const string InGameObjectBinName = "In Game Objects UI Go Here";
     
     public CreateNewObjects CreateToolTipFolder(Transform hubTransform)
     {
@@ -34,19 +33,31 @@ public class CreateNewObjects
         _mainBinName.transform.parent = hubTransform;
         _mainBinName.transform.position = hubTransform.position;
         _mainBinName.name = MainBinName;
-        CreateTooltipSubFolders(_newFixedPos, FixedPositionsBin);
-        CreateTooltipSubFolders(_newToolTips, ToolTipBin);
+        CreateTooltipSubFolders(FixedPositionsBin);
+        CreateTooltipSubFolders(ToolTipBin);
         return Create;
     }
 
-    public Transform GetTooltipBin()
+    public Transform GetTooltipBin() => _mainBinName.transform.Find(ToolTipBin);
+
+    public Transform CreateInGameUIBin(Transform hubTransform)
     {
-        return _mainBinName.transform.Find(ToolTipBin);
+        var existingBin = hubTransform.Find(InGameObjectBinName);
+        
+        if (existingBin)
+            return existingBin;
+
+        var newBin = new GameObject();
+        newBin.AddComponent<RectTransform>();
+        newBin.transform.parent = hubTransform;
+        newBin.transform.position = hubTransform.position;
+        newBin.name = InGameObjectBinName;
+        return newBin.transform;
     }
-    
-    private void CreateTooltipSubFolders(GameObject newFolder, string name)
+
+    private void CreateTooltipSubFolders(string name)
     {
-        newFolder = new GameObject();
+        var newFolder = new GameObject();
         newFolder.transform.parent = _mainBinName.transform;
         newFolder.name = name;
         newFolder.AddComponent<RectTransform>();

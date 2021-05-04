@@ -43,6 +43,8 @@ public class NavigationSettings :INavigationSettings
         set => _childBranch = (UIBranch) value;
     }
 
+    private void SetNewChild(IBranch newChild) => ChildBranch = newChild;
+
     public NavigationType NavType => _setKeyNavigation;
     public UINode Up => _up;
     public UINode Down => _down;
@@ -54,6 +56,7 @@ public class NavigationSettings :INavigationSettings
     {
         if ((functions & Setting.NavigationAndOnClick) != 0)
         {
+            uiNodeEvents.ReturnMasterNode.MyRunTimeSetter.SetChildBranch = SetNewChild;
             Instance = new UINavigation(this, uiNodeEvents);
             return Instance;
         }

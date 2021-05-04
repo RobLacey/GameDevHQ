@@ -279,15 +279,18 @@
             <e p="WeaponSpec.cs" t="Include" />
           </e>
           <e p="UI" t="Include">
-            <e p="CountDownTimer.cs" t="Include" />
-            <e p="Fader.cs" t="Include" />
-            <e p="GameOverUIController.cs" t="Include" />
-            <e p="HealthBar.cs" t="Include" />
-            <e p="LevelLoader.cs" t="Include" />
-            <e p="LoadingScreenWidgets.cs" t="Include" />
-            <e p="StartCountDown.cs" t="Include" />
-            <e p="TipController.cs" t="Include" />
-            <e p="UIActivator.cs" t="Include" />
+            <e p="Other Ui Scripts" t="Include">
+              <e p="CountDownTimer.cs" t="Include" />
+              <e p="Fader.cs" t="Include" />
+              <e p="GameOverUIController.cs" t="Include" />
+              <e p="HealthBar.cs" t="Include" />
+              <e p="LevelLoader.cs" t="Include" />
+              <e p="LoadingScreenWidgets.cs" t="Include" />
+              <e p="StartCountDown.cs" t="Include" />
+              <e p="TipController.cs" t="Include" />
+              <e p="UIActivator.cs" t="Include" />
+              <e p="WaveWipeText.cs" t="Include" />
+            </e>
             <e p="UIElements" t="Include">
               <e p="INput System" t="Include">
                 <e p="In Game Control" t="Include">
@@ -330,6 +333,12 @@
                 </e>
               </e>
               <e p="MouseDraw.cs" t="Include" />
+              <e p="RunTime Set Up" t="Include">
+                <e p="IRunTimeGetter.cs" t="Include" />
+                <e p="RunTimeGetter.cs" t="Include" />
+                <e p="RunTimeSetter.cs" t="Include" />
+                <e p="ToolTipRuntimeData.cs" t="Include" />
+              </e>
               <e p="Shader" t="Include">
                 <e p="UnlitFrostedGlass.shader" t="Include" />
                 <e p="UnlitFrostGlassWithTint.shader" t="Include" />
@@ -502,10 +511,12 @@
                   <e p="InvertColoursSettings.cs" t="Include" />
                   <e p="NavigationSettings.cs" t="Include" />
                   <e p="NullFunction.cs" t="Include" />
-                  <e p="RunTimeSetter.cs" t="Include" />
                   <e p="SizeAndPositionSettings.cs" t="Include" />
                   <e p="SwapImageOrTextSettings.cs" t="Include" />
-                  <e p="ToolTipSettings.cs" t="Include" />
+                  <e p="Tootips" t="Include">
+                    <e p="SetUpToolTipClass.cs" t="Include" />
+                    <e p="ToolTipSettings.cs" t="Include" />
+                  </e>
                 </e>
                 <e p="Components - Main Types" t="Include">
                   <e p="NodeFunctionBase.cs" t="Include" />
@@ -560,7 +571,6 @@
               </e>
               <e p="UINode.cs" t="Include" />
             </e>
-            <e p="WaveWipeText.cs" t="Include" />
           </e>
           <e p="Utilities" t="Include">
             <e p="DrawArrow.cs" t="Include" />

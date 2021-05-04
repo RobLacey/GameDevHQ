@@ -79,7 +79,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Lucy has finish
+  m_Text: Hello Everyone Out There
 --- !u!114 &1029969821651712206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,7 +116,7 @@ GameObject:
   - component: {fileID: 1029969822198092330}
   - component: {fileID: 847121841321660680}
   m_Layer: 5
-  m_Name: GOUI ToolTip
+  m_Name: Test Tool Tip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

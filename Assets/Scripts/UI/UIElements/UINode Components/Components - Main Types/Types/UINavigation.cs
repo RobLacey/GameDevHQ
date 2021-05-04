@@ -1,10 +1,12 @@
-﻿using UnityEngine.EventSystems;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class UINavigation : NodeFunctionBase, IEServUser
 {
     public UINavigation(INavigationSettings settings, IUiEvents uiEvents)
     {
-        _childBranch = settings.ChildBranch;
+        _mySettings = settings;
+        //_childBranch = settings.ChildBranch;
         _setNavigation = settings.NavType;
         _up = settings.Up;
         _down = settings.Down;
@@ -15,7 +17,7 @@ public class UINavigation : NodeFunctionBase, IEServUser
     }
 
     //Variables
-    private readonly IBranch _childBranch;
+   // private readonly IBranch _childBranch;
     private readonly NavigationType _setNavigation;
     private readonly UINode _up;
     private readonly UINode _down;
@@ -24,10 +26,13 @@ public class UINavigation : NodeFunctionBase, IEServUser
     private IBranch _myBranch;
     private INode _myNode;
     private IHub _uiHub;
+    private INavigationSettings _mySettings;
 
     //Properties
+    private IBranch ChildBranch => _mySettings.ChildBranch;
     protected override bool CanBeHighlighted() => false;
-    protected override bool CanBePressed() => !(_childBranch is null);
+    //protected override bool CanBePressed() => !(_childBranch is null);
+    protected override bool CanBePressed() => !(ChildBranch is null);
     protected override bool FunctionNotActive() => !CanActivate;
     protected override void SavePointerStatus(bool pointerOver) { }
     private bool MultiSelectAllowed => _uiHub.Scheme.MultiSelectPressed() &&
@@ -82,10 +87,10 @@ public class UINavigation : NodeFunctionBase, IEServUser
 
     private protected override void ProcessPress()
     {
-        if(FunctionNotActive() || !CanBePressed() || _childBranch is null) return;
+        if(FunctionNotActive() || !CanBePressed()) return;
 
         if (!_isSelected) return;
-        NavigateToChildBranch(_childBranch);
+        NavigateToChildBranch(ChildBranch);
     }
 
     private void NavigateToChildBranch(IBranch moveToo)

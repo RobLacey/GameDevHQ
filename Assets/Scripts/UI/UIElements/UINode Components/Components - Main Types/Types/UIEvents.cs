@@ -4,29 +4,21 @@ using NaughtyAttributes;
 
 public class UIEvents : NodeFunctionBase
 {
-    [Header("Highlight Events")]
-    [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    
-    private readonly UnityEvent _onEnterEvent;
-    private readonly UnityEvent _onExitEvent;
-    
-    [Header("Click/Selected Events")]
-    [HorizontalLine(4, color: EColor.Blue, order = 1)]
-    private readonly UnityEvent _onButtonClickEvent;
-    private readonly OnDisabledEvent _onDisable;
-    private readonly OnToggleEvent _onToggleEvent;
+    private IEventSettings _eventSettings;
 
-    public UIEvents(IEventSetttings settings, IUiEvents uiEvents)
+    public UIEvents(IEventSettings settings, IUiEvents uiEvents)
     {
-        _onEnterEvent = settings.OnEnterEvent;
-        _onExitEvent = settings.OnExitEvent;
-        _onButtonClickEvent = settings.OnButtonClickEvent;
-        _onDisable = settings.DisableEvent;
-        _onToggleEvent = settings.ToggleEvent;
+        _eventSettings = settings;
         CanActivate = true;
         base.OnAwake(uiEvents);
     }
-    
+
+    private UnityEvent OnEnterEvent => _eventSettings.OnEnterEvent;
+    private UnityEvent OnExitEvent => _eventSettings.OnExitEvent;
+    private UnityEvent OnButtonClickedEvent => _eventSettings.OnButtonClickEvent;
+    private OnDisabledEvent OnDisableEvent => _eventSettings.DisableEvent;
+    private OnToggleEvent OnToggleEvent => _eventSettings.ToggleEvent;
+
     //Properties
     protected override bool CanBeHighlighted() => true;
     protected override bool CanBePressed() => true;
@@ -38,24 +30,24 @@ public class UIEvents : NodeFunctionBase
 
         if (pointerOver)
         {
-            _onEnterEvent?.Invoke();
+            OnEnterEvent?.Invoke();
         }
         else
         {
-            _onExitEvent?.Invoke();
+            OnExitEvent?.Invoke();
         }
     }
 
     private protected override void ProcessPress()
     {
         if (FunctionNotActive()) return;
-        _onButtonClickEvent?.Invoke();
-        _onToggleEvent?.Invoke(_isSelected);
+        OnButtonClickedEvent?.Invoke();
+        OnToggleEvent?.Invoke(_isSelected);
     }
 
     private protected override void ProcessDisabled()
     {
         if(FunctionNotActive()) return;
-        _onDisable?.Invoke(_isDisabled);
+        OnDisableEvent?.Invoke(_isDisabled);
     }
 }

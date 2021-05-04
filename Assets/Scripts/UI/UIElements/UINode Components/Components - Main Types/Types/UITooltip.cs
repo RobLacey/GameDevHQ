@@ -23,10 +23,10 @@ public class UITooltip : NodeFunctionBase, IToolTipData
 {
     public UITooltip(ITooltipSettings settings)
     {
+        _settings = settings;
         FixedPosition = settings.FixedPosition;
         UiCamera = settings.UiCamera;
         Scheme = settings.Scheme;
-        ListOfTooltips = settings.ToolTips;
         CanActivate = true;
         OnAwake(settings.UiNodeEvents);
     }
@@ -39,6 +39,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     private float _buildDelay;
     private IToolTipFade _toolTipFade;
     private IGetScreenPosition _getScreenPosition;
+    private readonly ITooltipSettings _settings;
     private bool _vcIsActive;
 
     //Properties
@@ -46,7 +47,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     public RectTransform FixedPosition { get; private set; }
     public Camera UiCamera { get; }
     public int CurrentToolTipIndex { get; private set; }
-    public LayoutGroup[] ListOfTooltips { get; }
+    public LayoutGroup[] ListOfTooltips => _settings.ToolTips;
     public RectTransform[] ToolTipsRects { get; private set; }
     public Vector3[] MyCorners { get; } = new Vector3[4];
     public RectTransform ParentRectTransform { get; private set; }

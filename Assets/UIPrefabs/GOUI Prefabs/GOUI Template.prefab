@@ -258,7 +258,7 @@ MonoBehaviour:
     _listOfTooltips:
     - {fileID: 1029969822198092331, guid: a23ac1c9dd686124b837ee0f02ecd949, type: 3}
     - {fileID: 1029969822198092331, guid: a23ac1c9dd686124b837ee0f02ecd949, type: 3}
-    _fixedPosition: {fileID: 3129358716322605446}
+    _fixedPosition: {fileID: 0}
   _events:
     _highlightEvents:
       _onEnterEvent:
@@ -289,6 +289,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00f12c3acdfb4140bd7b437f898978ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _uiImage: {fileID: 5921039407125897730}
+  _uiText: {fileID: 5921039407769930204}
 --- !u!1 &5921039408018227071
 GameObject:
   m_ObjectHideFlags: 0
