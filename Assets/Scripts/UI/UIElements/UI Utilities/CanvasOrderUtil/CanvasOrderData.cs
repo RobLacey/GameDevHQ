@@ -3,8 +3,18 @@ using UnityEngine;
 
 namespace UIElements
 {
+    
+    public interface ISetCanvasOrder
+    {
+        int ReturnPresetCanvasOrder(ICanvasOrderCalculator canvasOrderCalculator);
+        int ReturnToolTipCanvasOrder();
+        int ReturnVirtualCursorCanvasOrder();
+        int ReturnOffScreenMarkerCanvasOrder();
+        int ReturnControlBarCanvasOrder();
+    }
+
     [Serializable]
-    public class CanvasOrderData : IEventDispatcher, ISetStartingCanvasOrder
+    public class CanvasOrderData : ISetCanvasOrder, IMonoEnable, IEServService
     {
         [SerializeField] private int _pauseMenu = 20;
         [SerializeField] private int _toolTip = 25;
@@ -16,21 +26,20 @@ namespace UIElements
         [SerializeField] private int _offScreenMarker = 10;
         [SerializeField] private int _controlBar = 12;
 
-        //Events
-        private Action<ISetStartingCanvasOrder> SetStartingCanvasOrder { get; set; }
-
         //Properties & Getters / Setters
-        public ISetStartingCanvasOrder ReturnCanvasOrderData => this;
-        public void OnEnable() => FetchEvents();
-        public void OnStart() => SetStartingCanvasOrder?.Invoke(this);
-        public void FetchEvents() => SetStartingCanvasOrder = EVent.Do.Fetch<ISetStartingCanvasOrder>();
         public int ReturnToolTipCanvasOrder() => _toolTip;
         public int ReturnVirtualCursorCanvasOrder() => _virtualCursor;
         public int ReturnOffScreenMarkerCanvasOrder() => _offScreenMarker;
         public int ReturnControlBarCanvasOrder() => _controlBar;
         
         //Main
-        public int ReturnPresetCanvasOrder(CanvasOrderCalculator calculator)
+        public void OnEnable() => AddService();
+
+        public void AddService() => EServ.Locator.AddNew<ISetCanvasOrder>(this);
+
+        public void OnDisable() { }
+
+        public int ReturnPresetCanvasOrder(ICanvasOrderCalculator calculator)
         {
             switch (calculator.GetBranchType)
             {
@@ -54,8 +63,8 @@ namespace UIElements
                     return 0;
             }
         }
-        
-        public int SetStandardCanvasOrder(CanvasOrderCalculator calculator)
+
+        public int SetStandardCanvasOrder(ICanvasOrderCalculator calculator)
         {
             switch (calculator.GetOrderInCanvas)
             {
@@ -71,6 +80,5 @@ namespace UIElements
 
             return 0;
         }
-
     }
 }

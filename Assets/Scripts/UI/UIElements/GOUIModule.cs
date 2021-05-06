@@ -1,8 +1,6 @@
 ﻿using System;
-using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 public interface ICursorHandler
 {
@@ -43,9 +41,8 @@ namespace UIElements
         [SerializeField] 
         private OffscreenMarkerData _offScreenMarker;
 
-        [SerializeField] 
-        [Space(20f)] [Foldout("Events")]
-        private UnityEvent<bool> _activeGOUI;
+        [SerializeField]
+        private UnityEvent<bool> _activateGOUI;
 
         //Variables
         private bool _active, _gameIsPaused, _canStart;
@@ -133,8 +130,6 @@ namespace UIElements
 
         public void ObserveEvents()
         {
-            if(_canStart) return;
-            EVent.Do.Subscribe<IClearAll>(ClearUI);
             EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
             EVent.Do.Subscribe<IGameIsPaused>(SaveIsGamePaused);
             EVent.Do.Subscribe<IOnStart>(CanStart);
@@ -152,7 +147,7 @@ namespace UIElements
             _active = false;
             NodeIsSelected = false;
             PointerOver = false;
-            _activeGOUI.Invoke(_active);
+            _activateGOUI?.Invoke(false);
         }
 
         private void Start()
@@ -160,6 +155,7 @@ namespace UIElements
             //TODO Fix this to match name wise
             //TODO see why events are not calling to change canvas or adding to multi
             //TODO Add ability to change initial InGameUi from Setter (have variables just needs methods)
+            //ToDo ** Don't do above, remove whats there
             
             Debug.Log("I am UpTo here");
             _myGOUIBranch = GetComponent<IRunTimeGetter>().CreateBranch(_myGOUIPrefab);
@@ -229,10 +225,10 @@ namespace UIElements
             ExitInGameUi();
         }
 
+
         private void OnMouseEnter()
         {
             if (_checkIfUnderUI.UnderUI()) return;
-
             EnterGOUI();
         }
 
@@ -272,22 +268,16 @@ namespace UIElements
             ExitInGameUi();
         }
         
-        private void ClearUI(IClearAll args = null)
-        {
-            if(!_active || CanNotDoAction) return;
-            ExitInGameUi();
-        }
-
         private void StartInGameUi()
         {
             if(CanNotDoAction || _active) return;
             
             _active = true;
             StartBranch?.Invoke(this);
-            if(!_allowKeys)
+             if(!_allowKeys)
                 _myGOUIBranch.DontSetBranchAsActive();
             _myGOUIBranch.MoveToThisBranch();
-            _activeGOUI.Invoke(_active);
+            _activateGOUI?.Invoke(_active);
         }
 
         private void ExitInGameUi()
@@ -296,8 +286,12 @@ namespace UIElements
             _myGOUIBranch.StartBranchExitProcess(OutTweenType.Cancel);
             _active = false;
             _checkVisibility.StopOffScreenMarker();
-            _activeGOUI.Invoke(_active);
+            _activateGOUI?.Invoke((_active));
         }
 
+        public void DestroyMe()
+        {
+            Destroy(gameObject);
+        }
     }
 }

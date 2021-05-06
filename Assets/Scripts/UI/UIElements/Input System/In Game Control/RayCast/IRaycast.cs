@@ -2,7 +2,7 @@
 
 namespace UIElements
 {
-    public interface IRaycast
+    public interface IRaycast : IMonoStart, IMonoEnable
     {
         void DoRaycast(Vector3 virtualCursorPos);
         void WhenInMenu();

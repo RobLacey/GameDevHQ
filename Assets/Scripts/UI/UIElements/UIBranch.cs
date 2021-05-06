@@ -83,10 +83,6 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     [ShowIf(EConditionOperator.Or, StandardBranch)]
     private EscapeKey _escapeKeyFunction = EscapeKey.GlobalSetting;
 
-    [SerializeField] 
-    [HideIf(EConditionOperator.Or, Fullscreen, HomeScreenBranch, IsPauseMenu)]
-    private IsActive _closeWhenClickedOff = IsActive.Yes;
-
     [SerializeField]
     [HideIf(EConditionOperator.Or, AnyPopUpBranch, HomeScreenBranch, InGamUIBranch)] 
     [Label("Branch Groups List (Leave blank if NO groups needed)")] 
@@ -193,7 +189,11 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         EVent.Do.Subscribe<ISelectedNode>(SaveSelected);
     }
 
-    private void Start() => CheckForControlBar();
+    private void Start()
+    {
+        _branchTypeClass.OnStart();
+        CheckForControlBar();
+    }
 
     private void CheckForControlBar()
     {
@@ -217,8 +217,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
 
         _branchTypeClass.SetUpBranch(newParentBranch);
 
-        if (_canActivateBranch) 
-            SetAsActiveBranch?.Invoke(this);
+        SetBranchAsActive();
         
         if (_tweenOnChange)
         {
@@ -231,7 +230,13 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
 
         _tweenOnChange = true;
     }
-    
+
+    public void SetBranchAsActive()
+    {
+        if (_canActivateBranch)
+            SetAsActiveBranch?.Invoke(this);
+    }
+
     private void InTweenCallback()
     {
         _branchTypeClass.EndOfBranchStart();

@@ -82,7 +82,7 @@ public class MoveBackInHistory : IMoveBackInHistory
             return BackToHomeProcess();
         }
         
-        _historyTracker.AddNodeToTestRunner(lastNode);
+        _historyTracker.UpdateHistoryData(lastNode);
 
         _history.Remove(lastNode);
         DoMoveBackOneLevel(lastNode, _activeBranch);

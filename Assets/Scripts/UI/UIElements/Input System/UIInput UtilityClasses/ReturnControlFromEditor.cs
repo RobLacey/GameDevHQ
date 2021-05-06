@@ -5,14 +5,13 @@ public interface IReturnFromEditor
     bool CanReturn(bool inMenu, IBranch activeBranch);
 }
 
-public class ReturnControlFromEditor : IReturnFromEditor
+public class ReturnControlFromEditor : IReturnFromEditor, IEServUser
 {
-    private readonly InputScheme _scheme;
+    private InputScheme _scheme;
 
-    public ReturnControlFromEditor(IInput uiInput)
-    {
-        _scheme = uiInput.ReturnScheme;
-    }
+    public ReturnControlFromEditor() => UseEServLocator();
+
+    public void UseEServLocator() => _scheme = EServ.Locator.Get<InputScheme>(this);
 
     public bool CanReturn(bool inMenu, IBranch activeBranch)
     {
@@ -26,4 +25,5 @@ public class ReturnControlFromEditor : IReturnFromEditor
         }
         return false;
     }
+
 }

@@ -25,8 +25,8 @@ public class UINavigation : NodeFunctionBase, IEServUser
     private readonly UINode _right;
     private IBranch _myBranch;
     private INode _myNode;
-    private IHub _uiHub;
     private INavigationSettings _mySettings;
+    private InputScheme _inputScheme;
 
     //Properties
     private IBranch ChildBranch => _mySettings.ChildBranch;
@@ -35,7 +35,7 @@ public class UINavigation : NodeFunctionBase, IEServUser
     protected override bool CanBePressed() => !(ChildBranch is null);
     protected override bool FunctionNotActive() => !CanActivate;
     protected override void SavePointerStatus(bool pointerOver) { }
-    private bool MultiSelectAllowed => _uiHub.Scheme.MultiSelectPressed() &&
+    private bool MultiSelectAllowed => _inputScheme.MultiSelectPressed() &&
                                        _myNode.MultiSelectSettings.OpenChildBranch == IsActive.No
                                         && _myNode.MultiSelectSettings.AllowMultiSelect == IsActive.Yes ;
 
@@ -48,7 +48,7 @@ public class UINavigation : NodeFunctionBase, IEServUser
         UseEServLocator();
     }
     
-    public void UseEServLocator() => _uiHub = EServ.Locator.Get<IHub>(this);
+    public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
 
     protected override void AxisMoveDirection(MoveDirection moveDirection)
     {

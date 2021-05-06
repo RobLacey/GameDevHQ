@@ -62,10 +62,7 @@ public class CheckVisibility : IEventDispatcher, IMono, IOffscreen, IEventUser
     public void OnEnable()
     {
         if(_canStart) return;
-
         ObserveEvents();
-        if(CanUseOffScreenMarker)
-            _offScreenMarker.OnEnable();
     }
 
     public void ObserveEvents() => EVent.Do.Subscribe<IOnStart>(CanStart);

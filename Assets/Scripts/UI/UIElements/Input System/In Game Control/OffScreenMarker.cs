@@ -4,7 +4,7 @@ using Object = UnityEngine.Object;
 
 namespace UIElements
 {
-    public class OffScreenMarker : IEServUser, IMono, IEventUser
+    public class OffScreenMarker : IEServUser, IMonoAwake, IMonoStart,  IMonoDisable
     {
         public OffScreenMarker(OffscreenMarkerData data) => _offscreenMarkerData = data;
 
@@ -18,7 +18,7 @@ namespace UIElements
         private RectTransform _offScreenMarkerRect;
         private readonly WaitFrameCustom _waitFrameCustom = new WaitFrameCustom();
         private Transform _parentTransform;
-        private ISetStartingCanvasOrder _savedSetCanvasOrderEvent;
+        private ISetCanvasOrder _setCanvasOrder;
         private readonly OffscreenMarkerData _offscreenMarkerData;
         private string _targetBranchesName;
 
@@ -49,11 +49,11 @@ namespace UIElements
             UseEServLocator();
         }
 
-        public void UseEServLocator() => _hub = EServ.Locator.Get<IHub>(this);
-
-        public void OnEnable() => ObserveEvents();
-
-        public void ObserveEvents() => EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetStartingCanvasOrder);
+        public void UseEServLocator()
+        {
+            _hub = EServ.Locator.Get<IHub>(this);
+            _setCanvasOrder = EServ.Locator.Get<ISetCanvasOrder>(this);
+        }
 
         public void OnDisable() => StopOffScreenMarker();
 
@@ -62,6 +62,7 @@ namespace UIElements
             SetUpOffScreenMarker();
             SetUpCursorCanvas();
             SetScreenSize(_hub.MainCanvasRect.sizeDelta);
+            SetStartingCanvasOrder();
         }
 
         private void SetUpOffScreenMarker()
@@ -83,8 +84,8 @@ namespace UIElements
             _offScreenMarkerCanvas = _offScreenMarkerRect.GetComponent<Canvas>();
             _offScreenMarkerCanvas.enabled = false;
             
-            if(_savedSetCanvasOrderEvent.IsNotNull())
-                SetCanvasOrderUtil.Set(_savedSetCanvasOrderEvent.ReturnOffScreenMarkerCanvasOrder,
+            if(_setCanvasOrder.IsNotNull())
+                SetCanvasOrderUtil.Set(_setCanvasOrder.ReturnOffScreenMarkerCanvasOrder,
                                        _offScreenMarkerCanvas);
         }
 
@@ -106,16 +107,10 @@ namespace UIElements
                                             Mathf.RoundToInt(ySize * 0.75f)) + _offscreenMarkerData.ScreenSafeMargin;
         }
 
-        private void SetStartingCanvasOrder(ISetStartingCanvasOrder args)
+        private void SetStartingCanvasOrder()
         {
             if(_offScreenMarkerCanvas)
-            {
-                SetCanvasOrderUtil.Set(args.ReturnOffScreenMarkerCanvasOrder, _offScreenMarkerCanvas);
-            }
-            else
-            {
-                _savedSetCanvasOrderEvent = args;
-            }
+                SetCanvasOrderUtil.Set(_setCanvasOrder.ReturnOffScreenMarkerCanvasOrder, _offScreenMarkerCanvas);
         }
 
         private IEnumerator SetOffScreenMarkerPosition(Transform moduleTransform)

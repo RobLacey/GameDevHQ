@@ -34,7 +34,6 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     INode LastHighlighted { get; }
     GameObject ThisBranchesGameObject { get; }
     IsActive ReturnOnlyAllowOnHomeScreen { get; }
-    IsActive CloseIfClickedOff { get; set; }
     List<GroupList> BranchGroupsList { get; }
     int GroupIndex { get; set; }
 
@@ -43,6 +42,7 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     IsActive GetStayOn();
     void SetNotAControlBar();
     void MoveToThisBranch(IBranch newParentBranch = null);
+    void SetBranchAsActive();
     void DontSetBranchAsActive();
     void DoNotTween();
     void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null);

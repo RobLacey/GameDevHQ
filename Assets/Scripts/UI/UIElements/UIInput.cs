@@ -5,7 +5,6 @@ using UnityEngine;
 
 public interface IInput : IParameters
 {
-    InputScheme ReturnScheme { get; }
     bool StartInGame();
 }
 
@@ -16,13 +15,11 @@ public interface IVirtualCursorSettings : IInput
 
 public interface ISwitchGroupSettings
 {
-    InputScheme ReturnScheme { get; }
     void DoChangeControlPressed();
 }
 
-public class UIInput : MonoBehaviour, IEventUser, IPausePressed,  
-                       ICancelPressed, IChangeControlsPressed, IMenuGameSwitchingPressed, 
-                       IEServUser, IEventDispatcher, IClearAll, IVirtualCursorSettings,
+public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ICancelPressed, IChangeControlsPressed, 
+                       IMenuGameSwitchingPressed, IEServUser, IEventDispatcher, IVirtualCursorSettings,
                        ISwitchGroupSettings
 {
     [SerializeField] [Space(10f)]
@@ -43,7 +40,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
     private bool _onHomeScreen = true;
     private UINode _lastHomeScreenNode;
     private IBranch _activeBranch;
-    
+
     //Editor
     private const string Settings = "Other Settings ";
     private bool HasScheme(InputScheme scheme) => scheme != null;
@@ -56,8 +53,6 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
     private Action<IMenuGameSwitchingPressed> OnMenuAndGameSwitch { get; set; }
     private Action<ICancelPressed> OnCancelPressed { get; set; }
     private Action<IChangeControlsPressed> OnChangeControlPressed { get; set; }
-    private Action<IClearAll> OnClearAll { get; set; }
-
     
     //Properties and Getters / Setters
     public bool StartInGame()
@@ -93,7 +88,6 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveOnHomeScreen (IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveAllowKeys (IAllowKeys args) => _allowKeys = args.CanAllowKeys;
-    public InputScheme ReturnScheme => _inputScheme;
     public EscapeKey EscapeKeySettings => _activeBranch.EscapeKeyType;
     private bool NothingSelectedAction => _inputScheme.PauseOptions == PauseOptionsOnEscape.EnterPauseOrEscapeMenu;
     private IMenuAndGameSwitching MenuToGameSwitching { get; set; }
@@ -108,11 +102,12 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
     {
         _inputScheme.OnAwake();
         ChangeControl = EJect.Class.WithParams<IChangeControl>(this);
-        MenuToGameSwitching = EJect.Class.WithParams<IMenuAndGameSwitching>(this);
+        MenuToGameSwitching = EJect.Class.NoParams<IMenuAndGameSwitching>();
         VirtualCursor = EJect.Class.WithParams<IVirtualCursor>(this);
         SwitchGroups = EJect.Class.WithParams<ISwitchGroup>(this);
-        ReturnControlFromEditor = EJect.Class.WithParams<IReturnFromEditor>(this);
+        ReturnControlFromEditor = EJect.Class.NoParams<IReturnFromEditor>();
         EServ.Locator.AddNew((IInput)this);
+        EServ.Locator.AddNew(_inputScheme);
         UseEServLocator();
         _inputScheme.SetCursor();
     }
@@ -135,7 +130,6 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
         if (_hotKeySettings.Count == 0) return;
         foreach (var hotKey in _hotKeySettings)
         {
-            hotKey.OnAwake(_inputScheme);
             hotKey.OnEnable();
         }
     }
@@ -146,7 +140,6 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
         OnMenuAndGameSwitch = EVent.Do.Fetch<IMenuGameSwitchingPressed>();
         OnCancelPressed = EVent.Do.Fetch<ICancelPressed>();
         OnChangeControlPressed = EVent.Do.Fetch<IChangeControlsPressed>();
-        OnClearAll = EVent.Do.Fetch<IClearAll>();
     }
 
     public void ObserveEvents()
@@ -159,12 +152,13 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
         EVent.Do.Subscribe<INoPopUps>(SaveNoActivePopUps);
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
-
+    
     private void Start()   
     {
         ChangeControl.OnStart();
         SwitchGroups.OnStart();
         VirtualCursor.OnStart();
+        MenuToGameSwitching.OnStart();
     }
 
     private void Update()
@@ -175,15 +169,6 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed,
 
         if(ReturnControlFromEditor.CanReturn(_inMenu, _activeBranch)) return;
         
-        if (CancelWhenClickedOff.CanCancel(_inputScheme, _onHomeScreen, _allowKeys, VirtualCursor))
-        {
-            if (_activeBranch.CloseIfClickedOff == IsActive.Yes)
-            {
-                OnClearAll?.Invoke(this);
-            }
-            return;
-        }
-
         if (CanPauseGame())
         {
             PausedPressedActions();

@@ -97,7 +97,7 @@ public class NewSelectionProcess : INewSelectionProcess
         if (!_historyTracker.IsPaused)
             SelectedNodeInDifferentBranch();
 
-        _historyTracker.AddNodeToTestRunner(_newNode);
+        _historyTracker.UpdateHistoryData(_newNode);
 
         _history.Add(_newNode);
         _lastSelected = _newNode;

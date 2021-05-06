@@ -65,11 +65,6 @@ public partial class UIBranch
     public bool PointerOverBranch => AutoOpenCloseClass.PointerOverBranch;
     public List<UIBranch> HomeBranches { private get; set; }
     public float Timer => _timer;
-    public IsActive CloseIfClickedOff
-    {
-        get => _closeWhenClickedOff;
-        set => _closeWhenClickedOff = value;
-    }
 
     public IsActive SetSaveLastSelectionOnExit
     {

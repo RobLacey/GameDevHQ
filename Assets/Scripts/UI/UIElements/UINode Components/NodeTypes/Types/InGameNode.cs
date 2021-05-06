@@ -14,7 +14,7 @@ public class InGameNode : NodeBase, IInGameNode, ICloseGOUIModule
     private INode _parentNode;
     private readonly float _autoOpenDelay;
     private readonly IDelayTimer _delayTimer = EJect.Class.NoParams<IDelayTimer>();
-    
+
     //Properties
     public IBranch TargetBranch => MyBranch.MyParentBranch;
 
@@ -25,6 +25,26 @@ public class InGameNode : NodeBase, IInGameNode, ICloseGOUIModule
     {
         base.FetchEvents();
         CloseGOUIModule = EVent.Do.Fetch<ICloseGOUIModule>();
+    }
+
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        EVent.Do.Subscribe<ISetUpUIGOBranch>(SetUpGOUIParent);
+    }
+
+    private void SetUpGOUIParent(ISetUpUIGOBranch args)
+    {
+        if(args.TargetBranch == MyBranch)
+            _uiNode.InGameObject = args.GOUITransform.gameObject;
+    }
+
+    protected override void TurnNodeOnOff()
+    {
+        //Needed To correct GOUI activation to make everything else work so highlighting doesn't activate Branch
+        if(!_allowKeys)
+            MyBranch.SetBranchAsActive();
+        base.TurnNodeOnOff();
     }
 
     public override void OnEnter()

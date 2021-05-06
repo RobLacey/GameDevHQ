@@ -65,7 +65,6 @@ public class BranchFactory
     {
         branch.ScreenType = ScreenType.Normal;
         branch.EscapeKeyType = EscapeKey.None;
-        branch.CloseIfClickedOff = IsActive.No;
 
         if (!branch.IsControlBar()) return;
         
@@ -116,7 +115,6 @@ public class BranchFactory
         branch.EscapeKeyType = EscapeKey.BackOneLevel;
         branch.TweenOnHome = DoTween.DoNothing;
         branch.CanvasOrder = OrderInCanvas.Manual;
-        branch.CloseIfClickedOff = IsActive.No;
     }
     
     private static void CreateInternal(IBranch branch)

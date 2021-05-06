@@ -1,46 +1,58 @@
 ﻿using System.Collections.Generic;
+using UIElements;
 using UnityEngine;
 
-public class CanvasOrderCalculator: IEventUser
+
+public interface ICanvasOrderCalculator : IMonoStart, IMonoEnable
 {
+    BranchType GetBranchType { get; }
+    int GetManualCanvasOrder { get; }
+    OrderInCanvas GetOrderInCanvas { get; }
+    void SetCanvasOrder();
+    void ResetCanvasOrder();
+    void ProcessActiveCanvasses(List<Canvas> activeCanvasList);
+}
+
+public class CanvasOrderCalculator: IEventUser, IEServUser, ICanvasOrderCalculator
+{
+    public CanvasOrderCalculator(ICanvasCalcParms data)
+    {
+        _myCanvas = data.MyBranch.MyCanvas;
+        GetOrderInCanvas = data.MyBranch.CanvasOrder;
+        GetBranchType = data.MyBranch.ReturnBranchType;
+        if (GetOrderInCanvas == OrderInCanvas.Manual)
+        {
+            GetManualCanvasOrder = data.MyBranch.ReturnManualCanvasOrder;
+        }
+    }
+    
+    //Variables
     private IBranch _activeBranch;
     private readonly Canvas _myCanvas;
     private int _startingOrder;
-    private ISetStartingCanvasOrder _startingCanvasOrder;
+    private ISetCanvasOrder _canvasOrder;
 
     //Properties
     public BranchType GetBranchType { get; }
-
+    public int GetManualCanvasOrder { get; }
     public OrderInCanvas GetOrderInCanvas { get; }
 
-    public int GetManualCanvasOrder { get; }
-    
+    //Main
 
-    public CanvasOrderCalculator(IBranch branch)
+    public void OnEnable()
     {
-        _myCanvas = branch.MyCanvas;
-        GetOrderInCanvas = branch.CanvasOrder;
-        GetBranchType = branch.ReturnBranchType;
-        if (GetOrderInCanvas == OrderInCanvas.Manual)
-        {
-            GetManualCanvasOrder = branch.ReturnManualCanvasOrder;
-        }
+        UseEServLocator();
         ObserveEvents();
     }
+    
+    public void UseEServLocator() => _canvasOrder = EServ.Locator.Get<ISetCanvasOrder>(this);
 
-    public void ObserveEvents()
-    {
-        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
-        EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetStartingSortingOrder);
-    }
+    public void ObserveEvents() => EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+
+    public void OnStart() => SetUpCanvasOrderAtStart();
 
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
 
-    private void SetStartingSortingOrder(ISetStartingCanvasOrder args)
-    {
-        _startingCanvasOrder = args.ReturnCanvasOrderData;
-        SetUpCanvasOrderAtStart();
-    }
     private void SetUpCanvasOrderAtStart()
     {
         var tempSavedCanvasStatus = _myCanvas.enabled;
@@ -53,7 +65,7 @@ public class CanvasOrderCalculator: IEventUser
 
     private void SetStartingSortingOrder(bool tempSavedCanvasStatus)
     {
-        _startingOrder = _startingCanvasOrder.ReturnPresetCanvasOrder(this);
+        _startingOrder = _canvasOrder.ReturnPresetCanvasOrder(this);
         _myCanvas.overrideSorting = true;
         _myCanvas.sortingOrder = _startingOrder;
         _myCanvas.enabled = tempSavedCanvasStatus;

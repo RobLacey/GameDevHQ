@@ -75,7 +75,8 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
     private bool IsCancelOrBack => _buttonFunction == ButtonFunction.CancelOrBack;
-    public bool CanNotStoreNodeInHistory => IsToggleGroup || IsToggleNotLinked || HasChildBranch is null;
+
+    public bool CanNotStoreNodeInHistory => IsToggleGroup || IsToggleNotLinked || IsCancelOrBack;  
     public ToggleData ToggleData => _toggleData;
     public IBranch MyBranch { get; private set; }
     public IBranch HasChildBranch
@@ -89,6 +90,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     public EscapeKey EscapeKeyType => _escapeKeyFunction;
     public GameObject ReturnGameObject => gameObject;
+    public GameObject InGameObject { get; set; }
     public float AutoOpenDelay => _autoOpenDelay;
     public bool CanAutoOpen => _autoOpen == IsActive.Yes;
     public IUiEvents UINodeEvents => _uiNodeEvents;
@@ -156,7 +158,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
         
         foreach (var nodeFunctionBase in _activeFunctions)
         {
-            nodeFunctionBase.Start();
+            nodeFunctionBase.OnStart();
         }
     }
 

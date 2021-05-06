@@ -1,6 +1,7 @@
-﻿public interface IBranchBase : IParameters
+﻿using UIElements;
+
+public interface IBranchBase : IParameters, IMonoEnable, IMonoStart
 {
-    void OnEnable();
     void SetUpAsTabBranch();
     void SetUpBranch(IBranch newParentController = null);
     void EndOfBranchStart();
@@ -15,5 +16,10 @@
 public interface IBranchParams
 {
     ScreenType MyScreenType { get; }
+}
+
+public interface ICanvasCalcParms : IParameters
+{
+    IBranch MyBranch { get; }
 }
 

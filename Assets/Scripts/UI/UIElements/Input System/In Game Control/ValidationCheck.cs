@@ -63,7 +63,7 @@ public class ValidationCheck : DialogueBox
 
     private void PopulateVariables()
     {
-        if (_uiInput is null)
+       // if (_uiInput is null)
            // _uiInput = _goController.GetComponent<UIInput>();
 
        // if (_goController is null)
@@ -72,7 +72,7 @@ public class ValidationCheck : DialogueBox
             //_currentState = _goController.ControlType;
       //  }
 
-        if (_scheme is null)
-            _scheme = _uiInput.ReturnScheme;
+        // if (_scheme is null)
+        //     _scheme = _uiInput.ReturnScheme;
     }
 }

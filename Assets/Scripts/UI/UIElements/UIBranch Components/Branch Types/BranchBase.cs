@@ -3,15 +3,15 @@ using UnityEngine;
 
 
 public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, IBranchBase, IBranchParams,
-                                   IEventDispatcher, IAddNewBranch, IRemoveBranch
+                          IEventDispatcher, IAddNewBranch, IRemoveBranch, ICanvasCalcParms
 {
     protected BranchBase(IBranch branch)
     {
         _myBranch = branch.ThisBranch;
         _myCanvas = _myBranch.MyCanvas;
-        _canvasOrderCalculator = new CanvasOrderCalculator(_myBranch);
         _myCanvasGroup = _myBranch.MyCanvasGroup;
         MyScreenType = _myBranch.ScreenType;
+        _canvasOrderCalculator = EJect.Class.WithParams<ICanvasOrderCalculator>(this);
         _screenData = EJect.Class.WithParams<IScreenData>(this);
         SetCanvas(ActiveCanvas.No);
         SetBlockRaycast(BlockRaycast.No);
@@ -24,9 +24,8 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     protected bool _inMenu, _canStart, _gameIsPaused, _activeResolvePopUps;
     protected IHistoryTrack _historyTrack;
     protected bool _isTabBranch;
-    protected readonly CanvasOrderCalculator _canvasOrderCalculator;
+    protected readonly ICanvasOrderCalculator _canvasOrderCalculator;
     private readonly Canvas _myCanvas;
-    private bool _allowKeys;
     protected readonly CanvasGroup _myCanvasGroup;
 
     //Events
@@ -51,19 +50,19 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
 
     private void AllowKeys(IAllowKeys args)
     {
-        _allowKeys = args.CanAllowKeys;
-        if (!_canStart && _allowKeys)
+        CanAllowKeys = args.CanAllowKeys;
+        if (!_canStart && CanAllowKeys)
         {
             _myCanvasGroup.blocksRaycasts = false;
         }
-        var blockRaycast = _allowKeys ? BlockRaycast.No : BlockRaycast.Yes;
+        var blockRaycast = CanAllowKeys ? BlockRaycast.No : BlockRaycast.Yes;
         SetBlockRaycast(blockRaycast);
     }
     public bool OnHomeScreen { get; protected set; } = true;
     public IBranch IgnoreThisBranch => _myBranch;
     public IBranch MyBranch => _myBranch;
     public ScreenType MyScreenType { get; }
-    public bool CanAllowKeys => _allowKeys;
+    protected bool CanAllowKeys { get; private set; }
 
     //Main
     public void OnEnable()
@@ -71,8 +70,11 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
         ObserveEvents();
         UseEServLocator();
         _screenData.OnEnable();
+        _canvasOrderCalculator.OnEnable();
     }
     
+    public virtual void OnStart() => _canvasOrderCalculator.OnStart();
+
     public virtual void FetchEvents()
     {
         SetIsOnHomeScreen = EVent.Do.Fetch<IOnHomeScreen>();
@@ -162,7 +164,7 @@ public class BranchBase : IEventUser, IOnHomeScreen, IClearScreen, IEServUser, I
     {
         if(!_canStart  || _activeResolvePopUps) return;
         
-        if (_allowKeys)
+        if (CanAllowKeys)
         {
             _myCanvasGroup.blocksRaycasts = false;
         }

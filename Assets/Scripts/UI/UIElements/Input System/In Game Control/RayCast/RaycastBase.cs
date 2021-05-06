@@ -2,22 +2,25 @@
 
 namespace UIElements
 {
-    public abstract class RaycastBase : I2DRaycast, I3DRaycast, IClearAll
+    public abstract class RaycastBase : I2DRaycast, I3DRaycast, IEServUser
     {
-        protected RaycastBase(IRaycastController parent)
-        {
-            _layerToHit = parent.LayerToHit;
-        }
-
         //Variables
         private ICursorHandler _lastGameObject;
         protected LayerMask _layerToHit;
         protected readonly Camera _mainCamera = Camera.main;
+        protected InputScheme _inputScheme;
         
         //Properties
         protected Vector3 CameraPosition => _mainCamera.transform.position;
 
         //Main
+        public void OnEnable() => UseEServLocator();
+
+        public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
+
+
+        public virtual void OnStart() => _layerToHit = _inputScheme.ReturnVirtualCursorSettings.LayerToHit;
+
         public void WhenInMenu()
         {
             if(_lastGameObject.IsNull()) return;

@@ -1,4 +1,5 @@
-﻿using UnityEngine.EventSystems;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace UIElements
 {
@@ -13,7 +14,7 @@ namespace UIElements
                 _allowMouseOver = true;
                 return true;
             }
-
+            
             _allowMouseOver = false;
             return false;
         }

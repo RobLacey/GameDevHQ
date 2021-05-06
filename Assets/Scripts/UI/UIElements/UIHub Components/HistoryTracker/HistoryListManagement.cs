@@ -9,6 +9,7 @@ public interface IHistoryManagement
     void Run();
     void ClearAllHistory();
     void ClearHistoryWithStopPointCheck(INode stopAtThisNode);
+    void CloseThisLevel(INode node);
 }
 
 public class HistoryListManagement : IHistoryManagement
@@ -67,12 +68,14 @@ public class HistoryListManagement : IHistoryManagement
         CloseThisLevel(_targetNode);
     }
 
-    private void CloseThisLevel(INode node)
+    public void CloseThisLevel(INode node)
     {
         _history.Remove(node);
+        _historyTracker.UpdateHistoryData(node);
+        
+        if(node.HasChildBranch.IsNull()) return;
         node.HasChildBranch.LastSelected.DeactivateNode();
         node.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel, EndOfTweenActions);
-        _historyTracker.AddNodeToTestRunner(node);
 
         void EndOfTweenActions() => node.MyBranch.MoveToThisBranch();
     }
@@ -102,13 +105,14 @@ public class HistoryListManagement : IHistoryManagement
             if (CheckIfAtStopPoint(stopAtThisNode, currentNode)) return;
         }
         
-        _historyTracker.AddNodeToTestRunner(null);
+        _historyTracker.UpdateHistoryData(null);
         _history.Clear();
     }
 
     private static void ExitNode(INode currentNode, INode firstInHistory)
     {
-        currentNode.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
+        if(currentNode.HasChildBranch.IsNotNull())
+            currentNode.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
         ResetNode(currentNode, firstInHistory);
     }
 
@@ -118,7 +122,7 @@ public class HistoryListManagement : IHistoryManagement
         if (currentNode.MyBranch != stopAtThisNode.MyBranch) return false;
         
         currentNode.DeactivateNode();
-        _historyTracker.AddNodeToTestRunner(currentNode);
+        _historyTracker.UpdateHistoryData(currentNode);
         _history.Remove(currentNode);
         return true;
     }

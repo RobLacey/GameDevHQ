@@ -19,7 +19,7 @@ public interface IToolTipData: IParameters
 }
 
 
-public class UITooltip : NodeFunctionBase, IToolTipData
+public class UITooltip : NodeFunctionBase, IToolTipData, IEServUser
 {
     public UITooltip(ITooltipSettings settings)
     {
@@ -40,6 +40,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     private IToolTipFade _toolTipFade;
     private IGetScreenPosition _getScreenPosition;
     private readonly ITooltipSettings _settings;
+    private ISetCanvasOrder _setCanvasOrder;
     private bool _vcIsActive;
 
     //Properties
@@ -75,6 +76,12 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         SetTooltipsVariables();
         _toolTipFade = EJect.Class.WithParams<IToolTipFade>(this);
         _getScreenPosition = EJect.Class.WithParams<IGetScreenPosition>(this);
+    }
+
+    public override void OnEnable()
+    {
+        base.OnEnable();
+        UseEServLocator();
     }
 
     private void SetUp()
@@ -120,29 +127,31 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         if (FixedPosition.Equals(null))
             FixedPosition = ParentRectTransform;
     }
+    
+    public void UseEServLocator() => _setCanvasOrder = EServ.Locator.Get<ISetCanvasOrder>(this);
 
     public override void ObserveEvents()
     {
         base.ObserveEvents();
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
-        EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetToolTipCanvasOrder);
         EVent.Do.Subscribe<ISwitchGroupPressed>(CloseTooltipImmediately);
         EVent.Do.Subscribe<IClearScreen>(CloseTooltipImmediately);
         EVent.Do.Subscribe<IHotKeyPressed>(CloseTooltipImmediately);
     }
 
-    public override void Start()
+    public override void OnStart()
     {
-        base.Start();
+        base.OnStart();
         _getScreenPosition.OnStart();
+        SetToolTipCanvasOrder();
     }
 
     //Main
-    private void SetToolTipCanvasOrder(ISetStartingCanvasOrder args)
+    private void SetToolTipCanvasOrder()
     {
         foreach (var canvas in _cachedToolTipCanvasList)
         {
-            SetCanvasOrderUtil.Set(args.ReturnToolTipCanvasOrder, canvas);
+            SetCanvasOrderUtil.Set(_setCanvasOrder.ReturnToolTipCanvasOrder, canvas);
         }
     }
 
@@ -229,6 +238,5 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         }
         yield return null;
     }
-
 }
 

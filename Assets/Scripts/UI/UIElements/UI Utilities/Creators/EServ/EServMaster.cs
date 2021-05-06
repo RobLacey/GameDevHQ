@@ -9,8 +9,9 @@ public interface IEServUser
     void UseEServLocator();
 }
 
-public interface IIsAService
+public interface IEServService
 {
+    void AddService();
     void OnDisable();
 }
 
@@ -74,7 +75,7 @@ public class EServMaster
     {
         if (_services.ContainsKey(typeof(T)))
         {
-            var temp = (IIsAService) _services[typeof(T)];
+            var temp = (IEServService) _services[typeof(T)];
             temp.OnDisable();
             _services.Remove(typeof(T));
         }

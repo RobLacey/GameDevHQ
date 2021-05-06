@@ -32,7 +32,7 @@ public class GetScreenPosition : IGetScreenPosition, IEServUser, ITooltipCalcsDa
 
     public void UseEServLocator()
     {
-        _myInput = EServ.Locator.Get<IInput>(this);
+        _inputScheme = EServ.Locator.Get<InputScheme>(this);
         _myUiHUb = EServ.Locator.Get<IHub>(this);
     }
 
@@ -46,7 +46,6 @@ public class GetScreenPosition : IGetScreenPosition, IEServUser, ITooltipCalcsDa
     private readonly Camera _uiCamera;
     private RectTransform _mainCanvasRectTransform;
     private InputScheme _inputScheme;
-    private IInput _myInput;
     private IHub _myUiHUb;
 
     //Properties
@@ -58,7 +57,6 @@ public class GetScreenPosition : IGetScreenPosition, IEServUser, ITooltipCalcsDa
 
     public void OnStart()
     {
-        _inputScheme = _myInput.ReturnScheme;
         _mainCanvasRectTransform = _myUiHUb.MainCanvasRect;
         _toolTipCalcs.OnStart();
     }

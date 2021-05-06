@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+﻿using UIElements;
 using UnityEngine.EventSystems;
 
-public abstract class NodeFunctionBase : IEventUser
+public abstract class NodeFunctionBase : IEventUser, IMonoEnable, IMonoDisable, IMonoStart
 {
     protected bool _pointerOver, _isSelected, _isDisabled;
     protected IUiEvents _uiEvents;
@@ -40,7 +40,7 @@ public abstract class NodeFunctionBase : IEventUser
 
     public virtual void ObserveEvents() { }
 
-    public virtual void Start() { }
+    public virtual void OnStart() { }
 
     protected abstract void SavePointerStatus(bool pointerOver);
 

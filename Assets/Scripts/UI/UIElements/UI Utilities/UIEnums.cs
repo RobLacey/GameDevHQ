@@ -113,11 +113,6 @@ public enum GameType
     _2D, _3D, NoRestrictions
 }
 
-public enum CancelClickLocation
-{
-    Never, Left, Right, Either
-}
-
 public enum MultiSelectGroup
 {
     One, Two, Three, Four, Five

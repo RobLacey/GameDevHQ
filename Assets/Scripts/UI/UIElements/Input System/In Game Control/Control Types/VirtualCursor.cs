@@ -20,28 +20,12 @@ public interface ICursorSettings
 }
 
 [Serializable]
-public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtualCursor, ICursorSettings
+public class VirtualCursor : IRaycastController, IEventUser, IVirtualCursor, ICursorSettings, IEServUser, IMonoAwake
 {
     public VirtualCursor(IVirtualCursorSettings settings)
     {
-        Scheme = settings.ReturnScheme;
-        _virtualCursorSetting = Scheme.ReturnVirtualCursorSettings;
-        SetUpVirtualCursor(settings.GetParentTransform);
+        _parentTransform = settings.GetParentTransform;
         OnAwake();
-    }
-    
-    private void SetUpVirtualCursor(Transform transform)
-    {
-        var newVirtualCursor = Object.Instantiate(VirtualCursorPrefab, transform, true);
-        CursorRect = newVirtualCursor.GetComponent<RectTransform>();
-        CursorRect.anchoredPosition3D = Vector3.zero;
-        SetUpCursorCanvas();
-    }
-    
-    private void SetUpCursorCanvas()
-    {
-        _cursorCanvas = CursorRect.GetComponent<Canvas>();
-        _cursorCanvas.enabled = Scheme.CanUseVirtualCursor;
     }
     
     //Variables
@@ -50,8 +34,10 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
     private bool _allowKeys;
     private IInteractWithUi _interactWithUi;
     private IMoveVirtualCursor _moveVirtualCursor;
+    private ISetCanvasOrder _setCanvasOrder;
     private VirtualCursorSettings _virtualCursorSetting;
     private bool _canStart;
+    private Transform _parentTransform;
 
     //Properties & Setters / Getters
     public LayerMask LayerToHit => _virtualCursorSetting.LayerToHit;
@@ -73,15 +59,20 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
     private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
 
     //Main
-    private void OnAwake()
+    public void OnAwake()
     {
-        _raycastTo2D = EJect.Class.WithParams<I2DRaycast>(this);
-        _raycastTo3D = EJect.Class.WithParams<I3DRaycast>(this);
+        _raycastTo2D = EJect.Class.NoParams<I2DRaycast>();
+        _raycastTo3D = EJect.Class.NoParams<I3DRaycast>();
         _moveVirtualCursor = EJect.Class.NoParams<IMoveVirtualCursor>();
         _interactWithUi = EJect.Class.NoParams<IInteractWithUi>();
         
-        if(_virtualCursorSetting.OnlyHitInGameUi == IsActive.Yes)
-            _interactWithUi.SetCanOnlyHitInGameObjects();
+        UseEServLocator();
+    }
+    
+    public void UseEServLocator()
+    {
+        Scheme = EServ.Locator.Get<InputScheme>(this);
+        _setCanvasOrder = EServ.Locator.Get<ISetCanvasOrder>(this);
     }
 
     public void OnEnable()
@@ -89,11 +80,12 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
         ObserveEvents();
         _interactWithUi.OnEnable();
         _moveVirtualCursor.OnEnable();
+        _raycastTo2D.OnEnable();
+        _raycastTo3D.OnEnable();
     }
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetStartingCanvasOrder);
         EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         EVent.Do.Subscribe<IVCSetUpOnStart>(SetCursorForStartUp);
         EVent.Do.Subscribe<IOnStart>(CanStart);
@@ -102,7 +94,30 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
     
     public void OnStart()
     {
+        _virtualCursorSetting = Scheme.ReturnVirtualCursorSettings;
+        SetUpVirtualCursor(_parentTransform);
+        
+        if(_virtualCursorSetting.OnlyHitInGameUi == IsActive.Yes)
+            _interactWithUi.SetCanOnlyHitInGameObjects();
+        
+        _raycastTo2D.OnStart();
+        _raycastTo3D.OnStart();
         _moveVirtualCursor.OnStart();
+        SetStartingCanvasOrder();
+    }
+    
+    private void SetUpVirtualCursor(Transform transform)
+    {
+        var newVirtualCursor = Object.Instantiate(VirtualCursorPrefab, transform, true);
+        CursorRect = newVirtualCursor.GetComponent<RectTransform>();
+        CursorRect.anchoredPosition3D = Vector3.zero;
+        SetUpCursorCanvas();
+    }
+    
+    private void SetUpCursorCanvas()
+    {
+        _cursorCanvas = CursorRect.GetComponent<Canvas>();
+        _cursorCanvas.enabled = Scheme.CanUseVirtualCursor;
     }
 
 
@@ -120,8 +135,8 @@ public class VirtualCursor : IRaycastController, IEventUser, IClearAll, IVirtual
         }
     }
 
-    private void SetStartingCanvasOrder(ISetStartingCanvasOrder args) 
-        => SetCanvasOrderUtil.Set(args.ReturnVirtualCursorCanvasOrder, _cursorCanvas);
+    private void SetStartingCanvasOrder() 
+        => SetCanvasOrderUtil.Set(_setCanvasOrder.ReturnVirtualCursorCanvasOrder, _cursorCanvas);
 
 
     private void TurnOffAndResetCursor()

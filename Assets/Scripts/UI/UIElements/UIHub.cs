@@ -15,7 +15,6 @@ public interface IHub : IParameters
 {
     GameObject ThisGameObject { get; }
     IBranch[] HomeBranches { get; }
-    InputScheme Scheme { get; }
     RectTransform MainCanvasRect { get; }
     bool CanStart { get; }
 }
@@ -28,7 +27,7 @@ namespace UIElements
     [RequireComponent(typeof(UIInput))]
 
     public class UIHub : MonoBehaviour, IHub, IEventUser, ISetUpStartBranches, IOnStart, ISceneChange, 
-                         IEServUser, IEventDispatcher
+                         IEventDispatcher, IEServService, IEServUser
     {
         [Space(10f, order = 1)]
         [Header(StartOnTitle, order = 2)] [HorizontalLine(1f, EColor.Blue, order = 3)]
@@ -41,7 +40,11 @@ namespace UIElements
         [Header(CanvasOrderTitle, order = 2)] [HorizontalLine(1f, EColor.Blue, order = 3)]
         
         [SerializeField] 
-        private CanvasOrderData _canvasSortingOrderSettings; 
+        private CanvasOrderData _canvasSortingOrderSettings;
+
+        [Space(10f, order = 1)] 
+        [Header(UIDataTitle, order = 2)] [HorizontalLine(1f, EColor.Blue, order = 3)]
+        [SerializeField] private UIData _uiData;
         
         //Editor
         [Button("Add a New Tree Structure")]
@@ -76,17 +79,17 @@ namespace UIElements
         private const string StartOnTitle = "Set On Which Branch To Start On";
         private const string StartOnInfoBox = "If left blank a random Home Group will be used";
         private const string CanvasOrderTitle = "Canvas Sorting Order Setting for Branch Types";
+        private const string UIDataTitle = "UI Data";
 
         //Events
         private Action<IOnStart> OnStart { get; set; }
         private Action<ISetUpStartBranches> SetUpBranchesAtStart { get; set; }
         private Action<ISceneChange> SceneChanging { get; set; }
         
-        //Properties
+        //Properties & Getters/ Setters
         public IBranch StartBranch => _homeBranches.First();
         public GameObject ThisGameObject => gameObject;
         public IBranch[] HomeBranches => _homeBranches.ToArray<IBranch>();
-        public InputScheme Scheme => _inputScheme;
         public RectTransform MainCanvasRect => GetComponent<RectTransform>();
         public bool CanStart { get; private set; }
 
@@ -103,11 +106,10 @@ namespace UIElements
         private void Awake()
         { 
             var uIInput = GetComponent<IInput>();
-            _inputScheme = GetComponent<IInput>().ReturnScheme;
             _startingInGame = uIInput.StartInGame();
             GetHomeScreenBranches();
             _historyTrack = EJect.Class.NoParams<IHistoryTrack>();
-            _cancelHandler = EJect.Class.WithParams<ICancel>(this);
+            _cancelHandler = EJect.Class.NoParams<ICancel>();
             _audioService = EJect.Class.WithParams<IAudioService>(this);
         }
 
@@ -132,15 +134,22 @@ namespace UIElements
 
         private void OnEnable()
         {
-            _canvasSortingOrderSettings.OnEnable();
             UseEServLocator();
+            AddService();
             FetchEvents();
+            ObserveEvents();
+            _canvasSortingOrderSettings.OnEnable();
             _historyTrack.OnEnable();
             _cancelHandler.OnEnable();
-            ObserveEvents();
+            _audioService.OnEnable();
+            _uiData.OnEnable();
         }
+        
+        public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
 
-        private void OnDisable()
+        public void AddService() => EServ.Locator.AddNew<IHub>(this);
+
+        public void OnDisable()
         {
             _audioService.OnDisable();
             SceneChanging?.Invoke(this);
@@ -153,13 +162,6 @@ namespace UIElements
             SceneChanging = EVent.Do.Fetch<ISceneChange>();
         }
 
-        public void UseEServLocator()
-        {
-            EServ.Locator.AddNew(_historyTrack);
-            EServ.Locator.AddNew(_audioService);
-            EServ.Locator.AddNew((IHub)this);
-        }
-
         public void ObserveEvents()
         {
             EVent.Do.Subscribe<IHighlightedNode>(SetLastHighlighted);
@@ -168,11 +170,7 @@ namespace UIElements
             EVent.Do.Subscribe<IGetHomeBranches>(ReturnHomeBranches);
         }
 
-        private void Start()
-        {
-            _canvasSortingOrderSettings.OnStart();
-            StartCoroutine(StartUIDelay());
-        }
+        private void Start() => StartCoroutine(StartUIDelay());
 
         // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator StartUIDelay()
@@ -210,7 +208,8 @@ namespace UIElements
         private IEnumerator EnableStartControls()
         {
             if(_inputScheme.ControlActivateDelay != 0)
-                yield return new WaitForSeconds(Scheme.ControlActivateDelay);
+                yield return new WaitForSeconds(_inputScheme.ControlActivateDelay);
+            
             if(!_startingInGame)
             {
                 OnStart?.Invoke(this);
@@ -236,6 +235,6 @@ namespace UIElements
         private static void SetEventSystem(GameObject newGameObject)
         {
             EventSystem.current.SetSelectedGameObject(newGameObject);
-        }    
+        }
     }
 }

@@ -17,17 +17,20 @@ public class SwitchGroups : IEventUser, IParameters, ISwitchGroupPressed, IEServ
 {
     public SwitchGroups(ISwitchGroupSettings settings)
     { 
-        _inputScheme = settings.ReturnScheme;
         _switcher = EJect.Class.NoParams<IGOUISwitcher>();
         _homeGroup = EJect.Class.NoParams<IHomeGroup>();
         ChangeControls = settings.DoChangeControlPressed;
         UseEServLocator();
     }
 
-    public void UseEServLocator() => _uiHub = EServ.Locator.Get<IHub>(this);
+    public void UseEServLocator()
+    {
+        _inputScheme = EServ.Locator.Get<InputScheme>(this);
+        _uiHub = EServ.Locator.Get<IHub>(this);
+    }
 
     //Variables
-    private readonly InputScheme _inputScheme;
+    private InputScheme _inputScheme;
     private SwitchFunction _currentSwitchFunction = SwitchFunction.Unset;
     private bool _allowKeys, _gameIsPaused;
     private readonly IGOUISwitcher _switcher;

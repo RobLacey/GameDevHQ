@@ -13,8 +13,8 @@ public class NewSystem : InputScheme
     protected override string VCursorHorizontal { get; } = " ";
     protected override string VCursorVertical { get; } = " ";
     protected override string SwitchToVC { get; } = " ";
-    protected override string MouseXAxis { get; } = " ";
-    protected override string MouseYAxis { get; } = " ";
+    protected override float MouseXAxis { get; } = 0;
+    protected override float MouseYAxis { get; } = 0;
     protected override string SelectedButton { get; } = " ";
     protected override string MultiSelectButton { get; } = " ";
     public override bool AnyMouseClicked { get; } = false;
@@ -125,13 +125,4 @@ public class NewSystem : InputScheme
         return false;
     }
 
-    public override float MouseXAxisValue()
-    {
-        return 0;
-    }
-
-    public override float MouseYAxisValue()
-    {
-        return 0;
-    }
 }

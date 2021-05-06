@@ -6,8 +6,6 @@ namespace UIElements
     
     public class _2DRaycast : RaycastBase
     {
-        public _2DRaycast(IRaycastController parent) : base(parent) { }
-        
         private readonly Vector3 _direction2D = Vector3.forward;
 
         protected override ICursorHandler RaycastToObj(Vector3 virtualCursorPos)

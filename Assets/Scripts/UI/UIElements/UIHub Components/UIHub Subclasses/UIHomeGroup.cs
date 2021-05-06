@@ -13,7 +13,7 @@ public interface IHomeGroup
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
 /// is for keyboard or controller. Differ from internal branch groups as involve Branches not Nodes
 /// </summary>
-public class UIHomeGroup : IEventUser, IHomeGroup, IIsAService, ISwitchGroupPressed, IEventDispatcher
+public class UIHomeGroup : IEventUser, IHomeGroup, ISwitchGroupPressed, IEventDispatcher
 {
     //Variables
     private IBranch[] _homeGroup;

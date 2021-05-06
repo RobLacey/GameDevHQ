@@ -1,28 +1,22 @@
 ﻿
 using System;
 using UIElements;
-using UnityEngine;
 
-public interface IMenuAndGameSwitching : IEventUser, IMonoEnable { }
+public interface IMenuAndGameSwitching : IEventUser, IMonoEnable, IMonoStart { }
 
-public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispatcher
+public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispatcher, IEServUser
 {
-    public MenuAndGameSwitching(IInput input)
-    {
-        if (input.ReturnScheme.InGameMenuSystem == InGameSystem.On)
-            StartWhere = input.ReturnScheme.WhereToStartGame;
-    }
-
     //Variables
     private bool _noPopUps = true;
     private bool _wasInGame;
+    private InputScheme _inputScheme;
 
     //Events
     private Action<IInMenu> IsInMenu { get; set; }
 
     //Properties
     public bool InTheMenu { get; set; } = true;
-    private InMenuOrGame StartWhere { get; }
+    private InMenuOrGame StartWhere { get; set; }
 
     private void SaveNoPopUps(INoPopUps args)
     {
@@ -33,9 +27,12 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispat
 
     public void OnEnable()
     {
+        UseEServLocator();
         FetchEvents();
         ObserveEvents();
     }
+    
+    public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
 
     public void FetchEvents() => IsInMenu = EVent.Do.Fetch<IInMenu>();
 
@@ -45,6 +42,12 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispat
         EVent.Do.Subscribe<IGameIsPaused>(WhenTheGameIsPaused);
         EVent.Do.Subscribe<IOnStart>(StartUp);
         EVent.Do.Subscribe<INoPopUps>(SaveNoPopUps);
+    }
+    
+    public void OnStart()
+    {
+        if (_inputScheme.InGameMenuSystem == InGameSystem.On)
+            StartWhere = _inputScheme.WhereToStartGame;
     }
 
     private void CheckForActivation(IMenuGameSwitchingPressed arg)

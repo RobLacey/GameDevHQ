@@ -1,151 +1,149 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace UIElements.Input_System
 {
-    public class MultiSelectSystem
+    public class MultiSelectSystem : IEServUser
     {
-        public MultiSelectSystem(HistoryTracker historyTrack)
+        public MultiSelectSystem(IHistoryTrack historyTrack)
         {
             _historyTracker = historyTrack;
+            UseEServLocator();
         }
+        
+        public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
 
+        //variables
+        private InputScheme _inputScheme;
         private MultiSelectGroup? _currentGroup = null;
+        private readonly IHistoryTrack _historyTracker;
 
-        public static event Action<INode> MultiSelectChange;
-
-        private readonly HistoryTracker _historyTracker;
-
-        private readonly List<INode> _multiSelected = new List<INode>();
-        private bool Pressed => Input.GetKey(KeyCode.LeftControl);
-        public bool MultiSelectActive => _multiSelected.Count > 0;
-
+        //Properties & Getters / Setters
+        private bool Pressed => _inputScheme.MultiSelectPressed();
+       public bool MultiSelectActive { get; set; }
+        
+        //Main
         public bool MultiSelectPressed(List<INode> history, INode newNode)
         {
             if (newNode.MultiSelectSettings.AllowMultiSelect == IsActive.No) return false;
             
+            CheckTheCurrentGroupSelection(history, newNode);
+            
+            if (DoMultiSelectionProcess(history, newNode))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void CheckTheCurrentGroupSelection(List<INode> history, INode newNode)
+        {
             if (_currentGroup == null)
             {
                 _currentGroup = newNode.MultiSelectSettings.MultiSelectGroup;
             }
             else
             {
-                if (_currentGroup != newNode.MultiSelectSettings.MultiSelectGroup)
-                {
-                    CloseAllNodesInList(_multiSelected);
-                    MultiSelectChange?.Invoke(null);
-                    _multiSelected.Clear();
-                    _currentGroup = newNode.MultiSelectSettings.MultiSelectGroup;
-                }
+                IsInAnotherGroup(history, newNode);
             }
-            
-            if (Pressed && newNode.MultiSelectSettings.AllowMultiSelect == IsActive.Yes)
+        }
+
+        private void IsInAnotherGroup(List<INode> history, INode newNode)
+        {
+            if (_currentGroup != newNode.MultiSelectSettings.MultiSelectGroup)
             {
-                if (_multiSelected.Contains(newNode))
+                CloseAllNodesInList(history);
+                _historyTracker.UpdateHistoryData(null);
+                _currentGroup = newNode.MultiSelectSettings.MultiSelectGroup;
+            }
+        }
+
+        private bool DoMultiSelectionProcess(List<INode> history, INode newNode)
+        {
+            if (Pressed)
+            {
+                if (history.Contains(newNode))
                 {
-                    RemoveFromMultiSelect(newNode);
+                    RemoveFromMultiSelect(history, newNode);
                 }
                 else
                 {
-                    if(!MultiSelectActive)
+                    if (!MultiSelectActive)
                         CheckAndAddExistingMulti(history);
-                    AddToMultiSelect(newNode);
+                    AddToMultiSelect(history, newNode);
                 }
-
                 return true;
             }
-            
-            ClearAllMultiSelect();
             return false;
         }
 
         private void CheckAndAddExistingMulti(List<INode> history)
         {
             if (history.Count <= 0) return;
+            var currentHistory = history.ToArray();
             
-            var firstNode = history[0];
-                
-            if (firstNode.MultiSelectSettings.AllowMultiSelect == IsActive.Yes 
-                && firstNode.MultiSelectSettings.MultiSelectGroup == _currentGroup)
+            foreach (var node in currentHistory)
             {
-                if (firstNode.MultiSelectSettings.OpenChildBranch == IsActive.No)
+                if (CanAddNode(node))
                 {
-                    CloseActiveBranch(firstNode);
+                    AddNodeToMultiSelectList(history, node);
                 }
-                AddToMultiSelect(firstNode);
-                history.Remove(firstNode);
-                _historyTracker.AddNodeToTestRunner(firstNode);
+                else
+                {
+                    node.DeactivateNode();
+                    RemoveFromMultiSelect(history, node);
+                }
             }
-                
-            ClearUnusedHistory(history);
         }
 
-        private void ClearUnusedHistory(List<INode> history)
+        private bool CanAddNode(INode node)
         {
-            if (history.Count == 0) return;
-
-            CloseAllNodesInList(history, RemoveFromHistory);
-            history.Clear();
-
-            void RemoveFromHistory(INode node) => _historyTracker.AddNodeToTestRunner(node);
+            return node.MultiSelectSettings.AllowMultiSelect == IsActive.Yes 
+                   && node.MultiSelectSettings.MultiSelectGroup == _currentGroup;
         }
 
-        private void AddToMultiSelect(INode newNode)
+        private void AddNodeToMultiSelectList(List<INode> history, INode firstNode)
         {
-            _multiSelected.Add(newNode);
-            MultiSelectChange?.Invoke(newNode);
+            if (firstNode.MultiSelectSettings.OpenChildBranch == IsActive.No)
+            {
+                CloseActiveBranch(firstNode);
+            }
+
+            AddToMultiSelect(history, firstNode);
+            history.Remove(firstNode);
+            _historyTracker.UpdateHistoryData(firstNode);
         }
 
-        public void NodeHasBeenDestroyed(INode oldNode)
+        private void AddToMultiSelect(List<INode> history, INode newNode)
         {
-            if(!_multiSelected.Contains(oldNode)) return;
-            oldNode.DeactivateNode();
-            RemoveFromMultiSelect(oldNode);
+            history.Add(newNode);
+            _historyTracker.UpdateHistoryData(newNode);
+            MultiSelectActive = true;
         }
 
-        private void RemoveFromMultiSelect(INode oldNode)
+        private void RemoveFromMultiSelect(List<INode> history, INode oldNode)
         {
-            _multiSelected.Remove(oldNode);
+            history.Remove(oldNode);
             CloseActiveBranch(oldNode);
-            MultiSelectChange?.Invoke(oldNode);
+            _historyTracker.UpdateHistoryData(oldNode);
+            if (history.Count == 0)
+                MultiSelectActive = false;
         }
 
-        public void ClearAllMultiSelect()
-        {
-            if(_multiSelected.Count == 0) return;
+        public void ClearMultiSelect() => MultiSelectActive = false;
 
-            var firstNode = _multiSelected.First();
-            
-            CloseAllNodesInList(_multiSelected);
-            
-            firstNode.SetNodeAsActive();
-            MultiSelectChange?.Invoke(null);
-            _multiSelected.Clear();
-        }
-
-        public INode CloseAlMultiSelectONCancelPressed()
-        {
-            var firstNode = _multiSelected.First();
-            CloseAllNodesInList(_multiSelected);
-            _multiSelected.Clear();
-            MultiSelectChange?.Invoke(null);
-            return firstNode;
-        }
-
-        private static void CloseAllNodesInList(List<INode> activeNodes, Action<INode> extraAction = null)
+        private static void CloseAllNodesInList(List<INode> activeNodes)
         {
             foreach (var node in activeNodes)
             {
                 node.DeactivateNode();
                 CloseActiveBranch(node);
-                extraAction?.Invoke(node);
             }
         }
 
         private static void CloseActiveBranch(INode node)
         {
+            if (node.HasChildBranch.IsNull()) return;
+            
             node.HasChildBranch.LastSelected.DeactivateNode();
             node.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
         }

@@ -143,8 +143,6 @@ public interface IGetHomeBranches
     List<UIBranch> HomeBranches { set; }
 }
 
-public interface IClearAll { }
-
 public interface ISetUpUIGOBranch
 {
     IBranch TargetBranch  { get; }
@@ -175,15 +173,6 @@ public interface IOffscreen
     bool IsOffscreen { get; }
 }
 
-public interface ISetStartingCanvasOrder
-{
-    ISetStartingCanvasOrder ReturnCanvasOrderData { get; }
-    int ReturnPresetCanvasOrder(CanvasOrderCalculator canvasOrderCalculator);
-    int ReturnToolTipCanvasOrder();
-    int ReturnVirtualCursorCanvasOrder();
-    int ReturnOffScreenMarkerCanvasOrder();
-    int ReturnControlBarCanvasOrder();
-}
 
 public interface IReturnHomeGroupIndex
 {

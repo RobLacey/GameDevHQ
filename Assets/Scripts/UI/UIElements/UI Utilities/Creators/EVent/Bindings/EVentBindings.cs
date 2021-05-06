@@ -36,7 +36,6 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<ISwitchGroupPressed>();
         AutoRemove().CreateEvent<IHotKeyPressed>();
         AutoRemove().CreateEvent<IMenuGameSwitchingPressed>();
-        AutoRemove().CreateEvent<IClearAll>();
         
         //ChangeControl
         AutoRemove().CreateEvent<IAllowKeys>();
@@ -67,10 +66,7 @@ public class EVentBindings : IEVentBindings
         AutoRemove().CreateEvent<IRemoveBranch>();
         
         //Test
-        AutoRemove().CreateEvent<ITestList>();
-        
-        //CanvasOrder
-        AutoRemove().CreateEvent<ISetStartingCanvasOrder>();
+        AutoRemove().CreateEvent<IHistoryData>();
         
         //UIGO System
         AutoRemove().CreateEvent<ISetUpUIGOBranch>();

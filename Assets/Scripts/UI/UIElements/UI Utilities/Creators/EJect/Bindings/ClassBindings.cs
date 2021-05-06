@@ -20,8 +20,8 @@ public class ClassBindings : BindBase
         _eJectMaster.Bind<UIAudioManager>().To<IAudioService>().WithParameters();
         _eJectMaster.Bind<UIHomeGroup>().To<IHomeGroup>();
         _eJectMaster.Bind<HistoryTracker>().To<IHistoryTrack>();
-        _eJectMaster.Bind<UICancel>().To<ICancel>().WithParameters();
-        _eJectMaster.Bind<ReturnControlFromEditor>().To<IReturnFromEditor>().WithParameters();
+        _eJectMaster.Bind<UICancel>().To<ICancel>();
+        _eJectMaster.Bind<ReturnControlFromEditor>().To<IReturnFromEditor>();
         _eJectMaster.Bind<SwitchGroups>().To<ISwitchGroup>().WithParameters();
 
         //Tweens
@@ -76,12 +76,12 @@ public class ClassBindings : BindBase
         _eJectMaster.Bind<ScreenData>().To<IScreenData>().WithParameters();
         
         //Input Classes
-        _eJectMaster.Bind<MenuAndGameSwitching>().To<IMenuAndGameSwitching>().WithParameters();
+        _eJectMaster.Bind<MenuAndGameSwitching>().To<IMenuAndGameSwitching>();
         _eJectMaster.Bind<ChangeControl>().To<IChangeControl>().WithParameters();
         
         //InGameControl
-        _eJectMaster.Bind<_2DRaycast>().To<I2DRaycast>().WithParameters();
-        _eJectMaster.Bind<_3DRaycast>().To<I3DRaycast>().WithParameters();
+        _eJectMaster.Bind<_2DRaycast>().To<I2DRaycast>();
+        _eJectMaster.Bind<_3DRaycast>().To<I3DRaycast>();
         _eJectMaster.Bind<GOUISwitcher>().To<IGOUISwitcher>();
         _eJectMaster.Bind<InteractWithUi>().To<IInteractWithUi>();
         _eJectMaster.Bind<MoveVirtualCursor>().To<IMoveVirtualCursor>();
@@ -90,6 +90,9 @@ public class ClassBindings : BindBase
         //AutoOpenClose
         _eJectMaster.Bind<AutoOpenCloseController>().To<IAutoOpenClose>().WithParameters();
         _eJectMaster.Bind<DelayTimer>().To<IDelayTimer>();
+        
+        //CanvasCalculator
+        _eJectMaster.Bind<CanvasOrderCalculator>().To<ICanvasOrderCalculator>().WithParameters();
         
     }
 }

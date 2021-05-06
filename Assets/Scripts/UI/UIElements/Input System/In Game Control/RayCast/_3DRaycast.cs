@@ -6,12 +6,13 @@ namespace UIElements
 
     public class _3DRaycast : RaycastBase
     {
-        public _3DRaycast(IRaycastController parent): base(parent)
+        public override void OnStart()
         {
-            _laserLength = parent.LaserLength;
+            base.OnStart();
+            _laserLength = _inputScheme.ReturnVirtualCursorSettings.RaycastLength;
         }
 
-        private readonly float _laserLength;
+        private float _laserLength;
 
         protected override ICursorHandler RaycastToObj(Vector3 virtualCursorPos)
         {

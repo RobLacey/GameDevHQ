@@ -12,6 +12,7 @@ public interface INode : IToggles, IParameters
     IBranch HasChildBranch { get; set; }
     bool CanNotStoreNodeInHistory { get; }
     GameObject ReturnGameObject { get; }
+    GameObject InGameObject { get; set; }
     void SetNodeAsActive();
     void DeactivateNode();
     void ThisNodeIsHighLighted();

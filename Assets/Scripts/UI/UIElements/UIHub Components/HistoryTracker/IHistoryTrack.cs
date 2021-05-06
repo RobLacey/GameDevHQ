@@ -1,6 +1,6 @@
 ﻿using System;
 
-public interface IHistoryTrack : IParameters, IIsAService
+public interface IHistoryTrack : IParameters, IEServService
 {
     void OnEnable();
     bool IsPaused { get; }
@@ -10,6 +10,6 @@ public interface IHistoryTrack : IParameters, IIsAService
     void BackOneLevel();
     void MoveToLastBranchInHistory();
     void CheckForPopUpsWhenCancelPressed(Action endOfCancelAction);
-    void AddNodeToTestRunner(INode node);
+    void UpdateHistoryData(INode node);
     void BackToHomeScreen();
 }

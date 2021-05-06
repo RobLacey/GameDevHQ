@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using NaughtyAttributes;
+using UIElements;
 using UnityEngine;
 
 [Serializable]
-public partial class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IReturnHomeGroupIndex
+public partial class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IReturnHomeGroupIndex, IEServUser,
+                               IMonoEnable
 {
     [SerializeField] 
     private string _name = SetName;
@@ -34,17 +36,15 @@ public partial class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IRe
 
     
     //Main
-    public void OnAwake(InputScheme inputScheme)
-    {
-        _inputScheme = inputScheme;
-        IsAllowedType();
-    }
-
     public void OnEnable()
     {
+        IsAllowedType();
         FetchEvents();
         ObserveEvents();
+        UseEServLocator();
     }
+    
+    public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
 
     public void FetchEvents()
     {
@@ -122,5 +122,4 @@ public partial class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IRe
         _parentNode.SetAsHotKeyParent(_makeParentActive);
         _myBranch.MoveToThisBranch(_parentNode.MyBranch);
     }
-
 }

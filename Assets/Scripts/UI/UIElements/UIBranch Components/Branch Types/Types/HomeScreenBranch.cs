@@ -1,5 +1,4 @@
-﻿
-using UnityEngine;
+﻿using UIElements;
 
 public interface IHomeScreenBranch : IBranchBase { }
 
@@ -9,29 +8,38 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
     {
         SetCanvas(ActiveCanvas.Yes);
     }
+
+    private ISetCanvasOrder _setCanvasOrder;
     
     //Properties
     private bool CannotTweenOnHome => _myBranch.TweenOnHome == DoTween.DoNothing;
     private bool IsControlBar => _myBranch.IsControlBar();
 
-    public override void ObserveEvents()
+    //Main
+
+    public override void UseEServLocator()
     {
-        base.ObserveEvents();
-        EVent.Do.Subscribe<ISetStartingCanvasOrder>(SetControlBarCanvasOrder);
+        base.UseEServLocator();
+        _setCanvasOrder = EServ.Locator.Get<ISetCanvasOrder>(this);
     }
 
-    private void SetControlBarCanvasOrder(ISetStartingCanvasOrder args)
+    public override void OnStart()
+    {
+        base.OnStart();
+        SetControlBarCanvasOrder();
+    }
+
+    private void SetControlBarCanvasOrder()
     {
         if(!IsControlBar) return;
         
         var storedCondition = _myBranch.MyCanvas.enabled;
         _myBranch.MyCanvas.enabled = true;
         _myBranch.MyCanvas.overrideSorting = true;
-        _myBranch.MyCanvas.sortingOrder = args.ReturnControlBarCanvasOrder();
+        _myBranch.MyCanvas.sortingOrder = _setCanvasOrder.ReturnControlBarCanvasOrder();
         _myBranch.MyCanvas.enabled = storedCondition;
     }
 
-    //Main
     protected override void SaveInMenu(IInMenu args)
     {
         base.SaveInMenu(args);

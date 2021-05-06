@@ -292,6 +292,7 @@
               <e p="WaveWipeText.cs" t="Include" />
             </e>
             <e p="UIElements" t="Include">
+              <e p="GOUIModule.cs" t="Include" />
               <e p="INput System" t="Include">
                 <e p="In Game Control" t="Include">
                   <e p="CheckIfUnderUI.cs" t="Include" />
@@ -305,7 +306,6 @@
                     <e p="VirtualCursor.cs" t="Include" />
                     <e p="VirtualCursorSettings.cs" t="Include" />
                   </e>
-                  <e p="GOUIModule.cs" t="Include" />
                   <e p="OffScreenMarker.cs" t="Include" />
                   <e p="OffscreenMarkerData.cs" t="Include" />
                   <e p="RayCast" t="Include">
@@ -326,7 +326,6 @@
                 <e p="MultiSelectSettings.cs" t="Include" />
                 <e p="MultiSelectSystem.cs" t="Include" />
                 <e p="UIInput UtilityClasses" t="Include">
-                  <e p="CancelWhenClickedOff.cs" t="Include" />
                   <e p="MakeFolderUtil.cs" t="Include" />
                   <e p="ReturnControlFromEditor.cs" t="Include" />
                   <e p="SwitchGroups.cs" t="Include" />
@@ -479,6 +478,7 @@
                 </e>
               </e>
               <e p="UIBranch.cs" t="Include" />
+              <e p="UIData.cs" t="Include" />
               <e p="UIHub Components" t="Include">
                 <e p="HistoryTracker" t="Include">
                   <e p="HistoryListManagement.cs" t="Include" />

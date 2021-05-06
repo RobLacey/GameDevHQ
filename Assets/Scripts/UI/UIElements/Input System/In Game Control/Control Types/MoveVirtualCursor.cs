@@ -17,20 +17,18 @@ public class MoveVirtualCursor : IMoveVirtualCursor, IEServUser
     private int _screenTop;
     private InputScheme _inputScheme;
     private IHub _hub;
-    private IInput _myInput;
 
     //Main
     public void OnEnable() => UseEServLocator();
 
     public void UseEServLocator()
     {
-        _myInput = EServ.Locator.Get<IInput>(this);
+        _inputScheme = EServ.Locator.Get<InputScheme>(this);
         _hub = EServ.Locator.Get<IHub>(this);
     }
     
     public void OnStart()
     {
-        _inputScheme = _myInput.ReturnScheme;
         SetScreenSize(_hub.MainCanvasRect);
     }
 

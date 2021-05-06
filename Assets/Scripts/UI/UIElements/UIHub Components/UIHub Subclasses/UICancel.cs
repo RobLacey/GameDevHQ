@@ -1,4 +1,5 @@
 ﻿using System;
+using UIElements;
 using UnityEngine;
 
 interface ICancel
@@ -9,16 +10,16 @@ interface ICancel
 /// <summary>
 /// Class handles all UI cancel behaviour from cancel type to context sensitive cases
 /// </summary>
-public class UICancel : ICancel, IEServUser, IEventUser
+public class UICancel : ICancel, IEServUser, IEventUser, IMonoEnable
 {
-    public UICancel(IHub settings) => _globalEscapeSetting = settings.Scheme.GlobalCancelAction;
-
     //Variables
-    private readonly EscapeKey _globalEscapeSetting;
     private bool _gameIsPaused, _resolvePopUps;
     private IHistoryTrack _uiHistoryTrack;
+    private InputScheme _inputScheme;
 
-    //Properties
+
+    //Properties 7 Getters / Setters
+    public EscapeKey GlobalEscapeSetting => _inputScheme.GlobalCancelAction;
     private void SaveResolvePopUps(INoResolvePopUp args) => _resolvePopUps = args.ActiveResolvePopUps;
     private void SaveGameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
 
@@ -37,7 +38,11 @@ public class UICancel : ICancel, IEServUser, IEventUser
         EVent.Do.Subscribe<ICancelHoverOver>(CancelHooverOver);
     }
 
-    public void UseEServLocator() => _uiHistoryTrack = EServ.Locator.Get<IHistoryTrack>(this);
+    public void UseEServLocator()
+    {
+        _inputScheme = EServ.Locator.Get<InputScheme>(this);
+        _uiHistoryTrack = EServ.Locator.Get<IHistoryTrack>(this);
+    }
 
     private void CancelPressed(ICancelPressed args)
     {
@@ -51,7 +56,7 @@ public class UICancel : ICancel, IEServUser, IEventUser
 
     private void ProcessCancelType(EscapeKey escapeKey)
     {
-        if (escapeKey == EscapeKey.GlobalSetting) escapeKey = _globalEscapeSetting;
+        if (escapeKey == EscapeKey.GlobalSetting) escapeKey = GlobalEscapeSetting;
         
         switch (escapeKey)
         {

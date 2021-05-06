@@ -31,10 +31,6 @@ public abstract class InputScheme : ScriptableObject
     [Label("Hide Cursor When Keys Active")]
     private IsActive _hideMouseCursor = IsActive.No;
     
-    [SerializeField] 
-    [Label("Cancel When Clicked Off UI")] 
-    protected CancelClickLocation _cancelClickOn = CancelClickLocation.Never;
-    
     //TODO Create a custom cursor and virual cursor class so a hotspot can be set for a VC and just use a texture not a prefab
     
     [SerializeField] 
@@ -138,16 +134,15 @@ public abstract class InputScheme : ScriptableObject
     public InMenuOrGame WhereToStartGame => _startGameWhere;
     public bool CanUseVirtualCursor => _useVirtualCursor == VirtualControl.Yes;
     public bool HideMouseCursor => _hideMouseCursor == IsActive.Yes;
-
     public VirtualCursorSettings ReturnVirtualCursorSettings => _virtualCursorSettings;
-    public CancelClickLocation CanCancelWhenClickedOff => _cancelClickOn;
-
+    
+    
+    //Abstracts
     protected abstract string PauseButton { get; }
     protected abstract string PositiveSwitch { get; }
     protected abstract string NegativeSwitch { get; }
     protected abstract string PositiveGOUISwitch { get; }
     protected abstract string NegativeGOUISwitch { get; }
-
     protected abstract string CancelButton { get; }
     protected abstract string MenuToGameSwitch { get; }
     protected abstract string VCursorHorizontal { get; }
@@ -160,8 +155,8 @@ public abstract class InputScheme : ScriptableObject
     public abstract bool CanSwitchToKeysOrController(bool allowKeys);
     public abstract bool CanSwitchToMouseOrVC(bool allowKeys);
     protected abstract string SwitchToVC { get; }
-    protected abstract string MouseXAxis { get; }
-    protected abstract string MouseYAxis { get; }
+    protected abstract float MouseXAxis { get; }
+    protected abstract float MouseYAxis { get; }
     public abstract Vector3 GetMouseOrVcPosition();
     public abstract void SetVirtualCursorPosition(Vector3 pos);
     private protected abstract Vector3 GetVirtualCursorPosition();
@@ -203,7 +198,4 @@ public abstract class InputScheme : ScriptableObject
                 throw new ArgumentOutOfRangeException();
         }
     }
-
-    public abstract float MouseXAxisValue();
-    public abstract float MouseYAxisValue();
 }

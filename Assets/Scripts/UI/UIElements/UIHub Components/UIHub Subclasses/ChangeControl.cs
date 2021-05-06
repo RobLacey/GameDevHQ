@@ -9,20 +9,15 @@ using UnityEngine;
 public interface IChangeControl : IEventUser, IMonoEnable, IMonoStart { }
 
 public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSetUpOnStart, 
-                             IVcChangeControlSetUp, IActivateBranchOnControlsChange
+                             IVcChangeControlSetUp, IActivateBranchOnControlsChange, IEServUser
 {
-    public ChangeControl(IInput input)
-    {
-        _inputScheme = input.ReturnScheme;
-        _controlMethod = _inputScheme.ControlType;
-        _startInGame = input.StartInGame();
-    }
+    public ChangeControl(IInput input) => _startInGame = input.StartInGame();
 
     //Variables
-    private readonly ControlMethod _controlMethod;
+    private ControlMethod _controlMethod;
     private readonly bool _startInGame;
     private bool _sceneStarted;
-    private readonly InputScheme _inputScheme;
+    private InputScheme _inputScheme;
     private bool _switchJustPressed;
     private IBranch _activeBranch;
 
@@ -43,10 +38,13 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
 
     public void OnEnable()
     {
+        UseEServLocator();
         FetchEvents();
         ObserveEvents();
     }
     
+    public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
+
     public void FetchEvents()
     {
         AllowKeys = EVent.Do.Fetch<IAllowKeys>();
@@ -63,7 +61,11 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
     }
 
     //Main
-    public void OnStart() => OnLevelSetUp();
+    public void OnStart()
+    {
+        _controlMethod = _inputScheme.ControlType;
+        OnLevelSetUp();
+    }
 
     private void OnLevelSetUp()
     {
