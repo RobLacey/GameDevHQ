@@ -1,4 +1,5 @@
 ﻿
+using EZ.Service;
 using UIElements;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public interface IMoveVirtualCursor : IMonoEnable, IMonoStart
     void Move(ICursorSettings cursor);
 }
 
-public class MoveVirtualCursor : IMoveVirtualCursor, IEServUser
+public class MoveVirtualCursor : IMoveVirtualCursor, IServiceUser
 {
     //Variables
     private Vector2 _newCursorPos = Vector2.zero;
@@ -16,20 +17,20 @@ public class MoveVirtualCursor : IMoveVirtualCursor, IEServUser
     private int _screenBottom;
     private int _screenTop;
     private InputScheme _inputScheme;
-    private IHub _hub;
+    private IDataHub _myDataHub;
 
     //Main
-    public void OnEnable() => UseEServLocator();
+    public void OnEnable() => UseEZServiceLocator();
 
-    public void UseEServLocator()
+    public void UseEZServiceLocator()
     {
-        _inputScheme = EServ.Locator.Get<InputScheme>(this);
-        _hub = EServ.Locator.Get<IHub>(this);
+        _inputScheme = EZService.Locator.Get<InputScheme>(this);
+        _myDataHub = EZService.Locator.Get<IDataHub>(this);
     }
     
     public void OnStart()
     {
-        SetScreenSize(_hub.MainCanvasRect);
+        SetScreenSize(_myDataHub.MainCanvasRect);
     }
 
     private void SetScreenSize(RectTransform hubMainCanvas)

@@ -1,38 +1,71 @@
-﻿using UnityEngine;
+﻿using EZ.Service;
+using UnityEngine;
 
-public class UIAudio : NodeFunctionBase, IEServUser
+public class UIAudio : NodeFunctionBase
 {
-    public UIAudio(IAudioSettings settings, IUiEvents uiEvents)
+    public UIAudio(IAudioSettings settings, IUiEvents uiEvents): base(uiEvents)
     {
         _uiEvents = uiEvents;
         _audioScheme = settings.AudioScheme;
         CanActivate = true;
-        OnAwake(uiEvents);
     }
 
     //Variables 
-    private readonly AudioScheme _audioScheme;
+    private AudioScheme _audioScheme;
     private IAudioService _audioService;
     private bool _audioIsMute;
 
     //Properties
     private bool UsingScheme() => _audioScheme;
     private void AudioIsMuted() => _audioIsMute = true;
+    private void CanStart(IOnStart args) => _audioIsMute = false;
+
 
     //Main
-    protected sealed override void OnAwake(IUiEvents uiEvents)
-    {
-        base.OnAwake(uiEvents);
-        _uiEvents.MuteAudio += AudioIsMuted;
-        UseEServLocator();
-    }
-
-     public void UseEServLocator() => _audioService = EServ.Locator.Get<IAudioService>(this);
+     public override void UseEZServiceLocator()
+     {
+         base.UseEZServiceLocator();
+         _audioService = EZService.Locator.Get<IAudioService>(this);
+     }
 
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
+        _uiEvents.MuteAudio += AudioIsMuted;
+        InputEvents.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
+        HistoryEvents.Do.Subscribe<IOnStart>(CanStart);
+        _audioIsMute = true;
+    }
+
+    protected override void LateStartSetUp()
+    {
+        base.LateStartSetUp();
+        if(MyHubDataIsNull) return;
+
+        _audioIsMute = false;
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        UnObserveEvents();
+        _audioService = null;
+    }
+
+    protected override void UnObserveEvents()
+    {
+        base.UnObserveEvents();
+        InputEvents.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
+        HistoryEvents.Do.Unsubscribe<IOnStart>(CanStart);
+        _uiEvents.MuteAudio -= AudioIsMuted;
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        UnObserveEvents();
+        _audioService = null;
+        _audioScheme = null;
     }
 
     protected override bool CanBeHighlighted() => !UsingScheme() ? false : _audioScheme.HighlightedClip;
@@ -47,7 +80,6 @@ public class UIAudio : NodeFunctionBase, IEServUser
 
     protected override void SavePointerStatus(bool pointerOver)
     {
-
         if (IsAudioMuted()) return;
         if (pointerOver)
             PlayHighlightedAudio();

@@ -1,4 +1,6 @@
-﻿public interface IDisableData : IParameters
+﻿using EZ.Inject;
+
+public interface IDisableData : IParameters
 {
     INode UINode { get; }
     UINavigation Navigation { get; }

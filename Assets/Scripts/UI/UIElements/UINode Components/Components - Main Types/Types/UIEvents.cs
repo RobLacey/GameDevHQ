@@ -1,16 +1,13 @@
-﻿using UnityEngine;
-using UnityEngine.Events;
-using NaughtyAttributes;
+﻿using UnityEngine.Events;
 
 public class UIEvents : NodeFunctionBase
 {
-    private IEventSettings _eventSettings;
+    private readonly IEventSettings _eventSettings;
 
-    public UIEvents(IEventSettings settings, IUiEvents uiEvents)
+    public UIEvents(IEventSettings settings, IUiEvents uiEvents) : base(uiEvents)
     {
         _eventSettings = settings;
         CanActivate = true;
-        base.OnAwake(uiEvents);
     }
 
     private UnityEvent OnEnterEvent => _eventSettings.OnEnterEvent;

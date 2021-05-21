@@ -93,7 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0331c19bd454f81b89608b9d151f8e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startHow: 1
+  _startHow: 0
   _myGOUIPrefab: {fileID: 5921039408018227064, guid: d232574277994fb47897e30df1121d9e,
     type: 3}
   _useOffsetPosition: {fileID: 0}
@@ -107,22 +107,9 @@ MonoBehaviour:
     _frameFrequency: 7
     _screenSafeMargin: {x: 0, y: 0}
     _markerFolder: {fileID: 0}
-  _activeGOUI:
+  _activateGOUI:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5312986142321859191, guid: 978a8bd383a2df14eaaa4c0123e85903,
-          type: 3}
-        m_TargetAssemblyTypeName: MovementTest, Assembly-CSharp
-        m_MethodName: ActivateObject
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &5312986142321859081
 MonoBehaviour:
   m_ObjectHideFlags: 0

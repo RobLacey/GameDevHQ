@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class UIImageTextToggle : NodeFunctionBase
 {
-    public UIImageTextToggle(SwapImageOrTextSettings settings, IUiEvents uiEvents)
+    public UIImageTextToggle(SwapImageOrTextSettings settings, IUiEvents uiEvents) : base(uiEvents)
     {
         _changeWhen = settings.ChangeWhen;
         _toggleIsOff = settings.ToggleOff;
@@ -11,7 +11,6 @@ public class UIImageTextToggle : NodeFunctionBase
         _textToSwap = settings.TextToSwap;
         _changeTextToo = settings.ChangeTextToo;
         CanActivate = CacheAndCheckForStartingUIElements();
-        OnAwake(uiEvents);
     }
 
     //variables
@@ -28,16 +27,56 @@ public class UIImageTextToggle : NodeFunctionBase
     protected override bool FunctionNotActive() => !CanActivate;
     private bool ToggleOnNewControls => _changeWhen == ChangeWhen.OnControlChanged;
 
-    protected sealed override void OnAwake(IUiEvents uiEvents)
-    {
-        base.OnAwake(uiEvents);
-        CycleToggle(_isSelected);
-    }
 
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EVent.Do.Subscribe<IAllowKeys>(OnControlsChanged);
+        InputEvents.Do.Subscribe<IAllowKeys>(OnControlsChanged);
+    }
+
+    protected override void UnObserveEvents()
+    {
+        base.UnObserveEvents();
+        InputEvents.Do.Unsubscribe<IAllowKeys>(OnControlsChanged);
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        UnObserveEvents();
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        UnObserveEvents();
+    }
+
+    protected override void LateStartSetUp()
+    {
+        base.LateStartSetUp();
+        if (MyHubDataIsNull) return;
+        
+        SetUp();
+    }
+
+    public override void OnStart()
+    {
+        base.OnStart();
+        if(!CanActivate) return;
+        SetUp();
+    }
+
+    private void SetUp()
+    {
+        if (ToggleOnNewControls)
+        {
+            CycleToggle(_myDataHub.AllowKeys);
+        }
+        else
+        {
+            CycleToggle(_isSelected);
+        }
     }
 
     private bool CacheAndCheckForStartingUIElements()
@@ -46,7 +85,6 @@ public class UIImageTextToggle : NodeFunctionBase
             _startingText = _textToSwap.text;
         return _toggleIsOff || _toggleIsOn || _textToSwap;
     }
-
 
     private void CycleToggle(bool isOn)
     {
@@ -66,7 +104,7 @@ public class UIImageTextToggle : NodeFunctionBase
 
     private void OnControlsChanged(IAllowKeys args)
     {
-        if (!ToggleOnNewControls) return;
+        if (!ToggleOnNewControls || !_uiEvents.ReturnMasterNode.MyBranch.CanvasIsEnabled) return;
         CycleToggle(args.CanAllowKeys);
     }
 

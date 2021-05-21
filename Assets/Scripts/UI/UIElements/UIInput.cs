@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using EZ.Events;
+using EZ.Inject;
+using EZ.Service;
 using NaughtyAttributes;
 using UnityEngine;
 
@@ -18,9 +21,9 @@ public interface ISwitchGroupSettings
     void DoChangeControlPressed();
 }
 
-public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ICancelPressed, IChangeControlsPressed, 
-                       IMenuGameSwitchingPressed, IEServUser, IEventDispatcher, IVirtualCursorSettings,
-                       ISwitchGroupSettings
+public class UIInput : MonoBehaviour, IEZEventUser, IPausePressed, ICancelPressed, IChangeControlsPressed, 
+                       IMenuGameSwitchingPressed, IServiceUser, IEZEventDispatcher, IVirtualCursorSettings,
+                       ISwitchGroupSettings, IIsAService
 {
     [SerializeField] [Space(10f)]
     [ValidateInput(CheckForScheme, InfoBox)]
@@ -32,7 +35,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ICancelPressed,
     [Header(Settings, order = 2)][HorizontalLine(1f, EColor.Blue, order = 3)] 
     
     [SerializeField] 
-    private InputEvents _inputEvents  = default;
+    private UIInputEvents _uiInputEvents  = default;
 
     //Variables
     private bool _canStart, _inMenu, _gameIsPaused, _allowKeys, _nothingSelected;
@@ -69,11 +72,11 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ICancelPressed,
         _inMenu = args.InTheMenu;
         if(_inMenu)
         {
-            _inputEvents.SwitchBetweenGameAndMenuPressed(InMenuOrGame.InMenu);
+            _uiInputEvents.SwitchBetweenGameAndMenuPressed(InMenuOrGame.InMenu);
         }
         else
         {
-            _inputEvents.SwitchBetweenGameAndMenuPressed(InMenuOrGame.InGameControl);
+            _uiInputEvents.SwitchBetweenGameAndMenuPressed(InMenuOrGame.InGameControl);
         }
     }
 
@@ -83,7 +86,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ICancelPressed,
     private void SaveGameIsPaused(IGameIsPaused args)
     {
         _gameIsPaused = args.GameIsPaused;
-        _inputEvents.GamePausedStatus(_gameIsPaused);
+        _uiInputEvents.GamePausedStatus(_gameIsPaused);
     }
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private void SaveOnHomeScreen (IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
@@ -100,20 +103,25 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ICancelPressed,
     //Main
     private void Awake()
     {
-        _inputScheme.OnAwake();
-        ChangeControl = EJect.Class.WithParams<IChangeControl>(this);
-        MenuToGameSwitching = EJect.Class.NoParams<IMenuAndGameSwitching>();
-        VirtualCursor = EJect.Class.WithParams<IVirtualCursor>(this);
-        SwitchGroups = EJect.Class.WithParams<ISwitchGroup>(this);
-        ReturnControlFromEditor = EJect.Class.NoParams<IReturnFromEditor>();
-        EServ.Locator.AddNew((IInput)this);
-        EServ.Locator.AddNew(_inputScheme);
-        UseEServLocator();
-        _inputScheme.SetCursor();
+        _inputScheme.Awake();
+        ChangeControl = EZInject.Class.WithParams<IChangeControl>(this);
+        MenuToGameSwitching = EZInject.Class.NoParams<IMenuAndGameSwitching>();
+        VirtualCursor = EZInject.Class.WithParams<IVirtualCursor>(this);
+        SwitchGroups = EZInject.Class.WithParams<ISwitchGroup>(this);
+        ReturnControlFromEditor = EZInject.Class.NoParams<IReturnFromEditor>();
+        AddService();
+    }
+
+    public void AddService() => EZService.Locator.AddNew<IInput>(this);
+
+    public void OnRemoveService()
+    {
+        throw new NotImplementedException();
     }
 
     private void OnEnable()
     {
+        UseEZServiceLocator();
         FetchEvents();
         SetUpHotKeys();
         ChangeControl.OnEnable();
@@ -123,7 +131,7 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ICancelPressed,
         ObserveEvents();
     }
 
-    public void UseEServLocator() => HistoryTracker = EServ.Locator.Get<IHistoryTrack>(this);
+    public void UseEZServiceLocator() => HistoryTracker = EZService.Locator.Get<IHistoryTrack>(this);
 
     private void SetUpHotKeys()
     {
@@ -136,21 +144,21 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ICancelPressed,
     
     public void FetchEvents()
     {
-        OnPausedPressed = EVent.Do.Fetch<IPausePressed>();
-        OnMenuAndGameSwitch = EVent.Do.Fetch<IMenuGameSwitchingPressed>();
-        OnCancelPressed = EVent.Do.Fetch<ICancelPressed>();
-        OnChangeControlPressed = EVent.Do.Fetch<IChangeControlsPressed>();
+        OnPausedPressed = InputEvents.Do.Fetch<IPausePressed>();
+        OnMenuAndGameSwitch = InputEvents.Do.Fetch<IMenuGameSwitchingPressed>();
+        OnCancelPressed = InputEvents.Do.Fetch<ICancelPressed>();
+        OnChangeControlPressed = InputEvents.Do.Fetch<IChangeControlsPressed>();
     }
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IGameIsPaused>(SaveGameIsPaused);
-        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
-        EVent.Do.Subscribe<IOnStart>(SaveOnStart);
-        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
-        EVent.Do.Subscribe<IInMenu>(SaveInMenu);
-        EVent.Do.Subscribe<INoPopUps>(SaveNoActivePopUps);
-        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+        HistoryEvents.Do.Subscribe<IGameIsPaused>(SaveGameIsPaused);
+        HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+        HistoryEvents.Do.Subscribe<IOnStart>(SaveOnStart);
+        HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        HistoryEvents.Do.Subscribe<IInMenu>(SaveInMenu);
+        PopUpEvents.Do.Subscribe<INoPopUps>(SaveNoActivePopUps);
+        InputEvents.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
     
     private void Start()   
@@ -261,4 +269,5 @@ public class UIInput : MonoBehaviour, IEventUser, IPausePressed, ICancelPressed,
     private bool CanEnterPauseWithNothingSelected() =>
         (_noActivePopUps && !_gameIsPaused && HistoryTracker.NoHistory)
         && NothingSelectedAction;
+
 }

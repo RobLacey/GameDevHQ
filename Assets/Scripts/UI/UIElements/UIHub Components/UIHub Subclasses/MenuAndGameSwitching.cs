@@ -1,10 +1,12 @@
 ﻿
 using System;
+using EZ.Events;
+using EZ.Service;
 using UIElements;
 
-public interface IMenuAndGameSwitching : IEventUser, IMonoEnable, IMonoStart { }
+public interface IMenuAndGameSwitching : IEZEventUser, IMonoEnable, IMonoStart { }
 
-public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispatcher, IEServUser
+public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEZEventDispatcher, IServiceUser
 {
     //Variables
     private bool _noPopUps = true;
@@ -27,21 +29,21 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEventDispat
 
     public void OnEnable()
     {
-        UseEServLocator();
+        UseEZServiceLocator();
         FetchEvents();
         ObserveEvents();
     }
     
-    public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
+    public void UseEZServiceLocator() => _inputScheme = EZService.Locator.Get<InputScheme>(this);
 
-    public void FetchEvents() => IsInMenu = EVent.Do.Fetch<IInMenu>();
+    public void FetchEvents() => IsInMenu = HistoryEvents.Do.Fetch<IInMenu>();
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IMenuGameSwitchingPressed>(CheckForActivation);
-        EVent.Do.Subscribe<IGameIsPaused>(WhenTheGameIsPaused);
-        EVent.Do.Subscribe<IOnStart>(StartUp);
-        EVent.Do.Subscribe<INoPopUps>(SaveNoPopUps);
+        InputEvents.Do.Subscribe<IMenuGameSwitchingPressed>(CheckForActivation);
+        HistoryEvents.Do.Subscribe<IGameIsPaused>(WhenTheGameIsPaused);
+        HistoryEvents.Do.Subscribe<IOnStart>(StartUp);
+        PopUpEvents.Do.Subscribe<INoPopUps>(SaveNoPopUps);
     }
     
     public void OnStart()

@@ -1,30 +1,34 @@
-﻿using UIElements;
+﻿using EZ.Service;
+using UIElements;
 using UnityEngine;
 using static UnityEngine.Mathf;
 
-public interface IToolTipCalcs : IMonoStart
+public interface IToolTipCalcs : IMonoStart, IMonoEnable, IMonoDisable
 {
     (Vector3 _toolTipData, Vector2 _newPivot)
         CalculatePosition(Vector3 tooltipPos, Vector3 toolTipSize, ToolTipAnchor toolTipAnchor);
 }
 
-public class ToolTipsCalcs : IEServUser, IToolTipCalcs
+public class ToolTipsCalcs : IServiceUser, IToolTipCalcs
 {
     private float _canvasWidth, _canvasHeight;
     private Vector3 _toolTipPosition, _tooltipSize;
     private Vector2 _newPivot, _parentNodePosition, _offset;
     private readonly float _safeZone;
-    private IHub _myUiHub;
+    private IDataHub _myDataHub;
     
     public ToolTipsCalcs(ITooltipCalcsData data)
     {
         _safeZone = data.SafeZone;
-        UseEServLocator();
     }
     
-    public void UseEServLocator() => _myUiHub = EServ.Locator.Get<IHub>(this);
+    public void OnEnable() => UseEZServiceLocator();
 
-    public void OnStart() => SetUsableArea(_myUiHub.MainCanvasRect);
+    public void OnDisable() => _myDataHub = null;
+
+    public void UseEZServiceLocator() => _myDataHub = EZService.Locator.Get<IDataHub>(this);
+
+    public void OnStart() => SetUsableArea(_myDataHub.MainCanvasRect);
 
     private void SetUsableArea(RectTransform mainCanvas)
     {
@@ -34,6 +38,7 @@ public class ToolTipsCalcs : IEServUser, IToolTipCalcs
     }
 
     //Main
+
     public (Vector3 _toolTipData, Vector2 _newPivot) 
         CalculatePosition (Vector3 tooltipPos, Vector3 toolTipSize, ToolTipAnchor toolTipAnchor)
     {

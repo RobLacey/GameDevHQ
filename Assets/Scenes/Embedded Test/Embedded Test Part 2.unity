@@ -216,7 +216,6 @@ GameObject:
   - component: {fileID: 107165966}
   - component: {fileID: 107165965}
   - component: {fileID: 107165964}
-  - component: {fileID: 107165970}
   m_Layer: 0
   m_Name: UIHub
   m_TagString: Untagged
@@ -237,12 +236,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startOnThisBranch: {fileID: 1174381628}
-  _pauseMenuCanvasOrder: 10
-  _toolTipCanvasOrder: 20
-  _resolvePopUpCanvasOrder: 5
-  _timedPopUpCanvasOrder: 5
-  _optionalPopUpCanvasOrder: 5
-  _nextScene: 5
+  _canvasSortingOrderSettings:
+    _pauseMenu: 20
+    _toolTip: 25
+    _resolvePopUp: 20
+    _timedPopUp: 15
+    _optionalPopUp: 15
+    _virtualCursor: 30
+    _inGameObject: -3
+    _offScreenMarker: 10
+    _controlBar: 12
+  _uiData:
+    _lastHighlighted: {fileID: 0}
+    _lastHighlightedGO: {fileID: 0}
+    _lastSelected: {fileID: 0}
+    _lastSelectedGO: {fileID: 0}
+    _activeBranch: {fileID: 0}
+    _onHomeScreen: 1
+    _controllingWithKeys: 0
+    _inMenu: 0
+    _selectedNodes: []
+    _selectedGOs: []
+  _nextLevel: 5
 --- !u!114 &107165965
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,10 +271,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inputScheme: {fileID: 11400000, guid: 347a3b76907f353408c0de665cac7c85, type: 2}
-  _switchBetweenMenuAndGame:
-    m_PersistentCalls:
-      m_Calls: []
   _hotKeySettings: []
+  _inputEvents:
+    _switchBetweenGameAndMenu:
+      m_PersistentCalls:
+        m_Calls: []
+    _gameIsPaused:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!82 &107165966
 AudioSource:
   m_ObjectHideFlags: 0
@@ -421,29 +440,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &107165970
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107165963}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86bb58c54bbd4fb0a2bf58f6edbdb7b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _inGameControlType: 0
-  _virtualCursor:
-    _restrictRaycastTo: 2
-    _virtualCursor: {fileID: 0}
-    _cursorSpeed: 7
-    _layerToHit:
-      serializedVersion: 2
-      m_Bits: 0
-    _raycastLength: 1000
-  _cancelWhen: 0
-  _safeNodeList: []
 --- !u!1 &179514264
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,12 +599,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e6ca6c0ffdb19944bd0c517764a1cad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _lastHighlighted: {fileID: 0}
-  _lastSelected: {fileID: 0}
-  _activeBranch: {fileID: 0}
-  _history: []
-  _onHomeScreen: 1
-  _allowKeys: 0
+  _uiData:
+    _lastHighlighted: {fileID: 0}
+    _lastHighlightedGO: {fileID: 0}
+    _lastSelected: {fileID: 0}
+    _lastSelectedGO: {fileID: 0}
+    _activeBranch: {fileID: 0}
+    _onHomeScreen: 1
+    _controllingWithKeys: 0
+    _inMenu: 0
+    _selectedNodes: []
+    _selectedGOs: []
+  _nextScene: 6
   _eventsForTest:
     _event1:
       m_PersistentCalls:
@@ -633,6 +635,8 @@ MonoBehaviour:
   _test3Test: 
   _test4Test: 
   _test5Test: 
+  _newObject: {fileID: 0}
+  _parentFolder: {fileID: 0}
 --- !u!1 &367702985
 GameObject:
   m_ObjectHideFlags: 0
@@ -946,6 +950,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1025689155}
   - component: {fileID: 1025689154}
+  - component: {fileID: 1025689156}
   m_Layer: 0
   m_Name: Node 1
   m_TagString: Untagged
@@ -966,17 +971,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonFunction: 0
-  _autoOpenCloseOverride: 1
+  _autoOpen: 1
   _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 323
   _navigation:
     _childBranch: {fileID: 0}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 2038035061}
     _left: {fileID: 0}
@@ -1011,6 +1020,7 @@ MonoBehaviour:
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
+    _fixedPosition: {fileID: 0}
   _events:
     _highlightEvents:
       _onEnterEvent:
@@ -1024,8 +1034,8 @@ MonoBehaviour:
         m_PersistentCalls:
           m_Calls:
           - m_Target: {fileID: 107165964}
-            m_TargetAssemblyTypeName: UIHub, Assembly-CSharp
-            m_MethodName: LoadNextScene
+            m_TargetAssemblyTypeName: UIElements.UIHub, Assembly-CSharp
+            m_MethodName: LoadNextLevel
             m_Mode: 1
             m_Arguments:
               m_ObjectArgument: {fileID: 0}
@@ -1062,6 +1072,20 @@ RectTransform:
   m_AnchoredPosition: {x: 557, y: 307}
   m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1025689156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1025689153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f12c3acdfb4140bd7b437f898978ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _uiImage: {fileID: 0}
+  _uiText: {fileID: 0}
 --- !u!1 &1074062678
 GameObject:
   m_ObjectHideFlags: 0
@@ -1198,15 +1222,16 @@ MonoBehaviour:
   _branchType: 0
   _controlBar: 1
   _startOnThisNode: {fileID: 1824789349}
-  _orderInCanvas: 0
-  _canvasOrderSetting: 3
-  _moveType: 0
-  _autoOpenClose: 0
-  _blockOtherNodes: 1
+  _onlyAllowOnHomeScreen: 0
   _timer: 1
+  _storeOrResetOptional: 1
+  _autoClose: 1
+  _autoCloseDelay: 0.25
+  _moveType: 0
+  _canvasOrderSetting: 3
+  _orderInCanvas: 0
   _screenType: 0
   _stayVisible: 1
-  _storeOrResetOptional: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
   _escapeKeyFunction: 3
@@ -1231,7 +1256,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList:
-  - _element: {fileID: 1824789350}
+  - _name: Node a Tween
+    _element: {fileID: 1824789350}
     _positionSettings:
       _grabStartPosition: 1
       _grabMidPosition: 1
@@ -1256,7 +1282,8 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  - _element: {fileID: 1436463073}
+  - _name: Node b Tween
+    _element: {fileID: 1436463073}
     _positionSettings:
       _grabStartPosition: 1
       _grabMidPosition: 1
@@ -1552,15 +1579,16 @@ MonoBehaviour:
   _branchType: 1
   _controlBar: 1
   _startOnThisNode: {fileID: 1025689154}
-  _orderInCanvas: 0
-  _canvasOrderSetting: 3
-  _moveType: 1
-  _autoOpenClose: 0
-  _blockOtherNodes: 1
+  _onlyAllowOnHomeScreen: 0
   _timer: 1
+  _storeOrResetOptional: 1
+  _autoClose: 1
+  _autoCloseDelay: 0.25
+  _moveType: 1
+  _canvasOrderSetting: 3
+  _orderInCanvas: 0
   _screenType: 1
   _stayVisible: 1
-  _storeOrResetOptional: 1
   _tweenOnHome: 1
   _saveExitSelection: 0
   _escapeKeyFunction: 3
@@ -1606,7 +1634,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildObjectsList:
-  - _element: {fileID: 1025689155}
+  - _name: Node 1 Tween
+    _element: {fileID: 1025689155}
     _positionSettings:
       _grabStartPosition: 1
       _grabMidPosition: 1
@@ -1631,7 +1660,8 @@ MonoBehaviour:
     _targetRotation: {x: 0, y: 0, z: 0}
     _punchStartScale: {x: 0, y: 0, z: 0}
     _shakeStartScale: {x: 0, y: 0, z: 0}
-  - _element: {fileID: 2038035060}
+  - _name: Node 2 Tween
+    _element: {fileID: 2038035060}
     _positionSettings:
       _grabStartPosition: 1
       _grabMidPosition: 1
@@ -1766,6 +1796,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1436463073}
   - component: {fileID: 1436463074}
+  - component: {fileID: 1436463075}
   m_Layer: 0
   m_Name: Node b
   m_TagString: Untagged
@@ -1807,17 +1838,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonFunction: 0
-  _autoOpenCloseOverride: 1
+  _autoOpen: 1
   _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 323
   _navigation:
     _childBranch: {fileID: 1323153078}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 1824789349}
     _down: {fileID: 0}
     _left: {fileID: 0}
@@ -1852,6 +1887,7 @@ MonoBehaviour:
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
+    _fixedPosition: {fileID: 0}
   _events:
     _highlightEvents:
       _onEnterEvent:
@@ -1882,6 +1918,20 @@ MonoBehaviour:
       _onToggleEvent:
         m_PersistentCalls:
           m_Calls: []
+--- !u!114 &1436463075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436463072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f12c3acdfb4140bd7b437f898978ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _uiImage: {fileID: 0}
+  _uiText: {fileID: 0}
 --- !u!1 &1599072432
 GameObject:
   m_ObjectHideFlags: 0
@@ -1967,6 +2017,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1824789350}
   - component: {fileID: 1824789349}
+  - component: {fileID: 1824789351}
   m_Layer: 0
   m_Name: Node a
   m_TagString: Untagged
@@ -1987,17 +2038,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonFunction: 0
-  _autoOpenCloseOverride: 1
+  _autoOpen: 1
   _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 67
   _navigation:
     _childBranch: {fileID: 1323153078}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 1436463074}
     _left: {fileID: 0}
@@ -2032,6 +2087,7 @@ MonoBehaviour:
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
+    _fixedPosition: {fileID: 0}
   _events:
     _highlightEvents:
       _onEnterEvent:
@@ -2071,6 +2127,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1824789351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1824789348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f12c3acdfb4140bd7b437f898978ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _uiImage: {fileID: 0}
+  _uiText: {fileID: 0}
 --- !u!1 &1875141296
 GameObject:
   m_ObjectHideFlags: 0
@@ -2156,6 +2226,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2038035060}
   - component: {fileID: 2038035061}
+  - component: {fileID: 2038035062}
   m_Layer: 0
   m_Name: Node 2
   m_TagString: Untagged
@@ -2197,17 +2268,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonFunction: 0
-  _autoOpenCloseOverride: 1
+  _autoOpen: 1
   _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
     _toggleGroupId: 0
     _startAsSelected: 1
     _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 323
   _navigation:
     _childBranch: {fileID: 0}
-    _setNavigation: 1
+    _setKeyNavigation: 3
     _up: {fileID: 1025689154}
     _down: {fileID: 0}
     _left: {fileID: 0}
@@ -2242,6 +2317,7 @@ MonoBehaviour:
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
+    _fixedPosition: {fileID: 0}
   _events:
     _highlightEvents:
       _onEnterEvent:
@@ -2255,8 +2331,8 @@ MonoBehaviour:
         m_PersistentCalls:
           m_Calls:
           - m_Target: {fileID: 107165964}
-            m_TargetAssemblyTypeName: UIHub, Assembly-CSharp
-            m_MethodName: LoadNextScene
+            m_TargetAssemblyTypeName: UIElements.UIHub, Assembly-CSharp
+            m_MethodName: LoadNextLevel
             m_Mode: 1
             m_Arguments:
               m_ObjectArgument: {fileID: 0}
@@ -2272,3 +2348,17 @@ MonoBehaviour:
       _onToggleEvent:
         m_PersistentCalls:
           m_Calls: []
+--- !u!114 &2038035062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2038035059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f12c3acdfb4140bd7b437f898978ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _uiImage: {fileID: 0}
+  _uiText: {fileID: 0}

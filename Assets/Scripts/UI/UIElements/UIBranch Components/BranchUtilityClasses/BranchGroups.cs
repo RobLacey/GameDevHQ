@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public static class BranchGroups
 {
@@ -8,7 +9,7 @@ public static class BranchGroups
     private static int index;
     
     public static void AddControlBarToGroupList(List<GroupList> groupsList,
-                                                List<UIBranch> homeBranches,
+                                                List<IBranch> homeBranches,
                                                 IBranch myBranch)
     {
         if(myBranch.ScreenType != ScreenType.FullScreen) return;
@@ -26,7 +27,7 @@ public static class BranchGroups
             groupsList.Add(GroupList(myBranch));
     }
 
-    private static void AddControlBarAsNewGroup(List<GroupList> groupsList, List<UIBranch> homeBranches)
+    private static void AddControlBarAsNewGroup(List<GroupList> groupsList, List<IBranch> homeBranches)
     {
         foreach (var homeBranch in homeBranches.Where(homeBranch => homeBranch.IsControlBar()))
         {

@@ -1,13 +1,14 @@
-﻿
-using System;
+﻿using System;
+using EZ.Inject;
+using EZ.Service;
 using UIElements;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
-public interface IGetScreenPosition : IMonoStart
+public interface IGetScreenPosition : IMono
 {
     void SetExactPosition(bool isKeyboard);
+    void LateStartSetUp();
 }
 
 public interface ITooltipCalcsData : IParameters
@@ -15,49 +16,79 @@ public interface ITooltipCalcsData : IParameters
     float SafeZone { get; }
 }
 
-public class GetScreenPosition : IGetScreenPosition, IEServUser, ITooltipCalcsData
+public class GetScreenPosition : IGetScreenPosition, IServiceUser, ITooltipCalcsData
 {
     public GetScreenPosition(IToolTipData uiTooltip)
     {
         _tooltip = uiTooltip;
-        _scheme = _tooltip.Scheme;
         _listOfTooltips = _tooltip.ListOfTooltips;
         _toolTipsRects = _tooltip.ToolTipsRects;
         _myCorners = _tooltip.MyCorners;
         _uiCamera = _tooltip.UiCamera;
         _parentRectTransform = _tooltip.ParentRectTransform;
-        _toolTipCalcs = EJect.Class.WithParams<IToolTipCalcs>(this);
-        UseEServLocator();
-    }
-
-    public void UseEServLocator()
-    {
-        _inputScheme = EServ.Locator.Get<InputScheme>(this);
-        _myUiHUb = EServ.Locator.Get<IHub>(this);
     }
 
     private readonly IToolTipData _tooltip;
-    private readonly IToolTipCalcs _toolTipCalcs;
-    private readonly ToolTipScheme _scheme;
+    private IToolTipCalcs _toolTipCalcs;
     private readonly LayoutGroup[] _listOfTooltips;
     private readonly RectTransform[] _toolTipsRects;
     private readonly Vector3[] _myCorners;
     private readonly RectTransform _parentRectTransform;
-    private readonly Camera _uiCamera;
     private RectTransform _mainCanvasRectTransform;
+    private readonly Camera _uiCamera;
     private InputScheme _inputScheme;
-    private IHub _myUiHUb;
+    private IDataHub _myDataHub;
 
     //Properties
-    public float SafeZone => _scheme.ScreenSafeZone;
+    public float SafeZone => Scheme.ScreenSafeZone;
+    private ToolTipScheme Scheme => _tooltip.Scheme;
 
     //Properties
-    private Vector2 KeyboardPadding => new Vector2(_scheme.KeyboardXPadding, _scheme.KeyboardYPadding);
-    private Vector2 MousePadding => new Vector2(_scheme.MouseXPadding, _scheme.MouseYPadding);
+    private Vector2 KeyboardPadding => new Vector2(Scheme.KeyboardXPadding, Scheme.KeyboardYPadding);
+    private Vector2 MousePadding => new Vector2(Scheme.MouseXPadding, Scheme.MouseYPadding);
+
+    //Main
+    public void OnAwake() => _toolTipCalcs = EZInject.Class.WithParams<IToolTipCalcs>(this);
+
+    public void OnEnable()
+    {
+        UseEZServiceLocator();
+        _toolTipCalcs.OnEnable();
+        LateStartSetUp();
+    }
+
+    public void UseEZServiceLocator()
+    {
+        _inputScheme = EZService.Locator.Get<InputScheme>(this);
+        _myDataHub = EZService.Locator.Get<IDataHub>(this);
+    }
+
+    public void LateStartSetUp()
+    {
+        if(_myDataHub.IsNull()) return;
+        
+        _mainCanvasRectTransform = _myDataHub.MainCanvasRect;
+        _toolTipCalcs.OnStart();
+    }
+
+    public void OnDisable()
+    {
+        _inputScheme = null;
+        _myDataHub = null;
+        _toolTipCalcs.OnDisable();
+    }
+
+    public void OnDestroy()
+    {
+        _toolTipCalcs.OnDisable();
+        _inputScheme = null;
+        _myDataHub = null;
+        _toolTipCalcs = null;
+    }
 
     public void OnStart()
     {
-        _mainCanvasRectTransform = _myUiHUb.MainCanvasRect;
+        LateStartSetUp();
         _toolTipCalcs.OnStart();
     }
 
@@ -68,9 +99,9 @@ public class GetScreenPosition : IGetScreenPosition, IEServUser, ITooltipCalcsDa
         var toolTipSize = new Vector2(_listOfTooltips[index].preferredWidth
                                       , _listOfTooltips[index].preferredHeight);
 
-        var toolTipAnchorPos  = isKeyboard ? _scheme.KeyboardPosition : _scheme.ToolTipPosition;
+        var toolTipAnchorPos  = isKeyboard ? Scheme.KeyboardPosition : Scheme.ToolTipPosition;
 
-        var tooTipType = isKeyboard ? _scheme.ToolTipTypeKeys : _scheme.ToolTipTypeMouse;
+        var tooTipType = isKeyboard ? Scheme.ToolTipTypeKeys : Scheme.ToolTipTypeMouse;
         
         var toolTipPos = GetToolTipsScreenPosition(isKeyboard, tooTipType);
 
@@ -109,7 +140,7 @@ public class GetScreenPosition : IGetScreenPosition, IEServUser, ITooltipCalcsDa
 
     private Vector3 PositionBasedOnSettings(Vector3 position)
     {
-        switch (_scheme.PositionToUse)
+        switch (Scheme.PositionToUse)
         {
             case UseSide.ToTheRightOf:
                 position = _myCorners[3] + ((_myCorners[2] - _myCorners[3]) / 2);

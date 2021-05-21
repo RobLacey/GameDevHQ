@@ -1,17 +1,18 @@
-﻿using UnityEngine.EventSystems;
+﻿using EZ.Service;
+using UnityEngine.EventSystems;
 
 public interface IReturnFromEditor
 {
     bool CanReturn(bool inMenu, IBranch activeBranch);
 }
 
-public class ReturnControlFromEditor : IReturnFromEditor, IEServUser
+public class ReturnControlFromEditor : IReturnFromEditor, IServiceUser
 {
     private InputScheme _scheme;
 
-    public ReturnControlFromEditor() => UseEServLocator();
+    public ReturnControlFromEditor() => UseEZServiceLocator();
 
-    public void UseEServLocator() => _scheme = EServ.Locator.Get<InputScheme>(this);
+    public void UseEZServiceLocator() => _scheme = EZService.Locator.Get<InputScheme>(this);
 
     public bool CanReturn(bool inMenu, IBranch activeBranch)
     {

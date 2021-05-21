@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections;
+using EZ.Service;
 using UIElements;
 using UnityEngine;
 
 /// <summary>
 /// This class handles playing UI audio. Is called by invoking the static event from within the project
 /// </summary>
-public class UIAudioManager : IAudioService, IEServService
+public class UIAudioManager : IAudioService, IIsAService
 {
     private AudioSource _myAudioSource;
     private bool IsPlayingSelected { get; set; }
@@ -16,7 +17,9 @@ public class UIAudioManager : IAudioService, IEServService
 
     public void OnEnable() => AddService();
 
-    public void AddService() => EServ.Locator.AddNew<IAudioService>(this);
+    public void AddService() => EZService.Locator.AddNew<IAudioService>(this);
+    
+    public void OnRemoveService() => OnDisable();
 
     public void OnDisable() => _myAudioSource = null;
 
@@ -57,9 +60,8 @@ public class UIAudioManager : IAudioService, IEServService
     public void PlayDisabled(AudioClip audioClip, float volume) => Play(audioClip, volume);
 }
 
-public interface IAudioService : IMonoEnable
+public interface IAudioService : IMonoEnable, IMonoDisable
 {
-    void OnDisable();
     void PlaySelect(AudioClip audioClip, float volume);
     void PlayCancel(AudioClip audioClip, float volume);
     void PlayHighlighted(AudioClip audioClip, float volume);

@@ -1,11 +1,14 @@
 ﻿
 using System;
+using System.Collections.Generic;
+using EZ.Events;
+using EZ.Service;
 using UnityEngine;
 
 public interface IHomeGroup
 {
     void OnEnable();
-    void SetUpHomeGroup(IBranch[] homeGroupBranches);
+    void SetUpHomeGroup();
     void SwitchHomeGroups(SwitchType switchType);
 }
 
@@ -13,18 +16,19 @@ public interface IHomeGroup
 /// This class Looks after switching between, clearing and correctly restoring the home screen branches. Main functionality
 /// is for keyboard or controller. Differ from internal branch groups as involve Branches not Nodes
 /// </summary>
-public class UIHomeGroup : IEventUser, IHomeGroup, ISwitchGroupPressed, IEventDispatcher
+public class UIHomeGroup : IEZEventUser, IHomeGroup, ISwitchGroupPressed, IEZEventDispatcher, IServiceUser
 {
     //Variables
-    private IBranch[] _homeGroup;
     private bool _onHomeScreen = true;
     private bool _gameIsPaused;
     private int _index = 0;
     private IBranch _lastActiveHomeBranch;
     private bool _allowKeys;
     private IBranch _activeBranch;
+    private IHub _myUIHub;
 
     //Properties and Getters / Setters
+    private IBranch[] HomeGroup => _myUIHub.HomeBranches.ToArray();
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
     private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
@@ -36,31 +40,30 @@ public class UIHomeGroup : IEventUser, IHomeGroup, ISwitchGroupPressed, IEventDi
     //Main
     public void OnEnable()
     {
+        UseEZServiceLocator();
         FetchEvents();
         ObserveEvents();
     }
 
+    public void UseEZServiceLocator() => _myUIHub = EZService.Locator.Get<IHub>(this);
+
     public void OnDisable() { }
 
-    public void FetchEvents() => OnSwitchGroupPressed = EVent.Do.Fetch<ISwitchGroupPressed>();
+    public void FetchEvents() => OnSwitchGroupPressed = InputEvents.Do.Fetch<ISwitchGroupPressed>();
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IReturnToHome>(ActivateHomeGroupBranch);
-        EVent.Do.Subscribe<IActiveBranch>(SetActiveHomeBranch);
-        EVent.Do.Subscribe<IGameIsPaused>(GameIsPaused);
-        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
-        EVent.Do.Subscribe<IReturnHomeGroupIndex>(ReturnHomeGroup);
-        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+        HistoryEvents.Do.Subscribe<IReturnToHome>(ActivateHomeGroupBranch);
+        HistoryEvents.Do.Subscribe<IActiveBranch>(SetActiveHomeBranch);
+        HistoryEvents.Do.Subscribe<IGameIsPaused>(GameIsPaused);
+        HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        HistoryEvents.Do.Subscribe<IReturnHomeGroupIndex>(ReturnHomeGroup);
+        HistoryEvents.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
+        InputEvents.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
 
-    public void SetUpHomeGroup(IBranch[] homeGroupBranches)
-    {
-        _homeGroup = homeGroupBranches;
-        _activeBranch = _homeGroup[_index];
-    }
-    
+    public void SetUpHomeGroup() => _activeBranch = HomeGroup[_index];
+
     private void SaveHighlighted(IHighlightedNode args)
     {
         if(_allowKeys) return;
@@ -74,12 +77,12 @@ public class UIHomeGroup : IEventUser, IHomeGroup, ISwitchGroupPressed, IEventDi
             => args.Highlighted.MyBranch.IsHomeScreenBranch() && _activeBranch.IsHomeScreenBranch();
     }
 
-    private void ReturnHomeGroup(IReturnHomeGroupIndex args) => args.TargetNode = _homeGroup[_index].LastHighlighted;
+    private void ReturnHomeGroup(IReturnHomeGroupIndex args) => args.TargetNode = HomeGroup[_index].LastHighlighted;
 
     public void SwitchHomeGroups(SwitchType switchType)
     {
         if (!_onHomeScreen) return;
-        if(_homeGroup.Length > 1)
+        if(HomeGroup.Length > 1)
             OnSwitchGroupPressed?.Invoke(this);
         SetNewIndex(switchType);
     }
@@ -89,16 +92,16 @@ public class UIHomeGroup : IEventUser, IHomeGroup, ISwitchGroupPressed, IEventDi
         switch (switchType)
         {
             case SwitchType.Positive:
-                _index = _index.PositiveIterate(_homeGroup.Length);
+                _index = _index.PositiveIterate(HomeGroup.Length);
                 break;
             case SwitchType.Negative:
-                _index = _index.NegativeIterate(_homeGroup.Length);
+                _index = _index.NegativeIterate(HomeGroup.Length);
                 break;
             case SwitchType.Activate:
                 break;
         }
-        _lastActiveHomeBranch = _homeGroup[_index];
-        _homeGroup[_index].MoveToThisBranch();
+        _lastActiveHomeBranch = HomeGroup[_index];
+        HomeGroup[_index].MoveToThisBranch();
     }
 
     private void SetActiveHomeBranch(IActiveBranch args)
@@ -130,9 +133,9 @@ public class UIHomeGroup : IEventUser, IHomeGroup, ISwitchGroupPressed, IEventDi
     {
         if(!newBranch.IsHomeScreenBranch()) return;
         
-        for (var index = 0; index < _homeGroup.Length; index++)
+        for (var index = 0; index < HomeGroup.Length; index++)
         {
-            if (_homeGroup[index] != newBranch) continue;
+            if (HomeGroup[index] != newBranch) continue;
             _index = index;
             break;
         }
@@ -140,11 +143,11 @@ public class UIHomeGroup : IEventUser, IHomeGroup, ISwitchGroupPressed, IEventDi
 
     private void ActivateHomeGroupBranch(IReturnToHome args)
     {
-        _homeGroup[_index].MoveToThisBranch();
+        HomeGroup[_index].MoveToThisBranch();
         
-        foreach (var branch in _homeGroup)
+        foreach (var branch in HomeGroup)
         {
-            if(branch == _homeGroup[_index]) continue;
+            if(branch == HomeGroup[_index]) continue;
             branch.DontSetBranchAsActive();
             branch.MoveToThisBranch();
         }

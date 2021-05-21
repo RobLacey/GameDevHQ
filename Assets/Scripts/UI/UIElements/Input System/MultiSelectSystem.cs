@@ -1,16 +1,25 @@
 ﻿using System.Collections.Generic;
+using EZ.Service;
 
 namespace UIElements.Input_System
 {
-    public class MultiSelectSystem : IEServUser
+
+    public interface IMultiSelect: IMonoEnable
+    {
+        bool MultiSelectPressed(List<INode> history, INode newNode);
+        void RemoveFromMultiSelect(List<INode> history, INode oldNode);
+        bool MultiSelectActive { get; }
+        void ClearMultiSelect();
+    }
+    
+    public class MultiSelectSystem : IMultiSelect, IServiceUser
     {
         public MultiSelectSystem(IHistoryTrack historyTrack)
         {
             _historyTracker = historyTrack;
-            UseEServLocator();
         }
         
-        public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
+        public void UseEZServiceLocator() => _inputScheme = EZService.Locator.Get<InputScheme>(this);
 
         //variables
         private InputScheme _inputScheme;
@@ -19,9 +28,11 @@ namespace UIElements.Input_System
 
         //Properties & Getters / Setters
         private bool Pressed => _inputScheme.MultiSelectPressed();
-       public bool MultiSelectActive { get; set; }
+        public bool MultiSelectActive { get; private set; }
         
         //Main
+        public void OnEnable() => UseEZServiceLocator();
+
         public bool MultiSelectPressed(List<INode> history, INode newNode)
         {
             if (newNode.MultiSelectSettings.AllowMultiSelect == IsActive.No) return false;
@@ -120,7 +131,7 @@ namespace UIElements.Input_System
             MultiSelectActive = true;
         }
 
-        private void RemoveFromMultiSelect(List<INode> history, INode oldNode)
+        public void RemoveFromMultiSelect(List<INode> history, INode oldNode)
         {
             history.Remove(oldNode);
             CloseActiveBranch(oldNode);

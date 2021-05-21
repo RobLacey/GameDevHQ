@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EZ.Events;
+using EZ.Service;
 using Object = UnityEngine.Object;
 
 namespace UIElements
@@ -10,7 +12,7 @@ namespace UIElements
         void UseGOUISwitcher(SwitchType switchType);
     }
     
-    public class GOUISwitcher : IGOUISwitcher, IEventUser, IEventDispatcher, ISwitchGroupPressed
+    public class GOUISwitcher : IGOUISwitcher, IEZEventUser, IEZEventDispatcher, ISwitchGroupPressed, IServiceUser
     {
         //Properties & Getters / Setters
         private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
@@ -23,6 +25,7 @@ namespace UIElements
         private bool _onHomeScreen = true;
         private int _index = 0;
         private List<IGOUIModule> _playerObjects;
+        private IHistoryTrack _historyTrack;
         
         //Events
         private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; set; }
@@ -30,16 +33,19 @@ namespace UIElements
         //Main
         public void OnEnable()
         {
+            UseEZServiceLocator();
             FetchEvents();
             ObserveEvents();
         }
+        
+        public void UseEZServiceLocator() => _historyTrack = EZService.Locator.Get<IHistoryTrack>(this);
 
         public void ObserveEvents()
         {
-            EVent.Do.Subscribe<IStartGOUIBranch>(SetIndex);
-            EVent.Do.Subscribe<IOnStart>(CanStart);
-            EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
-            EVent.Do.Subscribe<ICloseAndResetBranch>(RemovePlayerObject);
+            GOUIEvents.Do.Subscribe<IStartGOUIBranch>(SetIndex);
+            HistoryEvents.Do.Subscribe<IOnStart>(CanStart);
+            HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+            GOUIEvents.Do.Subscribe<ICloseGOUIBranch>(RemovePlayerObject);
         }
         
         public void OnStart() => FindActiveGameObjectsOnStart();
@@ -55,7 +61,7 @@ namespace UIElements
             }
         }
 
-        public void FetchEvents() => OnSwitchGroupPressed = EVent.Do.Fetch<ISwitchGroupPressed>();
+        public void FetchEvents() => OnSwitchGroupPressed = InputEvents.Do.Fetch<ISwitchGroupPressed>();
 
         public void UseGOUISwitcher(SwitchType switchType)
         {
@@ -120,12 +126,7 @@ namespace UIElements
             }
         }
         
-        //TODO GOUI Switcher
-        //No list safe guards
-        //Object is in position 0 safe guards
-        //Change Event in GOUITo Sent branch
-
-        private void RemovePlayerObject(ICloseAndResetBranch args)
+        private void RemovePlayerObject(ICloseGOUIBranch args)
         {
             if (_playerObjects.Contains(args.ReturnGOUIModule))
             {
@@ -133,7 +134,21 @@ namespace UIElements
                 {
                     _index = 0;
                 }
+                
                 _playerObjects.Remove(args.ReturnGOUIModule);
+                MoveToNextObjectOrBranch(args.TargetBranch);
+            }
+        }
+
+        private void MoveToNextObjectOrBranch(IBranch branchToClose)
+        {
+            if (_playerObjects.Count > 0)
+            {
+                _historyTrack.GOUIBranchHasClosed(branchToClose, _playerObjects[_index]);
+            }
+            else
+            {
+                _historyTrack.GOUIBranchHasClosed(branchToClose);
             }
         }
     }

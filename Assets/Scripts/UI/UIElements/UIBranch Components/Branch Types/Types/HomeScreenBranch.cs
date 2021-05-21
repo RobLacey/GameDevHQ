@@ -1,31 +1,37 @@
-﻿using UIElements;
+﻿using EZ.Service;
+using UIElements;
 
 public interface IHomeScreenBranch : IBranchBase { }
 
 public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 {
-    public HomeScreenBranch(IBranch branch) : base(branch)
-    {
-        SetCanvas(ActiveCanvas.Yes);
-    }
+    public HomeScreenBranch(IBranch branch) : base(branch) { }
 
-    private ISetCanvasOrder _setCanvasOrder;
+    private ICanvasOrderData _canvasOrderData;
+    private bool _justReturnedHome = false;
     
     //Properties
-    private bool CannotTweenOnHome => _myBranch.TweenOnHome == DoTween.DoNothing;
+    private bool CannotTweenOnHome => _myBranch.TweenOnHome == DoTween.DoNothing 
+                                      && (!_justReturnedHome && _myBranch.GetStayOn() == IsActive.Yes);
     private bool IsControlBar => _myBranch.IsControlBar();
 
-    //Main
-
-    public override void UseEServLocator()
+    protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
     {
-        base.UseEServLocator();
-        _setCanvasOrder = EServ.Locator.Get<ISetCanvasOrder>(this);
+        base.SaveIfOnHomeScreen(args);
+        _justReturnedHome = true;
+    }
+
+    //Main
+    public override void UseEZServiceLocator()
+    {
+        base.UseEZServiceLocator();
+        _canvasOrderData = EZService.Locator.Get<ICanvasOrderData>(this);
     }
 
     public override void OnStart()
     {
         base.OnStart();
+        SetCanvas(ActiveCanvas.Yes);
         SetControlBarCanvasOrder();
     }
 
@@ -36,7 +42,7 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
         var storedCondition = _myBranch.MyCanvas.enabled;
         _myBranch.MyCanvas.enabled = true;
         _myBranch.MyCanvas.overrideSorting = true;
-        _myBranch.MyCanvas.sortingOrder = _setCanvasOrder.ReturnControlBarCanvasOrder();
+        _myBranch.MyCanvas.sortingOrder = _canvasOrderData.ReturnControlBarCanvasOrder();
         _myBranch.MyCanvas.enabled = storedCondition;
     }
 
@@ -68,6 +74,7 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
+        
         base.SetUpBranch(newParentController);
         
         if(!_canStart || !_inMenu) return;
@@ -76,21 +83,31 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
             _canvasOrderCalculator.SetCanvasOrder();
         
         SetCanvas(ActiveCanvas.Yes);
-        
-        if (CannotTweenOnHome && !OnHomeScreen)
-            _myBranch.DoNotTween();
-        
-        if (OnHomeScreen && _myBranch.GetStayOn() == IsActive.Yes)
+        if (CannotTweenOnHome || IsControlBar)
             _myBranch.DoNotTween();
         
         if(!OnHomeScreen)
             InvokeOnHomeScreen(true);
+        _justReturnedHome = false;
+    }
+
+    public override void EndOfBranchExit()
+    {
+        base.EndOfBranchExit();
+        CheckChildOfControlBar();
+    }
+
+    private void CheckChildOfControlBar()
+    {
+        if (_myBranch.LastSelected.HasChildBranch.ScreenType == ScreenType.Normal && !OnHomeScreen)
+        {
+            _historyTrack.BackToHomeScreen();
+        }
     }
 
     public override void SetBlockRaycast(BlockRaycast active)
     {
-        if(_activeResolvePopUps) return;
-        if(!_gameIsPaused)
+        if(!_gameIsPaused && !_activeResolvePopUps)
         {
             base.SetBlockRaycast(IsControlBar ? BlockRaycast.Yes: active);
         }
@@ -102,7 +119,7 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
     
     public override void SetCanvas(ActiveCanvas active)
     {
-        if(!_gameIsPaused)
+        if(!_gameIsPaused && !_activeResolvePopUps)
         {
             base.SetCanvas(IsControlBar ? ActiveCanvas.Yes : active);
         }
@@ -110,16 +127,6 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
         {
             base.SetCanvas(active);
         }
-    }
-
-    protected override void ActivateStoredPosition()
-    {
-        if (MyScreenType != ScreenType.FullScreen && _myBranch.IsControlBar())
-        {
-            InvokeOnHomeScreen(true);
-            return;
-        }
-        base.ActivateStoredPosition();
     }
 }
 

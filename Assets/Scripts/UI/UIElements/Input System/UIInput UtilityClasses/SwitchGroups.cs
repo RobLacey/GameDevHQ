@@ -1,4 +1,7 @@
 ﻿using System;
+using EZ.Events;
+using EZ.Inject;
+using EZ.Service;
 using UIElements;
 using UnityEngine;
 
@@ -13,21 +16,17 @@ public interface ISwitchGroup
     bool GOUISwitchProcess();
 }
 
-public class SwitchGroups : IEventUser, IParameters, ISwitchGroupPressed, IEServUser, ISwitchGroup
+public class SwitchGroups : IEZEventUser, IParameters, ISwitchGroupPressed, IServiceUser, ISwitchGroup
 {
     public SwitchGroups(ISwitchGroupSettings settings)
     { 
-        _switcher = EJect.Class.NoParams<IGOUISwitcher>();
-        _homeGroup = EJect.Class.NoParams<IHomeGroup>();
+        _switcher = EZInject.Class.NoParams<IGOUISwitcher>();
+        _homeGroup = EZInject.Class.NoParams<IHomeGroup>();
         ChangeControls = settings.DoChangeControlPressed;
-        UseEServLocator();
+        UseEZServiceLocator();
     }
 
-    public void UseEServLocator()
-    {
-        _inputScheme = EServ.Locator.Get<InputScheme>(this);
-        _uiHub = EServ.Locator.Get<IHub>(this);
-    }
+    public void UseEZServiceLocator() => _inputScheme = EZService.Locator.Get<InputScheme>(this);
 
     //Variables
     private InputScheme _inputScheme;
@@ -36,7 +35,6 @@ public class SwitchGroups : IEventUser, IParameters, ISwitchGroupPressed, IEServ
     private readonly IGOUISwitcher _switcher;
     private bool _noActivePopUps = true;
     private readonly IHomeGroup _homeGroup;
-    private IHub _uiHub;
     private bool _onHomeScreen = true;
     private IBranch _activeBranch;
 
@@ -77,11 +75,11 @@ public class SwitchGroups : IEventUser, IParameters, ISwitchGroupPressed, IEServ
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
-        EVent.Do.Subscribe<INoPopUps>(SaveNoActivePopUps);
-        EVent.Do.Subscribe<IGameIsPaused>(GameIsPaused);
-        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
-        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+        InputEvents.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+        PopUpEvents.Do.Subscribe<INoPopUps>(SaveNoActivePopUps);
+        HistoryEvents.Do.Subscribe<IGameIsPaused>(GameIsPaused);
+        HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
     }
 
     private void SaveActiveBranch(IActiveBranch args)
@@ -91,7 +89,7 @@ public class SwitchGroups : IEventUser, IParameters, ISwitchGroupPressed, IEServ
 
     public void OnStart()
     {
-        _homeGroup.SetUpHomeGroup(_uiHub.HomeBranches);
+        _homeGroup.SetUpHomeGroup();
         _switcher.OnStart();
     }
     

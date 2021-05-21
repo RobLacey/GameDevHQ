@@ -1,15 +1,15 @@
 ﻿
 using System;
 using System.Collections;
+using EZ.Events;
 using UnityEngine;
 
 
-public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelHoverOver, IEventUser
+public class AutoOpenCloseController: IAutoOpenClose, IEZEventDispatcher, ICancelHoverOver, IEZEventUser
 {
     public AutoOpenCloseController(IAutoOpenCloseData data)
     {
         _branch = data.ThisBranch;
-        FetchEvents();
     }
     
     //Variables
@@ -44,9 +44,16 @@ public class AutoOpenCloseController: IAutoOpenClose, IEventDispatcher, ICancelH
         ObserveEvents();
     }
 
-    public void FetchEvents() => CancelHooverOver = EVent.Do.Fetch<ICancelHoverOver>();
+    public void OnDisable()
+    {
+        InputEvents.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
+        CancelHooverOver = null;
+        StaticCoroutine.StopCoroutines(runningCoroutine);
+    }
+    
+    public void FetchEvents() => CancelHooverOver = CancelEvents.Do.Fetch<ICancelHoverOver>();
 
-    public void ObserveEvents() => EVent.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
+    public void ObserveEvents() => InputEvents.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
 
     public void OnPointerExit()
     {

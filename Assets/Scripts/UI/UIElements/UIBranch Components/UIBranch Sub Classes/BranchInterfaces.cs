@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using EZ.Inject;
 using UIElements;
 using UnityEngine;
 
 
-public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
+public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder, IMonoDisable, IMonoEnable, IMonoOnDestroy
 {
     bool IsControlBar();
     bool IsPauseMenuBranch();
@@ -24,7 +25,7 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     DoTween TweenOnHome { get; set; }
     IBranch MyParentBranch { get; set; }
     float Timer { get; }
-    INode[] ThisGroupsUiNodes { get; }
+    INode[] ThisGroupsUiNodes { get; set; }
     bool PointerOverBranch { get;}
     IAutoOpenClose AutoOpenCloseClass { get; }
     IsActive SetSaveLastSelectionOnExit { set; }
@@ -38,7 +39,6 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     int GroupIndex { get; set; }
 
 
-    IBranch[] FindAllBranches();
     IsActive GetStayOn();
     void SetNotAControlBar();
     void MoveToThisBranch(IBranch newParentBranch = null);
@@ -49,11 +49,13 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder
     void SetCanvas(ActiveCanvas activeCanvas);
     void SetBlockRaycast(BlockRaycast blockRaycast);
     void SetUpAsTabBranch();
+    void SetUpGOUIBranch(IGOUIModule module);
+    void AddNodeToBranch();
+    void RemoveNodeFromBranch(INode nodeToRemove);
 }
 
-public interface IAutoOpenClose
+public interface IAutoOpenClose : IMonoEnable, IMonoDisable
 {
-    void OnEnable();
     void OnPointerEnter();
     void OnPointerExit();
     bool PointerOverBranch { get;}

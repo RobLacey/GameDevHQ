@@ -4,14 +4,13 @@ using UnityEngine.UI;
 
 public class UIAccessories : NodeFunctionBase
 {
-    public UIAccessories(IAccessoriesSettings settings, IUiEvents uiEvents)
+    public UIAccessories(IAccessoriesSettings settings, IUiEvents uiEvents) : base(uiEvents)
     {
         _activateWhen = settings.ActivateWhen;
         _accessoriesList = settings.AccessoriesList;
         _outlinesToUse = settings.OutLineList;
         _dropShadowsToUse = settings.ShadowList;
         CanActivate = true;
-        OnAwake(uiEvents);
     }
 
     //Variables
@@ -25,9 +24,9 @@ public class UIAccessories : NodeFunctionBase
     protected override bool CanBePressed() => (_activateWhen & AccessoryEventType.Selected) != 0;
     protected override bool FunctionNotActive() => !CanActivate || _activateWhen == AccessoryEventType.None;
 
-    protected sealed override void OnAwake(IUiEvents events)
+    public override void OnAwake()
     {
-        base.OnAwake(events);
+        base.OnAwake();
         StartActivation(false);
     }
 

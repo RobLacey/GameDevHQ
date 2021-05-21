@@ -4,21 +4,19 @@ public interface ISizeAndPosition : IPositionScaleTween, IPunchShakeTween { }
 
 public class UISizeAndPosition : NodeFunctionBase, ISizeAndPosition
 {
-    public UISizeAndPosition(ISizeAndPositionSettings settings, IUiEvents uiEvents)
+    public UISizeAndPosition(ISizeAndPositionSettings settings, IUiEvents uiEvents): base(uiEvents)
     {
-        _scheme = settings.Scheme;
+        Scheme = settings.Scheme;
         CanActivate = true;
         if(settings.RectTransform != null)
             MyRect = settings.RectTransform;
-        OnAwake(uiEvents);
     }
 
     //Variables
-    private readonly SizeAndPositionScheme _scheme;
     private INodeTween _tween;
 
     //Properties & Set/Getters
-    public SizeAndPositionScheme Scheme => _scheme;
+    public SizeAndPositionScheme Scheme { get; }
     public bool IsPressed { get; private set; }
     public RectTransform MyRect { get; }
     public Transform MyTransform { get; private set; }
@@ -26,18 +24,24 @@ public class UISizeAndPosition : NodeFunctionBase, ISizeAndPosition
     public Vector3 StartSize { get; private set; }
     public string GameObjectID { get; private set; }
 
-    protected override bool CanBeHighlighted() => _scheme.CanBeHighlighted || _scheme.CanBeSelectedAndHighlight;
-    protected override bool CanBePressed()  => !_scheme.NotSet && !_scheme.CanBeSelectedAndHighlight;
-    protected override bool FunctionNotActive() => !CanActivate && !_scheme.NotSet;
+    protected override bool CanBeHighlighted() => Scheme.CanBeHighlighted || Scheme.CanBeSelectedAndHighlight;
+    protected override bool CanBePressed()  => !Scheme.NotSet && !Scheme.CanBeSelectedAndHighlight;
+    protected override bool FunctionNotActive() => !CanActivate && !Scheme.NotSet;
 
     //Main
-    protected sealed override void OnAwake(IUiEvents events)
+    public override void OnAwake()
     {
-        if(!_scheme || MyRect is null) return;
-        base.OnAwake(events);
-        _scheme.OnAwake();
-        GameObjectID = events.MasterNodeID.ToString();
+        if(!Scheme || MyRect is null) return;
+        base.OnAwake();
+        Scheme.OnAwake();
+        GameObjectID = _uiEvents.MasterNodeID.ToString();
         SetVariables();
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        IsPressed = false;
     }
 
     private void SetVariables()
@@ -46,7 +50,7 @@ public class UISizeAndPosition : NodeFunctionBase, ISizeAndPosition
         StartSize = MyRect.localScale;
         StartPosition = MyRect.anchoredPosition3D;
         if(CanActivate)
-            _tween = SizeAndPositionFactory.AssignType(_scheme.TweenEffect, this);
+            _tween = SizeAndPositionFactory.AssignType(Scheme.TweenEffect, this);
     }
 
     protected override void SaveIsSelected(bool isSelected)
@@ -61,14 +65,14 @@ public class UISizeAndPosition : NodeFunctionBase, ISizeAndPosition
         
         if(pointerOver)
         {
-            if (_isSelected && _scheme.CanBeSelectedAndHighlight || _pointerOver) return;
+            if (_isSelected && Scheme.CanBeSelectedAndHighlight || _pointerOver) return;
             _tween.DoTween(IsActive.Yes);
             _pointerOver = true;
         }
         else
         {
 
-            if (_isSelected && _scheme.CanBeSelectedAndHighlight || !_pointerOver) return;
+            if (_isSelected && Scheme.CanBeSelectedAndHighlight || !_pointerOver) return;
             _tween.DoTween(IsActive.No);
             _pointerOver = false;
         }    
@@ -78,13 +82,13 @@ public class UISizeAndPosition : NodeFunctionBase, ISizeAndPosition
     { 
         if(FunctionNotActive() || !CanBePressed()) return;
         
-        if(_scheme.IsPressed)
+        if(Scheme.IsPressed)
         {
             IsPressed = true;
             _tween.DoTween(IsActive.Yes);
             IsPressed = false;
         }
-        else if(_scheme.CanBeSelected || _scheme.CanBeSelectedAndHighlight)
+        else if(Scheme.CanBeSelected || Scheme.CanBeSelectedAndHighlight)
         {
             if(_pointerOver) return;
             _tween.DoTween(_isSelected ? IsActive.Yes : IsActive.No);

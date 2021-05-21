@@ -19,6 +19,6 @@ public class AudioSettings : IAudioSettings
         {
             return new UIAudio(this, uiNodeEvents);
         }
-        return new NullFunction();
+        return null;
     }
 }

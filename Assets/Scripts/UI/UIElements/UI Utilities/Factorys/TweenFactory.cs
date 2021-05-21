@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using EZ.Inject;
 
 public class TweenFactory
 {
-    private static readonly IEJect ieJect = new EJect();
+    private static readonly IEZInject ieJect = new EZInject();
     
     public static List<ITweenBase> CreateTypes(TweenScheme scheme)
     {

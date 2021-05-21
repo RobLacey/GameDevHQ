@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using EZ.Events;
+using UnityEngine;
 using NaughtyAttributes;
 
-public class MovementTest : MonoBehaviour, IEventUser
+public class MovementTest : MonoBehaviour, IEZEventUser
 {
     Transform _myTransform;
     [SerializeField] [InputAxis] string _horizontal;

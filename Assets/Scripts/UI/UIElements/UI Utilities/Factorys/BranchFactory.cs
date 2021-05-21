@@ -1,9 +1,10 @@
 ﻿using System;
+using EZ.Inject;
 
 public class BranchFactory
 {
     private IBranch _branch;
-    private static readonly IEJect ieJect = new EJect();
+    private static readonly IEZInject ieJect = new EZInject();
     
     public static BranchFactory Factory { get; } = new BranchFactory();
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using EZ.Events;
+using EZ.Service;
 using UIElements;
 using UnityEngine;
 
@@ -10,7 +12,7 @@ interface ICancel
 /// <summary>
 /// Class handles all UI cancel behaviour from cancel type to context sensitive cases
 /// </summary>
-public class UICancel : ICancel, IEServUser, IEventUser, IMonoEnable
+public class UICancel : ICancel, IServiceUser, IEZEventUser, IMonoEnable
 {
     //Variables
     private bool _gameIsPaused, _resolvePopUps;
@@ -25,23 +27,23 @@ public class UICancel : ICancel, IEServUser, IEventUser, IMonoEnable
 
     public void OnEnable()
     {
-        UseEServLocator();
+        UseEZServiceLocator();
         ObserveEvents();
     }
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<INoResolvePopUp>(SaveResolvePopUps);
-        EVent.Do.Subscribe<ICancelPressed>(CancelPressed);
-        EVent.Do.Subscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
-        EVent.Do.Subscribe<IGameIsPaused>(SaveGameIsPaused);
-        EVent.Do.Subscribe<ICancelHoverOver>(CancelHooverOver);
+        PopUpEvents.Do.Subscribe<INoResolvePopUp>(SaveResolvePopUps);
+        InputEvents.Do.Subscribe<ICancelPressed>(CancelPressed);
+        CancelEvents.Do.Subscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
+        HistoryEvents.Do.Subscribe<IGameIsPaused>(SaveGameIsPaused);
+        CancelEvents.Do.Subscribe<ICancelHoverOver>(CancelHooverOver);
     }
 
-    public void UseEServLocator()
+    public void UseEZServiceLocator()
     {
-        _inputScheme = EServ.Locator.Get<InputScheme>(this);
-        _uiHistoryTrack = EServ.Locator.Get<IHistoryTrack>(this);
+        _inputScheme = EZService.Locator.Get<InputScheme>(this);
+        _uiHistoryTrack = EZService.Locator.Get<IHistoryTrack>(this);
     }
 
     private void CancelPressed(ICancelPressed args)

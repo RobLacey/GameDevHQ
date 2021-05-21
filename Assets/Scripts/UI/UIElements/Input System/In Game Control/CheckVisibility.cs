@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections;
+using EZ.Events;
+using EZ.Service;
 using NaughtyAttributes;
 using UIElements;
 using UnityEngine;
 
 [Serializable]
-public class CheckVisibility : IEventDispatcher, IMono, IOffscreen, IEventUser
+public class CheckVisibility : IEZEventDispatcher, IMonoEnable, IMonoStart, IMonoDisable, IMonoOnDestroy, 
+                               IOffscreen, IEZEventUser, IServiceUser
 {
     [SerializeField] 
     private Renderer _myRenderer;
@@ -15,11 +18,10 @@ public class CheckVisibility : IEventDispatcher, IMono, IOffscreen, IEventUser
 
     //Variables
     private GOUIModule _myGOUI;
-    private Coroutine _coroutine = null;
     private readonly WaitFrameCustom _waitFrame = new WaitFrameCustom();
     private OffScreenMarker _offScreenMarker;
-    private OffscreenMarkerData _data;
-    private bool _canStart;
+    private IDataHub _myDataHub;
+    private bool _runVisibilityCheck;
 
     //Editor
     private const string FrequencyName = "Check Visible Frequency";
@@ -28,69 +30,82 @@ public class CheckVisibility : IEventDispatcher, IMono, IOffscreen, IEventUser
                                             "Effects both GOUI and Off Screen Marker";
 
 
+    //Properties
     public IBranch TargetBranch { get; private set; }
-
     public bool IsOffscreen { get; private set; }
     public bool CanUseOffScreenMarker { get; set; }
 
+    //Events
     public Action<IOffscreen> GOUIOffScreen { get; set; }
     
-    public void CanStart(IOnStart args)
-    {
-        _canStart = true;
-        _coroutine = StaticCoroutine.StartCoroutine(IsVisible(false));
-    }
+    
+    //Main
+    public void CanStart(IOnStart args) => StaticCoroutine.StartCoroutine(IsVisible(false));
 
-    public void SetUp(GOUIModule goui)
+    public void SetUpOnStart(GOUIModule goui)
     {
         _myGOUI = goui;
         TargetBranch = _myGOUI.TargetBranch;
-        _data = _myGOUI.OffScreenMarkerData;
         CanUseOffScreenMarker = _myGOUI.OffScreenMarkerData.CanUseOffScreenMarker;
-        _offScreenMarker = new OffScreenMarker(_data);
-    }
-
-    public void OnAwake()
-    {
-        if (!CanUseOffScreenMarker) return;
-        
         _offScreenMarker = new OffScreenMarker(_myGOUI.OffScreenMarkerData);
         _offScreenMarker.OnAwake(_myGOUI);
-        FetchEvents();
+        OnStart();
     }
 
     public void OnEnable()
     {
-        if(_canStart) return;
+        _runVisibilityCheck = true;
+        UseEZServiceLocator();
+        FetchEvents();
         ObserveEvents();
+        RunTimeEnable();
     }
 
-    public void ObserveEvents() => EVent.Do.Subscribe<IOnStart>(CanStart);
+    public void UseEZServiceLocator() => _myDataHub = EZService.Locator.Get<IDataHub>(this);
 
-    public void OnDelayedStart()
+    public void FetchEvents() => GOUIOffScreen = GOUIEvents.Do.Fetch<IOffscreen>();
+
+    public void ObserveEvents() => HistoryEvents.Do.Subscribe<IOnStart>(CanStart);
+
+    private void RunTimeEnable()
     {
-        _canStart = true;
-        if(CanUseOffScreenMarker)
-            _coroutine = StaticCoroutine.StartCoroutine(IsVisible(true));
+        if(_myDataHub.IsNull()) return;
+        
+        if(_myDataHub.SceneAlreadyStarted)
+        {
+            if (CanUseOffScreenMarker)
+            {
+                StaticCoroutine.StartCoroutine(IsVisible(true));
+            }            
+        }    
     }
 
     public void OnDisable()
     {
         if(CanUseOffScreenMarker)
             _offScreenMarker.OnDisable();
-        StaticCoroutine.StopCoroutines(_coroutine);
-        _coroutine = null;
+        HistoryEvents.Do.Unsubscribe<IOnStart>(CanStart);
+        GOUIOffScreen = null;
         IsOffscreen = false;
+        _runVisibilityCheck = false;
     }
     
+    public void OnDestroy()
+    {
+        HistoryEvents.Do.Unsubscribe<IOnStart>(CanStart);
+        _runVisibilityCheck = false;
+        if(CanUseOffScreenMarker)
+            _offScreenMarker.OnDisable();
+    }
+
+
     public void OnStart()
     {
         if(CanUseOffScreenMarker)
             _offScreenMarker.OnStart();
+        RunTimeEnable();
     }
 
-    public void FetchEvents() => GOUIOffScreen = EVent.Do.Fetch<IOffscreen>();
-    
     public void StopOffScreenMarker()
     {
         if(CanUseOffScreenMarker)
@@ -102,7 +117,7 @@ public class CheckVisibility : IEventDispatcher, IMono, IOffscreen, IEventUser
         if(isRestart)
             yield return _waitFrame.SetFrameTarget(_checkFrequency);
         
-        while (true)
+        while (_runVisibilityCheck)
         {
             if (_myRenderer.isVisible)
             {
@@ -117,6 +132,7 @@ public class CheckVisibility : IEventDispatcher, IMono, IOffscreen, IEventUser
 
             yield return _waitFrame.SetFrameTarget(_checkFrequency);
         }
+        yield return null;
     }
 
     private void DoTurnOff()

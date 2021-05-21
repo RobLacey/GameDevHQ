@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using EZ.Inject;
+using UnityEngine;
 using UnityEngine.UI;
 
 public interface IRaycastController : IParameters

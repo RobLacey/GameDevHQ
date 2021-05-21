@@ -293,13 +293,13 @@
             </e>
             <e p="UIElements" t="Include">
               <e p="GOUIModule.cs" t="Include" />
+              <e p="IMono.cs" t="Include" />
               <e p="INput System" t="Include">
                 <e p="In Game Control" t="Include">
                   <e p="CheckIfUnderUI.cs" t="Include" />
                   <e p="CheckVisibility.cs" t="Include" />
                   <e p="Control Types" t="Include">
                     <e p="GOUISwitcher.cs" t="Include" />
-                    <e p="InGameUiExtensionMethod.cs" t="Include" />
                     <e p="InteractWithUi.cs" t="Include" />
                     <e p="MOveVirtualCursor.cs" t="Include" />
                     <e p="ProcessBranchAndNodeLists.cs" t="Include" />
@@ -315,14 +315,12 @@
                     <e p="IRaycastController.cs" t="Include" />
                     <e p="RaycastBase.cs" t="Include" />
                   </e>
-                  <e p="ValidationCheck.cs" t="Include" />
                 </e>
                 <e p="Input Scheme" t="Include">
                   <e p="InputScheme.cs" t="Include" />
                   <e p="NewSystem.cs" t="Include" />
                   <e p="OldSystem.cs" t="Include" />
                 </e>
-                <e p="InputEvents.cs" t="Include" />
                 <e p="MultiSelectSettings.cs" t="Include" />
                 <e p="MultiSelectSystem.cs" t="Include" />
                 <e p="UIInput UtilityClasses" t="Include">
@@ -330,6 +328,7 @@
                   <e p="ReturnControlFromEditor.cs" t="Include" />
                   <e p="SwitchGroups.cs" t="Include" />
                 </e>
+                <e p="UIInputEvents.cs" t="Include" />
               </e>
               <e p="MouseDraw.cs" t="Include" />
               <e p="RunTime Set Up" t="Include">
@@ -377,7 +376,6 @@
                 <e p="Attributes" t="Include">
                   <e p="Attributes.cs" t="Include" />
                 </e>
-                <e p="Attributes.cs" t="Include" />
                 <e p="CanvasOrderUtil" t="Include">
                   <e p="CanvasOrderCalculator.cs" t="Include" />
                   <e p="CanvasOrderData.cs" t="Include" />
@@ -385,51 +383,55 @@
                 </e>
                 <e p="CreateNewObjects.cs" t="Include" />
                 <e p="Creators" t="Include">
-                  <e p="BindBase.cs" t="Include" />
-                  <e p="EJect" t="Include">
+                  <e p="EServ" t="Include">
+                    <e p="EZService.cs" t="Include" />
+                    <e p="EZServiceBase.cs" t="Include" />
+                    <e p="EZServiceInterfaces.cs" t="Include" />
+                    <e p="EZServiceMaster.cs" t="Include" />
+                  </e>
+                  <e p="EZEvent" t="Include">
+                    <e p="Bindings" t="Include">
+                      <e p="BranchBindings.cs" t="Include" />
+                      <e p="CancelBindings.cs" t="Include" />
+                      <e p="GOUIEventsBindings.cs" t="Include" />
+                      <e p="HistoryBindings.cs" t="Include" />
+                      <e p="InputBindings.cs" t="Include" />
+                      <e p="PopUpBindings.cs" t="Include" />
+                    </e>
+                    <e p="EventHandlers" t="Include">
+                      <e p="BranchEvent.cs" t="Include" />
+                      <e p="CancelEvents.cs" t="Include" />
+                      <e p="GOUIEvents.cs" t="Include" />
+                      <e p="HistoryEvents.cs" t="Include" />
+                      <e p="InputEvents.cs" t="Include" />
+                      <e p="PopUpEvents.cs" t="Include" />
+                    </e>
+                    <e p="Source Files" t="Include">
+                      <e p="CustomEZEvent.cs" t="Include" />
+                      <e p="EVentMasterProcessor.cs" t="Include" />
+                      <e p="EZEventBaseClass.cs" t="Include" />
+                      <e p="EZEventBindingsBase.cs" t="Include" />
+                      <e p="EZEventInterface.cs" t="Include" />
+                    </e>
+                  </e>
+                  <e p="EZInject" t="Include">
                     <e p="Bindings" t="Include">
                       <e p="ClassBindings.cs" t="Include" />
-                      <e p="ClassBindingsSub.cs" t="Include" />
                     </e>
-                    <e p="EjectBase.cs" t="Include" />
-                    <e p="EJectMaster.cs" t="Include" />
-                    <e p="IEject.cs" t="Include" />
+                    <e p="Example Files" t="Include">
+                      <e p="ClassBindingsExample.cs" t="Include" />
+                      <e p="InjectExampleClass.cs" t="Include" />
+                    </e>
                     <e p="Injectors" t="Include">
-                      <e p="Eject.cs" t="Include" />
-                      <e p="EJectSub.cs" t="Include" />
+                      <e p="EZInject.cs" t="Include" />
                     </e>
-                    <e p="IParameters.cs" t="Include" />
-                  </e>
-                  <e p="EServ" t="Include">
-                    <e p="EServ.cs" t="Include" />
-                    <e p="EServBase.cs" t="Include" />
-                    <e p="EServMaster.cs" t="Include" />
-                  </e>
-                  <e p="EVent" t="Include">
-                    <e p="Bindings" t="Include">
-                      <e p="EventBindings.cs" t="Include" />
-                      <e p="EVentBindingsSub.cs" t="Include" />
-                      <e p="IEVentBindings.cs" t="Include" />
+                    <e p="Source Files" t="Include">
+                      <e p="EZInjectBase.cs" t="Include" />
+                      <e p="EZInjectBindingBase.cs" t="Include" />
+                      <e p="EZInjectMaster.cs" t="Include" />
+                      <e p="IEZInject.cs" t="Include" />
+                      <e p="IParameters.cs" t="Include" />
                     </e>
-                    <e p="CustomEvent.cs" t="Include" />
-                    <e p="EVentBaseClass.cs" t="Include" />
-                    <e p="EventHandlers" t="Include">
-                      <e p="EVent.cs" t="Include" />
-                      <e p="EVentSub.cs" t="Include" />
-                    </e>
-                    <e p="EventInterfaces.cs" t="Include" />
-                    <e p="EVentMaster.cs" t="Include" />
-                    <e p="IEVentBase.cs" t="Include" />
-                  </e>
-                  <e p="EventLocator - Old Version" t="Include">
-                    <e p="CustomEvent.cs" t="Include" />
-                    <e p="EventLocator.cs" t="Include" />
-                  </e>
-                  <e p="IMono.cs" t="Include" />
-                  <e p="UI Event Callers (Depreciated)" t="Include">
-                    <e p="CustomEventHandler.cs" t="Include" />
-                    <e p="UIDataEvents.cs" t="Include" />
-                    <e p="UiEventCaller.cs" t="Include" />
                   </e>
                 </e>
                 <e p="DelayTimer.cs" t="Include" />
@@ -458,16 +460,17 @@
                     <e p="OptionalPopUp.cs" t="Include" />
                     <e p="PauseMenu.cs" t="Include" />
                     <e p="ResolvePopUp.cs" t="Include" />
+                    <e p="SetScreenPosition.cs" t="Include" />
                     <e p="StandardBranch.cs" t="Include" />
                     <e p="TimedPopUp.cs" t="Include" />
                   </e>
                 </e>
                 <e p="BranchUtilityClasses" t="Include">
+                  <e p="BranchChildNodeUtil.cs" t="Include" />
                   <e p="BranchGroups.cs" t="Include" />
                   <e p="GroupList.cs" t="Include" />
                   <e p="NodeSearch.cs" t="Include" />
                   <e p="ScreenData.cs" t="Include" />
-                  <e p="SetBranchesChildNodes.cs" t="Include" />
                 </e>
                 <e p="UIBranch Sub Classes" t="Include">
                   <e p="AutoOpenCloseController.cs" t="Include" />
@@ -480,6 +483,7 @@
               <e p="UIBranch.cs" t="Include" />
               <e p="UIData.cs" t="Include" />
               <e p="UIHub Components" t="Include">
+                <e p="DataHub.cs" t="Include" />
                 <e p="HistoryTracker" t="Include">
                   <e p="HistoryListManagement.cs" t="Include" />
                   <e p="HistoryTracker.cs" t="Include" />
@@ -510,7 +514,6 @@
                   <e p="EventSettings.cs" t="Include" />
                   <e p="InvertColoursSettings.cs" t="Include" />
                   <e p="NavigationSettings.cs" t="Include" />
-                  <e p="NullFunction.cs" t="Include" />
                   <e p="SizeAndPositionSettings.cs" t="Include" />
                   <e p="SwapImageOrTextSettings.cs" t="Include" />
                   <e p="Tootips" t="Include">

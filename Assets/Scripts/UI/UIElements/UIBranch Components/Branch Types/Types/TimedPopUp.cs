@@ -6,12 +6,12 @@ public interface ITimedPopUpBranch : IBranchBase { }
 
 public class TimedPopUp : BranchBase, ITimedPopUpBranch
 {
-    public TimedPopUp(IBranch branch) : base(branch) => timedPopUps = new List<Canvas>();
+    public TimedPopUp(IBranch branch) : base(branch) { }
 
     //Variables
     private bool _running;
     private Coroutine _coroutine;
-    private static List<Canvas> timedPopUps;
+    private static readonly List<Canvas> timedPopUps = new List<Canvas>();
 
     //Main
     public override bool CanStartBranch()
@@ -58,18 +58,13 @@ public class TimedPopUp : BranchBase, ITimedPopUpBranch
         _myBranch.StartBranchExitProcess(OutTweenType.Cancel);
     }
 
-    protected override void ClearBranchForFullscreen(IClearScreen args)
-    {
-        base.ClearBranchForFullscreen(args);
-    }
-
     private void AdjustCanvasOrderAdded()
     {
         timedPopUps.Add(_myBranch.MyCanvas);
         _canvasOrderCalculator.ProcessActiveCanvasses(timedPopUps);
     }
 
-    private void AdjustCanvasOrderRemoved(ILastRemovedPopUp args = null)
+    private void AdjustCanvasOrderRemoved()
     {
         timedPopUps.Remove(_myBranch.MyCanvas);
         _canvasOrderCalculator.ProcessActiveCanvasses(timedPopUps);

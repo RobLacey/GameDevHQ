@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using EZ.Events;
 using UIElements;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ public interface IInteractWithUi: IMonoEnable
     bool UIObjectSelected(bool selected);
 }
 
-public class InteractWithUi : IInteractWithUi, IEventUser
+public class InteractWithUi : IInteractWithUi, IEZEventUser
 {
     private readonly Dictionary<UINode, RectTransform> _activeNodes = new Dictionary<UINode, RectTransform>();
     private readonly Dictionary<UINode, RectTransform> _sortedNodesDict = new Dictionary<UINode, RectTransform>();
@@ -39,11 +40,12 @@ public class InteractWithUi : IInteractWithUi, IEventUser
     
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
-        EVent.Do.Subscribe<IOnStart>(OnStart);
-        EVent.Do.Subscribe<IAddNewBranch>(AddNodes);
-        EVent.Do.Subscribe<IRemoveBranch>(RemoveNodes);
-        EVent.Do.Subscribe<ICancelPressed>(CancelPressed);
+        InputEvents.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+        HistoryEvents.Do.Subscribe<IOnStart>(OnStart);
+        BranchEvent.Do.Subscribe<ICanInteractWithBranch>(AddNodes);
+        BranchEvent.Do.Subscribe<ICannotInteractWithBranch>(RemoveNodes);
+        InputEvents.Do.Subscribe<ICancelPressed>(CancelPressed);
+        GOUIEvents.Do.Subscribe<ICloseGOUIBranch>(RemoveNodeAsGouiClosed);
     }
 
     private void CancelPressed(ICancelPressed args) => _lastHit = (null, null);
@@ -168,7 +170,7 @@ public class InteractWithUi : IInteractWithUi, IEventUser
         return true;
     }
 
-    private void AddNodes(IAddNewBranch args)
+    private void AddNodes(ICanInteractWithBranch args)
     {
         if(_onlyHitInGameObjects && !args.MyBranch.IsInGameBranch()) return;
         
@@ -186,16 +188,20 @@ public class InteractWithUi : IInteractWithUi, IEventUser
         }    
     }
 
-    private void RemoveNodes(IRemoveBranch args)
+    private void RemoveNodeAsGouiClosed(ICloseGOUIBranch args) => RemoveProcess(args.TargetBranch);
+
+    private void RemoveNodes(ICannotInteractWithBranch args) => RemoveProcess(args.MyBranch);
+
+    private void RemoveProcess(IBranch branch)
     {
-        if(_onlyHitInGameObjects && !args.MyBranch.IsInGameBranch()) return;
+        if (_onlyHitInGameObjects && !branch.IsInGameBranch()) return;
 
-        var list = args.MyBranch.ThisGroupsUiNodes.Cast<UINode>().ToArray();
+        var list = branch.ThisGroupsUiNodes.Cast<UINode>().ToArray();
 
-        ProcessBranchAndNodeLists.CheckAndRemoveBranch(args.MyBranch, _activeBranches);
+        ProcessBranchAndNodeLists.CheckAndRemoveBranch(branch, _activeBranches);
         var needSort = ProcessBranchAndNodeLists.RemoveNodeFromList(list, _activeNodes);
 
-        if(needSort & _canStart) 
+        if (needSort & _canStart)
             ProcessBranchAndNodeLists.SortNodeList(_sortedNodesDict, _activeNodes);
     }
 }

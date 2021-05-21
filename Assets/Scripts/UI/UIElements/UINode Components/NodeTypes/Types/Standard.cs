@@ -9,7 +9,7 @@ public class Standard : NodeBase, IStandard
     }
 
     private bool _isToggle;
-    private readonly IDelayTimer _delayTimer = EJect.Class.NoParams<IDelayTimer>();
+    private readonly IDelayTimer _delayTimer = EZInject.Class.NoParams<IDelayTimer>();
     private readonly float _autoOpenDelay;
 
     public override void OnEnter()

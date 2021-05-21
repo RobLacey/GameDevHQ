@@ -30,7 +30,7 @@ public class AccessoriesSettings : IAccessoriesSettings
         {
             return new UIAccessories(this, uiNodeEvents);
         }
-        return new NullFunction();
+        return null;
     }
 
 }

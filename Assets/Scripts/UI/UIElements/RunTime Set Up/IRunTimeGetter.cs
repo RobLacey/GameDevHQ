@@ -6,7 +6,7 @@ namespace UIElements
     public interface IRunTimeGetter
     {
         IBranch CreateBranch(UIBranch template);
-        void BufferMainTextFroCreation(string newText);
+        void BufferMainTextForCreation(string newText);
         void SetToolTipDataOnCreation(ToolTipRuntimeData[] tooltipData);
         void SetTooltips(ToolTipRuntimeData[] newTooltips);
         void SetTooltipAtIndex(int indexOfToolTip, string newTooltips);

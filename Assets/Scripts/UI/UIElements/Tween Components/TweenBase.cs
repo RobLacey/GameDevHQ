@@ -2,9 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using EZ.Events;
 using UnityEngine;
 
-public interface ITweenBase : IEventUser
+public interface ITweenBase : IEZEventUser
 {
     void StartTween(TweenType tweenType, TweenCallback tweenCallback);
 
@@ -18,7 +19,7 @@ public interface ITweenBase : IEventUser
 /// </summary>
 // ReSharper disable IdentifierTypo
 [Serializable]
-public abstract class TweenBase : IEventUser
+public abstract class TweenBase : IEZEventUser
 {
     //Variables
     protected float _tweenTime;

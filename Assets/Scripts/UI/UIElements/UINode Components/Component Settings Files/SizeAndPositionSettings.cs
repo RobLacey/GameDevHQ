@@ -24,6 +24,6 @@ public class SizeAndPositionSettings : ISizeAndPositionSettings
         {
             return new UISizeAndPosition(this, uiNodeEvents);
         }
-        return new NullFunction();
+        return null;
     }
 }

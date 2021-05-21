@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections;
+using EZ.Events;
 using UnityEngine;
 using UnityEngine.Events;
 using NaughtyAttributes;
 using UIElements;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class TestRunner : MonoBehaviour, IEventUser
+public class TestRunner : MonoBehaviour, IEZEventUser
 {
     [SerializeField] private UIData _uiData;
     [SerializeField] [Space(20, order = 1)] private int _nextScene  = 6;
@@ -17,8 +19,15 @@ public class TestRunner : MonoBehaviour, IEventUser
     [SerializeField] private string _test3Test = default;
     [SerializeField] private string _test4Test = default;
     [SerializeField] private string _test5Test = default;
+    
+    [Header("New GameObject")]
     [SerializeField] private GameObject _newObject;
     [SerializeField] private Transform _parentFolder;
+    
+    [Header("New Node")]
+    [SerializeField] private GameObject _nodePrefab;
+    [SerializeField] private UIBranch _targetBranch;
+    [SerializeField] private Transform _parentTransform;
     
     
     private int minV = -5;
@@ -26,6 +35,7 @@ public class TestRunner : MonoBehaviour, IEventUser
     private int minH = -9;
     private int maxH = 9;
     private int _counter;
+    private int _nodeCounter;
 
     [Serializable]
     private class EventsForTest
@@ -78,13 +88,22 @@ public class TestRunner : MonoBehaviour, IEventUser
     {
         _eventsForTest._event6?.Invoke();
     }
+    [Button ("Add A New Node At Runtime")]
+    public void Button_Event7()
+    {
+        var newObject = Instantiate(_nodePrefab, _parentTransform);
+        newObject.name = "New Object : " + _nodeCounter;
+        _targetBranch.AddNodeToBranch();
+        _nodeCounter++;
+    }
+    
     [Button]
     public void AddANewInGameObject()
     {
         Vector2 randomPos = new Vector2(Random.Range(minH, maxH), Random.Range(minV, maxV));
         var newObject = Instantiate(_newObject, randomPos, Quaternion.identity, _parentFolder);
         newObject.name = "New Object : " + _counter;
-        newObject.GetComponent<RunTimeGetter>().BufferMainTextFroCreation(_counter.ToString());
+        newObject.GetComponent<RunTimeGetter>().BufferMainTextForCreation(_counter.ToString());
         _counter++;
     }
 

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using EZ.Events;
+using UnityEngine;
 
 public interface IPopUpController
 {
@@ -12,8 +14,8 @@ public interface IPopUpController
 /// This Class Looks after managing switching between PopUps
 /// </summary>
 ///
-public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, INoPopUps, 
-                               IEventDispatcher, ILastRemovedPopUp
+public class PopUpController : IPopUpController, IEZEventUser, INoResolvePopUp, INoPopUps, 
+                               IEZEventDispatcher, ILastRemovedPopUp
 {
     //Variables
     private readonly List<IBranch> _activeResolvePopUps = new List<IBranch>();
@@ -41,16 +43,16 @@ public class PopUpController : IPopUpController, IEventUser, INoResolvePopUp, IN
     
     public void FetchEvents()
     {
-        NoResolvePopUps = EVent.Do.Fetch<INoResolvePopUp>();
-        NoPopUps = EVent.Do.Fetch<INoPopUps>();
-        LastRemovedPopUp = EVent.Do.Fetch<ILastRemovedPopUp>();
+        NoResolvePopUps = PopUpEvents.Do.Fetch<INoResolvePopUp>();
+        NoPopUps = PopUpEvents.Do.Fetch<INoPopUps>();
+        LastRemovedPopUp = PopUpEvents.Do.Fetch<ILastRemovedPopUp>();
     }
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional);
-        EVent.Do.Subscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen);
-        EVent.Do.Subscribe<IAddResolvePopUp>(AddActivePopUps_Resolve);
+        PopUpEvents.Do.Subscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional);
+        PopUpEvents.Do.Subscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen);
+        PopUpEvents.Do.Subscribe<IAddResolvePopUp>(AddActivePopUps_Resolve);
     }
 
     public IBranch NextPopUp()

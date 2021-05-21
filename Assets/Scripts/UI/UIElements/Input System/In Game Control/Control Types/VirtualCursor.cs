@@ -1,4 +1,6 @@
 ﻿using System;
+using EZ.Events;
+using EZ.Service;
 using UIElements;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -20,7 +22,7 @@ public interface ICursorSettings
 }
 
 [Serializable]
-public class VirtualCursor : IRaycastController, IEventUser, IVirtualCursor, ICursorSettings, IEServUser, IMonoAwake
+public class VirtualCursor : IRaycastController, IEZEventUser, IVirtualCursor, ICursorSettings, IServiceUser, IMonoAwake
 {
     public VirtualCursor(IVirtualCursorSettings settings)
     {
@@ -34,7 +36,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IVirtualCursor, ICu
     private bool _allowKeys;
     private IInteractWithUi _interactWithUi;
     private IMoveVirtualCursor _moveVirtualCursor;
-    private ISetCanvasOrder _setCanvasOrder;
+    private ICanvasOrderData _canvasOrderData;
     private VirtualCursorSettings _virtualCursorSetting;
     private bool _canStart;
     private Transform _parentTransform;
@@ -61,18 +63,18 @@ public class VirtualCursor : IRaycastController, IEventUser, IVirtualCursor, ICu
     //Main
     public void OnAwake()
     {
-        _raycastTo2D = EJect.Class.NoParams<I2DRaycast>();
-        _raycastTo3D = EJect.Class.NoParams<I3DRaycast>();
-        _moveVirtualCursor = EJect.Class.NoParams<IMoveVirtualCursor>();
-        _interactWithUi = EJect.Class.NoParams<IInteractWithUi>();
+        _raycastTo2D = EZInject.Class.NoParams<I2DRaycast>();
+        _raycastTo3D = EZInject.Class.NoParams<I3DRaycast>();
+        _moveVirtualCursor = EZInject.Class.NoParams<IMoveVirtualCursor>();
+        _interactWithUi = EZInject.Class.NoParams<IInteractWithUi>();
         
-        UseEServLocator();
+        UseEZServiceLocator();
     }
     
-    public void UseEServLocator()
+    public void UseEZServiceLocator()
     {
-        Scheme = EServ.Locator.Get<InputScheme>(this);
-        _setCanvasOrder = EServ.Locator.Get<ISetCanvasOrder>(this);
+        Scheme = EZService.Locator.Get<InputScheme>(this);
+        _canvasOrderData = EZService.Locator.Get<ICanvasOrderData>(this);
     }
 
     public void OnEnable()
@@ -86,10 +88,10 @@ public class VirtualCursor : IRaycastController, IEventUser, IVirtualCursor, ICu
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
-        EVent.Do.Subscribe<IVCSetUpOnStart>(SetCursorForStartUp);
-        EVent.Do.Subscribe<IOnStart>(CanStart);
-        EVent.Do.Subscribe<IVcChangeControlSetUp>(DoVCStartCheck);
+        InputEvents.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+        InputEvents.Do.Subscribe<IVCSetUpOnStart>(SetCursorForStartUp);
+        HistoryEvents.Do.Subscribe<IOnStart>(CanStart);
+        InputEvents.Do.Subscribe<IVcChangeControlSetUp>(DoVCStartCheck);
     }
     
     public void OnStart()
@@ -136,7 +138,7 @@ public class VirtualCursor : IRaycastController, IEventUser, IVirtualCursor, ICu
     }
 
     private void SetStartingCanvasOrder() 
-        => SetCanvasOrderUtil.Set(_setCanvasOrder.ReturnVirtualCursorCanvasOrder, _cursorCanvas);
+        => SetCanvasOrderUtil.Set(_canvasOrderData.ReturnVirtualCursorCanvasOrder, _cursorCanvas);
 
 
     private void TurnOffAndResetCursor()

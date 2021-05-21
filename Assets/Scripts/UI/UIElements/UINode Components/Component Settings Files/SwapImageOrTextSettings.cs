@@ -35,6 +35,6 @@ public class SwapImageOrTextSettings : ISwapImageOrTextSettings
         {
             return new UIImageTextToggle(this, uiNodeEvents);
         }
-        return new NullFunction();
+        return null;
     }
 }

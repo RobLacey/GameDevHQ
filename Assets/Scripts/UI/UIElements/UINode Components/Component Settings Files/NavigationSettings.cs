@@ -60,6 +60,6 @@ public class NavigationSettings :INavigationSettings
             Instance = new UINavigation(this, uiNodeEvents);
             return Instance;
         }
-        return  new NullFunction();
+        return null;
     }
 }

@@ -1,12 +1,8 @@
 ﻿using System;
+using EZ.Inject;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.UI;
-
-public interface IComponentSettings: IParameters
-{
-    NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions);
-}
 
 public interface IColourSettings : IComponentSettings
 {
@@ -33,6 +29,6 @@ public class ColourSettings: IColourSettings
         {
             return new UIColour(this, uiNodeEvents);
         }
-        return new NullFunction();
+        return null;
     }
 }

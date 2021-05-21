@@ -74,7 +74,7 @@ public class EventSettings : IEventSettings
             uiNodeEvents.ReturnMasterNode.MyRunTimeSetter.SetEvents(this);
             return new UIEvents(this, uiNodeEvents);
         }
-        return new NullFunction();
+        return null;
     }
 }
 

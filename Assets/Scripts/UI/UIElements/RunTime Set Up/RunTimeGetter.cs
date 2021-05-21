@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace UIElements
 {
-    public class RunTimeGetter : MonoBehaviour, IRunTimeGetter
+    public class RunTimeGetter : MonoBehaviour, IRunTimeGetter, IMonoStart
     {
         [SerializeField] 
         [ReorderableList] [Foldout(ToolTipFoldOut)]
@@ -69,10 +69,19 @@ namespace UIElements
             _mySetter = newBranch.ThisBranchesGameObject.GetComponentInChildren<IRunTimeSetter>();
             if(_branchTextOnCreation != String.Empty)
                 _mySetter.ChangeMainText(_branchTextOnCreation);
+            OnStart();
             return newBranch;
         }
 
-        public void BufferMainTextFroCreation(string newText) => _branchTextOnCreation = newText;
+        public void OnStart()
+        {
+            SetTooltips(_tooltipText.ToArray());
+            SetFixedPosition(_worldFixedPos);
+            SetChildBranch(_childBranch);
+            SetUpEvents();
+        }
+
+        public void BufferMainTextForCreation(string newText) => _branchTextOnCreation = newText;
 
         public void SetToolTipDataOnCreation(ToolTipRuntimeData[] tooltipData)
         {
@@ -80,15 +89,6 @@ namespace UIElements
             {
                 _tooltipText.Add(toolTipRuntimeData);
             }
-        }
-        
-
-        private void Start()
-        {
-            SetTooltips(_tooltipText.ToArray());
-            SetFixedPosition(_worldFixedPos);
-            SetChildBranch(_childBranch);
-            SetUpEvents();
         }
 
         private void SetUpEvents()

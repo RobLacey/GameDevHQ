@@ -53,7 +53,7 @@ public class ToolTipSettings : ITooltipSettings
     public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
         var activeFunction = (functions & Setting.ToolTip) != 0;
-        
+
         UiNodeEvents = uiNodeEvents;
         _myNode = uiNodeEvents.ReturnMasterNode;
         
@@ -66,7 +66,7 @@ public class ToolTipSettings : ITooltipSettings
             SetUpToolTipClass.SetRunTimeSetter(newClass, ToolTips, _myNode.MyRunTimeSetter);
             return newClass;
         }
-        return new NullFunction();
+        return null;
     }
 }
 

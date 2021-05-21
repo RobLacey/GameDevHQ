@@ -11,7 +11,7 @@ public class NodeSearch : INodeSearch
     private static INode toFind;
     private INode _default;
     
-    private static INodeSearch Search { get; } = new EJect().NoParams<INodeSearch>();
+    private static INodeSearch Search { get; } = new EZInject().NoParams<INodeSearch>();
     
     public static INodeSearch Find(INode nodeToFind)
     {

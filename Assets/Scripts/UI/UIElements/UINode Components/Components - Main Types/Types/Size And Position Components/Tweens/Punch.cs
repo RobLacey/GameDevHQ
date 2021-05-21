@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using UnityEngine;
 
 public interface IPunch : INodeTween{ }
 
@@ -9,6 +10,7 @@ public class Punch : BaseShakePunch, IPunch
     
     private protected override void RunTween()
     {
+        Debug.Log("Punch");
         base.RunTween();
         _tweenData.MyTransform.DOPunchScale(_scheme.ChangeBy, _scheme.Time, 
                                             _scheme.Vibrato, _scheme.Elasticity)

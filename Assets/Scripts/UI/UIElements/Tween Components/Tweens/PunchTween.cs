@@ -12,7 +12,7 @@ public class PunchTween : TweenBase, IPunchTween
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EVent.Do.Subscribe<IEndTween>(EndTweenEffect);
+        BranchEvent.Do.Subscribe<IEndTween>(EndTweenEffect);
     }
 
     public override void SetUpTweens(List<BuildTweenData> buildObjectsList, 
@@ -48,7 +48,7 @@ public class PunchTween : TweenBase, IPunchTween
             callback?.Invoke();
             return null;
         } 
-
+        
         var data = _scheme.PunchData;
         return item.Element.DOPunchScale(data.Strength, data.Duration, data.Vibrato, data.Elasticity)
                             .SetId($"{_tweenName}{item.Element.GetInstanceID()}")

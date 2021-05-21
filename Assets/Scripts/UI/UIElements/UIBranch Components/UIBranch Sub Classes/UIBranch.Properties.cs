@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -20,41 +19,23 @@ public partial class UIBranch
     public bool IsHomeScreenBranch() => _branchType == BranchType.HomeScreen;
     public bool IsStandardBranch() => _branchType == BranchType.Standard;
     public bool IsInGameBranch() => _branchType == BranchType.InGameObject;
-    public void DoNotTween() => _tweenOnChange = false;
+    public void DoNotTween()=> _tweenOnChange = false;
     public void DontSetBranchAsActive() => _canActivateBranch = false;
-    public IBranch[] FindAllBranches() => FindObjectsOfType<UIBranch>().ToArray<IBranch>(); //TODO Write Up this
     public bool IsTimedPopUp() => _branchType == BranchType.TimedPopUp;
     public IsActive GetStayOn() => _stayVisible;
     public void SetNotAControlBar() => _controlBar = IsActive.No;
     public IsActive SetStayOn { set => _stayVisible = value; }
-    private void SaveHighlighted(IHighlightedNode args)
-    {
-        if(args.Highlighted.MyBranch.NotEqualTo(this) || _saveExitSelection == IsActive.No) return;
-        
-        _lastHighlighted = NodeSearch.Find(args.Highlighted)
-                                    .DefaultReturn(LastSelected)
-                                    .RunOn(ThisGroupsUiNodes);
-    }
-    private void SaveSelected(ISelectedNode args)
-    {
-        if(args.UINode.MyBranch.NotEqualTo(this)) return;
-
-        LastSelected = NodeSearch.Find(args.UINode)
-                                 .DefaultReturn(LastSelected)
-                                 .RunOn(ThisGroupsUiNodes);
-    }    
     
    //Properties
     public BranchType ReturnBranchType => _branchType;
     public bool CanvasIsEnabled => MyCanvas.enabled;
     public bool CanStoreAndRestoreOptionalPoUp => _storeOrResetOptional == StoreAndRestorePopUps.StoreAndRestore;
-    public INode DefaultStartOnThisNode => _startOnThisNode;
+    public INode DefaultStartOnThisNode { get; private set; }
     public INode LastSelected { get; private set; }
-    public INode LastHighlighted => _lastHighlighted;
-    public INode[] ThisGroupsUiNodes { get; private set; }
+    public INode LastHighlighted { get; private set; }
+    public INode[] ThisGroupsUiNodes { get; set; } = new INode[0];
     public List<GroupList> BranchGroupsList => _groupsList;
     public int GroupIndex { get; set; }
-
     public Canvas MyCanvas { get; private set; } 
     public CanvasGroup MyCanvasGroup { get; private set; }
     public IBranch MyParentBranch { get; set; }
@@ -63,7 +44,6 @@ public partial class UIBranch
     public IBranch ActiveBranch => this;
     public IAutoOpenClose AutoOpenCloseClass { get; private set; }
     public bool PointerOverBranch => AutoOpenCloseClass.PointerOverBranch;
-    public List<UIBranch> HomeBranches { private get; set; }
     public float Timer => _timer;
 
     public IsActive SetSaveLastSelectionOnExit

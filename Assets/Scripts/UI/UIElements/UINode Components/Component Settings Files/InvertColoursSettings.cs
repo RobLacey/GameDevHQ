@@ -1,7 +1,13 @@
 ﻿using System;
+using EZ.Inject;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.UI;
+
+public interface IComponentSettings: IParameters
+{
+    NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions);
+}
 
 public interface IInvertSettings : IComponentSettings
 {
@@ -40,6 +46,6 @@ public class InvertColoursSettings : IInvertSettings
         {
             return new UIInvertColours(this, uiNodeEvents);
         }
-        return new NullFunction();
+        return null;
     }
 }

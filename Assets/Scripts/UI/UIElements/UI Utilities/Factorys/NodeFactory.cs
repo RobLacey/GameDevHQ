@@ -1,9 +1,10 @@
 ﻿using System;
+using EZ.Inject;
 using UnityEngine;
 
 public static class NodeFactory
 {
-    private static IEJect EJect { get; } = new EJect();
+    private static IEZInject EJect { get; } = new EZInject();
     
     public static INodeBase Factory(ButtonFunction functions, INode node)
     {

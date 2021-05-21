@@ -1,10 +1,11 @@
 ﻿using System;
+using EZ.Service;
 using UnityEngine;
 
 namespace UIElements
 {
     
-    public interface ISetCanvasOrder
+    public interface ICanvasOrderData
     {
         int ReturnPresetCanvasOrder(ICanvasOrderCalculator canvasOrderCalculator);
         int ReturnToolTipCanvasOrder();
@@ -14,7 +15,7 @@ namespace UIElements
     }
 
     [Serializable]
-    public class CanvasOrderData : ISetCanvasOrder, IMonoEnable, IEServService
+    public class CanvasOrderData : ICanvasOrderData, IMonoEnable, IIsAService
     {
         [SerializeField] private int _pauseMenu = 20;
         [SerializeField] private int _toolTip = 25;
@@ -35,9 +36,9 @@ namespace UIElements
         //Main
         public void OnEnable() => AddService();
 
-        public void AddService() => EServ.Locator.AddNew<ISetCanvasOrder>(this);
+        public void AddService() => EZService.Locator.AddNew<ICanvasOrderData>(this);
 
-        public void OnDisable() { }
+        public void OnRemoveService() { }
 
         public int ReturnPresetCanvasOrder(ICanvasOrderCalculator calculator)
         {

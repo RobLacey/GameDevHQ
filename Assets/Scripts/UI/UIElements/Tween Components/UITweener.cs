@@ -2,9 +2,10 @@
 using UnityEngine;
 using System;
 using DG.Tweening;
+using EZ.Events;
 using NaughtyAttributes;
 
-public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
+public class UITweener : MonoBehaviour, IEndTween, IEZEventDispatcher
 {
     
     [SerializeField] 
@@ -22,7 +23,7 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
     //Variables
     private int _counter, _effectCounter;
     private List<ITweenBase> _activeTweens;
-    private readonly ITweenInspector _tweenInspector = EJect.Class.NoParams<ITweenInspector>();
+    private readonly ITweenInspector _tweenInspector = EZInject.Class.NoParams<ITweenInspector>();
 
     //Properties
     public RectTransform EndTweenRect { get; private set; }
@@ -51,7 +52,7 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
         }
     }
     
-    public void FetchEvents() => EndTweenEffect = EVent.Do.Fetch<IEndTween>();
+    public void FetchEvents() => EndTweenEffect = BranchEvent.Do.Fetch<IEndTween>();
 
     private void OnEnable()
     {
@@ -80,7 +81,9 @@ public class UITweener : MonoBehaviour, IEndTween, IEventDispatcher
     private void StartProcessingTweens(TweenType tweenType, Action callBack, TweenTrigger userEvent)
     {
         FinishedTweenCallback = callBack;
+
         if (IfTweenCounterIsZero_In(userEvent)) return;
+
         ResetCounterAndCoroutines();
         DoTweens(tweenType, DoAtEndOfTweens(userEvent));
     }

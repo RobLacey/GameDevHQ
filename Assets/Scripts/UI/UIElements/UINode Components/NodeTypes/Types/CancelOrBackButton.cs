@@ -25,9 +25,9 @@ public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBac
     public override void FetchEvents()
     {
         base.FetchEvents();
-        CancelButtonActive = EVent.Do.Fetch<ICancelButtonActivated>();
-        CancelPopUp= EVent.Do.Fetch<ICancelPopUp>();
-        CancelHoverOver= EVent.Do.Fetch<ICancelHoverOver>();
+        CancelButtonActive = CancelEvents.Do.Fetch<ICancelButtonActivated>();
+        CancelPopUp= CancelEvents.Do.Fetch<ICancelPopUp>();
+        CancelHoverOver= CancelEvents.Do.Fetch<ICancelHoverOver>();
     }
 
     protected override void TurnNodeOnOff()

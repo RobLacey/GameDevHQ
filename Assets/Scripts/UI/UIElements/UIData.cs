@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using EZ.Events;
 using NaughtyAttributes;
 using UIElements;
 using UnityEngine;
@@ -19,7 +20,7 @@ public interface IUIData
 }
 
 [Serializable]
-public class UIData : IMonoEnable, IEventUser, IUIData
+public class UIData : IMonoEnable, IEZEventUser, IUIData
 {
     [SerializeField] private UINode _lastHighlighted = default;
     [SerializeField] private GameObject _lastHighlightedGO = default;
@@ -49,17 +50,17 @@ public class UIData : IMonoEnable, IEventUser, IUIData
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IHistoryData>(ManageHistory);
-        EVent.Do.Subscribe<IHighlightedNode>(SaveLastHighlighted);
-        EVent.Do.Subscribe<ISelectedNode>(SaveLastSelected);
-        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
-        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
-        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
-        EVent.Do.Subscribe<IInMenu>(SaveInMenu);
-        EVent.Do.Subscribe<ICloseAndResetBranch>(CloseAndReset);
+        HistoryEvents.Do.Subscribe<IHistoryData>(ManageHistory);
+        HistoryEvents.Do.Subscribe<IHighlightedNode>(SaveLastHighlighted);
+        HistoryEvents.Do.Subscribe<ISelectedNode>(SaveLastSelected);
+        HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+        HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        InputEvents.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+        HistoryEvents.Do.Subscribe<IInMenu>(SaveInMenu);
+        GOUIEvents.Do.Subscribe<ICloseGOUIBranch>(CloseAndReset);
     }
 
-    private void CloseAndReset(ICloseAndResetBranch args)
+    private void CloseAndReset(ICloseGOUIBranch args)
     {
         if (_lastHighlightedGO.IsEqualTo(args.TargetBranch.LastHighlighted.InGameObject))
             _lastHighlightedGO = null;

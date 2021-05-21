@@ -1,37 +1,34 @@
-﻿using UnityEngine;
+﻿using System;
+using EZ.Service;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class UINavigation : NodeFunctionBase, IEServUser
+public class UINavigation : NodeFunctionBase
 {
-    public UINavigation(INavigationSettings settings, IUiEvents uiEvents)
+    public UINavigation(INavigationSettings settings, IUiEvents uiEvents): base(uiEvents)
     {
         _mySettings = settings;
-        //_childBranch = settings.ChildBranch;
-        _setNavigation = settings.NavType;
         _up = settings.Up;
         _down = settings.Down;
         _left = settings.Left;
         _right = settings.Right;
         CanActivate = true;
-        OnAwake(uiEvents);
     }
 
     //Variables
-   // private readonly IBranch _childBranch;
-    private readonly NavigationType _setNavigation;
     private readonly UINode _up;
     private readonly UINode _down;
     private readonly UINode _left;
     private readonly UINode _right;
     private IBranch _myBranch;
     private INode _myNode;
-    private INavigationSettings _mySettings;
+    private readonly INavigationSettings _mySettings;
     private InputScheme _inputScheme;
 
     //Properties
     private IBranch ChildBranch => _mySettings.ChildBranch;
+    private NavigationType SetNavigation => _mySettings.NavType;
     protected override bool CanBeHighlighted() => false;
-    //protected override bool CanBePressed() => !(_childBranch is null);
     protected override bool CanBePressed() => !(ChildBranch is null);
     protected override bool FunctionNotActive() => !CanActivate;
     protected override void SavePointerStatus(bool pointerOver) { }
@@ -40,15 +37,24 @@ public class UINavigation : NodeFunctionBase, IEServUser
                                         && _myNode.MultiSelectSettings.AllowMultiSelect == IsActive.Yes ;
 
     //Main
-    protected sealed override void OnAwake(IUiEvents events)
+    public override void OnAwake()
     {
-        base.OnAwake(events);
-        _myNode = events.ReturnMasterNode;
+        base.OnAwake();
+        _myNode = _uiEvents.ReturnMasterNode;
         _myBranch = _myNode.MyBranch;
-        UseEServLocator();
     }
     
-    public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
+    public override void UseEZServiceLocator()
+    {
+        base.UseEZServiceLocator();
+        _inputScheme = EZService.Locator.Get<InputScheme>(this);
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        _inputScheme = null;
+    }
 
     protected override void AxisMoveDirection(MoveDirection moveDirection)
     {
@@ -58,7 +64,9 @@ public class UINavigation : NodeFunctionBase, IEServUser
 
     private void ProcessMoves(MoveDirection moveDirection)
     {
-        if (FunctionNotActive() || _setNavigation == NavigationType.None) return;
+        if (FunctionNotActive() || SetNavigation == NavigationType.None) return;
+        
+        if (DoAutoMove(moveDirection)) return;
 
         switch (moveDirection)
         {
@@ -83,6 +91,36 @@ public class UINavigation : NodeFunctionBase, IEServUser
                 break;
             }
         }
+    }
+
+    private bool DoAutoMove(MoveDirection moveDirection)
+    {
+        Debug.Log("Make it show when moved onto branch and be able to remove nodes safely");
+        if (SetNavigation != NavigationType.AutoUpDown 
+            && SetNavigation != NavigationType.AutoRightLeft) return false;
+        
+        int index = Array.IndexOf(_myBranch.ThisGroupsUiNodes, _myBranch.LastHighlighted);
+        int size = _myBranch.ThisGroupsUiNodes.Length;
+
+        if(SetNavigation == NavigationType.AutoUpDown)
+        {
+            if (moveDirection == MoveDirection.Up)
+                index = index.PositiveIterate(size);
+            else if (moveDirection == MoveDirection.Down)
+                index = index.NegativeIterate(size);
+            _myBranch.ThisGroupsUiNodes[index].DoNonMouseMove(moveDirection);
+        } 
+        
+        if(SetNavigation == NavigationType.AutoRightLeft)
+        {
+            if (moveDirection == MoveDirection.Right)
+                index = index.PositiveIterate(size);
+            else if (moveDirection == MoveDirection.Left)
+                index = index.NegativeIterate(size);
+        _myBranch.ThisGroupsUiNodes[index].DoNonMouseMove(moveDirection);
+        }
+        
+        return true;
     }
 
     private protected override void ProcessPress()
@@ -119,12 +157,12 @@ public class UINavigation : NodeFunctionBase, IEServUser
 
     private UINode ReturnNextFreeMoveTarget()
     {
-        if (_setNavigation == NavigationType.UpAndDown || _setNavigation == NavigationType.AllDirections)
+        if (SetNavigation == NavigationType.UpAndDown || SetNavigation == NavigationType.AllDirections)
         {
             return _down ? _down : _up;
         }
 
-        if (_setNavigation == NavigationType.RightAndLeft || _setNavigation == NavigationType.AllDirections)
+        if (SetNavigation == NavigationType.RightAndLeft || SetNavigation == NavigationType.AllDirections)
         {
             return _right ? _right : _left;
         }

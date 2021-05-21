@@ -1,8 +1,10 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using EZ.Inject;
 using UIElements.Input_System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public interface INode : IToggles, IParameters
 {
@@ -22,6 +24,8 @@ public interface INode : IToggles, IParameters
     float AutoOpenDelay { get; }
     bool CanAutoOpen { get; }
     IRunTimeSetter MyRunTimeSetter { get; }
+    void DoNonMouseMove(MoveDirection moveDirection);
+    void SetGOUIModule(IGOUIModule module);
 }
 
 public interface IToggles

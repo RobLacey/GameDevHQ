@@ -11,7 +11,7 @@ public class GroupedToggles : NodeBase, IGroupedToggles
         SetUpToggleData();
         SetUpOtherVariables();
         SelectedToggle += SaveSelectedNode;
-        _delayTimer = EJect.Class.NoParams<IDelayTimer>();
+        _delayTimer = EZInject.Class.NoParams<IDelayTimer>();
     }
 
     private void SetUpToggleData()
@@ -29,7 +29,6 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     }
 
     //Variables
-    private List<INode> _allNodes;
     private readonly List<INode> _toggleGroupMembers = new List<INode>();
     private IBranch _tabBranch;
     private bool _hasATabBranch;
@@ -38,14 +37,19 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     private bool _startAsSelected;
     private float _autoOpenDelay;
     private readonly IDelayTimer _delayTimer;
+    
+    //Properties
+    private List<INode> AllNodes => _uiNode.MyBranch.ThisGroupsUiNodes.ToList();
 
     //Events
     private static event Action<INode, Action> SelectedToggle;
 
     //Main
-    public override void Start()
+    public override void OnStart()
     {
-        base.Start();
+        base.OnStart();
+        if(_uiNode.HasChildBranch is null) return;
+        
         SetUpToggleGroup();
         SetUpTabBranch();
         if (_startAsSelected)
@@ -57,9 +61,7 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     
     private void SetUpToggleGroup()
     {
-        _allNodes = _uiNode.MyBranch.ThisGroupsUiNodes.ToList();
-
-        foreach (var node in _allNodes.Where(node => node.IsToggleGroup)
+        foreach (var node in AllNodes.Where(node => node.IsToggleGroup)
                                       .Where(node => _myToggleGroupId == node.ToggleData.ReturnToggleId))
         {
             _toggleGroupMembers.Add(node);
@@ -147,7 +149,6 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     {
         SetNodeAsNotSelected_NoEffects();
         if (!_hasATabBranch) return;
-       // CanvasOrderCalculator.SetCanvasOrder();
         _tabBranch.StartBranchExitProcess(OutTweenType.Cancel, callback);
     }
 

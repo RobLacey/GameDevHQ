@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
+using EZ.Events;
+using EZ.Service;
+using UIElements;
 using UnityEngine;
 
-public interface IScreenData
+public interface IScreenData : IMonoEnable,IMonoDisable
 {
-    void OnEnable();
-    bool WasOnHomeScreen { get; set; }
+    bool WasOnHomeScreen { get; }
     void RestoreScreen();
     void StoreClearScreenData(IBranch[] allBranches, IBranch thisBranch, BlockRaycast blockRaycast);
 }
 
-public class ScreenData : IScreenData
+public class ScreenData : IScreenData, IServiceUser, IEZEventUser
 {
     public ScreenData(IBranchParams branch)
     {
@@ -17,48 +19,56 @@ public class ScreenData : IScreenData
             _isFullscreen = true;
     }
 
+    //Variables
     private readonly List<IBranch> _clearedBranches = new List<IBranch>();
-    private bool  _locked;
-    private bool _wasOnHomeScreen = true;
     private readonly bool _isFullscreen;
+    private IDataHub _myDataHub;
 
     //Propertues
-    public bool WasOnHomeScreen
+    public bool WasOnHomeScreen { get; private set; } = true;
+
+    public void OnEnable()
     {
-        get => _wasOnHomeScreen;
-        set => _wasOnHomeScreen = value;
-    }
-
-    public void OnEnable() => EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
-
-    //Main
-
-    private void SaveOnHomeScreen(IOnHomeScreen args)
-    {
-        if (_locked) return;
-        _wasOnHomeScreen = args.OnHomeScreen;
-    }
-
-    public void StoreClearScreenData(IBranch[] allBranches, IBranch thisBranch, BlockRaycast blockRaycast)
-    {
-        _locked = true;
-        StoreActiveBranches(allBranches, thisBranch, blockRaycast == BlockRaycast.Yes);
+        UseEZServiceLocator();
+        ObserveEvents();
     }
     
+    public void ObserveEvents() => GOUIEvents.Do.Subscribe<ICloseGOUIBranch>(RemoveBranch);
+    private void UnobserveEvents() => GOUIEvents.Do.Unsubscribe<ICloseGOUIBranch>(RemoveBranch);
+
+    private void RemoveBranch(ICloseGOUIBranch args)
+    {
+        if (_clearedBranches.Contains(args.TargetBranch))
+            _clearedBranches.Remove(args.TargetBranch);
+    }
+
+    public void UseEZServiceLocator() => _myDataHub = EZService.Locator.Get<IDataHub>(this);
+
+    public void OnDisable()
+    {
+        UnobserveEvents();
+        _clearedBranches.Clear();
+    }
+
+    //Main
+    public void StoreClearScreenData(IBranch[] allBranches, IBranch thisBranch, BlockRaycast blockRaycast)
+    {
+        WasOnHomeScreen = _myDataHub.OnHomeScreen;
+        StoreActiveBranches(allBranches, thisBranch, blockRaycast == BlockRaycast.Yes);
+    }
+
     private void StoreActiveBranches(IBranch[] allBranches, IBranch thisBranch, bool blockRaycast)
     {
         foreach (var branchToClear in allBranches)
         {
             if(branchToClear == thisBranch) continue;
             
-            if (branchToClear.CanvasIsEnabled && !IsAPopUp(branchToClear))
+            if (branchToClear.CanvasIsEnabled)
                 _clearedBranches.Add(branchToClear);
             
             if (blockRaycast) 
                 branchToClear.SetBlockRaycast(BlockRaycast.No);
         }
-
-        bool IsAPopUp(IBranch branchToClear) => branchToClear.IsAPopUpBranch() || branchToClear.IsTimedPopUp();
     }
 
     public void RestoreScreen()
@@ -72,6 +82,5 @@ public class ScreenData : IScreenData
             branch.SetBlockRaycast(BlockRaycast.Yes);
         }
         _clearedBranches.Clear();
-        _locked = false;
     }
 }

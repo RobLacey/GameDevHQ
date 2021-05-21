@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using DG.Tweening;
+using EZ.Inject;
+using EZ.Service;
 using UIElements;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,16 +21,14 @@ public interface IToolTipData: IParameters
 }
 
 
-public class UITooltip : NodeFunctionBase, IToolTipData, IEServUser
+public class UITooltip : NodeFunctionBase, IToolTipData
 {
-    public UITooltip(ITooltipSettings settings)
+    public UITooltip(ITooltipSettings settings) : base(settings.UiNodeEvents)
     {
         _settings = settings;
         FixedPosition = settings.FixedPosition;
         UiCamera = settings.UiCamera;
-        Scheme = settings.Scheme;
         CanActivate = true;
-        OnAwake(settings.UiNodeEvents);
     }
 
     //Variables
@@ -40,11 +40,10 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IEServUser
     private IToolTipFade _toolTipFade;
     private IGetScreenPosition _getScreenPosition;
     private readonly ITooltipSettings _settings;
-    private ISetCanvasOrder _setCanvasOrder;
-    private bool _vcIsActive;
+    private ICanvasOrderData _canvasOrderData;
 
     //Properties
-    public ToolTipScheme Scheme { get; }
+    public ToolTipScheme Scheme => _settings.Scheme;
     public RectTransform FixedPosition { get; private set; }
     public Camera UiCamera { get; }
     public int CurrentToolTipIndex { get; private set; }
@@ -69,19 +68,14 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IEServUser
     
     //TODO Change size calculations to work from camera size rather than canvas so still works when aspect changes
 
-    protected sealed override void OnAwake(IUiEvents uiEvents) 
+    public override void OnAwake() 
     {
-        base.OnAwake(uiEvents);
+        base.OnAwake();
         SetUp();
         SetTooltipsVariables();
-        _toolTipFade = EJect.Class.WithParams<IToolTipFade>(this);
-        _getScreenPosition = EJect.Class.WithParams<IGetScreenPosition>(this);
-    }
-
-    public override void OnEnable()
-    {
-        base.OnEnable();
-        UseEServLocator();
+        _toolTipFade = EZInject.Class.WithParams<IToolTipFade>(this);
+        _getScreenPosition = EZInject.Class.WithParams<IGetScreenPosition>(this);
+        _getScreenPosition.OnAwake();
     }
 
     private void SetUp()
@@ -92,28 +86,6 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IEServUser
     }
 
     public void SetFixedPositionAtRuntime(RectTransform fixPos) => FixedPosition = fixPos;
-
-    private void SetUpTooltips()
-    {
-        if (ListOfTooltips.Length > 1)
-            _buildDelay = Scheme.BuildDelay;
-        
-        ToolTipsRects = new RectTransform[ListOfTooltips.Length];
-        _cachedToolTipCanvasList = new Canvas[ListOfTooltips.Length];
-
-        for (int index = 0; index < ListOfTooltips.Length; index++)
-        {
-            ToolTipsRects[index] = ListOfTooltips[index].GetComponent<RectTransform>();
-            _cachedToolTipCanvasList[index] = ListOfTooltips[index].GetComponent<Canvas>();
-            _cachedToolTipCanvasList[index].enabled = false;
-        }
-    }
-
-    private void CheckSetUpForError()
-    {
-        if (ListOfTooltips.Length == 0)
-            throw new Exception("No tooltips set");
-    }
 
     private void SetTooltipsVariables()
     {
@@ -127,16 +99,87 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IEServUser
         if (FixedPosition.Equals(null))
             FixedPosition = ParentRectTransform;
     }
-    
-    public void UseEServLocator() => _setCanvasOrder = EServ.Locator.Get<ISetCanvasOrder>(this);
+
+    private void SetUpTooltips()
+    {
+        if (ListOfTooltips.Length > 1)
+            _buildDelay = Scheme.BuildDelay;
+        
+        ToolTipsRects = new RectTransform[ListOfTooltips.Length];
+        _cachedToolTipCanvasList = new Canvas[ListOfTooltips.Length];
+
+        GetRectAndCanvasForEachToolTip();
+    }
+
+    private void GetRectAndCanvasForEachToolTip()
+    {
+        for (int index = 0; index < ListOfTooltips.Length; index++)
+        {
+            ToolTipsRects[index] = ListOfTooltips[index].GetComponent<RectTransform>();
+            _cachedToolTipCanvasList[index] = ListOfTooltips[index].GetComponent<Canvas>();
+            _cachedToolTipCanvasList[index].enabled = false;
+        }
+    }
+
+    public override void OnEnable()
+    {
+        base.OnEnable();
+        _getScreenPosition.OnEnable();
+    }
+
+    protected override void LateStartSetUp()
+    {
+        base.LateStartSetUp();
+        if (MyHubDataIsNull) return;
+        _getScreenPosition.LateStartSetUp();
+        _allowKeys = _myDataHub.AllowKeys;
+    }
+
+    public override void UseEZServiceLocator()
+    {
+        base.UseEZServiceLocator();
+        _canvasOrderData = EZService.Locator.Get<ICanvasOrderData>(this);
+    }
 
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
-        EVent.Do.Subscribe<ISwitchGroupPressed>(CloseTooltipImmediately);
-        EVent.Do.Subscribe<IClearScreen>(CloseTooltipImmediately);
-        EVent.Do.Subscribe<IHotKeyPressed>(CloseTooltipImmediately);
+        InputEvents.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+        InputEvents.Do.Subscribe<ISwitchGroupPressed>(CloseTooltipImmediately);
+        BranchEvent.Do.Subscribe<IClearScreen>(CloseTooltipImmediately);
+        InputEvents.Do.Subscribe<IHotKeyPressed>(CloseTooltipImmediately);
+    }
+
+    protected override void UnObserveEvents()
+    {
+        base.UnObserveEvents();
+        InputEvents.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
+        InputEvents.Do.Unsubscribe<ISwitchGroupPressed>(CloseTooltipImmediately);
+        BranchEvent.Do.Unsubscribe<IClearScreen>(CloseTooltipImmediately);
+        InputEvents.Do.Unsubscribe<IHotKeyPressed>(CloseTooltipImmediately);
+    }
+
+    public override void OnDisable()
+    {
+        HideToolTip();
+        base.OnDisable();
+        UnObserveEvents();
+        _getScreenPosition.OnDisable();
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        UnObserveEvents();
+        _getScreenPosition.OnDestroy();
+        _toolTipFade = null;
+        _getScreenPosition = null;
+    }
+
+    private void CheckSetUpForError()
+    {
+        if (ListOfTooltips.Length == 0)
+            throw new Exception("No tooltips set");
     }
 
     public override void OnStart()
@@ -151,7 +194,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IEServUser
     {
         foreach (var canvas in _cachedToolTipCanvasList)
         {
-            SetCanvasOrderUtil.Set(_setCanvasOrder.ReturnToolTipCanvasOrder, canvas);
+            SetCanvasOrderUtil.Set(_canvasOrderData.ReturnToolTipCanvasOrder, canvas);
         }
     }
 
@@ -189,6 +232,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData, IEServUser
         StaticCoroutine.StopCoroutines(_coroutineBuild);
         StaticCoroutine.StopCoroutines(_coroutineActivate);
         _cachedToolTipCanvasList[CurrentToolTipIndex].enabled = false;
+        CurrentToolTipIndex = 0;
     }
     
     private IEnumerator StartToolTip()

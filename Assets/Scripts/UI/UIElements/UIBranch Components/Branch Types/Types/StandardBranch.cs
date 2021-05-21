@@ -4,12 +4,9 @@ public interface IStandardBranch : IBranchBase { }
 
 public class StandardBranch : BranchBase, IStandardBranch
 {
-    public StandardBranch(IBranch branch) : base(branch)
-    {
-        _allBranches = branch.FindAllBranches();
-    }
+    public StandardBranch(IBranch branch) : base(branch) { }
 
-    private readonly IBranch[] _allBranches;
+    private IBranch[] AllBranches => _myDataHub.AllBranches;
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
@@ -21,7 +18,7 @@ public class StandardBranch : BranchBase, IStandardBranch
         SetNewParentBranch(newParentController);
         
         if(_myBranch.ScreenType == ScreenType.FullScreen)
-            _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.Yes);
+            _screenData.StoreClearScreenData(AllBranches, _myBranch, BlockRaycast.Yes);
     }
 
     protected override void ClearBranchForFullscreen(IClearScreen args)

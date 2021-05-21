@@ -4,14 +4,13 @@ using UnityEngine;
 
 public interface IOptionalPopUpBranch : IBranchBase { } 
 
-public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp, 
-                                  IAddOptionalPopUp, IOptionalPopUpBranch
+public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp, IAddOptionalPopUp, IOptionalPopUpBranch
 {
-    public OptionalPopUpPopUp(IBranch branch) : base(branch) => optionalPopUps = new List<Canvas>();
+    public OptionalPopUpPopUp(IBranch branch) : base(branch) { }
 
     //Variables
     private bool _restoreOnHome;
-    private static List<Canvas> optionalPopUps;
+    private static readonly List<Canvas> optionalPopUps = new List<Canvas>();
 
     //Properties
     public IBranch ThisPopUp => _myBranch;
@@ -24,14 +23,20 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp,
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EVent.Do.Subscribe<ILastRemovedPopUp>(AdjustCanvasOrderRemoved);
+        PopUpEvents.Do.Subscribe<ILastRemovedPopUp>(AdjustCanvasOrderRemoved);
+    }
+
+    protected override void UnObserveEvents()
+    {
+        base.UnObserveEvents();
+        PopUpEvents.Do.Unsubscribe<ILastRemovedPopUp>(AdjustCanvasOrderRemoved);
     }
 
     public override void FetchEvents()
     {
         base.FetchEvents();
-        AddOptionalPopUp = EVent.Do.Fetch<IAddOptionalPopUp>();
-        RemoveOptionalPopUp = EVent.Do.Fetch<IRemoveOptionalPopUp>();
+        AddOptionalPopUp = PopUpEvents.Do.Fetch<IAddOptionalPopUp>();
+        RemoveOptionalPopUp = PopUpEvents.Do.Fetch<IRemoveOptionalPopUp>();
     }
 
     protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
@@ -65,7 +70,7 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp,
 
     public override bool CanStartBranch() //TODO add to buffer goes here for when paused. trigger from SaveOnHome?
     {
-        if (_gameIsPaused || !OnHomeScreen || !_canStart || _myBranch.CanvasIsEnabled || _activeResolvePopUps) return false;
+        if (_gameIsPaused || !OnHomeScreen || !_canStart || _activeResolvePopUps) return false;
         IfActiveResolvePopUps();        
         return true;
     }
@@ -96,12 +101,6 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp,
         if(!_myBranch.CanvasIsEnabled) return;
         base.ClearBranchForFullscreen(args);
         RemoveOrStorePopUp();
-    }
-
-    public override void SetBlockRaycast(BlockRaycast active)
-    {
-        if(_activeResolvePopUps) return;
-        base.SetBlockRaycast(active);
     }
 
     private void RemoveOrStorePopUp()

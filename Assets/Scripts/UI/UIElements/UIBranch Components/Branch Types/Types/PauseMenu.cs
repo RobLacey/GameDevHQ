@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 /// <summary>
 /// Need To Make this a singleton or check thee is only one of these
@@ -9,34 +8,31 @@ public interface IPauseBranch : IBranchBase { }
 
 public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch
 {
-    public PauseMenu(IBranch branch) : base(branch)
-    {
-        _allBranches = branch.FindAllBranches();
-    }
+    public PauseMenu(IBranch branch) : base(branch) { } 
 
     //Variables
-    private readonly IBranch[] _allBranches;
     private IBranch _activeBranch;
-    
+
     //Properties
     private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private bool WasInGame() => !_screenData.WasOnHomeScreen;
     public bool GameIsPaused => _gameIsPaused;
+    private IBranch[] AllBranches => _myDataHub.AllBranches;
 
     //Events
     private Action<IGameIsPaused> OnGamePaused { get; set; }
-
+    
     public override void FetchEvents()
     {
         base.FetchEvents();
-        OnGamePaused = EVent.Do.Fetch<IGameIsPaused>();
+        OnGamePaused = HistoryEvents.Do.Fetch<IGameIsPaused>();
     }
 
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EVent.Do.Subscribe<IPausePressed>(StartPopUp);
-        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+        InputEvents.Do.Subscribe<IPausePressed>(StartPopUp);
+        HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
     }
 
     //Main
@@ -61,6 +57,12 @@ public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch
         EnterPause();
     }
 
+    private void EnterPause()
+    {
+        _screenData.StoreClearScreenData(AllBranches, _myBranch, BlockRaycast.Yes);
+        _myBranch.MoveToThisBranch();
+    }
+
     private void UnPauseGame()
     {
         _gameIsPaused = false;
@@ -68,11 +70,7 @@ public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch
         ExitPause();
     }
 
-    private void EnterPause()
-    {
-        _screenData.StoreClearScreenData(_allBranches, _myBranch, BlockRaycast.Yes);
-        _myBranch.MoveToThisBranch();
-    }
+    private void ExitPause() => _myBranch.StartBranchExitProcess(OutTweenType.Cancel);
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
@@ -84,10 +82,8 @@ public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch
     public override void EndOfBranchExit()
     {
         base.EndOfBranchExit();
-        ActivateStoredPosition();
+       RestoreLastStoredState();
     }
-
-    private void ExitPause() => _myBranch.StartBranchExitProcess(OutTweenType.Cancel, RestoreLastStoredState);
 
     private void RestoreLastStoredState()
     {
@@ -95,6 +91,5 @@ public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch
         ActivateStoredPosition();
         _historyTrack.MoveToLastBranchInHistory();
     }
-
 }
 

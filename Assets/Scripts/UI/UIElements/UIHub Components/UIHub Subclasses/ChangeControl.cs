@@ -1,4 +1,6 @@
 ﻿using System;
+using EZ.Events;
+using EZ.Service;
 using UIElements;
 using UnityEngine;
 
@@ -6,10 +8,10 @@ using UnityEngine;
 /// Class that handles switching control from the mouse to a keyboard or controller
 /// </summary>
 
-public interface IChangeControl : IEventUser, IMonoEnable, IMonoStart { }
+public interface IChangeControl : IEZEventUser, IMonoEnable, IMonoStart { }
 
-public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSetUpOnStart, 
-                             IVcChangeControlSetUp, IActivateBranchOnControlsChange, IEServUser
+public class ChangeControl : IChangeControl, IAllowKeys, IEZEventDispatcher, IVCSetUpOnStart, 
+                             IVcChangeControlSetUp, IActivateBranchOnControlsChange, IServiceUser
 {
     public ChangeControl(IInput input) => _startInGame = input.StartInGame();
 
@@ -38,26 +40,26 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEventDispatcher, IVCSe
 
     public void OnEnable()
     {
-        UseEServLocator();
+        UseEZServiceLocator();
         FetchEvents();
         ObserveEvents();
     }
     
-    public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
+    public void UseEZServiceLocator() => _inputScheme = EZService.Locator.Get<InputScheme>(this);
 
     public void FetchEvents()
     {
-        AllowKeys = EVent.Do.Fetch<IAllowKeys>();
-        VCStartSetUp = EVent.Do.Fetch<IVCSetUpOnStart>();
-        SetVCUsage = EVent.Do.Fetch<IVcChangeControlSetUp>();
-        ActivateBranchOnControlsChanged = EVent.Do.Fetch<IActivateBranchOnControlsChange>();
+        AllowKeys = InputEvents.Do.Fetch<IAllowKeys>();
+        VCStartSetUp = InputEvents.Do.Fetch<IVCSetUpOnStart>();
+        SetVCUsage = InputEvents.Do.Fetch<IVcChangeControlSetUp>();
+        ActivateBranchOnControlsChanged = InputEvents.Do.Fetch<IActivateBranchOnControlsChange>();
     }
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IChangeControlsPressed>(ChangeControlType);
-        EVent.Do.Subscribe<IOnStart>(StartGame);
-        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+        InputEvents.Do.Subscribe<IChangeControlsPressed>(ChangeControlType);
+        HistoryEvents.Do.Subscribe<IOnStart>(StartGame);
+        HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
     }
 
     //Main

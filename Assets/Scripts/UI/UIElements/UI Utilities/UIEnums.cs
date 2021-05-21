@@ -33,7 +33,7 @@ public enum Setting
     Events = 1 << 8
 }
 
-public enum NavigationType { RightAndLeft, UpAndDown, AllDirections, None }
+public enum NavigationType { RightAndLeft, UpAndDown, AllDirections, AutoUpDown, AutoRightLeft, None }
 
 [Flags]
 public enum AccessoryEventType

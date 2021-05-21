@@ -1,24 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EZ.Events;
+using EZ.Service;
 using UIElements.Input_System;
 using UnityEngine;
 
-public interface IHistoryData //TODO Remove
-{
-    INode NodeToUpdate { get; }
-}
-
-public class HistoryTracker : IHistoryTrack, IEventUser, 
-                              IReturnToHome, IHistoryData, ICancelHoverOverButton, IEventDispatcher, IReturnHomeGroupIndex
+public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IHistoryData, 
+                              IEZEventDispatcher, IReturnHomeGroupIndex
 {
     public HistoryTracker()
     {
-        HistoryListManagement = EJect.Class.WithParams<IHistoryManagement>(this);
-        SelectionProcess = EJect.Class.WithParams<INewSelectionProcess> (this);
-        MoveBackInHistory = EJect.Class.WithParams<IMoveBackInHistory>(this);
-        PopUpHistory = EJect.Class.WithParams<IManagePopUpHistory>(this);
-        _multiSelectSystem = new MultiSelectSystem(this);
+        HistoryListManagement = EZInject.Class.WithParams<IHistoryManagement>(this);
+        SelectionProcess = EZInject.Class.WithParams<INewSelectionProcess> (this);
+        MoveBackInHistory = EZInject.Class.WithParams<IMoveBackInHistory>(this);
+        PopUpHistory = EZInject.Class.WithParams<IManagePopUpHistory>(this);
+        _multiSelectSystem = EZInject.Class.WithParams<IMultiSelect>(this);
     }
 
     //Variables
@@ -28,7 +25,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
     private bool _onHomeScreen = true, _noPopUps = true;
     private IBranch _activeBranch;
     private ICancel _cancel;
-    private MultiSelectSystem _multiSelectSystem;
+    private IMultiSelect _multiSelectSystem;
 
     //Properties
     private IManagePopUpHistory PopUpHistory { get; }
@@ -44,9 +41,9 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
     public bool IsPaused => _isPaused;
     public INode TargetNode { get; set; }
 
+
     //Events
     private Action<IReturnToHome> ReturnHome { get; set; }
-    private Action<ICancelHoverOverButton> CancelHoverToActivate { get; set; }
     private Action<IReturnHomeGroupIndex> ReturnHomeGroupBranch { get; set; }
     
     //TODO Remove Test Rig
@@ -65,50 +62,66 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
         FetchEvents();
         ObserveEvents();
         PopUpHistory.OnEnable();
+        _multiSelectSystem.OnEnable();
     }
 
-    public void AddService() => EServ.Locator.AddNew<IHistoryTrack>(this);
+    public void AddService() => EZService.Locator.AddNew<IHistoryTrack>(this);
 
-    public void OnDisable() { }
+    public void OnRemoveService() { }
    
     public void FetchEvents()
     {
-        ReturnHome = EVent.Do.Fetch<IReturnToHome>();
-        CancelHoverToActivate = EVent.Do.Fetch<ICancelHoverOverButton>();
-        ReturnHomeGroupBranch = EVent.Do.Fetch<IReturnHomeGroupIndex>();
-        DoAddANode = EVent.Do.Fetch<IHistoryData>();
+        ReturnHome = HistoryEvents.Do.Fetch<IReturnToHome>();
+        ReturnHomeGroupBranch = HistoryEvents.Do.Fetch<IReturnHomeGroupIndex>();
+        DoAddANode = HistoryEvents.Do.Fetch<IHistoryData>();
     }
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IOnStart>(SetCanStart);
-        EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
-        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomScreen);
-        EVent.Do.Subscribe<IGameIsPaused>(SaveIsGamePaused);
-        EVent.Do.Subscribe<INoPopUps>(NoPopUps);
-        EVent.Do.Subscribe<IHotKeyPressed>(SetFromHotkey);
-        EVent.Do.Subscribe<IDisabledNode>(CloseNodesAfterDisabledNode);
-        EVent.Do.Subscribe<ISwitchGroupPressed>(SwitchGroupPressed);
-        EVent.Do.Subscribe<IInMenu>(SwitchToGame);
-        EVent.Do.Subscribe<ICancelPopUp>(CancelPopUpFromButton);
-        EVent.Do.Subscribe<ISelectedNode>(SetSelected);
-        EVent.Do.Subscribe<ICloseAndResetBranch>(BranchHasClosed);
+        HistoryEvents.Do.Subscribe<IOnStart>(SetCanStart);
+        HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+        HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomScreen);
+        HistoryEvents.Do.Subscribe<IGameIsPaused>(SaveIsGamePaused);
+        HistoryEvents.Do.Subscribe<ISelectedNode>(SetSelected);
+        HistoryEvents.Do.Subscribe<IDisabledNode>(CloseNodesAfterDisabledNode);
+        HistoryEvents.Do.Subscribe<IInMenu>(SwitchToGame);
+        PopUpEvents.Do.Subscribe<INoPopUps>(NoPopUps);
+        InputEvents.Do.Subscribe<IHotKeyPressed>(SetFromHotkey);
+        InputEvents.Do.Subscribe<ISwitchGroupPressed>(SwitchGroupPressed);
+        CancelEvents.Do.Subscribe<ICancelPopUp>(CancelPopUpFromButton);
     }
 
-    private void BranchHasClosed(ICloseAndResetBranch args)
+    public void GOUIBranchHasClosed(IBranch branchToClose, IGOUIModule nextModule)
     {
-        CheckListsForBranch(args.TargetBranch.LastSelected);
-
-        if(_isPaused || !_onHomeScreen) return;
-        
-        if (!_noPopUps)
+        if (_activeBranch == branchToClose || _activeBranch.MyParentBranch == branchToClose)
         {
-            PopUpHistory.MoveToNextPopUp();
-            return;
+            Debug.Log("GOUI Object");
+            nextModule.SwitchEnter();
         }
         
-        ReturnHomeGroupBranch?.Invoke(this);
-        TargetNode.MyBranch.MoveToThisBranch();
+        if(!_history.Contains(branchToClose.LastSelected)) return;
+
+        if (_multiSelectSystem.MultiSelectActive)
+        {
+            Debug.Log($"MultiSelect : {branchToClose} Removed");
+            _multiSelectSystem.RemoveFromMultiSelect(_history, branchToClose.LastSelected);
+            branchToClose.LastSelected.DeactivateNode();
+        }
+        else
+        {
+            Debug.Log($"History Tracker : {branchToClose} Removed");
+            CheckListsForBranch(branchToClose.LastSelected);
+        }
+        
+        if(_history.Count > 0)
+        {
+            _history.Last().MyBranch.MoveToThisBranch();
+        }
+        else
+        {
+            ReturnHomeGroupBranch?.Invoke(this);
+            TargetNode.MyBranch.MoveToThisBranch();
+        }
     }
 
     private void CheckListsForBranch(INode targetBranchLastSelected)
@@ -155,7 +168,7 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
 
     private void CloseNodesAfterDisabledNode(IDisabledNode args)
         => HistoryListManagement.CurrentHistory(_history)
-                                .CloseToThisPoint(args.ToThisDisabledNode)
+                                .CloseToThisPoint(args.ThisIsTheDisabledNode)
                                 .Run();
 
     public void BackOneLevel()
@@ -268,5 +281,4 @@ public class HistoryTracker : IHistoryTrack, IEventUser,
                     .NoPopUpAction(endOfCancelAction)
                     .DoPopUpCheckAndHandle();
     }
-
 }

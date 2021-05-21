@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using EZ.Events;
+using EZ.Service;
 using UIElements;
 using UnityEngine;
 
 
-public interface ICanvasOrderCalculator : IMonoStart, IMonoEnable
+public interface ICanvasOrderCalculator : IMonoStart, IMonoEnable, IMonoDisable
 {
     BranchType GetBranchType { get; }
     int GetManualCanvasOrder { get; }
@@ -13,7 +15,7 @@ public interface ICanvasOrderCalculator : IMonoStart, IMonoEnable
     void ProcessActiveCanvasses(List<Canvas> activeCanvasList);
 }
 
-public class CanvasOrderCalculator: IEventUser, IEServUser, ICanvasOrderCalculator
+public class CanvasOrderCalculator: IEZEventUser, IServiceUser, ICanvasOrderCalculator
 {
     public CanvasOrderCalculator(ICanvasCalcParms data)
     {
@@ -30,7 +32,7 @@ public class CanvasOrderCalculator: IEventUser, IEServUser, ICanvasOrderCalculat
     private IBranch _activeBranch;
     private readonly Canvas _myCanvas;
     private int _startingOrder;
-    private ISetCanvasOrder _canvasOrder;
+    private ICanvasOrderData _canvasOrderData;
 
     //Properties
     public BranchType GetBranchType { get; }
@@ -41,13 +43,16 @@ public class CanvasOrderCalculator: IEventUser, IEServUser, ICanvasOrderCalculat
 
     public void OnEnable()
     {
-        UseEServLocator();
+        UseEZServiceLocator();
         ObserveEvents();
     }
     
-    public void UseEServLocator() => _canvasOrder = EServ.Locator.Get<ISetCanvasOrder>(this);
+    public void UseEZServiceLocator() => _canvasOrderData = EZService.Locator.Get<ICanvasOrderData>(this);
 
-    public void ObserveEvents() => EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+    public void ObserveEvents() => HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+    private void UnobserveEvents() => HistoryEvents.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
+
+    public void OnDisable() => UnobserveEvents();
 
     public void OnStart() => SetUpCanvasOrderAtStart();
 
@@ -65,7 +70,7 @@ public class CanvasOrderCalculator: IEventUser, IEServUser, ICanvasOrderCalculat
 
     private void SetStartingSortingOrder(bool tempSavedCanvasStatus)
     {
-        _startingOrder = _canvasOrder.ReturnPresetCanvasOrder(this);
+        _startingOrder = _canvasOrderData.ReturnPresetCanvasOrder(this);
         _myCanvas.overrideSorting = true;
         _myCanvas.sortingOrder = _startingOrder;
         _myCanvas.enabled = tempSavedCanvasStatus;
@@ -102,11 +107,8 @@ public class CanvasOrderCalculator: IEventUser, IEServUser, ICanvasOrderCalculat
         }
     }
 
-    public void ResetCanvasOrder()
-    {
-        _myCanvas.sortingOrder = _startingOrder;
-    }
-    
+    public void ResetCanvasOrder() => _myCanvas.sortingOrder = _startingOrder;
+
     public void ProcessActiveCanvasses(List<Canvas> activeCanvasList)
     {
         for (var index = 0; index < activeCanvasList.Count; index++)

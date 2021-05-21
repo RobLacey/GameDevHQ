@@ -12,7 +12,7 @@ public class ShakeTween : TweenBase, IShakeTween
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EVent.Do.Subscribe<IEndTween>(EndTweenEffect);
+        BranchEvent.Do.Subscribe<IEndTween>(EndTweenEffect);
     }
 
     public override void SetUpTweens(List<BuildTweenData> buildObjectsList, TweenScheme tweenScheme, 

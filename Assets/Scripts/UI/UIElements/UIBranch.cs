@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EZ.Events;
+using EZ.Service;
 using UnityEngine;
 using UnityEngine.UI;
 using NaughtyAttributes;
@@ -13,8 +15,8 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(UITweener))]
 
 
-public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranch, IEventDispatcher, IGetHomeBranches,
-                                IPointerEnterHandler, IPointerExitHandler
+public partial class UIBranch : MonoBehaviour, IEZEventUser, IActiveBranch, IBranch, IEZEventDispatcher,
+                                IPointerEnterHandler, IPointerExitHandler, IServiceUser
 {
     [Header("Branch Main Settings")] [HorizontalLine(1f, EColor.Blue, order = 1)]
     [SerializeField]
@@ -106,26 +108,46 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
     private UITweener _uiTweener;
     private bool _tweenOnChange = true, _canActivateBranch = true;
     private bool _activePopUp, _isTabBranch;
-    private IBranchBase _branchTypeClass;
-    private INode _lastHighlighted;
+    private IBranchBase _branchTypeBaseClass;
+    private IHub _myHub;
+    private bool _sceneIsChanging;
 
     //Delegates & Events
     private Action TweenFinishedCallBack { get; set; }
     private  Action<IActiveBranch> SetAsActiveBranch { get; set; }
-    private  Action<IGetHomeBranches> GetHomeBranches { get; set; }
+
+    //Getters & Setters
+    private void SaveHighlighted(IHighlightedNode args)
+    {
+        if(args.Highlighted.MyBranch.NotEqualTo(this) || _saveExitSelection == IsActive.No) return;
+        
+        LastHighlighted = NodeSearch.Find(args.Highlighted)
+                                     .DefaultReturn(LastSelected)
+                                     .RunOn(ThisGroupsUiNodes);
+    }
+    private void SaveSelected(ISelectedNode args)
+    {
+        if(args.UINode.MyBranch.NotEqualTo(this)) return;
+
+        LastSelected = NodeSearch.Find(args.UINode)
+                                 .DefaultReturn(LastSelected)
+                                 .RunOn(ThisGroupsUiNodes);
+    }    
+    private void SceneIsChanging(ISceneIsChanging args) => _sceneIsChanging = true;
 
     //Main
     private void Awake()
     {
         CheckForValidSetUp();
-        ThisGroupsUiNodes = SetBranchesChildNodes.GetChildNodes(this);
+        ThisGroupsUiNodes = BranchChildNodeUtil.GetChildNodes(this);
         MyCanvasGroup = GetComponent<CanvasGroup>();
         MyCanvasGroup.blocksRaycasts = false;
         _uiTweener = GetComponent<UITweener>();
         MyCanvas = GetComponent<Canvas>();
         MyParentBranch = this;
-        SetStartPositions();
-        AutoOpenCloseClass = EJect.Class.WithParams<IAutoOpenClose>(this); 
+        AutoOpenCloseClass = EZInject.Class.WithParams<IAutoOpenClose>(this); 
+        _branchTypeBaseClass = BranchFactory.Factory.PassThisBranch(this).CreateType(_branchType);
+        _branchTypeBaseClass.OnAwake();
     }
 
     private void CheckForValidSetUp()
@@ -136,10 +158,20 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
                   $"{Environment.NewLine} OutTween NOT Allowed");
     }
 
+    public void OnEnable()
+    {
+        UseEZServiceLocator();
+        FetchEvents();
+        ObserveEvents();
+        SetStartPositions();
+        _branchTypeBaseClass.OnEnable();
+        AutoOpenCloseClass.OnEnable();
+    }
+
     private void SetStartPositions()
     {
         SetDefaultStartPosition();
-        _lastHighlighted = DefaultStartOnThisNode;
+        LastHighlighted = DefaultStartOnThisNode;
         LastSelected = DefaultStartOnThisNode;
         if(_groupsList.Count <= 1) return;
         GroupIndex = BranchGroups.SetGroupIndex(DefaultStartOnThisNode, _groupsList);
@@ -147,60 +179,66 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
 
     private void SetDefaultStartPosition()
     {
-        if (_startOnThisNode) return;
+        if (_startOnThisNode)
+        {
+            DefaultStartOnThisNode = _startOnThisNode;
+            return;
+        }        
         if (_groupsList.Count > 0)
         {
-            _startOnThisNode = _groupsList.First().StartNode;
+            DefaultStartOnThisNode = _groupsList.First().StartNode;
         }
         else
         {
-            FindStartPosition();
+            DefaultStartOnThisNode = (UINode) ThisGroupsUiNodes.First();
         }
     }
 
-    private void FindStartPosition()
-    {
-        var childNodes = transform.GetComponentsInChildren<UINode>();
-        
-        if (childNodes.Length == 0)
-            throw new Exception($"No child Nodes in {this}");
-        
-        _startOnThisNode = transform.GetComponentsInChildren<UINode>().First();
-    }    
+    public void UseEZServiceLocator() => _myHub = EZService.Locator.Get<IHub>(this);
 
-    private void OnEnable()
-    {
-        FetchEvents();
-        ObserveEvents();
-        _branchTypeClass = BranchFactory.Factory.PassThisBranch(this).CreateType(_branchType);
-        _branchTypeClass.OnEnable();
-        AutoOpenCloseClass.OnEnable();
-    }
-
-    public void FetchEvents()
-    {
-        SetAsActiveBranch = EVent.Do.Fetch<IActiveBranch>();
-        GetHomeBranches = EVent.Do.Fetch<IGetHomeBranches>();
-    }
+    public void FetchEvents() => SetAsActiveBranch = HistoryEvents.Do.Fetch<IActiveBranch>();
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Subscribe<ISelectedNode>(SaveSelected);
+        HistoryEvents.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
+        HistoryEvents.Do.Subscribe<ISelectedNode>(SaveSelected);
+        HistoryEvents.Do.Subscribe<ISceneIsChanging>(SceneIsChanging);
+    }
+
+    private void UnObserveEvents()
+    {
+        HistoryEvents.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
+        HistoryEvents.Do.Unsubscribe<ISelectedNode>(SaveSelected);
+        HistoryEvents.Do.Unsubscribe<ISceneIsChanging>(SceneIsChanging);
+    }
+
+    public void OnDisable()
+    {
+        UnObserveEvents();
+        AutoOpenCloseClass.OnDisable();
+        
+        if(_sceneIsChanging) return;
+        _branchTypeBaseClass.OnDisable();
+        SetAsActiveBranch = null;
+        _myHub = null;
+    }
+
+    public void OnDestroy()
+    {
+        UnObserveEvents();
+        _branchTypeBaseClass.OnDestroy();
+        SetAsActiveBranch = null;
+        _myHub = null;
     }
 
     private void Start()
     {
-        _branchTypeClass.OnStart();
+        _branchTypeBaseClass.OnStart();
         CheckForControlBar();
     }
 
-    private void CheckForControlBar()
-    {
-        GetHomeBranches?.Invoke(this);
-        BranchGroups.AddControlBarToGroupList(_groupsList, HomeBranches, this);
-    }
-    
+    private void CheckForControlBar() => BranchGroups.AddControlBarToGroupList(_groupsList, _myHub.HomeBranches, this);
+
     public void StartBranch_InspectorCall()
     {
         if (IsInGameBranch())
@@ -213,9 +251,9 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
 
     public void MoveToThisBranch(IBranch newParentBranch = null)
     {
-        if(!_branchTypeClass.CanStartBranch()) return;
-
-        _branchTypeClass.SetUpBranch(newParentBranch);
+        if(!_branchTypeBaseClass.CanStartBranch()) return;
+        
+        _branchTypeBaseClass.SetUpBranch(newParentBranch);
 
         SetBranchAsActive();
         
@@ -239,7 +277,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
 
     private void InTweenCallback()
     {
-        _branchTypeClass.EndOfBranchStart();
+        _branchTypeBaseClass.EndOfBranchStart();
        
         SetHighlightedNode();
         
@@ -249,10 +287,12 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
 
     private void SetHighlightedNode()
     {
+        if(LastHighlighted.IsNull()) return;
+        
         if (_canActivateBranch)
-            _lastHighlighted.SetNodeAsActive();
+            LastHighlighted.SetNodeAsActive();
 
-        GroupIndex = BranchGroups.SetGroupIndex(_lastHighlighted, _groupsList);
+        GroupIndex = BranchGroups.SetGroupIndex(LastHighlighted, _groupsList);
     }
 
     public void StartBranchExitProcess(OutTweenType outTweenType, Action endOfTweenCallback = null)
@@ -273,7 +313,7 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
             endOfTweenCallback?.Invoke();
         }
 
-        bool DontExitBranch() => !_branchTypeClass.CanExitBranch(outTweenType);
+        bool DontExitBranch() => !_branchTypeBaseClass.CanExitBranch(outTweenType);
     }
 
     private void StartOutTween(Action endOfTweenCallback = null)
@@ -281,22 +321,55 @@ public partial class UIBranch : MonoBehaviour, IEventUser, IActiveBranch, IBranc
         TweenFinishedCallBack = endOfTweenCallback;
         
         _branchEvents.OnBranchExit();
-        _branchTypeClass.StartBranchExit();
+        _branchTypeBaseClass.StartBranchExit();
         _uiTweener.StartOutTweens(OutTweenCallback);
         
         void OutTweenCallback()
         {
-            _branchTypeClass.EndOfBranchExit();
+            _branchTypeBaseClass.EndOfBranchExit();
             TweenFinishedCallBack?.Invoke();
         }
     }
 
-    public void SetCanvas(ActiveCanvas activeCanvas) => _branchTypeClass.SetCanvas(activeCanvas);
-    public void SetBlockRaycast(BlockRaycast blockRaycast) => _branchTypeClass.SetBlockRaycast(blockRaycast);
-    public void SetUpAsTabBranch() => _branchTypeClass.SetUpAsTabBranch();
-    
+    public void SetCanvas(ActiveCanvas activeCanvas) => _branchTypeBaseClass.SetCanvas(activeCanvas);
+    public void SetBlockRaycast(BlockRaycast blockRaycast) => _branchTypeBaseClass.SetBlockRaycast(blockRaycast);
+    public void SetUpAsTabBranch() => _branchTypeBaseClass.SetUpAsTabBranch();
+    public void SetUpGOUIBranch(IGOUIModule module) => _branchTypeBaseClass.SetUpGOUIBranch(module);
+
     public void OnPointerEnter(PointerEventData eventData) => AutoOpenCloseClass.OnPointerEnter();
 
     public void OnPointerExit(PointerEventData eventData) => AutoOpenCloseClass.OnPointerExit();
+
+    public void AddNodeToBranch()
+    {
+        ThisGroupsUiNodes = BranchChildNodeUtil.GetChildNodes(this);
+    }
+    
+    public void RemoveNodeFromBranch(INode nodeToRemove)
+    {
+        ThisGroupsUiNodes = BranchChildNodeUtil.RemoveNode(ThisGroupsUiNodes, nodeToRemove);
+
+        if (ThisGroupsUiNodes.Length == 0)
+        {
+            LastHighlighted = null;
+            LastSelected = null;
+            return;
+        }
+        
+        SetValuesToNextNode(nodeToRemove);
+    }
+
+    private void SetValuesToNextNode(INode nodeToRemove)
+    {
+        if (LastHighlighted == nodeToRemove && _saveExitSelection == IsActive.Yes)
+        {
+            ThisGroupsUiNodes.Last().SetNodeAsActive();
+        }
+
+        if (LastSelected == nodeToRemove)
+        {
+            LastSelected = ThisGroupsUiNodes.Last();
+        }
+    }
 }
 

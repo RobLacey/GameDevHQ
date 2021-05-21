@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using EZ.Events;
+using EZ.Service;
 using NaughtyAttributes;
 using UIElements;
 using UnityEngine;
 
 [Serializable]
-public partial class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IReturnHomeGroupIndex, IEServUser,
+public partial class HotKeys : IEZEventUser, IHotKeyPressed, IEZEventDispatcher, IReturnHomeGroupIndex, IServiceUser,
                                IMonoEnable
 {
     [SerializeField] 
@@ -33,26 +35,28 @@ public partial class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IRe
     public INode ParentNode => _parentNode;
     public IBranch MyBranch => _myBranch;
     public INode TargetNode { private get; set; }
+    private INode[] ThisGroupsUiNodes => _myBranch.MyParentBranch.ThisGroupsUiNodes;
 
-    
+
+
     //Main
     public void OnEnable()
     {
         IsAllowedType();
         FetchEvents();
         ObserveEvents();
-        UseEServLocator();
+        UseEZServiceLocator();
     }
     
-    public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
+    public void UseEZServiceLocator() => _inputScheme = EZService.Locator.Get<InputScheme>(this);
 
     public void FetchEvents()
     {
-        HotKeyPressed = EVent.Do.Fetch<IHotKeyPressed>();
-        ReturnHomeGroupIndex = EVent.Do.Fetch<IReturnHomeGroupIndex>();
+        HotKeyPressed = InputEvents.Do.Fetch<IHotKeyPressed>();
+        ReturnHomeGroupIndex = HistoryEvents.Do.Fetch<IReturnHomeGroupIndex>();
     }
 
-    public void ObserveEvents() => EVent.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+    public void ObserveEvents() => HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
 
     public bool CheckHotKeys()
     {
@@ -103,12 +107,12 @@ public partial class HotKeys : IEventUser, IHotKeyPressed, IEventDispatcher, IRe
         }
         else
         {
-            var branchesNodes = _myBranch.MyParentBranch.ThisGroupsUiNodes;
+            var branchesNodes = ThisGroupsUiNodes;
             _parentNode = branchesNodes.First(node => ReferenceEquals(_myBranch, node.HasChildBranch));
             _makeParentActive = true;
         }
     }
-    
+
     private void FindHomeScreenParentNode()
     {
         ReturnHomeGroupIndex?.Invoke(this);

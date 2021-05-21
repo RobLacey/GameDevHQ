@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using EZ.Service;
+using UnityEngine;
 
 namespace UIElements
 {
-    public abstract class RaycastBase : I2DRaycast, I3DRaycast, IEServUser
+    public abstract class RaycastBase : I2DRaycast, I3DRaycast, IServiceUser
     {
         //Variables
         private ICursorHandler _lastGameObject;
@@ -14,9 +15,9 @@ namespace UIElements
         protected Vector3 CameraPosition => _mainCamera.transform.position;
 
         //Main
-        public void OnEnable() => UseEServLocator();
+        public void OnEnable() => UseEZServiceLocator();
 
-        public void UseEServLocator() => _inputScheme = EServ.Locator.Get<InputScheme>(this);
+        public void UseEZServiceLocator() => _inputScheme = EZService.Locator.Get<InputScheme>(this);
 
 
         public virtual void OnStart() => _layerToHit = _inputScheme.ReturnVirtualCursorSettings.LayerToHit;

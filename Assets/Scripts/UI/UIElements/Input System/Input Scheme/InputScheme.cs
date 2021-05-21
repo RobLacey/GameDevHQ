@@ -1,5 +1,7 @@
 ﻿using System;
+using EZ.Service;
 using NaughtyAttributes;
+using UIElements;
 using UnityEngine;
 
 [Serializable]
@@ -17,7 +19,7 @@ public class CursorSettings
     public Vector2 HotSpot => _hotSpot;
 }
 
-public abstract class InputScheme : ScriptableObject
+public abstract class InputScheme : ScriptableObject, IIsAService
 {
     [Space(EditorSpace, order = 0)]
     
@@ -78,6 +80,19 @@ public abstract class InputScheme : ScriptableObject
     [Label("..Enable Controls After..")] [Range(0, 10)] 
     protected float _controlActivateDelay;
 
+    public void Awake()
+    {
+        SetUpUInputScheme();
+        AddService();
+        SetCursor();
+    }
+
+    public void AddService()
+    {
+        EZService.Locator.AddNew<InputScheme>(this);
+    }
+
+    public void OnRemoveService() { }
 
     //Variables
     protected Vector3 _virtualCursorPosition;
@@ -112,7 +127,7 @@ public abstract class InputScheme : ScriptableObject
         }
     }
 
-    public void SetCursor()
+    private void SetCursor()
     {
         if (_customMouseCursor == IsActive.Yes && !KeyboardOnly)
         {
@@ -160,12 +175,6 @@ public abstract class InputScheme : ScriptableObject
     public abstract Vector3 GetMouseOrVcPosition();
     public abstract void SetVirtualCursorPosition(Vector3 pos);
     private protected abstract Vector3 GetVirtualCursorPosition();
-
-    public void OnAwake()
-    {
-        SetUpUInputScheme();
-    }
-
     protected abstract void SetUpUInputScheme();
     public void TurnOffInGameMenuSystem() => _inGameMenuSystem = InGameSystem.Off;
     public abstract bool PressPause();
@@ -198,4 +207,5 @@ public abstract class InputScheme : ScriptableObject
                 throw new ArgumentOutOfRangeException();
         }
     }
+
 }

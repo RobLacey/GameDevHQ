@@ -1,7 +1,9 @@
 ﻿
+using EZ.Inject;
+
 public static class SizeAndPositionFactory
 {
-    private static readonly IEJect ieJect = new EJect();
+    private static readonly IEZInject injector = new EZInject();
     
     public static INodeTween AssignType(TweenEffect tweenEffect, ISizeAndPosition parent)
     {
@@ -9,19 +11,19 @@ public static class SizeAndPositionFactory
         {
             case TweenEffect.Punch:
             {
-                return ieJect.WithParams<IPunch>(parent);
+                return injector.WithParams<IPunch>(parent);
             }            
             case TweenEffect.Shake:
             {
-                return ieJect.WithParams<IShake>(parent);
+                return injector.WithParams<IShake>(parent);
             }
             case TweenEffect.Position:
             {
-                return ieJect.WithParams<IPosition>(parent);
+                return injector.WithParams<IPosition>(parent);
             }
             case TweenEffect.Scale:
             {
-                return ieJect.WithParams<IScale>(parent);
+                return injector.WithParams<IScale>(parent);
             }
         }
 

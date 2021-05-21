@@ -1,4 +1,5 @@
 ﻿using System;
+using EZ.Events;
 using UnityEngine;
 
 public interface IManagePopUpHistory
@@ -11,18 +12,18 @@ public interface IManagePopUpHistory
     void MoveToNextPopUp();
 }
 
-public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
+public class ManagePopUpHistory : IEZEventUser, IManagePopUpHistory
 {
     public ManagePopUpHistory(IHistoryTrack historyTracker) => _historyTracker = historyTracker;
 
     //Variables
     private readonly IHistoryTrack _historyTracker;
-    private readonly IPopUpController _popUpController = EJect.Class.NoParams<IPopUpController>();
+    private readonly IPopUpController _popUpController = EZInject.Class.NoParams<IPopUpController>();
     private bool _noPopUps = true;
     private bool _isPaused;
     private Action _noPopUpAction;
     private UIBranch _popUpToRemove;
-    private bool _onHomeScreen;
+    private bool _onHomeScreen = true;
 
     //Properties
     private void ActivePopUps(INoPopUps args) => _noPopUps = args.NoActivePopUps;
@@ -37,8 +38,8 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
 
     public void ObserveEvents()
     {
-        EVent.Do.Subscribe<INoPopUps>(ActivePopUps);
-        EVent.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
+        PopUpEvents.Do.Subscribe<INoPopUps>(ActivePopUps);
+        HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
     }
 
     public IManagePopUpHistory IsGamePaused(bool isPaused)
@@ -55,7 +56,7 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
 
     public void DoPopUpCheckAndHandle()
     {
-        if (!_noPopUps && !_isPaused && _onHomeScreen)
+        if (!_noPopUps && !_isPaused)
         {
             HandlePopUps(_popUpController.NextPopUp());
         }
@@ -68,7 +69,8 @@ public class ManagePopUpHistory : IEventUser, IManagePopUpHistory
     public void HandlePopUps(IBranch popUpToCancel)
     {
         _popUpController.RemoveNextPopUp(popUpToCancel);
-        popUpToCancel.StartBranchExitProcess(OutTweenType.Cancel, RemovedPopUpCallback);
+        if(_onHomeScreen)
+            popUpToCancel.StartBranchExitProcess(OutTweenType.Cancel, RemovedPopUpCallback);
     }
 
     private void RemovedPopUpCallback()

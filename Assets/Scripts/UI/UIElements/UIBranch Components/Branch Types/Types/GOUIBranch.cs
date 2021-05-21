@@ -1,37 +1,60 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 public interface IGOUIBranch: IBranchBase { }
 
 public class GOUIBranch : BranchBase, IGOUIBranch
 {
-    public GOUIBranch(IBranch branch) : base(branch)
-    {
-        _mainCamera = Camera.main;
-        _myRectTransform = branch.MyCanvas.GetComponent<RectTransform>();
-    }
+    public GOUIBranch(IBranch branch) : base(branch) { }
     
     //Variables
-    private readonly Camera _mainCamera;
-    private readonly RectTransform _myRectTransform;
-    private Coroutine _coroutine;
     private IGOUIModule _myGOUIModule;
-    private Transform _inGameObjectPosition;
     private Vector3 _inGameObjectLastFrameScreenPosition;
     private bool _canStartGOUI;
-    private IHub _myUiHub;
+    private ISetScreenPosition _setScreenPosition;
 
 
     //Properties & Getters / Setters
     private bool AlwaysOn => _myGOUIModule.AlwaysOnIsActive;
 
+    public override void OnAwake()
+    {
+        base.OnAwake();
+        _setScreenPosition = EZInject.Class.WithParams<ISetScreenPosition>(this);
+    }
+
+    public override void OnEnable()
+    {
+        base.OnEnable();
+        _setScreenPosition.OnEnable();
+    }
+
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        EVent.Do.Subscribe<ISetUpUIGOBranch>(SetUpGOUIParent);
-        EVent.Do.Subscribe<IStartGOUIBranch>(StartGOUIBranch);
-        EVent.Do.Subscribe<ICloseAndResetBranch>(CloseAndReset);
-        EVent.Do.Subscribe<IOffscreen>(SetPositionWhenOffScreen);
+        GOUIEvents.Do.Subscribe<IStartGOUIBranch>(StartGOUIBranch);
+    }
+
+    protected override void UnObserveEvents()
+    {
+        base.UnObserveEvents();
+        GOUIEvents.Do.Unsubscribe<IStartGOUIBranch>(StartGOUIBranch);
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        UnObserveEvents();
+        _setScreenPosition.OnDisable();
+        _canStartGOUI = false;
+        SetCanvas(ActiveCanvas.No);
+        SetBlockRaycast(BlockRaycast.No);
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        UnObserveEvents();
+        _setScreenPosition.OnDisable();
     }
 
     protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
@@ -62,18 +85,10 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         }
     }
 
-    private void CloseAndReset(ICloseAndResetBranch args)
-    {
-        if(args.TargetBranch.NotEqualTo(_myBranch)) return;
-        
-        _canStartGOUI = false;
-        _myCanvasGroup.blocksRaycasts = false;
-        SetCanvas(ActiveCanvas.No);
-        StopSettingPosition();
-    }
-
     public override void SetBlockRaycast(BlockRaycast active)
     {
+        if(_myCanvasGroup == null) return;
+        
         if (OnHomeScreen)
         {
             _myCanvasGroup.blocksRaycasts = active == BlockRaycast.Yes;
@@ -82,21 +97,21 @@ public class GOUIBranch : BranchBase, IGOUIBranch
 
     public override void SetCanvas(ActiveCanvas active)
     {
-        if(!OnHomeScreen) return;
+        if(!OnHomeScreen || _myCanvas == null) return;
         base.SetCanvas(active);
     }
 
-    private void SetUpGOUIParent(ISetUpUIGOBranch args)
+    public override void SetUpGOUIBranch(IGOUIModule module)
     {
-        if(args.TargetBranch != _myBranch || _myGOUIModule.IsNotNull()) return;
-        _myGOUIModule = args.ReturnGOUIModule;
-        _inGameObjectPosition = args.GOUITransform;
-    }
+        _myGOUIModule = module;
+        _setScreenPosition.InGameObjectPosition = module.GOUITransform;
 
-    public override void UseEServLocator()
-    {
-        base.UseEServLocator();
-        _myUiHub = EServ.Locator.Get<IHub>(this);
+        var nodes = _myBranch.ThisBranchesGameObject.GetComponentsInChildren<INode>();
+        
+        foreach (var node in nodes)
+        {
+            node.SetGOUIModule(module);
+        }
     }
 
     //Main
@@ -120,19 +135,13 @@ public class GOUIBranch : BranchBase, IGOUIBranch
             SetBlockRaycast(BlockRaycast.Yes);
         }  
         
-        StartMyUIGO();
+        _setScreenPosition.StartSetting();
     }
 
     protected override void ClearBranchForFullscreen(IClearScreen args)
     {
         base.ClearBranchForFullscreen(args);
         _canvasOrderCalculator.ResetCanvasOrder();
-    }
-
-    private void StartMyUIGO()
-    {
-        StaticCoroutine.StopCoroutines(_coroutine);
-        _coroutine = StaticCoroutine.StartCoroutine(SetMyScreenPosition(_inGameObjectPosition));
     }
 
     public override void EndOfBranchStart()
@@ -154,7 +163,7 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     public override void StartBranchExit()
     {
         base.StartBranchExit();
-        StopSettingPosition();
+        _setScreenPosition.Stop();
     }
     
     public override void EndOfBranchExit()
@@ -183,45 +192,5 @@ public class GOUIBranch : BranchBase, IGOUIBranch
             if(_myBranch.CanvasIsEnabled)
                 _myGOUIModule.SwitchExit();
         }
-    }
-    
-    private void StopSettingPosition() => StaticCoroutine.StopCoroutines(_coroutine);
-    
-    private void SetPositionWhenOffScreen(IOffscreen args)
-    {
-        if(args.TargetBranch.NotEqualTo(_myBranch)) return;
-        
-        if(args.IsOffscreen)
-        {
-            StaticCoroutine.StopCoroutines(_coroutine);
-        }        
-        else
-        {
-            StartMyUIGO();
-        }
-    }
-
-    private IEnumerator SetMyScreenPosition(Transform objTransform)
-    {
-        while (true)
-        {
-            SetPosition(objTransform);
-            yield return null;
-        }
-    }
-
-    private void SetPosition(Transform objTransform)
-    {
-        var position = objTransform.position;
-        var currentScreenPos = _mainCamera.WorldToScreenPoint(position);
-        var mainCanvasRectTransform = _myUiHub.MainCanvasRect;
-        
-        if(currentScreenPos == _inGameObjectLastFrameScreenPosition) return;
-        
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(mainCanvasRectTransform, currentScreenPos, 
-                                                                null, out var canvasPos);
-        
-        _myRectTransform.localPosition = canvasPos;
-        _inGameObjectLastFrameScreenPosition = currentScreenPos;
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public interface IInGameNode : INodeBase { }
 
-public class InGameNode : NodeBase, IInGameNode, ICloseGOUIModule
+public class InGameNode : NodeBase, IInGameNode, ICloseThisGOUIModule
 {
     public InGameNode(INode node) : base(node)
     {
@@ -13,31 +13,21 @@ public class InGameNode : NodeBase, IInGameNode, ICloseGOUIModule
     //Variables
     private INode _parentNode;
     private readonly float _autoOpenDelay;
-    private readonly IDelayTimer _delayTimer = EJect.Class.NoParams<IDelayTimer>();
+    private readonly IDelayTimer _delayTimer = EZInject.Class.NoParams<IDelayTimer>();
 
     //Properties
     public IBranch TargetBranch => MyBranch.MyParentBranch;
 
     //Events
-    private Action<ICloseGOUIModule> CloseGOUIModule { get; set; }
+    private Action<ICloseThisGOUIModule> CloseGOUIModule { get; set; }
 
     public override void FetchEvents()
     {
         base.FetchEvents();
-        CloseGOUIModule = EVent.Do.Fetch<ICloseGOUIModule>();
+        CloseGOUIModule = GOUIEvents.Do.Fetch<ICloseThisGOUIModule>();
     }
 
-    public override void ObserveEvents()
-    {
-        base.ObserveEvents();
-        EVent.Do.Subscribe<ISetUpUIGOBranch>(SetUpGOUIParent);
-    }
-
-    private void SetUpGOUIParent(ISetUpUIGOBranch args)
-    {
-        if(args.TargetBranch == MyBranch)
-            _uiNode.InGameObject = args.GOUITransform.gameObject;
-    }
+    public override void SetUpGOUIParent(IGOUIModule module) => _uiNode.InGameObject = module.GOUITransform.gameObject;
 
     protected override void TurnNodeOnOff()
     {

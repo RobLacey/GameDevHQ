@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7713156616522297102}
   - component: {fileID: 7713156616522297100}
+  - component: {fileID: 6972332944693185644}
   m_Layer: 5
   m_Name: Long Button
   m_TagString: Untagged
@@ -51,15 +52,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonFunction: 2
+  _autoOpen: 1
+  _autoOpenDelay: 0
   _escapeKeyFunction: 3
-  _toggleGroupId: 0
-  _tabBranch: {fileID: 0}
-  _closeHoverOnExit: 0
-  _startAsSelected: 0
+  _toggleData:
+    _toggleGroupId: 0
+    _startAsSelected: 1
+    _tabBranch: {fileID: 0}
+  _multiSelectSettings:
+    _allowMultiSelect: 1
+    _openChildBranch: 1
+    _multiSelectGroup: 0
   _enabledFunctions: 323
   _navigation:
     _childBranch: {fileID: 0}
-    _setNavigation: 2
+    _setKeyNavigation: 3
     _up: {fileID: 0}
     _down: {fileID: 0}
     _left: {fileID: 0}
@@ -91,10 +98,10 @@ MonoBehaviour:
   _audio:
     _audioScheme: {fileID: 11400000, guid: dff70bd616e07d542b319136f24999d2, type: 2}
   _tooltips:
-    _mainCanvas: {fileID: 0}
     _uiCamera: {fileID: 0}
     _scheme: {fileID: 0}
     _listOfTooltips: []
+    _fixedPosition: {fileID: 0}
   _events:
     _highlightEvents:
       _onEnterEvent:
@@ -113,6 +120,20 @@ MonoBehaviour:
       _onToggleEvent:
         m_PersistentCalls:
           m_Calls: []
+--- !u!114 &6972332944693185644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7713156616522297103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f12c3acdfb4140bd7b437f898978ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _uiImage: {fileID: 0}
+  _uiText: {fileID: 0}
 --- !u!1 &7713156617023358286
 GameObject:
   m_ObjectHideFlags: 0

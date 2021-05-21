@@ -1,9 +1,11 @@
 ﻿using System;
+using EZ.Events;
+using EZ.Service;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelectedNode, 
-                                 IHighlightedNode, IDisableData
+public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, ISelectedNode, 
+                                 IHighlightedNode, IDisableData, IServiceUser
 {
     protected NodeBase(INode node)
     {
@@ -19,11 +21,13 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     private bool _hasFinishedSetUp;
     protected bool _allowKeys;
     private INode _lastHighlighted;
+    private IDataHub _myDataHub;
     private readonly IUiEvents _uiFunctionEvents;
     private bool _fromHotKey;
 
     //Events
-    private Action<IHighlightedNode> DoHighlighted { get; set; }
+    private Action<IHighlightedNode> DoHighlighted { get; set; } 
+
     private Action<ISelectedNode> DoSelected { get; set; }
 
     //Properties
@@ -57,9 +61,14 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
     private void SaveAllowKeys(IAllowKeys args)
     {
         _allowKeys = args.CanAllowKeys;
+        ClearHighlightedIfSwitchedToMouse();
+    }
+
+    private void ClearHighlightedIfSwitchedToMouse()
+    {
         var thisNode = ReferenceEquals(_lastHighlighted, _uiNode);
 
-        if(thisNode)
+        if (thisNode && !_allowKeys)
             OnExit();
     }
 
@@ -86,33 +95,76 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         _hasFinishedSetUp = true;
         return true;
     }
-
+    
+    
+    //Main
+    public void OnAwake()
+    {
+        _disabledNode = EZInject.Class.WithParams<IDisabledNode>(this);
+    }
 
     public void OnEnable()
     {
+        UseEZServiceLocator();
         FetchEvents();
         ObserveEvents();
+        LateStartSetUp();
     }
-    
+
+    public void UseEZServiceLocator() => _myDataHub = EZService.Locator.Get<IDataHub>(this);
+
+    private void LateStartSetUp()
+    {
+        if(_myDataHub.IsNull()) return;
+
+        if (_myDataHub.SceneAlreadyStarted)
+        {
+            SetNodeAsNotSelected_NoEffects();
+            _inMenu = _myDataHub.InMenu;
+            PointerOverNode = false;
+            _allowKeys = _myDataHub.AllowKeys;
+        }
+    }
+
     public virtual void FetchEvents()
     {
-        DoHighlighted = EVent.Do.Fetch<IHighlightedNode>();
-        DoSelected = EVent.Do.Fetch<ISelectedNode>();
+        DoHighlighted = HistoryEvents.Do.Fetch<IHighlightedNode>();
+        DoSelected = HistoryEvents.Do.Fetch<ISelectedNode>();
     }
 
-    public virtual void ObserveEvents()
+    public void ObserveEvents()
     {
-        EVent.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
-        EVent.Do.Subscribe<IInMenu>(SaveInMenuOrInGame);
-        EVent.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
-        EVent.Do.Subscribe<ICancelButtonActivated>(ClearHighlight);
+        InputEvents.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
+        HistoryEvents.Do.Subscribe<IInMenu>(SaveInMenuOrInGame);
+        HistoryEvents.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
+        CancelEvents.Do.Subscribe<ICancelButtonActivated>(ClearHighlight);
     }
 
-    public virtual void Start()
+    private void UnObserveEvents()
     {
-        _disabledNode = EJect.Class.WithParams<IDisabledNode>(this);
-        if(_uiNode.HasChildBranch is null) return;
+        InputEvents.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
+        HistoryEvents.Do.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
+        HistoryEvents.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
+        CancelEvents.Do.Unsubscribe<ICancelButtonActivated>(ClearHighlight);
     }
+
+    public void OnDisable()
+    {
+        EnableNodeAfterBeingDisabled();
+        UnObserveEvents();
+        DoHighlighted = null;
+        DoSelected = null;
+        _myDataHub = null;
+    }
+
+    public void OnDestroy()
+    {
+        UnObserveEvents();
+        _myDataHub = null;
+        _disabledNode = null;
+    }
+
+    public virtual void OnStart() { }
 
     public virtual void DeactivateNodeByType() => OnExit();
 
@@ -122,14 +174,12 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         OnExit();
     }
 
-    // ReSharper disable once UnusedMember.Global - Assigned in editor to Enable Object
-    public void EnableNode()
+    public void EnableNodeAfterBeingDisabled()
     {
         _disabledNode.IsDisabled = false;
         _uiFunctionEvents.DoIsDisabled(_disabledNode.IsDisabled);
     }
 
-    // ReSharper disable once UnusedMember.Global - Assigned in editor to Disable Object
     public void DisableNode()
     {
         _disabledNode.IsDisabled = true;
@@ -142,7 +192,6 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
 
         ThisNodeIsHighLighted();
         
-
         if (_allowKeys && _inMenu)
         {
             OnEnter();
@@ -256,4 +305,6 @@ public abstract class NodeBase : IEventUser, INodeBase, IEventDispatcher, ISelec
         if(!setAsActive) return;
         SetNodeAsSelected_NoEffects();
     }
+    
+    public virtual void SetUpGOUIParent(IGOUIModule module) { }
 }

@@ -1,24 +1,34 @@
 ﻿using System;
+using EZ.Events;
 
-public class DisabledNode : IDisabledNode
+public class DisabledNode : IDisabledNode, IEZEventDispatcher
 {
     public DisabledNode(IDisableData nodeBase)
     {
-        ToThisDisabledNode = nodeBase.UINode;
+        ThisIsTheDisabledNode = nodeBase.UINode;
         _nodeBase = nodeBase;
-        ThisIsDisabled = EVent.Do.Fetch<IDisabledNode>();
     }
 
     private bool _isDisabled;
     private readonly IDisableData _nodeBase;
 
     //Events
-    private Action<IDisabledNode> ThisIsDisabled { get; }
+    private Action<IDisabledNode> ThisIsDisabled { get; set; }
 
     //Properties
-    public INode ToThisDisabledNode { get; }
+    public INode ThisIsTheDisabledNode { get; }
 
     //Main
+    public void OnEnable() => FetchEvents();
+
+    public void OnDisable()
+    {
+        _isDisabled = false;
+        ThisIsDisabled = null;
+    }
+
+    public void FetchEvents() => ThisIsDisabled = HistoryEvents.Do.Fetch<IDisabledNode>();
+
     public bool IsDisabled
     {
         get => _isDisabled;
@@ -38,7 +48,6 @@ public class DisabledNode : IDisabledNode
         _nodeBase.Navigation.MoveToNextFreeNode();
         return true;
     }
-
 }
 
 
