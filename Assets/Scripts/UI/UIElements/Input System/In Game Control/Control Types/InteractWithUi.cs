@@ -45,8 +45,10 @@ public class InteractWithUi : IInteractWithUi, IEZEventUser
         BranchEvent.Do.Subscribe<ICanInteractWithBranch>(AddNodes);
         BranchEvent.Do.Subscribe<ICannotInteractWithBranch>(RemoveNodes);
         InputEvents.Do.Subscribe<ICancelPressed>(CancelPressed);
-        GOUIEvents.Do.Subscribe<ICloseGOUIBranch>(RemoveNodeAsGouiClosed);
+        BranchEvent.Do.Subscribe<ICloseBranch>(RemoveNodeAsGouiClosed);
     }
+
+    public void UnObserveEvents() { }
 
     private void CancelPressed(ICancelPressed args) => _lastHit = (null, null);
 
@@ -188,7 +190,7 @@ public class InteractWithUi : IInteractWithUi, IEZEventUser
         }    
     }
 
-    private void RemoveNodeAsGouiClosed(ICloseGOUIBranch args) => RemoveProcess(args.TargetBranch);
+    private void RemoveNodeAsGouiClosed(ICloseBranch args) => RemoveProcess(args.TargetBranch);
 
     private void RemoveNodes(ICannotInteractWithBranch args) => RemoveProcess(args.MyBranch);
 

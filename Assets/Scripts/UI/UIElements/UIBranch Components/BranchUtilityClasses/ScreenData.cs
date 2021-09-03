@@ -33,10 +33,10 @@ public class ScreenData : IScreenData, IServiceUser, IEZEventUser
         ObserveEvents();
     }
     
-    public void ObserveEvents() => GOUIEvents.Do.Subscribe<ICloseGOUIBranch>(RemoveBranch);
-    private void UnobserveEvents() => GOUIEvents.Do.Unsubscribe<ICloseGOUIBranch>(RemoveBranch);
+    public void ObserveEvents() => BranchEvent.Do.Subscribe<ICloseBranch>(RemoveBranch);
+    public void UnObserveEvents() => BranchEvent.Do.Unsubscribe<ICloseBranch>(RemoveBranch);
 
-    private void RemoveBranch(ICloseGOUIBranch args)
+    private void RemoveBranch(ICloseBranch args)
     {
         if (_clearedBranches.Contains(args.TargetBranch))
             _clearedBranches.Remove(args.TargetBranch);
@@ -46,7 +46,7 @@ public class ScreenData : IScreenData, IServiceUser, IEZEventUser
 
     public void OnDisable()
     {
-        UnobserveEvents();
+        UnObserveEvents();
         _clearedBranches.Clear();
     }
 

@@ -15,7 +15,7 @@ public interface IPopUpController
 /// </summary>
 ///
 public class PopUpController : IPopUpController, IEZEventUser, INoResolvePopUp, INoPopUps, 
-                               IEZEventDispatcher, ILastRemovedPopUp
+                               IEZEventDispatcher
 {
     //Variables
     private readonly List<IBranch> _activeResolvePopUps = new List<IBranch>();
@@ -23,16 +23,13 @@ public class PopUpController : IPopUpController, IEZEventUser, INoResolvePopUp, 
     private bool _noPopUps = true;
 
     //Properties & setters
-    public bool ActiveResolvePopUps => _activeResolvePopUps.Count > 0;
-    private bool ActiveOptionalPopUps => _activeOptionalPopUps.Count > 0;
+    public bool NoActiveResolvePopUps => _activeResolvePopUps.Count == 0;
+    private bool NoActiveOptionalPopUps => _activeOptionalPopUps.Count == 0;
     public bool NoActivePopUps => _noPopUps;
-    public IBranch LastOptionalPopUp { get; private set; }
-
 
     //Events
     private Action<INoResolvePopUp> NoResolvePopUps { get; set; }
     private Action<INoPopUps> NoPopUps { get; set; }
-    private Action<ILastRemovedPopUp> LastRemovedPopUp { get; set; }
     
     //Main
     public void OnEnable()
@@ -45,24 +42,28 @@ public class PopUpController : IPopUpController, IEZEventUser, INoResolvePopUp, 
     {
         NoResolvePopUps = PopUpEvents.Do.Fetch<INoResolvePopUp>();
         NoPopUps = PopUpEvents.Do.Fetch<INoPopUps>();
-        LastRemovedPopUp = PopUpEvents.Do.Fetch<ILastRemovedPopUp>();
     }
 
     public void ObserveEvents()
     {
         PopUpEvents.Do.Subscribe<IAddOptionalPopUp>(AddToActivePopUps_Optional);
-        PopUpEvents.Do.Subscribe<IRemoveOptionalPopUp>(OnLeavingHomeScreen);
+        PopUpEvents.Do.Subscribe<IClearOptionalPopUp>(ClearPopUpsOnLeavingHomeScreen);
         PopUpEvents.Do.Subscribe<IAddResolvePopUp>(AddActivePopUps_Resolve);
+        BranchEvent.Do.Subscribe<ICloseBranch>(RemoveClosedBranch);
     }
+
+    public void UnObserveEvents() { }
+
+    private void RemoveClosedBranch(ICloseBranch args) => RemoveNextPopUp(args.TargetBranch);
 
     public IBranch NextPopUp()
     {
-        if (ActiveResolvePopUps)
+        if (!NoActiveResolvePopUps)
         {
             return GetNextPopUp(_activeResolvePopUps);
         }
 
-        if (ActiveOptionalPopUps)
+        if (!NoActiveOptionalPopUps)
         {
             return GetNextPopUp(_activeOptionalPopUps);
         }
@@ -91,15 +92,15 @@ public class PopUpController : IPopUpController, IEZEventUser, INoResolvePopUp, 
     }
 
     private bool HasAResolvePopUpToRemove(IBranch popUpToRemove) 
-        => ActiveResolvePopUps && _activeResolvePopUps.Contains(popUpToRemove);
+        => !NoActiveResolvePopUps && _activeResolvePopUps.Contains(popUpToRemove);
 
     private bool HasAOptionalPopUpToRemove(IBranch popUpToRemove) 
-        => ActiveOptionalPopUps && _activeOptionalPopUps.Contains(popUpToRemove);
+        => !NoActiveOptionalPopUps && _activeOptionalPopUps.Contains(popUpToRemove);
 
-    private void OnLeavingHomeScreen(IRemoveOptionalPopUp args)
+    private void ClearPopUpsOnLeavingHomeScreen(IClearOptionalPopUp args)
     {
         _activeOptionalPopUps.Remove(args.ThisPopUp);
-        if (ActiveOptionalPopUps) return;
+        if (!NoActiveOptionalPopUps) return;
         
         _noPopUps = true;
         NoPopUps?.Invoke(this);
@@ -118,7 +119,6 @@ public class PopUpController : IPopUpController, IEZEventUser, INoResolvePopUp, 
     private void AddToPopUpList(IBranch newPopUp, 
                                 List<IBranch> popUpList)
     {
-
         if(popUpList.Contains(newPopUp)) return;
         popUpList.Add(newPopUp);
         _noPopUps = false;
@@ -131,23 +131,21 @@ public class PopUpController : IPopUpController, IEZEventUser, INoResolvePopUp, 
     {
         if(!popUpList.Contains(popUpToRemove)) return;
         popUpList.Remove(popUpToRemove);
-        LastOptionalPopUp = popUpToRemove;
-        LastRemovedPopUp?.Invoke(this);
+        popUpToRemove.OnDisable();
         finishRemovalFromList?.Invoke(popUpToRemove);
     }
 
     private void WhatToDoNext_Resolve(IBranch currentPopUpBranch)
     {
-        if (ActiveResolvePopUps) return;
+        if (!NoActiveResolvePopUps) return;
         NoResolvePopUps?.Invoke(this);
         WhatToDoNext_Optional(currentPopUpBranch);
     }
 
     private void WhatToDoNext_Optional(IBranch currentPopUpBranch)
     {
-        if (ActiveOptionalPopUps) return;
+        if (!NoActiveOptionalPopUps) return;
         _noPopUps = true;
         NoPopUps?.Invoke(this);
     }
-
 }

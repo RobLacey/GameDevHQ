@@ -4,6 +4,7 @@ using UIElements;
 public interface IBranchBase : IParameters, IMono
 {
     void SetUpGOUIBranch(IGOUIModule module);
+    IGOUIModule ReturnGOUIModule();
     void SetUpAsTabBranch();
     void SetUpBranch(IBranch newParentController = null);
     void EndOfBranchStart();

@@ -66,12 +66,14 @@ public class CheckVisibility : IEZEventDispatcher, IMonoEnable, IMonoStart, IMon
     public void FetchEvents() => GOUIOffScreen = GOUIEvents.Do.Fetch<IOffscreen>();
 
     public void ObserveEvents() => HistoryEvents.Do.Subscribe<IOnStart>(CanStart);
+    
+    public void UnObserveEvents() => HistoryEvents.Do.Unsubscribe<IOnStart>(CanStart);
 
     private void RunTimeEnable()
     {
         if(_myDataHub.IsNull()) return;
         
-        if(_myDataHub.SceneAlreadyStarted)
+        if(_myDataHub.SceneStarted)
         {
             if (CanUseOffScreenMarker)
             {
@@ -84,7 +86,7 @@ public class CheckVisibility : IEZEventDispatcher, IMonoEnable, IMonoStart, IMon
     {
         if(CanUseOffScreenMarker)
             _offScreenMarker.OnDisable();
-        HistoryEvents.Do.Unsubscribe<IOnStart>(CanStart);
+        UnObserveEvents();
         GOUIOffScreen = null;
         IsOffscreen = false;
         _runVisibilityCheck = false;

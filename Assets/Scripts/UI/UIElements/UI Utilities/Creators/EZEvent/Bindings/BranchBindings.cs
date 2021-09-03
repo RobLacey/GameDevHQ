@@ -1,5 +1,6 @@
 ﻿
 using EZ.Events;
+using UIElements;
 using UnityEngine;
 
 public class BranchBindings : EZEventBindingsBase
@@ -12,6 +13,7 @@ public class BranchBindings : EZEventBindingsBase
         AutoRemove().CreateEvent<IEndTween>();
         AutoRemove().CreateEvent<ICanInteractWithBranch>();
         AutoRemove().CreateEvent<ICannotInteractWithBranch>();
+        AutoRemove().CreateEvent<ICloseBranch>();
     }
 }
 
@@ -39,5 +41,12 @@ public interface ICannotInteractWithBranch
 {
     IBranch MyBranch { get; }
 }
+
+public interface ICloseBranch
+{
+    IBranch TargetBranch { get; }
+    GOUIModule ReturnGOUIModule { get; }
+}
+
 
 

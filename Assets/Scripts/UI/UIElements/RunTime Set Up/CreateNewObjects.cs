@@ -1,5 +1,7 @@
 ﻿using System;
+using UIElements;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class CreateNewObjects
 {
@@ -14,18 +16,23 @@ public class CreateNewObjects
     private GameObject _mainBinName;
     private GameObject _newBranch;
     private GameObject _newNode;
-    
+    private GameObject _tooltips;
+    private GameObject _fixedPositions;
+
     private const string FixedPositionsBin ="Fixed Positions Here";
     private const string ToolTipBin ="Tooltips Here";
     private const string MainBinName = "ToolTips & Fixed Positions Go Here";
     private const string InGameObjectBinName = "In Game Objects UI Go Here";
+    private const string PopUpBinName = "PopUps Go Here";
     
-    public CreateNewObjects CreateToolTipFolder(Transform hubTransform)
+    public Transform CreateToolTipFolder(Transform hubTransform)
     {
-        if (hubTransform.Find(MainBinName))
+        var existingBin = hubTransform.Find(MainBinName);
+        if (existingBin)
         {
-            _mainBinName = hubTransform.Find(MainBinName).gameObject;
-            return Create;
+            if(_tooltips.IsNull())
+                _tooltips = existingBin.Find(ToolTipBin).gameObject;
+            return _tooltips.transform;
         }
         
         _mainBinName = new GameObject();
@@ -33,16 +40,14 @@ public class CreateNewObjects
         _mainBinName.transform.parent = hubTransform;
         _mainBinName.transform.position = hubTransform.position;
         _mainBinName.name = MainBinName;
-        CreateTooltipSubFolders(FixedPositionsBin);
-        CreateTooltipSubFolders(ToolTipBin);
-        return Create;
+        _fixedPositions = CreateTooltipSubFolders(FixedPositionsBin);
+        _tooltips = CreateTooltipSubFolders(ToolTipBin);
+        return _tooltips.transform;
     }
 
-    public Transform GetTooltipBin() => _mainBinName.transform.Find(ToolTipBin);
-
-    public Transform CreateInGameUIBin(Transform hubTransform)
+    private Transform CreateBin(Transform hubTransform, string binName)
     {
-        var existingBin = hubTransform.Find(InGameObjectBinName);
+        var existingBin = hubTransform.Find(binName);
         
         if (existingBin)
             return existingBin;
@@ -51,19 +56,23 @@ public class CreateNewObjects
         newBin.AddComponent<RectTransform>();
         newBin.transform.parent = hubTransform;
         newBin.transform.position = hubTransform.position;
-        newBin.name = InGameObjectBinName;
+        newBin.name = binName;
         return newBin.transform;
     }
 
-    private void CreateTooltipSubFolders(string name)
+    public Transform MakeGOUIBin(Transform hubTransform) => CreateBin(hubTransform, InGameObjectBinName);
+    public Transform MakePopUpBin(Transform hubTransform) => CreateBin(hubTransform, PopUpBinName);
+
+    private GameObject CreateTooltipSubFolders(string name)
     {
         var newFolder = new GameObject();
         newFolder.transform.parent = _mainBinName.transform;
         newFolder.name = name;
         newFolder.AddComponent<RectTransform>();
         newFolder.transform.position = _mainBinName.transform.position;
+        return newFolder;
     }
-
+    
     public CreateNewObjects CreateMainFolder(Transform hubTransform)
     {
         _newTree = new GameObject();

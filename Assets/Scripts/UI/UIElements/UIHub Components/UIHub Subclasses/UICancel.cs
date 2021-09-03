@@ -15,15 +15,15 @@ interface ICancel
 public class UICancel : ICancel, IServiceUser, IEZEventUser, IMonoEnable
 {
     //Variables
-    private bool _gameIsPaused, _resolvePopUps;
     private IHistoryTrack _uiHistoryTrack;
     private InputScheme _inputScheme;
+    private IDataHub _myDataHub;
 
 
     //Properties 7 Getters / Setters
-    public EscapeKey GlobalEscapeSetting => _inputScheme.GlobalCancelAction;
-    private void SaveResolvePopUps(INoResolvePopUp args) => _resolvePopUps = args.ActiveResolvePopUps;
-    private void SaveGameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
+    private bool GameIsPaused => _myDataHub.GamePaused;
+    private bool NoResolvePopUps => _myDataHub.NoResolvePopUp;
+    private EscapeKey GlobalEscapeSetting => _inputScheme.GlobalCancelAction;
 
     public void OnEnable()
     {
@@ -33,22 +33,23 @@ public class UICancel : ICancel, IServiceUser, IEZEventUser, IMonoEnable
 
     public void ObserveEvents()
     {
-        PopUpEvents.Do.Subscribe<INoResolvePopUp>(SaveResolvePopUps);
         InputEvents.Do.Subscribe<ICancelPressed>(CancelPressed);
         CancelEvents.Do.Subscribe<ICancelButtonActivated>(CancelOrBackButtonPressed);
-        HistoryEvents.Do.Subscribe<IGameIsPaused>(SaveGameIsPaused);
         CancelEvents.Do.Subscribe<ICancelHoverOver>(CancelHooverOver);
     }
+
+    public void UnObserveEvents() { }
 
     public void UseEZServiceLocator()
     {
         _inputScheme = EZService.Locator.Get<InputScheme>(this);
         _uiHistoryTrack = EZService.Locator.Get<IHistoryTrack>(this);
+        _myDataHub = EZService.Locator.Get<IDataHub>(this);
     }
 
     private void CancelPressed(ICancelPressed args)
     {
-        if(_resolvePopUps && !_gameIsPaused) return;
+        if(!NoResolvePopUps && !GameIsPaused) return;
         ProcessCancelType(args.EscapeKeySettings);
     }
 

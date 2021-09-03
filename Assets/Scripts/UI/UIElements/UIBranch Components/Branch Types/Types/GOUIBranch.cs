@@ -34,7 +34,7 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         GOUIEvents.Do.Subscribe<IStartGOUIBranch>(StartGOUIBranch);
     }
 
-    protected override void UnObserveEvents()
+    public override void UnObserveEvents()
     {
         base.UnObserveEvents();
         GOUIEvents.Do.Unsubscribe<IStartGOUIBranch>(StartGOUIBranch);
@@ -63,7 +63,7 @@ public class GOUIBranch : BranchBase, IGOUIBranch
         
         if(_myGOUIModule.IsNull()) return;
         
-        if(args.OnHomeScreen)
+        if(OnHomeScreen)
         {
             if(AlwaysOn)
             {
@@ -113,6 +113,8 @@ public class GOUIBranch : BranchBase, IGOUIBranch
             node.SetGOUIModule(module);
         }
     }
+
+    public override IGOUIModule ReturnGOUIModule() => _myGOUIModule;
 
     //Main
     public override bool CanStartBranch() => _canStartGOUI || AlwaysOn || CanAllowKeys;
@@ -170,27 +172,5 @@ public class GOUIBranch : BranchBase, IGOUIBranch
     {
         base.EndOfBranchExit();
         _canvasOrderCalculator.ResetCanvasOrder();
-    }
-
-    protected override void WhenControlsChange(IActivateBranchOnControlsChange args)
-    {
-        if(args.ActiveBranch != _myBranch) return;
-        
-        if (CanAllowKeys)
-        {
-            if(_myBranch.CanvasIsEnabled)
-            {
-                _myBranch.MoveToThisBranch();
-            }
-            else
-            {
-                _myGOUIModule.SwitchEnter();
-            }
-        }
-        else
-        {
-            if(_myBranch.CanvasIsEnabled)
-                _myGOUIModule.SwitchExit();
-        }
     }
 }

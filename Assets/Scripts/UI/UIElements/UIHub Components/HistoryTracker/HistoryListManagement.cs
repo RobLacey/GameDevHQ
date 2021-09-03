@@ -9,7 +9,7 @@ public interface IHistoryManagement
     void Run();
     void ClearAllHistory();
     void ClearHistoryWithStopPointCheck(INode stopAtThisNode);
-    void CloseThisLevel(INode node);
+    void ClearGOUIBranchFromHistory(INode targetBranchLastSelected);
 }
 
 public class HistoryListManagement : IHistoryManagement
@@ -68,7 +68,7 @@ public class HistoryListManagement : IHistoryManagement
         CloseThisLevel(_targetNode);
     }
 
-    public void CloseThisLevel(INode node)
+    private void CloseThisLevel(INode node)
     {
         _history.Remove(node);
         _historyTracker.UpdateHistoryData(node);
@@ -138,4 +138,17 @@ public class HistoryListManagement : IHistoryManagement
             currentNode.ClearNode();
         }
     }
+    
+    public void ClearGOUIBranchFromHistory(INode targetBranchLastSelected)
+    {
+        CheckForMissingHistory();
+        _history.Remove(targetBranchLastSelected);
+        _historyTracker.UpdateHistoryData(targetBranchLastSelected);
+
+        if(targetBranchLastSelected.HasChildBranch.IsNotNull())
+            targetBranchLastSelected.HasChildBranch.StartBranchExitProcess(OutTweenType.Cancel);
+
+        targetBranchLastSelected.DeactivateNode();
+    }
+
 }

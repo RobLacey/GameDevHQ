@@ -12,14 +12,10 @@ public class UINavigation : NodeFunctionBase
         _down = settings.Down;
         _left = settings.Left;
         _right = settings.Right;
-        CanActivate = true;
     }
 
     //Variables
-    private readonly UINode _up;
-    private readonly UINode _down;
-    private readonly UINode _left;
-    private readonly UINode _right;
+    private readonly UINode _up, _down, _left, _right;
     private IBranch _myBranch;
     private INode _myNode;
     private readonly INavigationSettings _mySettings;
@@ -28,9 +24,9 @@ public class UINavigation : NodeFunctionBase
     //Properties
     private IBranch ChildBranch => _mySettings.ChildBranch;
     private NavigationType SetNavigation => _mySettings.NavType;
+    private int NodeGroupSize => _myBranch.ThisGroupsUiNodes.Length;
     protected override bool CanBeHighlighted() => false;
     protected override bool CanBePressed() => !(ChildBranch is null);
-    protected override bool FunctionNotActive() => !CanActivate;
     protected override void SavePointerStatus(bool pointerOver) { }
     private bool MultiSelectAllowed => _inputScheme.MultiSelectPressed() &&
                                        _myNode.MultiSelectSettings.OpenChildBranch == IsActive.No
@@ -65,9 +61,14 @@ public class UINavigation : NodeFunctionBase
     private void ProcessMoves(MoveDirection moveDirection)
     {
         if (FunctionNotActive() || SetNavigation == NavigationType.None) return;
-        
+
         if (DoAutoMove(moveDirection)) return;
 
+        DoPresetMove(moveDirection);
+    }
+
+    private void DoPresetMove(MoveDirection moveDirection)
+    {
         switch (moveDirection)
         {
             case MoveDirection.Down when _down:
@@ -95,32 +96,38 @@ public class UINavigation : NodeFunctionBase
 
     private bool DoAutoMove(MoveDirection moveDirection)
     {
-        Debug.Log("Make it show when moved onto branch and be able to remove nodes safely");
-        if (SetNavigation != NavigationType.AutoUpDown 
-            && SetNavigation != NavigationType.AutoRightLeft) return false;
-        
-        int index = Array.IndexOf(_myBranch.ThisGroupsUiNodes, _myBranch.LastHighlighted);
-        int size = _myBranch.ThisGroupsUiNodes.Length;
+        if (NodeGroupSize <= 1) return false;
 
-        if(SetNavigation == NavigationType.AutoUpDown)
+        var index = Array.IndexOf(_myBranch.ThisGroupsUiNodes, _myBranch.LastHighlighted);
+
+        switch (moveDirection)
         {
-            if (moveDirection == MoveDirection.Up)
-                index = index.PositiveIterate(size);
-            else if (moveDirection == MoveDirection.Down)
-                index = index.NegativeIterate(size);
-            _myBranch.ThisGroupsUiNodes[index].DoNonMouseMove(moveDirection);
+            case MoveDirection.Down when SetNavigation == NavigationType.AutoUpDown:
+                CheckMoveDirection(PositiveInteract, moveDirection, index);
+                return true;
+            case MoveDirection.Up when SetNavigation == NavigationType.AutoUpDown:
+                CheckMoveDirection(NegativeIterate, moveDirection, index);
+                return true;
+            case MoveDirection.Left when SetNavigation == NavigationType.AutoRightLeft:
+                CheckMoveDirection(NegativeIterate, moveDirection, index);
+                return true;
+            case MoveDirection.Right when SetNavigation == NavigationType.AutoRightLeft:
+                CheckMoveDirection(PositiveInteract, moveDirection, index);
+                return true;
+            case MoveDirection.None:
+                return false;
+            default:
+                return false;
         } 
-        
-        if(SetNavigation == NavigationType.AutoRightLeft)
-        {
-            if (moveDirection == MoveDirection.Right)
-                index = index.PositiveIterate(size);
-            else if (moveDirection == MoveDirection.Left)
-                index = index.NegativeIterate(size);
-        _myBranch.ThisGroupsUiNodes[index].DoNonMouseMove(moveDirection);
-        }
-        
-        return true;
+    }
+
+    private int PositiveInteract(int newIndex) => newIndex.PositiveIterate(NodeGroupSize);
+    
+    private int NegativeIterate(int newIndex) => newIndex.NegativeIterate(NodeGroupSize);
+
+    private void CheckMoveDirection(Func<int,int> iterateMethod, MoveDirection moveDirection, int index)
+    {
+        _myBranch.ThisGroupsUiNodes[iterateMethod.Invoke(index)].DoNonMouseMove(moveDirection);
     }
 
     private protected override void ProcessPress()

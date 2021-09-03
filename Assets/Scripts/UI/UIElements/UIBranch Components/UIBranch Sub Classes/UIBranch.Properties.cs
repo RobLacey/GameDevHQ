@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// This partial class holds all the classes properties as UIBranch is an important link between higher and lower parts of the system
 /// </summary>
-public partial class UIBranch
+public partial class UIBranch : ICloseBranch
 {
     //Set / Getters
     public bool IsAPopUpBranch()
@@ -30,10 +30,12 @@ public partial class UIBranch
     public BranchType ReturnBranchType => _branchType;
     public bool CanvasIsEnabled => MyCanvas.enabled;
     public bool CanStoreAndRestoreOptionalPoUp => _storeOrResetOptional == StoreAndRestorePopUps.StoreAndRestore;
-    public INode DefaultStartOnThisNode { get; private set; }
-    public INode LastSelected { get; private set; }
-    public INode LastHighlighted { get; private set; }
+    public INode DefaultStartOnThisNode { get; set; }
+    public INode LastSelected { get; set; }
+    public INode LastHighlighted { get; set; }
     public INode[] ThisGroupsUiNodes { get; set; } = new INode[0];
+    public void SetThisGroupsNode(INode[] groupsNodes) => ThisGroupsUiNodes = groupsNodes;
+    public IsActive GetSaveOnExit => _saveExitSelection;
     public List<GroupList> BranchGroupsList => _groupsList;
     public int GroupIndex { get; set; }
     public Canvas MyCanvas { get; private set; } 
@@ -45,6 +47,7 @@ public partial class UIBranch
     public IAutoOpenClose AutoOpenCloseClass { get; private set; }
     public bool PointerOverBranch => AutoOpenCloseClass.PointerOverBranch;
     public float Timer => _timer;
+    public IsActive AlwaysHighlighted => _alwaysHighlighted;
 
     public IsActive SetSaveLastSelectionOnExit
     {

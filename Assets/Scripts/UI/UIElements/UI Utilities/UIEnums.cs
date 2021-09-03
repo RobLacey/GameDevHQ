@@ -64,7 +64,7 @@ public enum EventType
     Pressed = 1 << 2,
 }
 
-public enum ScreenType { Normal, FullScreen }
+public enum ScreenType { Overlay, FullScreen }
 
 public enum InMenuOrGame { InMenu, InGameControl }
 public enum BranchType { HomeScreen, Standard, ResolvePopUp, OptionalPopUp, 
@@ -88,7 +88,7 @@ public enum ActivateWhen
     OnHighlighted = 1 << 0,
     OnSelected = 2 <<1
 }
-public enum ChangeWhen { OnHighlight, OnPressed, OnControlChanged }
+public enum ChangeWhen { Never, OnHighlight, OnPressed, OnControlChanged }
 
 public enum BlockRaycast { Yes, No }
 public enum ActiveCanvas { Yes, No }
@@ -98,7 +98,7 @@ public enum DoTween { Tween, DoNothing }
 
 public enum AutoOpenClose { No, Open, Close, Both }
 
-public enum StoreAndRestorePopUps { StoreAndRestore, Reset }
+public enum StoreAndRestorePopUps { StoreAndRestore, Close }
 
 public enum OrderInCanvas { InFront, Behind, Manual, Default }
 
@@ -121,6 +121,11 @@ public enum MultiSelectGroup
 public enum StartOffscreen
 {
     OnlyWhenSelected, Always
+}
+
+public enum Override
+{
+    Override, Allow
 }
 
 

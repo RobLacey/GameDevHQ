@@ -115,7 +115,7 @@ GameObject:
   - component: {fileID: 1029969822198092331}
   - component: {fileID: 847121841321660680}
   m_Layer: 5
-  m_Name: GOUI ToolTip
+  m_Name: GOUI ToolTip 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -219,8 +219,8 @@ MonoBehaviour:
     m_Bottom: 10
   m_ChildAlignment: 4
   m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0

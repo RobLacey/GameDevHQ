@@ -38,6 +38,7 @@ public abstract class TweenBase : IEZEventUser
     private TweenCallback _callback;
 
     public virtual void ObserveEvents() { }
+    public virtual void UnObserveEvents() { }
 
     public virtual void SetUpTweens(List<BuildTweenData> buildObjectsList,
                                     TweenScheme tweenScheme,

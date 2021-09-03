@@ -11,6 +11,7 @@ namespace EZ.Service
         public override void AddNew<T>(IIsAService service) => Service.AddNew<T>(service);
 
         public override T Get<T>(IServiceUser ieServUser) => Service.Get<T>(ieServUser);
+        public override T LateGet<T>() => Service.Get<T>();
 
         public override IEZServiceBase Unlock()
         {

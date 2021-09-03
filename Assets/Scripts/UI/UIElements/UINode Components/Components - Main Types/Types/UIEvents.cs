@@ -1,4 +1,5 @@
-﻿using UnityEngine.Events;
+﻿using UnityEngine;
+using UnityEngine.Events;
 
 public class UIEvents : NodeFunctionBase
 {
@@ -7,7 +8,6 @@ public class UIEvents : NodeFunctionBase
     public UIEvents(IEventSettings settings, IUiEvents uiEvents) : base(uiEvents)
     {
         _eventSettings = settings;
-        CanActivate = true;
     }
 
     private UnityEvent OnEnterEvent => _eventSettings.OnEnterEvent;
@@ -19,8 +19,8 @@ public class UIEvents : NodeFunctionBase
     //Properties
     protected override bool CanBeHighlighted() => true;
     protected override bool CanBePressed() => true;
-    protected override bool FunctionNotActive() => !CanActivate;
     
+    //Main
     protected override void SavePointerStatus(bool pointerOver)
     {
         if (FunctionNotActive()) return;

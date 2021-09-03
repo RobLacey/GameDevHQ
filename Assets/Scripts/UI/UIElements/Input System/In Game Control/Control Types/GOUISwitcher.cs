@@ -10,22 +10,20 @@ namespace UIElements
     public interface IGOUISwitcher : IMonoEnable, IMonoStart
     {
         void UseGOUISwitcher(SwitchType switchType);
+        int GOUIPlayerCount { get; }
     }
     
     public class GOUISwitcher : IGOUISwitcher, IEZEventUser, IEZEventDispatcher, ISwitchGroupPressed, IServiceUser
     {
         //Properties & Getters / Setters
-        private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
-        private void CanStart(IOnStart obj) => _canStart = true;
-        private bool CanSwitch => _canStart && _onHomeScreen && _playerObjects.Count > 0;
-        public SwitchType SwitchType { get; }
+        private bool CanSwitch => _myDataHub.SceneStarted && _myDataHub.OnHomeScreen && _playerObjects.Count > 0;
+        public int GOUIPlayerCount => _playerObjects.Count;
 
         //Variables
-        private bool _canStart;
-        private bool _onHomeScreen = true;
         private int _index = 0;
         private List<IGOUIModule> _playerObjects;
         private IHistoryTrack _historyTrack;
+        private IDataHub _myDataHub;
         
         //Events
         private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; set; }
@@ -38,16 +36,20 @@ namespace UIElements
             ObserveEvents();
         }
         
-        public void UseEZServiceLocator() => _historyTrack = EZService.Locator.Get<IHistoryTrack>(this);
+        public void UseEZServiceLocator()
+        {
+            _historyTrack = EZService.Locator.Get<IHistoryTrack>(this);
+            _myDataHub = EZService.Locator.Get<IDataHub>(this);
+        }
 
         public void ObserveEvents()
         {
             GOUIEvents.Do.Subscribe<IStartGOUIBranch>(SetIndex);
-            HistoryEvents.Do.Subscribe<IOnStart>(CanStart);
-            HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
-            GOUIEvents.Do.Subscribe<ICloseGOUIBranch>(RemovePlayerObject);
+            BranchEvent.Do.Subscribe<ICloseBranch>(RemovePlayerObject);
         }
-        
+
+        public void UnObserveEvents() { }
+
         public void OnStart() => FindActiveGameObjectsOnStart();
 
         private void FindActiveGameObjectsOnStart()
@@ -83,16 +85,10 @@ namespace UIElements
             }
         }
 
-        private void SwitchHasBeenPressed()
-        {
-            if (_playerObjects.Count > 1)
-                OnSwitchGroupPressed?.Invoke(this);
-        }
+        private void SwitchHasBeenPressed() => OnSwitchGroupPressed?.Invoke(this);
 
         private void DoSwitchProcess(Func<int, int> switchAction)
         {
-            if (_playerObjects.Count == 1) return;
-            
             _playerObjects[_index].SwitchExit();
             _index = switchAction(_playerObjects.Count);
             _playerObjects[_index].SwitchEnter();
@@ -100,7 +96,7 @@ namespace UIElements
 
         private void SetIndex(IStartGOUIBranch args)
         {
-            if(!_canStart) return;
+            if(!_myDataHub.SceneStarted) return;
             
             if (!_playerObjects.Contains(args.ReturnGOUIModule))
             {
@@ -126,15 +122,13 @@ namespace UIElements
             }
         }
         
-        private void RemovePlayerObject(ICloseGOUIBranch args)
+        private void RemovePlayerObject(ICloseBranch args)
         {
+            if(args.ReturnGOUIModule.IsNull()) return;
+            
             if (_playerObjects.Contains(args.ReturnGOUIModule))
             {
-                if (_playerObjects[_index].IsEqualTo(args.ReturnGOUIModule) && _playerObjects.Count > 1)
-                {
-                    _index = 0;
-                }
-                
+                _index = 0;
                 _playerObjects.Remove(args.ReturnGOUIModule);
                 MoveToNextObjectOrBranch(args.TargetBranch);
             }
@@ -144,11 +138,16 @@ namespace UIElements
         {
             if (_playerObjects.Count > 0)
             {
-                _historyTrack.GOUIBranchHasClosed(branchToClose, _playerObjects[_index]);
+                if (_myDataHub.ActiveBranch == branchToClose || _myDataHub.ActiveBranch.MyParentBranch == branchToClose)
+                {
+                    _playerObjects[_index].SwitchEnter();
+                }
+
+                _historyTrack.GOUIBranchHasClosed(branchToClose);
             }
             else
             {
-                _historyTrack.GOUIBranchHasClosed(branchToClose);
+                _historyTrack.GOUIBranchHasClosed(branchToClose, true);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using EZ.Service;
 using UIElements;
+using UnityEngine;
 
 public interface IHomeScreenBranch : IBranchBase { }
 
@@ -28,6 +29,18 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
         _canvasOrderData = EZService.Locator.Get<ICanvasOrderData>(this);
     }
 
+    public override void ObserveEvents()
+    {
+        base.ObserveEvents();
+        HistoryEvents.Do.Subscribe<IOnStart>(SetUpOnStart);
+    }
+
+    public override void UnObserveEvents()
+    {
+        base.UnObserveEvents();
+        HistoryEvents.Do.Unsubscribe<IOnStart>(SetUpOnStart);
+    }
+
     public override void OnStart()
     {
         base.OnStart();
@@ -52,11 +65,7 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
         SetBlockRaycast(BlockRaycast.Yes);
     }
 
-    protected override void SaveOnStart(IOnStart args) 
-    {
-        base.SaveOnStart(args);
-        SetBlockRaycast(BlockRaycast.Yes);
-    }
+    private void SetUpOnStart(IOnStart args) => SetBlockRaycast(BlockRaycast.Yes);
 
     //Main
     protected override void SetUpBranchesOnStart(ISetUpStartBranches args)
@@ -74,17 +83,17 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 
     public override void SetUpBranch(IBranch newParentController = null)
     {
-        
         base.SetUpBranch(newParentController);
         
-        if(!_canStart || !_inMenu) return;
+        if(!CanStart || !InMenu) return;
         
         if(!IsControlBar)
             _canvasOrderCalculator.SetCanvasOrder();
         
-        SetCanvas(ActiveCanvas.Yes);
-        if (CannotTweenOnHome || IsControlBar)
+        if (CannotTweenOnHome || IsControlBar || _myBranch.CanvasIsEnabled)
             _myBranch.DoNotTween();
+        
+        SetCanvas(ActiveCanvas.Yes);
         
         if(!OnHomeScreen)
             InvokeOnHomeScreen(true);
@@ -99,7 +108,7 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 
     private void CheckChildOfControlBar()
     {
-        if (_myBranch.LastSelected.HasChildBranch.ScreenType == ScreenType.Normal && !OnHomeScreen)
+        if (_myBranch.LastSelected.HasChildBranch.ScreenType == ScreenType.Overlay && !OnHomeScreen)
         {
             _historyTrack.BackToHomeScreen();
         }
@@ -107,7 +116,7 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
 
     public override void SetBlockRaycast(BlockRaycast active)
     {
-        if(!_gameIsPaused && !_activeResolvePopUps)
+        if(!GameIsPaused && NoResolvePopUps)
         {
             base.SetBlockRaycast(IsControlBar ? BlockRaycast.Yes: active);
         }
@@ -119,7 +128,7 @@ public class HomeScreenBranch: BranchBase, IHomeScreenBranch
     
     public override void SetCanvas(ActiveCanvas active)
     {
-        if(!_gameIsPaused && !_activeResolvePopUps)
+        if(!GameIsPaused && NoResolvePopUps)
         {
             base.SetCanvas(IsControlBar ? ActiveCanvas.Yes : active);
         }

@@ -1,9 +1,6 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System;
 using EZ.Events;
 using EZ.Service;
-using UnityEngine;
 
 public interface IHomeGroup
 {
@@ -19,20 +16,16 @@ public interface IHomeGroup
 public class UIHomeGroup : IEZEventUser, IHomeGroup, ISwitchGroupPressed, IEZEventDispatcher, IServiceUser
 {
     //Variables
-    private bool _onHomeScreen = true;
-    private bool _gameIsPaused;
     private int _index = 0;
     private IBranch _lastActiveHomeBranch;
-    private bool _allowKeys;
     private IBranch _activeBranch;
     private IHub _myUIHub;
+    private IDataHub _myDataHub;
 
     //Properties and Getters / Setters
     private IBranch[] HomeGroup => _myUIHub.HomeBranches.ToArray();
-    private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
-    private void GameIsPaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
-    private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
-    public SwitchType SwitchType { get; }
+    private bool OnHomeScreen => _myDataHub.OnHomeScreen;
+    private bool GameIsPaused => _myDataHub.GamePaused;
 
     //Events
     private Action<ISwitchGroupPressed> OnSwitchGroupPressed { get; set; }
@@ -45,7 +38,11 @@ public class UIHomeGroup : IEZEventUser, IHomeGroup, ISwitchGroupPressed, IEZEve
         ObserveEvents();
     }
 
-    public void UseEZServiceLocator() => _myUIHub = EZService.Locator.Get<IHub>(this);
+    public void UseEZServiceLocator()
+    {
+        _myDataHub = EZService.Locator.Get<IDataHub>(this);
+        _myUIHub = EZService.Locator.Get<IHub>(this);
+    }
 
     public void OnDisable() { }
 
@@ -55,19 +52,16 @@ public class UIHomeGroup : IEZEventUser, IHomeGroup, ISwitchGroupPressed, IEZEve
     {
         HistoryEvents.Do.Subscribe<IReturnToHome>(ActivateHomeGroupBranch);
         HistoryEvents.Do.Subscribe<IActiveBranch>(SetActiveHomeBranch);
-        HistoryEvents.Do.Subscribe<IGameIsPaused>(GameIsPaused);
-        HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
         HistoryEvents.Do.Subscribe<IReturnHomeGroupIndex>(ReturnHomeGroup);
         HistoryEvents.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
-        InputEvents.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
     }
+
+    public void UnObserveEvents() { }
 
     public void SetUpHomeGroup() => _activeBranch = HomeGroup[_index];
 
     private void SaveHighlighted(IHighlightedNode args)
     {
-        if(_allowKeys) return;
-        
         if (IsHomeScreenBranchAndNoChildrenOpen())
         {
             SearchHomeBranchesAndSet(args.Highlighted.MyBranch);
@@ -77,11 +71,18 @@ public class UIHomeGroup : IEZEventUser, IHomeGroup, ISwitchGroupPressed, IEZEve
             => args.Highlighted.MyBranch.IsHomeScreenBranch() && _activeBranch.IsHomeScreenBranch();
     }
 
-    private void ReturnHomeGroup(IReturnHomeGroupIndex args) => args.TargetNode = HomeGroup[_index].LastHighlighted;
+    private void ReturnHomeGroup(IReturnHomeGroupIndex args)
+    {
+        if (HomeGroup[_index].ThisGroupsUiNodes.Length == 0)
+        {
+            _index = _index.PositiveIterate(HomeGroup.Length);
+        }
+        args.TargetNode = HomeGroup[_index].LastHighlighted;
+    }
 
     public void SwitchHomeGroups(SwitchType switchType)
     {
-        if (!_onHomeScreen) return;
+        if (!OnHomeScreen) return;
         if(HomeGroup.Length > 1)
             OnSwitchGroupPressed?.Invoke(this);
         SetNewIndex(switchType);
@@ -100,6 +101,9 @@ public class UIHomeGroup : IEZEventUser, IHomeGroup, ISwitchGroupPressed, IEZEve
             case SwitchType.Activate:
                 break;
         }
+        if(HomeGroup[_index].ThisGroupsUiNodes.Length == 0)
+            SetNewIndex(switchType);
+        
         _lastActiveHomeBranch = HomeGroup[_index];
         HomeGroup[_index].MoveToThisBranch();
     }
@@ -117,7 +121,7 @@ public class UIHomeGroup : IEZEventUser, IHomeGroup, ISwitchGroupPressed, IEZEve
     private bool DontDoSearch(IBranch newBranch) 
         => newBranch.IsAPopUpBranch() || newBranch.IsPauseMenuBranch() 
                                               || newBranch.IsInGameBranch() 
-                                              || _gameIsPaused;
+                                              || GameIsPaused;
 
     private void FindHomeScreenBranch(IBranch newBranch)
     {
@@ -132,13 +136,8 @@ public class UIHomeGroup : IEZEventUser, IHomeGroup, ISwitchGroupPressed, IEZEve
     private void SearchHomeBranchesAndSet(IBranch newBranch)
     {
         if(!newBranch.IsHomeScreenBranch()) return;
-        
-        for (var index = 0; index < HomeGroup.Length; index++)
-        {
-            if (HomeGroup[index] != newBranch) continue;
-            _index = index;
-            break;
-        }
+
+        _index = Array.IndexOf(HomeGroup, newBranch);
     }
 
     private void ActivateHomeGroupBranch(IReturnToHome args)

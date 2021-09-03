@@ -5,7 +5,8 @@ using UIElements;
 using UnityEngine;
 
 
-public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder, IMonoDisable, IMonoEnable, IMonoOnDestroy
+public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder, IMonoDisable, IMonoEnable, IMonoOnDestroy,
+                           IDynamicBranch
 {
     bool IsControlBar();
     bool IsPauseMenuBranch();
@@ -25,7 +26,8 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder, IMonoD
     DoTween TweenOnHome { get; set; }
     IBranch MyParentBranch { get; set; }
     float Timer { get; }
-    INode[] ThisGroupsUiNodes { get; set; }
+    IsActive AlwaysHighlighted { get; }
+    INode[] ThisGroupsUiNodes { get; }
     bool PointerOverBranch { get;}
     IAutoOpenClose AutoOpenCloseClass { get; }
     IsActive SetSaveLastSelectionOnExit { set; }
@@ -37,10 +39,12 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder, IMonoD
     IsActive ReturnOnlyAllowOnHomeScreen { get; }
     List<GroupList> BranchGroupsList { get; }
     int GroupIndex { get; set; }
+    GOUIModule ReturnGOUIModule { get; }
 
 
     IsActive GetStayOn();
     void SetNotAControlBar();
+    void StartPopUp_RunTimeCall(bool fromPool);
     void MoveToThisBranch(IBranch newParentBranch = null);
     void SetBranchAsActive();
     void DontSetBranchAsActive();
@@ -50,8 +54,6 @@ public interface IBranch : IParameters, IAutoOpenCloseData, ICanvasOrder, IMonoD
     void SetBlockRaycast(BlockRaycast blockRaycast);
     void SetUpAsTabBranch();
     void SetUpGOUIBranch(IGOUIModule module);
-    void AddNodeToBranch();
-    void RemoveNodeFromBranch(INode nodeToRemove);
 }
 
 public interface IAutoOpenClose : IMonoEnable, IMonoDisable
@@ -62,11 +64,16 @@ public interface IAutoOpenClose : IMonoEnable, IMonoDisable
     IBranch ChildNodeHasOpenChild { set; }
 }
 
-public interface IAutoOpenCloseData
+public interface IAutoOpenCloseData : IThisBranch
+{
+    EscapeKey EscapeKeyType { get; }
+    IsActive AutoClose { get; }
+    float AutoCloseDelay { get; }
+}
+
+public interface IThisBranch
 {
     IBranch ThisBranch { get; }
-    IsActive AutoClose { get; set; }
-    float AutoCloseDelay { get; }
 }
 
 public interface ICanvasOrder
@@ -75,4 +82,17 @@ public interface ICanvasOrder
     int ReturnManualCanvasOrder { get; }
     Canvas MyCanvas { get; }
 }
+
+public interface IDynamicBranch : IThisBranch
+{
+    IsActive GetSaveOnExit { get; }
+    INode DefaultStartOnThisNode { get; set; }
+    INode LastSelected { get; set; }
+    INode LastHighlighted { get; set; }
+    INode[] ThisGroupsUiNodes { get; set; }
+    void SetThisGroupsNode(INode[] groupsNodes);
+    bool IsInGameBranch();
+}
+
+
 

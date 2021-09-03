@@ -45,7 +45,9 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEZEventDisp
         HistoryEvents.Do.Subscribe<IOnStart>(StartUp);
         PopUpEvents.Do.Subscribe<INoPopUps>(SaveNoPopUps);
     }
-    
+
+    public void UnObserveEvents() { }
+
     public void OnStart()
     {
         if (_inputScheme.InGameMenuSystem == InGameSystem.On)
@@ -114,14 +116,14 @@ public class MenuAndGameSwitching : IMenuAndGameSwitching, IInMenu, IEZEventDisp
 
     private void WhenTheGameIsPaused(IGameIsPaused args)
     {
-        if (args.GameIsPaused && !InTheMenu)
+        if (args.IsPaused && !InTheMenu)
         {
             SwitchBetweenGameAndMenu();
             _wasInGame = true;
             return;
         }
 
-        if (!args.GameIsPaused && _wasInGame)
+        if (!args.IsPaused && _wasInGame)
         {
             SwitchBetweenGameAndMenu();
             _wasInGame = false;

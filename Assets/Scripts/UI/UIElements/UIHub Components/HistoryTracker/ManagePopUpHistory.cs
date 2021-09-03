@@ -1,52 +1,40 @@
 ﻿using System;
-using EZ.Events;
-using UnityEngine;
+using EZ.Service;
 
 public interface IManagePopUpHistory
 {
     void OnEnable();
-    IManagePopUpHistory IsGamePaused(bool isPaused);
     IManagePopUpHistory NoPopUpAction(Action noPopUpAction);
     void DoPopUpCheckAndHandle();
     void HandlePopUps(IBranch popUpToCancel);
     void MoveToNextPopUp();
 }
 
-public class ManagePopUpHistory : IEZEventUser, IManagePopUpHistory
+public class ManagePopUpHistory : IManagePopUpHistory, IServiceUser
 {
     public ManagePopUpHistory(IHistoryTrack historyTracker) => _historyTracker = historyTracker;
 
     //Variables
     private readonly IHistoryTrack _historyTracker;
     private readonly IPopUpController _popUpController = EZInject.Class.NoParams<IPopUpController>();
-    private bool _noPopUps = true;
-    private bool _isPaused;
     private Action _noPopUpAction;
     private UIBranch _popUpToRemove;
-    private bool _onHomeScreen = true;
+    private IDataHub _myDataHub;
 
     //Properties
-    private void ActivePopUps(INoPopUps args) => _noPopUps = args.NoActivePopUps;
-    private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
+    private bool NoPopUps => _myDataHub.NoPopups;
+    private bool OnHomeScreen => _myDataHub.OnHomeScreen;
+    private bool IsPaused => _myDataHub.GamePaused;
 
     //Main
     public void OnEnable()
     {
-        ObserveEvents();
+        UseEZServiceLocator();
         _popUpController.OnEnable();
     }
+    
+    public void UseEZServiceLocator() => _myDataHub = EZService.Locator.Get<IDataHub>(this);
 
-    public void ObserveEvents()
-    {
-        PopUpEvents.Do.Subscribe<INoPopUps>(ActivePopUps);
-        HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
-    }
-
-    public IManagePopUpHistory IsGamePaused(bool isPaused)
-    {
-        _isPaused = isPaused;
-        return this;
-    }
 
     public IManagePopUpHistory NoPopUpAction(Action noPopUpAction)
     {
@@ -56,7 +44,7 @@ public class ManagePopUpHistory : IEZEventUser, IManagePopUpHistory
 
     public void DoPopUpCheckAndHandle()
     {
-        if (!_noPopUps && !_isPaused)
+        if (!NoPopUps && !IsPaused)
         {
             HandlePopUps(_popUpController.NextPopUp());
         }
@@ -69,13 +57,13 @@ public class ManagePopUpHistory : IEZEventUser, IManagePopUpHistory
     public void HandlePopUps(IBranch popUpToCancel)
     {
         _popUpController.RemoveNextPopUp(popUpToCancel);
-        if(_onHomeScreen)
+        if(OnHomeScreen)
             popUpToCancel.StartBranchExitProcess(OutTweenType.Cancel, RemovedPopUpCallback);
     }
 
     private void RemovedPopUpCallback()
     {
-        if (_noPopUps)
+        if (NoPopUps)
         {
             _historyTracker.MoveToLastBranchInHistory();
         }
@@ -89,4 +77,5 @@ public class ManagePopUpHistory : IEZEventUser, IManagePopUpHistory
     {
         _popUpController.NextPopUp().MoveToThisBranch();
     }
+
 }

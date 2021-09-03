@@ -5,22 +5,8 @@ using NaughtyAttributes;
 using UIElements;
 using UnityEngine;
 
-public interface IUIData
-{
-    UINode GetLastHighlighted { get; }
-    GameObject GetLastHighlightedGO { get; }
-    UINode GetLastSelected { get; }
-    GameObject GetLastSelectedGO { get; }
-    UIBranch GetActiveBranch { get; }
-    bool GetOnHomeScreen { get; }
-    bool GetControllingWithKeys { get; }
-    bool GetInMenu { get; }
-    List<UINode> GetSelectedNodes { get; }
-    List<GameObject> GetSelectedGOs { get; }
-}
-
 [Serializable]
-public class UIData : IMonoEnable, IEZEventUser, IUIData
+public class UIData : IMonoEnable, IEZEventUser
 {
     [SerializeField] private UINode _lastHighlighted = default;
     [SerializeField] private GameObject _lastHighlightedGO = default;
@@ -33,34 +19,24 @@ public class UIData : IMonoEnable, IEZEventUser, IUIData
     [SerializeField] private List<UINode> _selectedNodes = default;
     [SerializeField] private List<GameObject> _selectedGOs = default;
 
-    //Properties
-    public UINode GetLastHighlighted => _lastHighlighted;
-    public GameObject GetLastHighlightedGO => _lastHighlightedGO;
-    public UINode GetLastSelected => _lastSelected;
-    public GameObject GetLastSelectedGO => _lastSelectedGO;
-    public UIBranch GetActiveBranch => _activeBranch;
-    public bool GetOnHomeScreen => _onHomeScreen;
-    public bool GetControllingWithKeys => _controllingWithKeys;
-    public bool GetInMenu => _inMenu;
-    public List<UINode> GetSelectedNodes => _selectedNodes;
-    public List<GameObject> GetSelectedGOs => _selectedGOs;
-
     //Main
     public void OnEnable() => ObserveEvents();
 
     public void ObserveEvents()
     {
-        HistoryEvents.Do.Subscribe<IHistoryData>(ManageHistory);
+        HistoryEvents.Do.Subscribe<IStoreNodeHistoryData>(ManageHistory);
         HistoryEvents.Do.Subscribe<IHighlightedNode>(SaveLastHighlighted);
         HistoryEvents.Do.Subscribe<ISelectedNode>(SaveLastSelected);
         HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
         HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
         InputEvents.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         HistoryEvents.Do.Subscribe<IInMenu>(SaveInMenu);
-        GOUIEvents.Do.Subscribe<ICloseGOUIBranch>(CloseAndReset);
+        BranchEvent.Do.Subscribe<ICloseBranch>(CloseAndReset);
     }
 
-    private void CloseAndReset(ICloseGOUIBranch args)
+    public void UnObserveEvents() { }
+
+    private void CloseAndReset(ICloseBranch args)
     {
         if (_lastHighlightedGO.IsEqualTo(args.TargetBranch.LastHighlighted.InGameObject))
             _lastHighlightedGO = null;
@@ -77,16 +53,18 @@ public class UIData : IMonoEnable, IEZEventUser, IUIData
     private void SaveLastSelected(ISelectedNode args)  
     {
         _lastSelected = (UINode) args.UINode;
+        if(args.UINode.IsNull()) return;
+        
         if (_lastSelected.InGameObject.IsNotNull())
             _lastSelectedGO = _lastSelected.InGameObject;
     }
-    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = (UIBranch) args.ActiveBranch.ThisBranch;
+    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = (UIBranch) args.ActiveBranch;
     private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
     private void SaveAllowKeys(IAllowKeys args) => _controllingWithKeys = args.CanAllowKeys;
     private void SaveInMenu(IInMenu args) => _inMenu = args.InTheMenu;
 
 
-    private void ManageHistory(IHistoryData args)
+    private void ManageHistory(IStoreNodeHistoryData args)
     {
         if (args.NodeToUpdate is null)
         {

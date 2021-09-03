@@ -11,32 +11,30 @@ using UnityEngine;
 public interface IChangeControl : IEZEventUser, IMonoEnable, IMonoStart { }
 
 public class ChangeControl : IChangeControl, IAllowKeys, IEZEventDispatcher, IVCSetUpOnStart, 
-                             IVcChangeControlSetUp, IActivateBranchOnControlsChange, IServiceUser
+                             IVcChangeControlSetUp, IServiceUser
 {
     public ChangeControl(IInput input) => _startInGame = input.StartInGame();
 
     //Variables
     private ControlMethod _controlMethod;
     private readonly bool _startInGame;
-    private bool _sceneStarted;
     private InputScheme _inputScheme;
-    private bool _switchJustPressed;
-    private IBranch _activeBranch;
+    private bool _fromSwitchPress;
+    private IHistoryTrack _myHistoryTracker;
+    private IDataHub _myDataHub;
 
     //Properties
     public bool CanAllowKeys { get; private set; }
     private bool UsingVirtualCursor => _inputScheme.CanUseVirtualCursor;
     public bool ShowCursorOnStart { get; private set; }
-    public IBranch ActiveBranch => _activeBranch;
+    private bool SceneStarted => _myDataHub.SceneStarted;
 
     //Events
     private Action<IAllowKeys> AllowKeys { get; set; }
-    private Action<IVCSetUpOnStart> VCStartSetUp { get; set; }
-    private Action<IVcChangeControlSetUp> SetVCUsage { get; set; }
-    private Action<IActivateBranchOnControlsChange> ActivateBranchOnControlsChanged { get; set; }
+    private Action<IVCSetUpOnStart> VcStartSetUp { get; set; }
+    private Action<IVcChangeControlSetUp> SetVcUsage { get; set; }
 
     //Getters / Setters
-    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
 
     public void OnEnable()
     {
@@ -45,22 +43,28 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEZEventDispatcher, IVC
         ObserveEvents();
     }
     
-    public void UseEZServiceLocator() => _inputScheme = EZService.Locator.Get<InputScheme>(this);
+    public void UseEZServiceLocator()
+    {
+        _inputScheme = EZService.Locator.Get<InputScheme>(this);
+        _myHistoryTracker = EZService.Locator.Get<IHistoryTrack>(this);
+        _myDataHub = EZService.Locator.Get<IDataHub>(this);
+    }
 
     public void FetchEvents()
     {
         AllowKeys = InputEvents.Do.Fetch<IAllowKeys>();
-        VCStartSetUp = InputEvents.Do.Fetch<IVCSetUpOnStart>();
-        SetVCUsage = InputEvents.Do.Fetch<IVcChangeControlSetUp>();
-        ActivateBranchOnControlsChanged = InputEvents.Do.Fetch<IActivateBranchOnControlsChange>();
+        VcStartSetUp = InputEvents.Do.Fetch<IVCSetUpOnStart>();
+        SetVcUsage = InputEvents.Do.Fetch<IVcChangeControlSetUp>();
     }
 
     public void ObserveEvents()
     {
         InputEvents.Do.Subscribe<IChangeControlsPressed>(ChangeControlType);
+        InputEvents.Do.Subscribe<IChangeControlsSwitchPressed>(ChangeControlSwitch);
         HistoryEvents.Do.Subscribe<IOnStart>(StartGame);
-        HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
     }
+
+    public void UnObserveEvents() { }
 
     //Main
     public void OnStart()
@@ -75,6 +79,12 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEZEventDispatcher, IVC
                            || _inputScheme.ControlType == ControlMethod.AllowBothStartWithMouse) 
                             || !_inputScheme.HideMouseCursor;
 
+        ShowMouseCursorOnStart();
+        VcStartSetUp?.Invoke(this);
+    }
+
+    private void ShowMouseCursorOnStart()
+    {
         if (UsingVirtualCursor)
         {
             Cursor.visible = false;
@@ -83,7 +93,6 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEZEventDispatcher, IVC
         {
             Cursor.visible = ShowCursorOnStart;
         }
-        VCStartSetUp?.Invoke(this);
     }
 
     private void StartGame(IOnStart onStart)
@@ -97,8 +106,7 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEZEventDispatcher, IVC
             SetUpKeysOrCtrl();
         }
         
-        SetUpVCCorrectly();
-        _sceneStarted = true;
+        SetUpVcCorrectly();
     }
 
     private bool MousePreferredControlMethod() 
@@ -132,6 +140,12 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEZEventDispatcher, IVC
         }
     }
 
+    private void ChangeControlSwitch(IChangeControlsSwitchPressed args)
+    {
+        _fromSwitchPress = true;
+        ChangeControlType(args);
+    }
+
     private void ChangeControlType(IChangeControlsPressed args)
     {
         if (_inputScheme.CanSwitchToMouseOrVC(CanAllowKeys))
@@ -144,31 +158,28 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEZEventDispatcher, IVC
             ActivateKeysOrControl();
         }
         
-        SetUpVCCorrectly();
+        SetUpVcCorrectly();
     }
     
-    private void SetUpVCCorrectly()
+    private void SetUpVcCorrectly()
     {
         if(!UsingVirtualCursor) return;
-        SetVCUsage?.Invoke(this);
+        SetVcUsage?.Invoke(this);
     }
 
     private void ActivateMouseOrVirtualCursor()
     {
-        if (UsingVirtualCursor)
-        {
-            Cursor.visible = false;
-        }
-        else
-        {
-            Cursor.visible = true;
-        }
+        ShowMouseCursor();
         
         if (!CanAllowKeys) return;
         CanAllowKeys = false;
-        _switchJustPressed = false;
+        _fromSwitchPress = false;
         SetAllowKeys();
+        if(!SceneStarted) return;
+        _myDataHub.Highlighted.ThisNodeNotHighLighted();
     }
+
+    private void ShowMouseCursor() => Cursor.visible = !UsingVirtualCursor;
 
     private void ActivateKeysOrControl()
     {
@@ -180,11 +191,22 @@ public class ChangeControl : IChangeControl, IAllowKeys, IEZEventDispatcher, IVC
         if (CanAllowKeys) return;
         CanAllowKeys = true;
         SetAllowKeys();
-        if(!_sceneStarted) return;
+        if(!SceneStarted) return;
         SetNextHighlightedForKeys();
     }
 
-    private void SetAllowKeys() => AllowKeys?.Invoke(this);
+    private void SetAllowKeys()
+    {
+        _myDataHub.SetAllowKeys(CanAllowKeys);
+        AllowKeys?.Invoke(this);
+    }
 
-    private void SetNextHighlightedForKeys() => ActivateBranchOnControlsChanged?.Invoke(this);
+    private void SetNextHighlightedForKeys()
+    {
+        if(!_fromSwitchPress)
+        {
+           _myHistoryTracker.MoveToLastBranchInHistory();
+        }
+        _fromSwitchPress = false;
+    }
 }

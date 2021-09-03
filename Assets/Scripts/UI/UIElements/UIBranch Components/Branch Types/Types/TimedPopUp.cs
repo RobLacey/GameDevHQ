@@ -16,7 +16,7 @@ public class TimedPopUp : BranchBase, ITimedPopUpBranch
     //Main
     public override bool CanStartBranch()
     {
-        if (_gameIsPaused || !_canStart || _activeResolvePopUps) return false;
+        if (GameIsPaused || !CanStart || !NoResolvePopUps) return false;
         if (!OnHomeScreen && _myBranch.ReturnOnlyAllowOnHomeScreen == IsActive.Yes) return false;
 
         SetIfRunningOrNot();

@@ -5,6 +5,7 @@ namespace EZ.Service
     {
         void AddNew<T>(IIsAService service);
         T Get<T>(IServiceUser ieServUser);
+        T LateGet<T>();
         IEZServiceBase Unlock();
         void Purge();
     }
@@ -16,6 +17,7 @@ namespace EZ.Service
 
         public abstract void AddNew<T>(IIsAService service);
         public abstract T Get<T>(IServiceUser ieServUser);
+        public abstract T LateGet<T>();
         public abstract IEZServiceBase Unlock();
         public abstract void Purge();
     }

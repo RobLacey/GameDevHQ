@@ -31,8 +31,7 @@ public class InGameNode : NodeBase, IInGameNode, ICloseThisGOUIModule
 
     protected override void TurnNodeOnOff()
     {
-        //Needed To correct GOUI activation to make everything else work so highlighting doesn't activate Branch
-        if(!_allowKeys)
+        if(!AllowKeys)
             MyBranch.SetBranchAsActive();
         base.TurnNodeOnOff();
     }
@@ -69,7 +68,7 @@ public class InGameNode : NodeBase, IInGameNode, ICloseThisGOUIModule
         Deactivate();
         
         CloseGOUIModule?.Invoke(this);
-        if(PointerOverNode && !_allowKeys) return;
+        if(PointerOverNode && !AllowKeys) return;
         OnExit();
     }
 

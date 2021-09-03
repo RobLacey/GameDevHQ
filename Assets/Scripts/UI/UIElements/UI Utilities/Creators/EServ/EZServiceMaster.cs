@@ -43,6 +43,8 @@ namespace EZ.Service
             return (T) _services[typeof(T)];
         }
         
+        public T Get<T>() => (T) _services[typeof(T)];
+
         public EZServiceMaster Unlock()
         {
             _locked = false;

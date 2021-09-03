@@ -31,12 +31,13 @@ public class NavigationSettings :INavigationSettings
     //Editor Scripts
     public bool CantNavigate { get; set; }
 
-    public bool UpDownNav() 
+    public bool UpDownNav()
         => _setKeyNavigation == NavigationType.UpAndDown || _setKeyNavigation == NavigationType.AllDirections;
 
-    public bool RightLeftNav() 
+    public bool RightLeftNav()
         => _setKeyNavigation == NavigationType.RightAndLeft || _setKeyNavigation == NavigationType.AllDirections;
 
+    //Properties, Setters & Getters
     public IBranch ChildBranch
     {
         get => _childBranch;
@@ -44,7 +45,6 @@ public class NavigationSettings :INavigationSettings
     }
 
     private void SetNewChild(IBranch newChild) => ChildBranch = newChild;
-
     public NavigationType NavType => _setKeyNavigation;
     public UINode Up => _up;
     public UINode Down => _down;
@@ -54,7 +54,7 @@ public class NavigationSettings :INavigationSettings
 
     public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
-        if ((functions & Setting.NavigationAndOnClick) != 0)
+        if (CanCreate(functions))
         {
             uiNodeEvents.ReturnMasterNode.MyRunTimeSetter.SetChildBranch = SetNewChild;
             Instance = new UINavigation(this, uiNodeEvents);
@@ -62,4 +62,7 @@ public class NavigationSettings :INavigationSettings
         }
         return null;
     }
+
+    private bool CanCreate(Setting functions) => (functions & Setting.NavigationAndOnClick) != 0;
+
 }

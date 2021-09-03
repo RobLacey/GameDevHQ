@@ -11,12 +11,11 @@ public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch
     public PauseMenu(IBranch branch) : base(branch) { } 
 
     //Variables
-    private IBranch _activeBranch;
+    private IBranch ActiveBranch => _myDataHub.ActiveBranch;
 
     //Properties
-    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
     private bool WasInGame() => !_screenData.WasOnHomeScreen;
-    public bool GameIsPaused => _gameIsPaused;
+    public bool IsPaused { get; private set; }
     private IBranch[] AllBranches => _myDataHub.AllBranches;
 
     //Events
@@ -32,27 +31,26 @@ public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch
     {
         base.ObserveEvents();
         InputEvents.Do.Subscribe<IPausePressed>(StartPopUp);
-        HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
     }
 
     //Main
     private void StartPopUp(IPausePressed args)
     {
-        if(!_canStart) return;
+        if(!CanStart) return;
         
-        if (!_gameIsPaused)
+        if (!GameIsPaused)
         {
             PauseGame();
             return;
         }
         
-        if(_gameIsPaused && _activeBranch.IsPauseMenuBranch())
+        if(GameIsPaused && ActiveBranch.IsPauseMenuBranch())
             UnPauseGame();
     }
 
     private void PauseGame()
     {
-        _gameIsPaused = true;
+        IsPaused = true;
         OnGamePaused?.Invoke(this);
         EnterPause();
     }
@@ -65,7 +63,7 @@ public class PauseMenu : BranchBase, IGameIsPaused, IPauseBranch
 
     private void UnPauseGame()
     {
-        _gameIsPaused = false;
+        IsPaused = false;
         OnGamePaused?.Invoke(this);
         ExitPause();
     }

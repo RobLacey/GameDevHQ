@@ -63,6 +63,7 @@ public class VirtualCursor : IRaycastController, IEZEventUser, IVirtualCursor, I
     //Main
     public void OnAwake()
     {
+        Debug.Log("Here");
         _raycastTo2D = EZInject.Class.NoParams<I2DRaycast>();
         _raycastTo3D = EZInject.Class.NoParams<I3DRaycast>();
         _moveVirtualCursor = EZInject.Class.NoParams<IMoveVirtualCursor>();
@@ -93,7 +94,9 @@ public class VirtualCursor : IRaycastController, IEZEventUser, IVirtualCursor, I
         HistoryEvents.Do.Subscribe<IOnStart>(CanStart);
         InputEvents.Do.Subscribe<IVcChangeControlSetUp>(DoVCStartCheck);
     }
-    
+
+    public void UnObserveEvents() { }
+
     public void OnStart()
     {
         _virtualCursorSetting = Scheme.ReturnVirtualCursorSettings;

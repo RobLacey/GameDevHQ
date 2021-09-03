@@ -7,7 +7,6 @@ public class UIAudio : NodeFunctionBase
     {
         _uiEvents = uiEvents;
         _audioScheme = settings.AudioScheme;
-        CanActivate = true;
     }
 
     //Variables 
@@ -15,12 +14,14 @@ public class UIAudio : NodeFunctionBase
     private IAudioService _audioService;
     private bool _audioIsMute;
 
-    //Properties
-    private bool UsingScheme() => _audioScheme;
+    //Properties, Getters & Setters
+    private bool AudioIsMute => !_myDataHub.SceneStarted || _audioIsMute;
     private void AudioIsMuted() => _audioIsMute = true;
-    private void CanStart(IOnStart args) => _audioIsMute = false;
-
-
+    protected override bool CanBeHighlighted() => _audioScheme.HighlightedClip;
+    protected override bool CanBePressed() => _audioScheme.SelectedClip;
+    private bool HasDisabledSound() => _audioScheme.DisabledClip;
+    private bool HasCancelSound() => _audioScheme.CancelledClip;
+    
     //Main
      public override void UseEZServiceLocator()
      {
@@ -33,7 +34,6 @@ public class UIAudio : NodeFunctionBase
         base.ObserveEvents();
         _uiEvents.MuteAudio += AudioIsMuted;
         InputEvents.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
-        HistoryEvents.Do.Subscribe<IOnStart>(CanStart);
         _audioIsMute = true;
     }
 
@@ -52,11 +52,10 @@ public class UIAudio : NodeFunctionBase
         _audioService = null;
     }
 
-    protected override void UnObserveEvents()
+    public override void UnObserveEvents()
     {
         base.UnObserveEvents();
         InputEvents.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
-        HistoryEvents.Do.Unsubscribe<IOnStart>(CanStart);
         _uiEvents.MuteAudio -= AudioIsMuted;
     }
 
@@ -67,16 +66,6 @@ public class UIAudio : NodeFunctionBase
         _audioService = null;
         _audioScheme = null;
     }
-
-    protected override bool CanBeHighlighted() => !UsingScheme() ? false : _audioScheme.HighlightedClip;
-
-    protected override bool CanBePressed() => !UsingScheme() ? false : _audioScheme.SelectedClip;
-
-    private bool HasDisabledSound() => !UsingScheme() ? false : _audioScheme.DisabledClip;
-
-    private bool HasCancelSound() => !UsingScheme() ? false : _audioScheme.CancelledClip;
-
-    protected override bool FunctionNotActive() => !CanActivate || !UsingScheme();
 
     protected override void SavePointerStatus(bool pointerOver)
     {
@@ -102,7 +91,7 @@ public class UIAudio : NodeFunctionBase
 
     private bool IsAudioMuted()
     {
-        if (_audioIsMute)
+        if (AudioIsMute)
         {
             _audioIsMute = false;
             return true;
@@ -112,7 +101,7 @@ public class UIAudio : NodeFunctionBase
 
     private protected override void ProcessPress() { }
 
-    private bool IsDisabled()
+    private bool IsDisabledCheckForDisabledSound()
     {
         if (!_isDisabled || !HasDisabledSound()) return false;
         
@@ -128,14 +117,14 @@ public class UIAudio : NodeFunctionBase
     
     private void PlaySelectedAudio()
     {
+        if(IsDisabledCheckForDisabledSound()) return;
         if(FunctionNotActive() || !CanBePressed()) return;
-        if(IsDisabled()) return;
         _audioService.PlaySelect(_audioScheme.SelectedClip, _audioScheme.SelectedVolume);
     }
     private void PlayHighlightedAudio()
     {
+        if(IsDisabledCheckForDisabledSound()) return;
         if(FunctionNotActive() || !CanBeHighlighted()) return;
-        if(IsDisabled()) return;
         _audioService.PlayHighlighted(_audioScheme.HighlightedClip, _audioScheme.HighlightedVolume);
     }
 

@@ -20,7 +20,7 @@ public class AutoOpenCloseController: IAutoOpenClose, IEZEventDispatcher, ICance
 
     //Properties
     public bool PointerOverBranch { get; private set; }
-    public EscapeKey EscapeKeyType => EscapeKey.BackToHome;
+    public EscapeKey EscapeKeyType => _branch.EscapeKeyType;
     public IBranch ChildNodeHasOpenChild { private get; set; }
 
     //Set / Getters
@@ -46,7 +46,7 @@ public class AutoOpenCloseController: IAutoOpenClose, IEZEventDispatcher, ICance
 
     public void OnDisable()
     {
-        InputEvents.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
+        UnObserveEvents();
         CancelHooverOver = null;
         StaticCoroutine.StopCoroutines(runningCoroutine);
     }
@@ -54,6 +54,8 @@ public class AutoOpenCloseController: IAutoOpenClose, IEZEventDispatcher, ICance
     public void FetchEvents() => CancelHooverOver = CancelEvents.Do.Fetch<ICancelHoverOver>();
 
     public void ObserveEvents() => InputEvents.Do.Subscribe<IHotKeyPressed>(HotKeyPressed);
+    
+    public void UnObserveEvents() => InputEvents.Do.Unsubscribe<IHotKeyPressed>(HotKeyPressed);
 
     public void OnPointerExit()
     {

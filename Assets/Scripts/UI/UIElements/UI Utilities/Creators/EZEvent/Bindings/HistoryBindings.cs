@@ -16,7 +16,7 @@ public class HistoryBindings : EZEventBindingsBase
         AutoRemove().CreateEvent<IHighlightedNode>();
         AutoRemove().CreateEvent<ISelectedNode>();
         AutoRemove().CreateEvent<IDisabledNode>();
-        AutoRemove().CreateEvent<IHistoryData>();
+        AutoRemove().CreateEvent<IStoreNodeHistoryData>();
         AutoRemove().CreateEvent<ISceneIsChanging>();
         
         //Branch
@@ -30,11 +30,12 @@ public interface IOnHomeScreen
 {
     bool OnHomeScreen { get; }
 }
+
 public interface IOnStart { }
 
 public interface IGameIsPaused
 {
-    bool GameIsPaused { get; }
+    bool IsPaused { get; }
 }
 
 public interface IInMenu
@@ -64,7 +65,7 @@ public interface IDisabledNode: IMonoEnable, IMonoDisable
     bool IsThisNodeIsDisabled();
 }
 
-public interface IHistoryData //TODO Remove
+public interface IStoreNodeHistoryData
 {
     INode NodeToUpdate { get; }
 }

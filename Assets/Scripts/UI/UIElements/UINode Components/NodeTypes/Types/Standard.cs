@@ -43,7 +43,7 @@ public class Standard : NodeBase, IStandard
         if (!IsSelected) return;
         Deactivate();
         
-        if(PointerOverNode && !_allowKeys) return;
+        if(PointerOverNode && !AllowKeys) return;
         OnExit();
     }
 }

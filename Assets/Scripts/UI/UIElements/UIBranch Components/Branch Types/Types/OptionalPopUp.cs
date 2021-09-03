@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IOptionalPopUpBranch : IBranchBase { } 
 
-public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp, IAddOptionalPopUp, IOptionalPopUpBranch
+public class OptionalPopUpPopUp : BranchBase, IClearOptionalPopUp, IAddOptionalPopUp, IOptionalPopUpBranch
 {
     public OptionalPopUpPopUp(IBranch branch) : base(branch) { }
 
@@ -17,26 +17,30 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp, IAddOptional
     
     //Events
     private Action<IAddOptionalPopUp> AddOptionalPopUp { get; set; }
-    private Action<IRemoveOptionalPopUp> RemoveOptionalPopUp { get; set; }
+    private Action<IClearOptionalPopUp> ClearOptionalPopUp { get; set; }
 
     //Main
-    public override void ObserveEvents()
+
+    public override void OnEnable()
     {
-        base.ObserveEvents();
-        PopUpEvents.Do.Subscribe<ILastRemovedPopUp>(AdjustCanvasOrderRemoved);
+        base.OnEnable();
+        AddOptionalPopUp?.Invoke(this);
     }
 
-    protected override void UnObserveEvents()
+    public override void OnDisable()
     {
-        base.UnObserveEvents();
-        PopUpEvents.Do.Unsubscribe<ILastRemovedPopUp>(AdjustCanvasOrderRemoved);
+        base.OnDisable();
+        SetCanvas(ActiveCanvas.No);
+        SetBlockRaycast(BlockRaycast.No);
+        ClearOptionalPopUp?.Invoke(this);
+        AdjustCanvasOrderRemoved();
     }
 
     public override void FetchEvents()
     {
         base.FetchEvents();
         AddOptionalPopUp = PopUpEvents.Do.Fetch<IAddOptionalPopUp>();
-        RemoveOptionalPopUp = PopUpEvents.Do.Fetch<IRemoveOptionalPopUp>();
+        ClearOptionalPopUp = PopUpEvents.Do.Fetch<IClearOptionalPopUp>();
     }
 
     protected override void SaveIfOnHomeScreen(IOnHomeScreen args)
@@ -64,13 +68,13 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp, IAddOptional
     private void ActivateWithoutTween()
     {
         SetCanvas(ActiveCanvas.Yes);
-        if (!_activeResolvePopUps)
+        if (NoResolvePopUps)
             SetBlockRaycast(BlockRaycast.Yes);
     }
 
     public override bool CanStartBranch() //TODO add to buffer goes here for when paused. trigger from SaveOnHome?
     {
-        if (_gameIsPaused || !OnHomeScreen || !_canStart || _activeResolvePopUps) return false;
+        if (GameIsPaused || !OnHomeScreen || !CanStart || !NoResolvePopUps) return false;
         IfActiveResolvePopUps();        
         return true;
     }
@@ -78,9 +82,11 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp, IAddOptional
     public override void SetUpBranch(IBranch newParentController = null)
     {
         base.SetUpBranch(newParentController);
+        
+        //Debug.Log();
+        
         if(!_myBranch.CanvasIsEnabled && !_restoreOnHome)
         {
-            AddOptionalPopUp?.Invoke(this);
             AdjustCanvasOrderAdded();
         }
         
@@ -91,7 +97,7 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp, IAddOptional
 
     private void IfActiveResolvePopUps()
     {
-        if (!_activeResolvePopUps) return;
+        if (NoResolvePopUps) return;
         _myBranch.DontSetBranchAsActive();
         SetBlockRaycast(BlockRaycast.No);
     }
@@ -105,14 +111,14 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp, IAddOptional
 
     private void RemoveOrStorePopUp()
     {
-        if (_myBranch.CanStoreAndRestoreOptionalPoUp) 
+        if (_myBranch.CanStoreAndRestoreOptionalPoUp)
         {
             _restoreOnHome = true;
         }
         else
         {
+            ClearOptionalPopUp.Invoke(this);
             _canvasOrderCalculator.ResetCanvasOrder();
-            RemoveOptionalPopUp?.Invoke(this);
         }
     }
 
@@ -121,10 +127,10 @@ public class OptionalPopUpPopUp : BranchBase, IRemoveOptionalPopUp, IAddOptional
         optionalPopUps.Add(_myBranch.MyCanvas);
         _canvasOrderCalculator.ProcessActiveCanvasses(optionalPopUps);
     }
-
-    private void AdjustCanvasOrderRemoved(ILastRemovedPopUp args)
+    
+    private void AdjustCanvasOrderRemoved()
     {
-        optionalPopUps.Remove(args.LastOptionalPopUp.MyCanvas);
+        optionalPopUps.Remove(_myCanvas);
         _canvasOrderCalculator.ProcessActiveCanvasses(optionalPopUps);
     }
 }

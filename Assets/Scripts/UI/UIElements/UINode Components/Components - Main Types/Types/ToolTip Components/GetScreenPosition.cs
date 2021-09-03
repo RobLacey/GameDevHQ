@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public interface IGetScreenPosition : IMono
 {
     void SetExactPosition(bool isKeyboard);
-    void LateStartSetUp();
 }
 
 public interface ITooltipCalcsData : IParameters
@@ -34,13 +33,13 @@ public class GetScreenPosition : IGetScreenPosition, IServiceUser, ITooltipCalcs
     private readonly RectTransform[] _toolTipsRects;
     private readonly Vector3[] _myCorners;
     private readonly RectTransform _parentRectTransform;
-    private RectTransform _mainCanvasRectTransform;
     private readonly Camera _uiCamera;
     private InputScheme _inputScheme;
     private IDataHub _myDataHub;
 
     //Properties
     public float SafeZone => Scheme.ScreenSafeZone;
+    private RectTransform MainCanvasRectTransform => _myDataHub.MainCanvasRect;
     private ToolTipScheme Scheme => _tooltip.Scheme;
 
     //Properties
@@ -54,21 +53,12 @@ public class GetScreenPosition : IGetScreenPosition, IServiceUser, ITooltipCalcs
     {
         UseEZServiceLocator();
         _toolTipCalcs.OnEnable();
-        LateStartSetUp();
     }
 
     public void UseEZServiceLocator()
     {
         _inputScheme = EZService.Locator.Get<InputScheme>(this);
         _myDataHub = EZService.Locator.Get<IDataHub>(this);
-    }
-
-    public void LateStartSetUp()
-    {
-        if(_myDataHub.IsNull()) return;
-        
-        _mainCanvasRectTransform = _myDataHub.MainCanvasRect;
-        _toolTipCalcs.OnStart();
     }
 
     public void OnDisable()
@@ -86,11 +76,7 @@ public class GetScreenPosition : IGetScreenPosition, IServiceUser, ITooltipCalcs
         _toolTipCalcs = null;
     }
 
-    public void OnStart()
-    {
-        LateStartSetUp();
-        _toolTipCalcs.OnStart();
-    }
+    public void OnStart() => _toolTipCalcs.OnStart();
 
     public void SetExactPosition(bool isKeyboard)
     {
@@ -167,7 +153,7 @@ public class GetScreenPosition : IGetScreenPosition, IServiceUser, ITooltipCalcs
     private Vector2 ReturnScreenPosition(Vector3 screenPosition)
     {
         RectTransformUtility.ScreenPointToLocalPointInRectangle
-            (_mainCanvasRectTransform, screenPosition, _uiCamera, out var toolTipPos);
+            (MainCanvasRectTransform, screenPosition, _uiCamera, out var toolTipPos);
         return toolTipPos;
     }
 }

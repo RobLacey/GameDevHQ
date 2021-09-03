@@ -5,7 +5,7 @@ using UIElements;
 using UnityEngine;
 
 
-public interface ICanvasOrderCalculator : IMonoStart, IMonoEnable, IMonoDisable
+public interface ICanvasOrderCalculator : IMonoStart, IMonoEnable
 {
     BranchType GetBranchType { get; }
     int GetManualCanvasOrder { get; }
@@ -15,7 +15,7 @@ public interface ICanvasOrderCalculator : IMonoStart, IMonoEnable, IMonoDisable
     void ProcessActiveCanvasses(List<Canvas> activeCanvasList);
 }
 
-public class CanvasOrderCalculator: IEZEventUser, IServiceUser, ICanvasOrderCalculator
+public class CanvasOrderCalculator: IServiceUser, ICanvasOrderCalculator
 {
     public CanvasOrderCalculator(ICanvasCalcParms data)
     {
@@ -29,34 +29,29 @@ public class CanvasOrderCalculator: IEZEventUser, IServiceUser, ICanvasOrderCalc
     }
     
     //Variables
-    private IBranch _activeBranch;
     private readonly Canvas _myCanvas;
     private int _startingOrder;
     private ICanvasOrderData _canvasOrderData;
+    private IDataHub _myDataHub;
 
     //Properties
+    private IBranch ActiveBranch => _myDataHub.ActiveBranch;
     public BranchType GetBranchType { get; }
     public int GetManualCanvasOrder { get; }
     public OrderInCanvas GetOrderInCanvas { get; }
 
     //Main
 
-    public void OnEnable()
+    public void OnEnable() => UseEZServiceLocator();
+
+    public void UseEZServiceLocator()
     {
-        UseEZServiceLocator();
-        ObserveEvents();
+        _canvasOrderData = EZService.Locator.Get<ICanvasOrderData>(this);
+        _myDataHub = EZService.Locator.Get<IDataHub>(this);
     }
-    
-    public void UseEZServiceLocator() => _canvasOrderData = EZService.Locator.Get<ICanvasOrderData>(this);
-
-    public void ObserveEvents() => HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
-    private void UnobserveEvents() => HistoryEvents.Do.Unsubscribe<IActiveBranch>(SaveActiveBranch);
-
-    public void OnDisable() => UnobserveEvents();
 
     public void OnStart() => SetUpCanvasOrderAtStart();
 
-    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
 
     private void SetUpCanvasOrderAtStart()
     {
@@ -88,7 +83,7 @@ public class CanvasOrderCalculator: IEZEventUser, IServiceUser, ICanvasOrderCalc
 
     public void SetCanvasOrder()
     {
-        if(_activeBranch.IsNull() || _myCanvas.sortingOrder > _startingOrder) return;
+        if(ActiveBranch.IsNull() || _myCanvas.sortingOrder > _startingOrder) return;
 
         switch (GetOrderInCanvas)
         {
@@ -99,7 +94,7 @@ public class CanvasOrderCalculator: IEZEventUser, IServiceUser, ICanvasOrderCalc
                 _myCanvas.sortingOrder--;
                 break;
             case OrderInCanvas.Manual:
-                if (_activeBranch.CanvasOrder == GetOrderInCanvas)
+                if (ActiveBranch.CanvasOrder == GetOrderInCanvas)
                 {
                     _myCanvas.sortingOrder++;
                 }

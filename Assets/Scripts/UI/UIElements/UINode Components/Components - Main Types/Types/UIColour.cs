@@ -3,21 +3,22 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public class UIColour : NodeFunctionBase
+public class UIColour : NodeFunctionBase, IAlwaysHighlightSettings
 {
     public UIColour(IColourSettings settings, IUiEvents uiEvents) : base(uiEvents)
     {
-        _scheme = settings.ColourScheme;
-        _textElements = settings.TextElement;
-        _imageElements = settings.ImageElement;
-        CanActivate = true;
+        _settings = settings;
+        _scheme = _settings.ColourScheme;
+        _textElements = _settings.TextElement;
+        _imageElements = _settings.ImageElement;
+        MyBranch = _settings.ParentBranch;
     }
 
     //Variables
 
     private readonly ColourScheme _scheme;
     private readonly Text _textElements;
-    private Image[] _imageElements;
+    private readonly Image[] _imageElements;
     private Color _textNormalColour = Color.white;
     private Color _imageNormalColour = Color.white;
     private Color _tweenImageToColour;
@@ -25,24 +26,32 @@ public class UIColour : NodeFunctionBase
     private Color _selectHighlightColour;
     private float _selectHighlightPerc;
     private int _id;
+    private readonly IColourSettings _settings;
+    private IAlwaysHighlight _alwaysHighlighted;
 
-    //Properties
-    protected override bool FunctionNotActive() => !CanActivate || _scheme is null || _isDisabled;
+    //Properties, Getter & Setters
+    public IBranch MyBranch { get; }
     protected override bool CanBePressed() => (_scheme.ColourSettings & EventType.Pressed) != 0;
     protected override bool CanBeHighlighted() => (_scheme.ColourSettings & EventType.Highlighted) !=0;
     private bool CanBeSelected() => (_scheme.ColourSettings & EventType.Selected) != 0;
+    public Override Overridden => _settings.OverrideAlwaysHighlighted;
+    public INode UiNode => _uiEvents.ReturnMasterNode;
+    public bool IsSelected => _isSelected;
+    public Action DoPointerOverSetUp => PointerOverSetUp;
+    public Action DoPointerNotOver => PointerNotOver;
+    public bool OptionalStartConditions => !CanBeHighlighted();
 
     public override void OnAwake()
     {
         base.OnAwake();
         _id = _uiEvents.MasterNodeID;
-        CheckForSetUpError();
         SetUpCachedColours();
+        if(MyBranch.AlwaysHighlighted == IsActive.Yes)
+            _alwaysHighlighted = EZInject.Class.WithParams<IAlwaysHighlight>(this);
     }
-
+    
     private void SetUpCachedColours()
     {
-        if(!CanActivate) return;
         if (_imageElements.Length > 0)
             _imageNormalColour = _imageElements[0].color;
         
@@ -52,29 +61,42 @@ public class UIColour : NodeFunctionBase
         _selectHighlightColour = SelectedHighlightColour();
     }
 
-    private void CheckForSetUpError() //TODO Improve error handling - Add data to UiActions to gather
+    public override void OnEnable()
     {
-        if(!CanActivate) return;
-        if (_imageElements.Length > 0 && _imageElements[0] is null)
+        base.OnEnable();
+        if(_alwaysHighlighted.IsNotNull())
+            _alwaysHighlighted.ObserveEvents();
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        if(_alwaysHighlighted.IsNotNull())
+            _alwaysHighlighted.UnObserveEvents();
+    }
+
+    protected override void LateStartSetUp()
+    {
+        base.LateStartSetUp();
+        if(MyHubDataIsNull) return;
+        
+        if (_myDataHub.SceneStarted)
         {
-            _imageElements = new Image[0];
+            _alwaysHighlighted.ShowStartingHighlightedNode();
         }
-        if (_imageElements.Length == 0 && !_textElements && CanActivate)
-            throw new Exception("No Image or Text set on Colour settings");
     }
 
     protected override void SavePointerStatus(bool pointerOver)
     {
-        if (FunctionNotActive()) return;
-        
         if (pointerOver)
         {
             PointerOverSetUp();
         }
         else
         {
+            if (_alwaysHighlighted.IsNotNull() && _alwaysHighlighted.CanAllow()) return;
             PointerNotOver();
-        }    
+        }
     }
 
     private void PointerOverSetUp()
@@ -85,7 +107,7 @@ public class UIColour : NodeFunctionBase
         }
         else
         {
-            NotSelectedHighlight();
+           NotSelectedHighlight();
         }
     }
 
@@ -150,8 +172,6 @@ public class UIColour : NodeFunctionBase
 
     private protected override void ProcessDisabled()
     {
-        if(!CanActivate) return;
-        
         if (_isDisabled)
         {
             _tweenImageToColour = _scheme.DisableColour;
@@ -172,8 +192,6 @@ public class UIColour : NodeFunctionBase
     
     private protected override void ProcessPress()
     {
-        if (FunctionNotActive()) return;
-
         if (CanBePressed())
         {
             SetUpPressedFlash();

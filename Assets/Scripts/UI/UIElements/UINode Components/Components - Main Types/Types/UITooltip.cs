@@ -28,14 +28,12 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         _settings = settings;
         FixedPosition = settings.FixedPosition;
         UiCamera = settings.UiCamera;
-        CanActivate = true;
     }
 
     //Variables
     private Vector2 _tooltipPos;
     private Canvas[] _cachedToolTipCanvasList;
     private Coroutine _coroutineStart, _coroutineActivate, _coroutineBuild;
-    private bool _allowKeys;
     private float _buildDelay;
     private IToolTipFade _toolTipFade;
     private IGetScreenPosition _getScreenPosition;
@@ -43,6 +41,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     private ICanvasOrderData _canvasOrderData;
 
     //Properties
+    private bool AllowKeys => _myDataHub.AllowKeys;
     public ToolTipScheme Scheme => _settings.Scheme;
     public RectTransform FixedPosition { get; private set; }
     public Camera UiCamera { get; }
@@ -52,19 +51,16 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     public Vector3[] MyCorners { get; } = new Vector3[4];
     public RectTransform ParentRectTransform { get; private set; }
 
-
     //Set / Getters
     protected override bool CanBeHighlighted() => false;
     protected override bool CanBePressed() => false;
     private protected override void ProcessPress() { }
-    protected override bool FunctionNotActive() => !CanActivate || ListOfTooltips.Length == 0 || Scheme is null;
+    public override bool FunctionNotActive() => _isDisabled || ListOfTooltips.Length == 0;
     private protected override void ProcessDisabled()
     {
         if(FunctionNotActive()) return;
         HideToolTip();
     }
-    
-    private void SaveAllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
     
     //TODO Change size calculations to work from camera size rather than canvas so still works when aspect changes
 
@@ -127,14 +123,6 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         _getScreenPosition.OnEnable();
     }
 
-    protected override void LateStartSetUp()
-    {
-        base.LateStartSetUp();
-        if (MyHubDataIsNull) return;
-        _getScreenPosition.LateStartSetUp();
-        _allowKeys = _myDataHub.AllowKeys;
-    }
-
     public override void UseEZServiceLocator()
     {
         base.UseEZServiceLocator();
@@ -144,16 +132,14 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     public override void ObserveEvents()
     {
         base.ObserveEvents();
-        InputEvents.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         InputEvents.Do.Subscribe<ISwitchGroupPressed>(CloseTooltipImmediately);
         BranchEvent.Do.Subscribe<IClearScreen>(CloseTooltipImmediately);
         InputEvents.Do.Subscribe<IHotKeyPressed>(CloseTooltipImmediately);
     }
 
-    protected override void UnObserveEvents()
+    public override void UnObserveEvents()
     {
         base.UnObserveEvents();
-        InputEvents.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
         InputEvents.Do.Unsubscribe<ISwitchGroupPressed>(CloseTooltipImmediately);
         BranchEvent.Do.Unsubscribe<IClearScreen>(CloseTooltipImmediately);
         InputEvents.Do.Unsubscribe<IHotKeyPressed>(CloseTooltipImmediately);
@@ -187,6 +173,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
         base.OnStart();
         _getScreenPosition.OnStart();
         SetToolTipCanvasOrder();
+        NameToolTips.NameTooltips(ListOfTooltips, _uiEvents);
     }
 
     //Main
@@ -227,7 +214,6 @@ public class UITooltip : NodeFunctionBase, IToolTipData
 
     private void HideToolTip()
     {
-        if (!CanActivate) return;
         StaticCoroutine.StopCoroutines(_coroutineStart);
         StaticCoroutine.StopCoroutines(_coroutineBuild);
         StaticCoroutine.StopCoroutines(_coroutineActivate);
@@ -239,7 +225,7 @@ public class UITooltip : NodeFunctionBase, IToolTipData
     {
         yield return new WaitForSeconds(Scheme.StartDelay);
         _coroutineBuild = StaticCoroutine.StartCoroutine(ToolTipBuild());
-        _coroutineActivate = StaticCoroutine.StartCoroutine(ActivateTooltip(_allowKeys));
+        _coroutineActivate = StaticCoroutine.StartCoroutine(ActivateTooltip(AllowKeys));
     }
 
     private IEnumerator ToolTipBuild()

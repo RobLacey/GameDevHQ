@@ -20,14 +20,18 @@ public interface IGOUIModule
     bool PointerOver { get; }
     bool NodeIsSelected { get; }
     Transform GOUITransform { get; }
+}
+
+public interface IRuntimeData
+{
     IBranch TargetBranch { get; }
 }
 
 namespace UIElements
 {
-    [RequireComponent(typeof(RunTimeGetter))]
+    [RequireComponent(typeof(RuntimeSettingExample))]
     public class GOUIModule : MonoBehaviour, IEZEventUser, ICursorHandler, IEZEventDispatcher, 
-                              IGOUIModule, IStartGOUIBranch, ICloseGOUIBranch, IServiceUser
+                              IGOUIModule, IStartGOUIBranch, ICloseBranch, IServiceUser, IRuntimeData
     {
         [SerializeField]
         private StartGOUI _startHow = StartGOUI.OnPointerEnter;
@@ -50,21 +54,16 @@ namespace UIElements
         private UnityEvent<bool> _activateGOUI;
 
         //Variables
-        private bool _active, _gameIsPaused, _canStart;
-        private bool _onHomeScreen = true;
+        private bool _active, _GOUIBranchSetUp;
         private readonly CheckIfUnderUI _checkIfUnderUI = new CheckIfUnderUI();
         private IDataHub _myDataHub;
-        private bool _allowKeys;
         private IBranch _myGOUIBranch;
-        private bool _isQuiting;
-        private bool _sceneChanging;
 
         //Enums
         private enum StartGOUI { AlwaysOn, OnPointerEnter }
         
         //Events
         private Action<IStartGOUIBranch> StartBranch { get; set; }
-        private Action<ICloseGOUIBranch> CloseAndResetBranch { get; set; }
         
         //Editor
         private const string InfoBox = "If left blank the centre of object will be used";
@@ -79,17 +78,16 @@ namespace UIElements
         public GOUIModule ReturnGOUIModule => this;
         public bool NodeIsSelected { get; private set; }
         public bool PointerOver { get; private set; }
-        private bool CanNotDoAction => !_onHomeScreen || _gameIsPaused || !_canStart;
-        private void CanStart(IOnStart args)
-        {
-            _canStart = true;
-            StartUpAlwaysOnBranch();
-        }
-        private void SaveOnHomeScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
-        private void SaveIsGamePaused(IGameIsPaused args) => _gameIsPaused = args.GameIsPaused;
-        private void SceneIsChanging(ISceneIsChanging args) => _sceneChanging = true;
+        private bool CanNotDoAction => !OnHomeScreen || GameIsPaused || !_myDataHub.SceneStarted;
+        private void CanStart(IOnStart args) => StartUpAlwaysOnBranch();
+        private void SceneIsChanging(ISceneIsChanging args) => SceneChanging = true;
 
-        
+        private bool GameIsPaused => _myDataHub.GamePaused;
+        private bool OnHomeScreen => _myDataHub.OnHomeScreen;
+        private bool SceneChanging { get; set; }
+        private bool AllowKeys => _myDataHub.AllowKeys;
+        private string BranchesName => $"{name} : InGameObj";
+
         //Main
         private void Awake()
         {
@@ -98,9 +96,10 @@ namespace UIElements
             if (_useOffsetPosition == null)
                 _useOffsetPosition = transform;
             
-            _myGOUIBranch = GetComponent<IRunTimeGetter>().CreateBranch(_myGOUIPrefab);
-            _myGOUIBranch.SetUpGOUIBranch(this);
+            _myGOUIBranch = new RuntimeCreateBranch().CreateGOUI(_myGOUIPrefab).NewName(BranchesName);
         }
+
+        public void RenameGouiBranch() => _myGOUIBranch.NewName(BranchesName);
 
         private bool DisableIfNotInUse()
         {
@@ -117,58 +116,49 @@ namespace UIElements
             UseEZServiceLocator();
             FetchEvents();
             ObserveEvents();
-            LateStartUp();
             _checkVisibility.OnEnable();
             _myGOUIBranch.OnEnable();
+            LateStartUp();
         }
 
         public void UseEZServiceLocator() => _myDataHub = EZService.Locator.Get<IDataHub>(this);
 
-        public void FetchEvents()
-        {
-            StartBranch = GOUIEvents.Do.Fetch<IStartGOUIBranch>();
-            CloseAndResetBranch = GOUIEvents.Do.Fetch<ICloseGOUIBranch>();
-        }
+        public void FetchEvents() => StartBranch = GOUIEvents.Do.Fetch<IStartGOUIBranch>();
 
         public void ObserveEvents()
         {
-            HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomeScreen);
-            HistoryEvents.Do.Subscribe<IGameIsPaused>(SaveIsGamePaused);
+            HistoryEvents.Do.Subscribe<ISceneIsChanging>(SceneIsChanging);
             HistoryEvents.Do.Subscribe<IOnStart>(CanStart);
             HistoryEvents.Do.Subscribe<IHighlightedNode>(ClearNodeWhenLeftOnWhenControlsChange);
             HistoryEvents.Do.Subscribe<ISelectedNode>(ChildIsOpen);
-            HistoryEvents.Do.Subscribe<ISceneIsChanging>(SceneIsChanging);
+            InputEvents.Do.Subscribe<IAllowKeys>(SetAllowKeys);
             GOUIEvents.Do.Subscribe<ICloseThisGOUIModule>(CloseAsOtherBranchSelectedOrCancelled);
-            InputEvents.Do.Subscribe<IAllowKeys>(AllowKeys);
         }
 
-        private void UnObserveEvents()
+        public void UnObserveEvents()
         {
-            HistoryEvents.Do.Unsubscribe<IOnHomeScreen>(SaveOnHomeScreen);
-            HistoryEvents.Do.Unsubscribe<IGameIsPaused>(SaveIsGamePaused);
+            HistoryEvents.Do.Unsubscribe<ISceneIsChanging>(SceneIsChanging);
             HistoryEvents.Do.Unsubscribe<IOnStart>(CanStart);
             HistoryEvents.Do.Unsubscribe<IHighlightedNode>(ClearNodeWhenLeftOnWhenControlsChange);
             HistoryEvents.Do.Unsubscribe<ISelectedNode>(ChildIsOpen);
-            HistoryEvents.Do.Unsubscribe<ISceneIsChanging>(SceneIsChanging);
+            InputEvents.Do.Unsubscribe<IAllowKeys>(SetAllowKeys);
             GOUIEvents.Do.Unsubscribe<ICloseThisGOUIModule>(CloseAsOtherBranchSelectedOrCancelled);
-            InputEvents.Do.Unsubscribe<IAllowKeys>(AllowKeys);
         }
 
         private void LateStartUp()
         {
             if(_myDataHub.IsNull()) return;
             
-            if (_myDataHub.SceneAlreadyStarted)
+            if (_myDataHub.SceneStarted)
             {
-                _canStart = true;
+                CheckGOUIBranchIsSetUp();
                 StartUpAlwaysOnBranch();
             }        
         }
 
         private void OnDisable()
         {
-            if(_sceneChanging) return;
-            CloseAndResetBranch?.Invoke(this);
+            if(SceneChanging) return;
             _checkVisibility.OnDisable();
             _myGOUIBranch.OnDisable();
             UnObserveEvents();
@@ -176,9 +166,6 @@ namespace UIElements
             NodeIsSelected = false;
             PointerOver = false;
             _activateGOUI?.Invoke(false);
-            
-            //TODO Add Event to clear history, fullscreen data, switch, interactUI and multiselect lists,
-
         }
 
         private void OnDestroy()
@@ -186,24 +173,28 @@ namespace UIElements
             UnObserveEvents();
             _checkVisibility.OnDestroy();
             _myGOUIBranch.OnDestroy();
+            if(SceneChanging) return;
+            Destroy(_myGOUIBranch.ThisBranchesGameObject);
         }
 
         private void Start()
         {
-            //TODO Fix this to match name wise
-            //TODO see why events are not calling to change canvas or adding to multi
-            //TODO Add ability to change initial InGameUi from Setter (have variables just needs methods)
-            //ToDo ** Don't do above, remove whats there
-            
-            Debug.Log("I am UpTo here");
+            CheckGOUIBranchIsSetUp();
             _checkVisibility.SetUpOnStart(this);
+        }
+
+        private void CheckGOUIBranchIsSetUp()
+        {
+            if (_GOUIBranchSetUp) return;
+            _myGOUIBranch.SetUpGOUIBranch(this);
+            _GOUIBranchSetUp = true;
         }
 
         private void StartUpAlwaysOnBranch()
         {
             _myGOUIBranch.ThisBranchesGameObject.SetActive(true);
-
             StartBranch?.Invoke(this);
+            
             if (AlwaysOnIsActive)
             {
                 PointerOver = true;
@@ -213,14 +204,12 @@ namespace UIElements
             }
         }
 
-        private void AllowKeys(IAllowKeys args)
+        private void SetAllowKeys(IAllowKeys args)
         {
-            _allowKeys = args.CanAllowKeys;
-            
-            if(PointerOver)
+            if(!AllowKeys && _active)
                 ExitGOUI();
             
-            if (args.CanAllowKeys && _active)
+            if (AllowKeys && _active)
                 PointerOver = true;
         }
 
@@ -253,7 +242,7 @@ namespace UIElements
         private void OnMouseEnter()
         {
             if (_checkIfUnderUI.UnderUI()) return;
-            if(!_allowKeys)
+            if(!AllowKeys)
                 _myGOUIBranch.DontSetBranchAsActive();
             EnterGOUI();
         }
@@ -276,7 +265,7 @@ namespace UIElements
 
         public void VirtualCursorEnter()
         {
-            if(!_allowKeys)
+            if(!AllowKeys)
                 _myGOUIBranch.DontSetBranchAsActive();
             EnterGOUI();
         }

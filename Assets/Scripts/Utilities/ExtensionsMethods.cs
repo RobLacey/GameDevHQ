@@ -211,4 +211,16 @@ public static class ExtensionsMethods
         return obj.gameObject.scene.rootCount == 0;
     }
 
+    public static IBranch NewName(this IBranch newBranch, string newName)
+    {
+        newBranch.ThisBranchesGameObject.name = newName;
+        return newBranch;
+    }
+    
+    public static GameObject NewName(this GameObject newBranch, string newName)
+    {
+        newBranch.name = newName;
+        return newBranch;
+    }
+
 }

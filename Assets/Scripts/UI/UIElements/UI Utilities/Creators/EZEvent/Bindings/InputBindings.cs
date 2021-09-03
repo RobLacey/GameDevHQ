@@ -14,18 +14,15 @@ public class InputBindings : EZEventBindingsBase
         //ChangeControl
         AutoRemove().CreateEvent<IAllowKeys>();
         AutoRemove().CreateEvent<IChangeControlsPressed>();
+        AutoRemove().CreateEvent<IChangeControlsSwitchPressed>();
         AutoRemove().CreateEvent<IVCSetUpOnStart>();
         AutoRemove().CreateEvent<IVcChangeControlSetUp>();
-        AutoRemove().CreateEvent<IActivateBranchOnControlsChange>();
     }
 }
 
 public interface IPausePressed { } // This one is test
 
-public interface ISwitchGroupPressed // This one is test
-{
-    SwitchType SwitchType { get; }
-}
+public interface ISwitchGroupPressed  { }
 
 public interface IHotKeyPressed
 {
@@ -40,7 +37,8 @@ public interface IAllowKeys // This one is test
     bool CanAllowKeys { get; }
 }
 
-public interface IChangeControlsPressed { } // This one is test
+public interface IChangeControlsPressed { }
+public interface IChangeControlsSwitchPressed : IChangeControlsPressed { }
 
 public interface IVCSetUpOnStart
 {
@@ -48,11 +46,6 @@ public interface IVCSetUpOnStart
 }
 
 public interface IVcChangeControlSetUp{ }
-
-public interface IActivateBranchOnControlsChange
-{
-    IBranch ActiveBranch { get; }
-}
 
 public interface ICancelPressed // This one is test
 {

@@ -8,7 +8,8 @@ public interface IHistoryTrack : IParameters, IIsAService
     bool IsPaused { get; }
     bool NoHistory { get; }
     IHistoryManagement HistoryListManagement { get; }
-    void GOUIBranchHasClosed(IBranch branchToClose, IGOUIModule module = null);
+    void GOUIBranchHasClosed(IBranch branchToClose, bool noGOUILeft = false);
+    void ReturnToNextHomeGroup();
     void BackToHome();
     void BackOneLevel();
     void MoveToLastBranchInHistory();

@@ -9,18 +9,11 @@ public class GOUIEventsBindings : EZEventBindingsBase
         //UIGO System
         AutoRemove().CreateEvent<ICloseThisGOUIModule>();
         AutoRemove().CreateEvent<IStartGOUIBranch>();
-        AutoRemove().CreateEvent<ICloseGOUIBranch>();
         AutoRemove().CreateEvent<IOffscreen>();
     }
 }
 
 public interface IStartGOUIBranch
-{
-    IBranch TargetBranch { get; }
-    GOUIModule ReturnGOUIModule { get; }
-}
-
-public interface ICloseGOUIBranch
 {
     IBranch TargetBranch { get; }
     GOUIModule ReturnGOUIModule { get; }

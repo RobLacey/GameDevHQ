@@ -18,5 +18,5 @@ MonoBehaviour:
   _selectedVolume: 1
   _cancel: {fileID: 8300000, guid: d89f385fe46f6344d9b3a462d7a97a8f, type: 3}
   _cancelVolume: 1
-  _disabled: {fileID: 0}
-  _disabledVolume: 0
+  _disabled: {fileID: 8300000, guid: cda2a82be2ca4d740bcaa7f799a085f7, type: 3}
+  _disabledVolume: 0.5

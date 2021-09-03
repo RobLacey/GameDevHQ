@@ -13,6 +13,10 @@ public class StandardBranch : BranchBase, IStandardBranch
         base.SetUpBranch(newParentController);
         
         _canvasOrderCalculator.SetCanvasOrder();
+        
+        if(_myCanvas.enabled)
+            _myBranch.DoNotTween();
+        
         SetCanvas(ActiveCanvas.Yes);
         CanGoToFullscreen();
         SetNewParentBranch(newParentController);
@@ -36,7 +40,7 @@ public class StandardBranch : BranchBase, IStandardBranch
 
     public override void SetBlockRaycast(BlockRaycast active)
     {
-        if(_activeResolvePopUps) return;
+        if(!NoResolvePopUps) return;
         base.SetBlockRaycast(active);
     }
 }

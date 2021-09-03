@@ -11,16 +11,17 @@ public abstract class NodeFunctionBase : IEZEventUser, IMono, IServiceUser
         _uiEvents = uiEvents;
     }
 
-    protected bool _pointerOver, _isSelected, _isDisabled;
+    protected bool _pointerOver;
+    protected bool _isSelected;
+    protected bool _isDisabled;
     protected IUiEvents _uiEvents;
     protected IDataHub _myDataHub;
 
     //Properties
-    protected bool CanActivate { get; set; }
     protected virtual void AxisMoveDirection(MoveDirection moveDirection) { }
     protected abstract bool CanBeHighlighted();
     protected abstract bool CanBePressed();
-    protected abstract bool FunctionNotActive();
+    public virtual bool FunctionNotActive() => _isDisabled;
     protected bool MyHubDataIsNull => _myDataHub.IsNull();
     
     //Main
@@ -39,9 +40,8 @@ public abstract class NodeFunctionBase : IEZEventUser, IMono, IServiceUser
     {
         if (MyHubDataIsNull) return;
         
-        if(_myDataHub.SceneAlreadyStarted)
+        if(_myDataHub.SceneStarted)
         {
-            _isSelected = false;
             _pointerOver = false;
             _isDisabled = false;
         }    
@@ -62,7 +62,7 @@ public abstract class NodeFunctionBase : IEZEventUser, IMono, IServiceUser
         _uiEvents.OnMove += AxisMoveDirection;
     }
 
-    protected virtual void UnObserveEvents()
+    public virtual void UnObserveEvents()
     {
         if (_uiEvents is null) return;
         _uiEvents.WhenPointerOver -= SavePointerStatus;
@@ -82,11 +82,7 @@ public abstract class NodeFunctionBase : IEZEventUser, IMono, IServiceUser
 
     protected abstract void SavePointerStatus(bool pointerOver);
 
-    protected virtual void SaveIsSelected(bool isSelected)
-    {
-        if (FunctionNotActive()) return;
-        _isSelected = isSelected;
-    }
+    protected virtual void SaveIsSelected(bool isSelected) => _isSelected = isSelected;
 
     private void IsDisabled(bool isDisabled)
     {

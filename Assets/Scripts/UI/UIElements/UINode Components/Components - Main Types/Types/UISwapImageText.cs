@@ -1,55 +1,66 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class UIImageTextToggle : NodeFunctionBase
+public class UISwapImageText : NodeFunctionBase, IAlwaysHighlightSettings
 {
-    public UIImageTextToggle(SwapImageOrTextSettings settings, IUiEvents uiEvents) : base(uiEvents)
+    public UISwapImageText(ISwapImageOrTextSettings settings, IUiEvents uiEvents) : base(uiEvents)
     {
+        _settings = settings;
+        MyBranch = settings.ParentBranch;
         _changeWhen = settings.ChangeWhen;
         _toggleIsOff = settings.ToggleOff;
         _toggleIsOn = settings.ToggleOn;
         _textToSwap = settings.TextToSwap;
         _changeTextToo = settings.ChangeTextToo;
-        CanActivate = CacheAndCheckForStartingUIElements();
+        _startingText = GetStartingText();
     }
 
     //variables
-    private string _startingText;
+    private readonly string _startingText;
     private readonly ChangeWhen _changeWhen;
     private readonly Image _toggleIsOff;
     private readonly Image _toggleIsOn;
     private readonly Text _textToSwap;
     private readonly string _changeTextToo;
+    private readonly ISwapImageOrTextSettings _settings;
+    private IAlwaysHighlight _alwaysHighlighted;
     
     //Properties
     protected override bool CanBeHighlighted() => _changeWhen == ChangeWhen.OnHighlight;
     protected override bool CanBePressed() => _changeWhen == ChangeWhen.OnPressed;
-    protected override bool FunctionNotActive() => !CanActivate;
     private bool ToggleOnNewControls => _changeWhen == ChangeWhen.OnControlChanged;
+    public IBranch MyBranch { get; }
+    public Override Overridden => _settings.OverrideAlwaysHighlighted;
+    public INode UiNode => _uiEvents.ReturnMasterNode;
+    public bool IsSelected => _isSelected;
+    public Action DoPointerOverSetUp => PointerOver;
+    public Action DoPointerNotOver => PointerNotOver;
+    public bool OptionalStartConditions => CanBePressed();
 
+    public override void OnAwake()
+    {
+        base.OnAwake();
+        if(MyBranch.AlwaysHighlighted == IsActive.Yes)
+            _alwaysHighlighted = EZInject.Class.WithParams<IAlwaysHighlight>(this);
+    }
+
+    private string GetStartingText() => _textToSwap ? _textToSwap.text : String.Empty;
 
     public override void ObserveEvents()
     {
         base.ObserveEvents();
         InputEvents.Do.Subscribe<IAllowKeys>(OnControlsChanged);
+        if(_alwaysHighlighted.IsNotNull())
+            _alwaysHighlighted.ObserveEvents();
     }
 
-    protected override void UnObserveEvents()
+    public override void UnObserveEvents()
     {
         base.UnObserveEvents();
         InputEvents.Do.Unsubscribe<IAllowKeys>(OnControlsChanged);
-    }
-
-    public override void OnDisable()
-    {
-        base.OnDisable();
-        UnObserveEvents();
-    }
-
-    public override void OnDestroy()
-    {
-        base.OnDestroy();
-        UnObserveEvents();
+        if(_alwaysHighlighted.IsNotNull())
+            _alwaysHighlighted.UnObserveEvents();
     }
 
     protected override void LateStartSetUp()
@@ -63,7 +74,6 @@ public class UIImageTextToggle : NodeFunctionBase
     public override void OnStart()
     {
         base.OnStart();
-        if(!CanActivate) return;
         SetUp();
     }
 
@@ -79,17 +89,8 @@ public class UIImageTextToggle : NodeFunctionBase
         }
     }
 
-    private bool CacheAndCheckForStartingUIElements()
-    {
-        if (_textToSwap)
-            _startingText = _textToSwap.text;
-        return _toggleIsOff || _toggleIsOn || _textToSwap;
-    }
-
     private void CycleToggle(bool isOn)
     {
-        if (FunctionNotActive()) return;
-        
         if (isOn)
         {
             ToggleImages(true);
@@ -125,8 +126,20 @@ public class UIImageTextToggle : NodeFunctionBase
     protected override void SavePointerStatus(bool pointerOver)
     {
         if(FunctionNotActive() || !CanBeHighlighted() || CanBePressed() && _isSelected) return;
-        CycleToggle(pointerOver);
+        
+        if (pointerOver)
+        {
+            PointerOver();
+        }
+        else
+        {
+            if(_alwaysHighlighted.CanAllow()) return;
+            PointerNotOver();
+        }
     }
+
+    private void PointerOver() => CycleToggle(true);
+    private void PointerNotOver() => CycleToggle(false);
 
     private protected override void ProcessPress()
     {

@@ -6,8 +6,8 @@ using EZ.Service;
 using UIElements.Input_System;
 using UnityEngine;
 
-public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IHistoryData, 
-                              IEZEventDispatcher, IReturnHomeGroupIndex
+public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IStoreNodeHistoryData, 
+                              IEZEventDispatcher, IReturnHomeGroupIndex, IServiceUser
 {
     public HistoryTracker()
     {
@@ -21,24 +21,22 @@ public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IHisto
     //Variables
     private readonly List<INode> _history = new List<INode>();
     private INode _lastSelected;
-    private bool _canStart, _isPaused;
-    private bool _onHomeScreen = true, _noPopUps = true;
-    private IBranch _activeBranch;
     private ICancel _cancel;
     private IMultiSelect _multiSelectSystem;
+    private IDataHub _myDataHub;
 
     //Properties
     private IManagePopUpHistory PopUpHistory { get; }
     private IMoveBackInHistory MoveBackInHistory { get; }
     public IHistoryManagement HistoryListManagement { get; }
     private INewSelectionProcess SelectionProcess { get; }
-    private void SaveOnHomScreen(IOnHomeScreen args) => _onHomeScreen = args.OnHomeScreen;
-    private void SaveIsGamePaused(IGameIsPaused args) => _isPaused = args.GameIsPaused;
-    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
-    private void NoPopUps(INoPopUps args) => _noPopUps = args.NoActivePopUps;
     public INode NodeToUpdate { get; private set; }
     public bool NoHistory => _history.Count == 0 && !_multiSelectSystem.MultiSelectActive;
-    public bool IsPaused => _isPaused;
+    public bool IsPaused => _myDataHub.GamePaused;
+    private bool CanStart => _myDataHub.SceneStarted;
+    private bool OnHomeScreen => _myDataHub.OnHomeScreen;
+    private bool NoPopUps => _myDataHub.NoPopups;
+    private IBranch ActiveBranch => _myDataHub.ActiveBranch;
     public INode TargetNode { get; set; }
 
 
@@ -47,7 +45,7 @@ public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IHisto
     private Action<IReturnHomeGroupIndex> ReturnHomeGroupBranch { get; set; }
     
     //TODO Remove Test Rig
-    private Action<IHistoryData> DoAddANode { get; set; }
+    private Action<IStoreNodeHistoryData> DoAddANode { get; set; }
     
     public void UpdateHistoryData(INode node)
     {
@@ -58,12 +56,16 @@ public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IHisto
     //Main
     public void OnEnable()
     {
+        UseEZServiceLocator();
         AddService();
         FetchEvents();
         ObserveEvents();
         PopUpHistory.OnEnable();
         _multiSelectSystem.OnEnable();
     }
+
+    
+    public void UseEZServiceLocator() => _myDataHub = EZService.Locator.Get<IDataHub>(this);
 
     public void AddService() => EZService.Locator.AddNew<IHistoryTrack>(this);
 
@@ -73,70 +75,65 @@ public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IHisto
     {
         ReturnHome = HistoryEvents.Do.Fetch<IReturnToHome>();
         ReturnHomeGroupBranch = HistoryEvents.Do.Fetch<IReturnHomeGroupIndex>();
-        DoAddANode = HistoryEvents.Do.Fetch<IHistoryData>();
+        DoAddANode = HistoryEvents.Do.Fetch<IStoreNodeHistoryData>();
     }
 
     public void ObserveEvents()
     {
-        HistoryEvents.Do.Subscribe<IOnStart>(SetCanStart);
-        HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
-        HistoryEvents.Do.Subscribe<IOnHomeScreen>(SaveOnHomScreen);
-        HistoryEvents.Do.Subscribe<IGameIsPaused>(SaveIsGamePaused);
         HistoryEvents.Do.Subscribe<ISelectedNode>(SetSelected);
         HistoryEvents.Do.Subscribe<IDisabledNode>(CloseNodesAfterDisabledNode);
         HistoryEvents.Do.Subscribe<IInMenu>(SwitchToGame);
-        PopUpEvents.Do.Subscribe<INoPopUps>(NoPopUps);
         InputEvents.Do.Subscribe<IHotKeyPressed>(SetFromHotkey);
         InputEvents.Do.Subscribe<ISwitchGroupPressed>(SwitchGroupPressed);
         CancelEvents.Do.Subscribe<ICancelPopUp>(CancelPopUpFromButton);
     }
 
-    public void GOUIBranchHasClosed(IBranch branchToClose, IGOUIModule nextModule)
+    public void UnObserveEvents() { }
+
+    public void GOUIBranchHasClosed(IBranch branchToClose, bool noGOUILeft)
     {
-        if (_activeBranch == branchToClose || _activeBranch.MyParentBranch == branchToClose)
-        {
-            Debug.Log("GOUI Object");
-            nextModule.SwitchEnter();
-        }
+        if(!branchToClose.IsInGameBranch()) return;
+        
+        NoGOUIAndWasActiveBranch(noGOUILeft, ActiveBranch == branchToClose);
         
         if(!_history.Contains(branchToClose.LastSelected)) return;
 
+        CheckListsAndRemove(branchToClose);
+        
+        if(_history.Count > 0)
+            _history.Last().MyBranch.MoveToThisBranch();
+    }
+
+    private void NoGOUIAndWasActiveBranch(bool noGOUILeft, bool activeBranch)
+    {
+        if (!noGOUILeft || !activeBranch) return;
+        ReturnToNextHomeGroup();
+    }
+
+    public void ReturnToNextHomeGroup()
+    {
+        ReturnHomeGroupBranch?.Invoke(this);
+        TargetNode.MyBranch.MoveToThisBranch();
+    }
+
+    private void CheckListsAndRemove(IBranch branchToClose)
+    {
         if (_multiSelectSystem.MultiSelectActive)
         {
-            Debug.Log($"MultiSelect : {branchToClose} Removed");
             _multiSelectSystem.RemoveFromMultiSelect(_history, branchToClose.LastSelected);
             branchToClose.LastSelected.DeactivateNode();
         }
         else
         {
-            Debug.Log($"History Tracker : {branchToClose} Removed");
-            CheckListsForBranch(branchToClose.LastSelected);
-        }
-        
-        if(_history.Count > 0)
-        {
-            _history.Last().MyBranch.MoveToThisBranch();
-        }
-        else
-        {
-            ReturnHomeGroupBranch?.Invoke(this);
-            TargetNode.MyBranch.MoveToThisBranch();
+            HistoryListManagement.CurrentHistory(_history)
+                                 .ClearGOUIBranchFromHistory(branchToClose.LastSelected);
         }
     }
-
-    private void CheckListsForBranch(INode targetBranchLastSelected)
-    {
-        HistoryListManagement.CurrentHistory(_history)
-                             .CloseThisLevel(targetBranchLastSelected);
-        targetBranchLastSelected.DeactivateNode();
-    }
-
-    private void SetCanStart(IOnStart onStart) => _canStart = true;
 
     //Main
     private void SetSelected(ISelectedNode newNode)
     {
-        if(!_canStart) return;
+        if(newNode.UINode.IsNull() || !CanStart) return;
         if(newNode.UINode.CanNotStoreNodeInHistory) return;
         
         if (IfMultiSelectPressed(newNode)) return;
@@ -181,15 +178,15 @@ public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IHisto
         else
         {
             _lastSelected = MoveBackInHistory.AddHistory(_history)
-                                             .ActiveBranch(_activeBranch)
-                                             .IsOnHomeScreen(_onHomeScreen)
+                                             .ActiveBranch(ActiveBranch)
+                                             .IsOnHomeScreen(OnHomeScreen)
                                              .BackOneLevelProcess();
         }
     }
 
     private void SwitchToGame(IInMenu args)
     {
-        if (!args.InTheMenu && _canStart)
+        if (!args.InTheMenu && CanStart)
         {
             BackToHome();
         }
@@ -199,13 +196,13 @@ public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IHisto
     {
         if(_history.Count == 0) return;
         _lastSelected = MoveBackInHistory.AddHistory(_history)
-                                         .ActiveBranch(_activeBranch)
+                                         .ActiveBranch(ActiveBranch)
                                          .BackToHomeProcess();
     }
 
     private void SwitchGroupPressed(ISwitchGroupPressed args)
     {
-        if (!_onHomeScreen && _activeBranch.IsInternalBranch())
+        if (!OnHomeScreen && ActiveBranch.IsInternalBranch())
         {
             BackOneLevel();
         }
@@ -233,7 +230,7 @@ public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IHisto
     
     private void HotKeyReturnsToHomeScreen(ScreenType hotKeyScreenType)
     {
-        if (hotKeyScreenType != ScreenType.FullScreen && !_onHomeScreen)
+        if (hotKeyScreenType != ScreenType.FullScreen && !OnHomeScreen)
         {
             BackToHomeScreen();
         }
@@ -243,33 +240,28 @@ public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IHisto
 
     public void MoveToLastBranchInHistory()
     {
-        if (!_noPopUps && !_isPaused)
+        if (!NoPopUps && !IsPaused)
         {
             PopUpHistory.MoveToNextPopUp();
-            
             return;
         }
         
-        if (_history.Count == 0 || _isPaused)
-        {
-            IfPausedOrNoHistory();
-        }
-        else
-        {
-            _history.Last().HasChildBranch.DoNotTween();
-            _history.Last().HasChildBranch.MoveToThisBranch();
-        }
-    }
-
-    private void IfPausedOrNoHistory()
-    {
-        if (_isPaused)
-        {
-            _activeBranch.MoveToThisBranch();
-        }
-        else
+        if (_history.Count == 0 || IsPaused)
         {
             BackToHomeScreen();
+        }
+        else
+        {
+            if(_history.Last().HasChildBranch.IsNotNull())
+            {
+                _history.Last().HasChildBranch.DoNotTween();
+                _history.Last().HasChildBranch.MoveToThisBranch();
+            }
+            else
+            {
+                _history.Last().MyBranch.DoNotTween();
+                _history.Last().MyBranch.MoveToThisBranch();
+            }
         }
     }
     
@@ -277,8 +269,7 @@ public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IHisto
 
     public void CheckForPopUpsWhenCancelPressed(Action endOfCancelAction)
     {
-        PopUpHistory.IsGamePaused(_isPaused)
-                    .NoPopUpAction(endOfCancelAction)
+        PopUpHistory.NoPopUpAction(endOfCancelAction)
                     .DoPopUpCheckAndHandle();
     }
 }

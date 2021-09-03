@@ -7,7 +7,7 @@ using UIElements;
 using UnityEngine;
 
 [Serializable]
-public partial class HotKeys : IEZEventUser, IHotKeyPressed, IEZEventDispatcher, IReturnHomeGroupIndex, IServiceUser,
+public partial class HotKeys : IHotKeyPressed, IEZEventDispatcher, IServiceUser,
                                IMonoEnable
 {
     [SerializeField] 
@@ -21,42 +21,35 @@ public partial class HotKeys : IEZEventUser, IHotKeyPressed, IEZEventDispatcher,
     //Variables
     private bool _hasParentNode;
     private INode _parentNode;
-    private IBranch _activeBranch;
     private InputScheme _inputScheme;
     private bool _makeParentActive;
+    private IDataHub _myDatHub;
     private const string SetName = "Set My Name";
 
     //Events
     private Action<IHotKeyPressed> HotKeyPressed { get; set; }
-    private Action<IReturnHomeGroupIndex> ReturnHomeGroupIndex { get; set; }
 
     //Properties
-    private void SaveActiveBranch(IActiveBranch args) => _activeBranch = args.ActiveBranch;
+    private IBranch ActiveBranch => _myDatHub.ActiveBranch;
     public INode ParentNode => _parentNode;
     public IBranch MyBranch => _myBranch;
-    public INode TargetNode { private get; set; }
     private INode[] ThisGroupsUiNodes => _myBranch.MyParentBranch.ThisGroupsUiNodes;
-
-
 
     //Main
     public void OnEnable()
     {
         IsAllowedType();
         FetchEvents();
-        ObserveEvents();
         UseEZServiceLocator();
     }
     
-    public void UseEZServiceLocator() => _inputScheme = EZService.Locator.Get<InputScheme>(this);
-
-    public void FetchEvents()
+    public void UseEZServiceLocator()  
     {
-        HotKeyPressed = InputEvents.Do.Fetch<IHotKeyPressed>();
-        ReturnHomeGroupIndex = HistoryEvents.Do.Fetch<IReturnHomeGroupIndex>();
+        _inputScheme = EZService.Locator.Get<InputScheme>(this);
+        _myDatHub = EZService.Locator.Get<IDataHub>(this);
     }
 
-    public void ObserveEvents() => HistoryEvents.Do.Subscribe<IActiveBranch>(SaveActiveBranch);
+    public void FetchEvents() => HotKeyPressed = InputEvents.Do.Fetch<IHotKeyPressed>();
 
     public bool CheckHotKeys()
     {
@@ -69,20 +62,19 @@ public partial class HotKeys : IEZEventUser, IHotKeyPressed, IEZEventDispatcher,
     // ReSharper disable Unity.PerformanceAnalysis
     private void HotKeyActivation()
     {    
-        if(ReferenceEquals(_activeBranch, _myBranch)) return;
-
+        if(ReferenceEquals(ActiveBranch, _myBranch)) return;
         if(!_hasParentNode)
         {
             GetParentNode();
         }
         
-        if (_activeBranch.IsHomeScreenBranch())
+        if (ActiveBranch.IsHomeScreenBranch())
         {
             StartThisHotKeyBranch();
         }
         else
         {
-            _activeBranch.StartBranchExitProcess(OutTweenType.Cancel, StartThisHotKeyBranch);
+            ActiveBranch.StartBranchExitProcess(OutTweenType.Cancel, StartThisHotKeyBranch);
         }
     }
 
@@ -101,23 +93,22 @@ public partial class HotKeys : IEZEventUser, IHotKeyPressed, IEZEventDispatcher,
 
     private void GetImmediateParentNode()
     {
-        if (ReferenceEquals(_myBranch.MyParentBranch, _myBranch))
-        {
-            FindHomeScreenParentNode();
-        }
-        else
-        {
-            var branchesNodes = ThisGroupsUiNodes;
-            _parentNode = branchesNodes.First(node => ReferenceEquals(_myBranch, node.HasChildBranch));
-            _makeParentActive = true;
-        }
+        var branchesNodes = ThisGroupsUiNodes;
+        _parentNode = branchesNodes.First(node => ReferenceEquals(_myBranch, node.HasChildBranch));
+        _makeParentActive = true;
     }
 
     private void FindHomeScreenParentNode()
     {
-        ReturnHomeGroupIndex?.Invoke(this);
-        _parentNode = TargetNode;
+        var toTest = _myBranch.MyParentBranch;
+
+        while (!toTest.IsHomeScreenBranch())
+        {
+            toTest = toTest.MyParentBranch;
+        }
+        
         _makeParentActive = false;
+        _parentNode = toTest.LastHighlighted;
     }
     
     private void StartThisHotKeyBranch()

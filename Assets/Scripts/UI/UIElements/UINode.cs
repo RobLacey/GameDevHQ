@@ -1,20 +1,19 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using EZ.Events;
 using EZ.Service;
 using NaughtyAttributes;
-using UIElements;
 using UIElements.Input_System;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(RunTimeSetter))]
 
 public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPointerDownHandler,
                               IMoveHandler, IPointerUpHandler, ISubmitHandler, IPointerExitHandler, 
-                              IEZEventUser, IServiceUser
+                              IServiceUser, IEZEventUser
 {
     [Header("Main Settings")]
     [HorizontalLine(1, color: EColor.Blue, order = 1)]
@@ -24,6 +23,8 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     [SerializeField] 
     [Label("Auto Open")]
     private IsActive _autoOpen = IsActive.No;
+    [SerializeField] 
+    private IsActive _isDynamic = IsActive.No;
     [SerializeField]
     [ShowIf(CanAutoOpenClose)] [Label("Auto Open Delay")]
     [Range(0, 1)]private float _autoOpenDelay = 0;
@@ -42,42 +43,44 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     [Label("UI Functions To Use")]
     private Setting _enabledFunctions;
     [SerializeField] 
-    [Space(15f)]  [Label("Navigation And On Click Calls")] [ShowIf(HasNavigation)]  
+    [Space(15f)] [Label("Navigation And On Click Calls")] [ShowIf(HasNavigation)]  
     private NavigationSettings _navigation;
     [SerializeField] 
-    [Space(5f)]  [Label("Colour Settings")] [ShowIf(HasColour)]  
-    private ColourSettings _coloursTest;
+    [Space(15f)] [Label("Colour Settings")] [ShowIf(HasColour)]  
+    private ColourSettings _colours;
     [SerializeField] 
-    [Space(5f)]  [Label("Invert Colour when Highlighted or Selected")] [ShowIf(HasInvert)]  
+    [Space(15f)] [Label("Invert Colour when Highlighted or Selected")] [ShowIf(HasInvert)]  
     private InvertColoursSettings _invertColourCorrection;
     [SerializeField] 
-    [Space(5f)]  [Label("Swap Images or Text on Select or Highlight")] [ShowIf(HasSwap)] 
+    [Space(15f)]  [Label("Swap Images or Text on Select or Highlight")] [ShowIf(HasSwap)] 
     private SwapImageOrTextSettings _swapImageOrText;
     [SerializeField] 
-    [Space(5f)]  [Label("Size And Position Effect Settings")] [ShowIf(HasSize)]  
+    [Space(15f)]  [Label("Size And Position Effect Settings")] [ShowIf(HasSize)]  
     private SizeAndPositionSettings _sizeAndPos;
     [SerializeField] 
-    [Space(5f)]  [Label("Accessories, Outline Or Shadow Settings")] [ShowIf(HasAccessories)]  
+    [Space(15f)]  [Label("Accessories, Outline Or Shadow Settings")] [ShowIf(HasAccessories)]  
     private AccessoriesSettings _accessories;
     [SerializeField] 
-    [Space(5f)]  [Label("Audio Settings")] [ShowIf(HasAudio)]  
+    [Space(15f)]  [Label("Audio Settings")] [ShowIf(HasAudio)]  
     private AudioSettings _audio;
     [SerializeField] 
-    [Space(5f)]  [Label("Tooltip Settings")] [ShowIf(HasTooltip)]  
+    [Space(15f)]  [Label("Tooltip Settings")] [ShowIf(HasTooltip)]  
     private ToolTipSettings _tooltips;
     [SerializeField] 
-    [Space(5f)]  [Label("Event Settings")] [ShowIf(HasEvents)]  
+    [Space(15f)]  [Label("Event Settings")] [ShowIf(HasEvents)]  
     private EventSettings _events;
 
     //Variables
-    private bool _childIsMoving, _setUpFinished, _canStart, _allowKeys;
+    private bool _childIsMoving, _setUpFinished;
     private IUiEvents _uiNodeEvents;
     private INodeBase _nodeBase;
     private IDataHub _myDataHub;
     private readonly List<NodeFunctionBase> _activeFunctions = new List<NodeFunctionBase>();
-    private bool _sceneIsChanging;
 
     //Properties
+    private bool SceneIsChanging { get; set; }
+    private bool CanStart => _myDataHub.SceneStarted;
+    private bool AllowKeys => _myDataHub.AllowKeys;
     public bool IsToggleGroup => _buttonFunction == ButtonFunction.ToggleGroup;
     private bool IsToggleNotLinked => _buttonFunction == ButtonFunction.ToggleNotLinked;
     private bool IsCancelOrBack => _buttonFunction == ButtonFunction.CancelOrBack;
@@ -102,12 +105,8 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public IUiEvents UINodeEvents => _uiNodeEvents;
     public MultiSelectSettings MultiSelectSettings => _multiSelectSettings;
     public IRunTimeSetter MyRunTimeSetter { get; private set; }
-    private void SceneIsChanging(ISceneIsChanging args) => _sceneIsChanging = true;
+    private void SceneIsChangeing(ISceneIsChanging args) => SceneIsChanging = true;
 
-    
-    //Setting / Getters
-    private void CanStart(IOnStart args) => _canStart = true;
-    private void AllowKeys(IAllowKeys args) => _allowKeys = args.CanAllowKeys;
     
     //Main
     private void Awake()
@@ -124,7 +123,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     private void SetUpUiFunctions()
     {
-        SetUpFunctions(_coloursTest.SetUp(_uiNodeEvents, _enabledFunctions));
+        SetUpFunctions(_colours.SetUp(_uiNodeEvents, _enabledFunctions));
         SetUpFunctions(_events.SetUp(_uiNodeEvents, _enabledFunctions));
         SetUpFunctions(_accessories.SetUp(_uiNodeEvents, _enabledFunctions));
         SetUpFunctions(_invertColourCorrection.SetUp(_uiNodeEvents, _enabledFunctions));
@@ -161,44 +160,31 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
             nodeFunctionBase.OnEnable();
         }
     }
+    
+    public void ObserveEvents() => HistoryEvents.Do.Subscribe<ISceneIsChanging>(SceneIsChangeing);
+    public void UnObserveEvents() { }
 
     private void LateStartSetUp()
     {
         if(_myDataHub.IsNull()) return;
-
-        if (_myDataHub.SceneAlreadyStarted)
-        {
-            if(!MyBranch.ThisGroupsUiNodes.Contains(this))
-                MyBranch.AddNodeToBranch();
-            _canStart = _myDataHub.SceneAlreadyStarted;
-            _allowKeys = _myDataHub.AllowKeys;
-        }
+    
+        if (_myDataHub.SceneStarted && _isDynamic == IsActive.Yes)
+            DynamicBranch.AddNodeToBranch(MyBranch);
     }
     
     public void UseEZServiceLocator() => _myDataHub = EZService.Locator.Get<IDataHub>(this);
 
-    public void ObserveEvents()
-    {
-        HistoryEvents.Do.Subscribe<IOnStart>(CanStart);
-        InputEvents.Do.Subscribe<IAllowKeys>(AllowKeys);
-        HistoryEvents.Do.Subscribe<ISceneIsChanging>(SceneIsChanging);
-    }
-
-    private void UnObserveEvents()
-    {
-        HistoryEvents.Do.Unsubscribe<IOnStart>(CanStart);
-        InputEvents.Do.Unsubscribe<IAllowKeys>(AllowKeys);
-        HistoryEvents.Do.Unsubscribe<ISceneIsChanging>(SceneIsChanging);
-    }
-
     private void OnDisable()
     {
-        UnObserveEvents();
         _myDataHub = null;
-
-        if(_sceneIsChanging) return;
+        HistoryEvents.Do.Unsubscribe<ISceneIsChanging>(SceneIsChangeing);
         
-        _nodeBase.OnDisable();
+        if(SceneIsChanging) return;
+        
+        if(_isDynamic == IsActive.Yes)
+            DynamicBranch.RemoveNodeFromBranch(MyBranch, this);
+        
+        _nodeBase?.OnDisable();
         foreach (var nodeFunctionBase in _activeFunctions)
         {
             nodeFunctionBase.OnDisable();
@@ -207,12 +193,8 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     private void OnDestroy()
     {
-        if(MyBranch.IsNotNull() && !_sceneIsChanging)
-            MyBranch.RemoveNodeFromBranch(this);
+        _nodeBase?.OnDestroy();
         
-        UnObserveEvents();
-        _nodeBase.OnDestroy();
-
         foreach (var nodeFunctionBase in _activeFunctions)
         {
             nodeFunctionBase.OnDestroy();
@@ -221,7 +203,6 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     private void Start()
     {
-        RuntimeStart();
         SetChildParentBranch();        
         _nodeBase.OnStart();
         
@@ -229,15 +210,6 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
         {
             nodeFunctionBase.OnStart();
         }
-    }
-
-    private void RuntimeStart()
-    {
-        if (_myDataHub.SceneAlreadyStarted)
-        {
-            _canStart = true;
-            _allowKeys = _myDataHub.AllowKeys;
-        }    
     }
 
     private void SetChildParentBranch()
@@ -258,6 +230,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public void SetNodeAsActive() => _nodeBase.SetNodeAsActive();
     public void SetAsHotKeyParent(bool setAsActive) => _nodeBase.HotKeyPressed(setAsActive);
 
+    public void UnHighlightAlwaysOn() => _nodeBase.UnHighlightAlwaysOn();
     public void DeactivateNode() => _nodeBase.DeactivateNodeByType();
 
     public void ClearNode() => _nodeBase.ClearNodeCompletely();
@@ -269,6 +242,8 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     public void ThisNodeIsHighLighted() => _nodeBase.ThisNodeIsHighLighted();
     
+    public void ThisNodeNotHighLighted() => _nodeBase.ThisNodeNotHighLighted();
+    
     //Input Interfaces
     public void OnPointerEnter(PointerEventData eventData) => _nodeBase.OnEnter();
     public void OnPointerExit(PointerEventData eventData) => _nodeBase.OnExit();
@@ -277,12 +252,12 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
 
     public void OnSubmit(BaseEventData eventData)
     {
-        if(!_allowKeys) return;
+        if(!AllowKeys) return;
         _nodeBase.SelectedAction();
     }
     public void OnMove(AxisEventData eventData)
     {
-        if(!_canStart || !_allowKeys) return;
+        if(!CanStart || !AllowKeys) return;
         _nodeBase.DoMoveToNextNode(eventData.moveDir);
     }
     public void OnPointerUp(PointerEventData eventData) { }

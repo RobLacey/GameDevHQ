@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e0988cae1f7438d9df2e80fdaea1821, type: 3}
   m_Name: SizeAndPosScheme
   m_EditorClassIdentifier: 
-  _changeSizeOn: 2
+  _changeSizeOn: 1
   _tweenEffect: 0
   _time: 0.5
   _pixelsToMoveBy: {x: 25, y: 0, z: 0}

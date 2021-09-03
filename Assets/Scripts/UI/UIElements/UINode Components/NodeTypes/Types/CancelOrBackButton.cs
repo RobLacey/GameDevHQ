@@ -45,8 +45,7 @@ public class CancelOrBackButton : NodeBase, ICancelButtonActivated, ICancelOrBac
             CancelButtonActive?.Invoke(this);
         }
         
-        bool CloseOnExit() => MyBranch.AutoClose == IsActive.Yes;        
-
+        bool CloseOnExit() => MyBranch.AutoClose == IsActive.Yes;
     }
 }
 

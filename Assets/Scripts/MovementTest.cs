@@ -26,6 +26,11 @@ public class MovementTest : MonoBehaviour, IEZEventUser
       //  EVent.Do.Subscribe<Ista>();
     }
 
+    public void UnObserveEvents()
+    {
+        throw new System.NotImplementedException();
+    }
+
 
     // Update is called once per frame
     void Update()

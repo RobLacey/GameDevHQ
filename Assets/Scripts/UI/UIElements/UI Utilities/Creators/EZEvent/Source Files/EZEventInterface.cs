@@ -8,5 +8,6 @@
         public interface IEZEventUser
         {
             void ObserveEvents();
+            void UnObserveEvents();
         }
     }

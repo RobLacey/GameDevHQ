@@ -15,9 +15,11 @@ public interface INode : IToggles, IParameters
     bool CanNotStoreNodeInHistory { get; }
     GameObject ReturnGameObject { get; }
     GameObject InGameObject { get; set; }
+    void UnHighlightAlwaysOn();
     void SetNodeAsActive();
     void DeactivateNode();
     void ThisNodeIsHighLighted();
+    void ThisNodeNotHighLighted();
     IUiEvents UINodeEvents { get; }
     MultiSelectSettings MultiSelectSettings { get; }
     void ClearNode();

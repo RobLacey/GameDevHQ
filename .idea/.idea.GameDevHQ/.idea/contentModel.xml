@@ -294,14 +294,14 @@
             <e p="UIElements" t="Include">
               <e p="GOUIModule.cs" t="Include" />
               <e p="IMono.cs" t="Include" />
-              <e p="INput System" t="Include">
+              <e p="Input System" t="Include">
                 <e p="In Game Control" t="Include">
                   <e p="CheckIfUnderUI.cs" t="Include" />
                   <e p="CheckVisibility.cs" t="Include" />
                   <e p="Control Types" t="Include">
                     <e p="GOUISwitcher.cs" t="Include" />
                     <e p="InteractWithUi.cs" t="Include" />
-                    <e p="MOveVirtualCursor.cs" t="Include" />
+                    <e p="MoveVirtualCursor.cs" t="Include" />
                     <e p="ProcessBranchAndNodeLists.cs" t="Include" />
                     <e p="VirtualCursor.cs" t="Include" />
                     <e p="VirtualCursorSettings.cs" t="Include" />
@@ -332,16 +332,20 @@
               </e>
               <e p="MouseDraw.cs" t="Include" />
               <e p="RunTime Set Up" t="Include">
-                <e p="IRunTimeGetter.cs" t="Include" />
-                <e p="RunTimeGetter.cs" t="Include" />
+                <e p="CreateNewObjects.cs" t="Include" />
+                <e p="RuntimeCreateBranch.cs" t="Include" />
                 <e p="RunTimeSetter.cs" t="Include" />
                 <e p="ToolTipRuntimeData.cs" t="Include" />
               </e>
+              <e p="RuntimeSettingExample.cs" t="Include" />
               <e p="Shader" t="Include">
                 <e p="UnlitFrostedGlass.shader" t="Include" />
                 <e p="UnlitFrostGlassWithTint.shader" t="Include" />
               </e>
-              <e p="TestRunner.cs" t="Include" />
+              <e p="TestRunner" t="Include">
+                <e p="PopUpTester.cs" t="Include" />
+                <e p="TestRunner.cs" t="Include" />
+              </e>
               <e p="Tween Components" t="Include">
                 <e p="TweenBase.cs" t="Include" />
                 <e p="TweenData" t="Include">
@@ -381,7 +385,6 @@
                   <e p="CanvasOrderData.cs" t="Include" />
                   <e p="SetCanvasOrderUtil.cs" t="Include" />
                 </e>
-                <e p="CreateNewObjects.cs" t="Include" />
                 <e p="Creators" t="Include">
                   <e p="EServ" t="Include">
                     <e p="EZService.cs" t="Include" />
@@ -466,8 +469,10 @@
                   </e>
                 </e>
                 <e p="BranchUtilityClasses" t="Include">
+                  <e p="AlwaysHighlighted.cs" t="Include" />
                   <e p="BranchChildNodeUtil.cs" t="Include" />
                   <e p="BranchGroups.cs" t="Include" />
+                  <e p="DynamicBranch.cs" t="Include" />
                   <e p="GroupList.cs" t="Include" />
                   <e p="NodeSearch.cs" t="Include" />
                   <e p="ScreenData.cs" t="Include" />
@@ -512,6 +517,10 @@
                   <e p="AudioSettings.cs" t="Include" />
                   <e p="ColourSettings.cs" t="Include" />
                   <e p="EventSettings.cs" t="Include" />
+                  <e p="Interfaces" t="Include">
+                    <e p="IComponentSettings.cs" t="Include" />
+                    <e p="IOverride.cs" t="Include" />
+                  </e>
                   <e p="InvertColoursSettings.cs" t="Include" />
                   <e p="NavigationSettings.cs" t="Include" />
                   <e p="SizeAndPositionSettings.cs" t="Include" />
@@ -538,6 +547,7 @@
                     </e>
                     <e p="ToolTip Components" t="Include">
                       <e p="GetScreenPosition.cs" t="Include" />
+                      <e p="NameToolTips.cs" t="Include" />
                       <e p="ToolTipFade.cs" t="Include" />
                       <e p="ToolTipsCalcs.cs" t="Include" />
                     </e>
@@ -545,10 +555,10 @@
                     <e p="UIAudio.cs" t="Include" />
                     <e p="UIColour.cs" t="Include" />
                     <e p="UIEvents.cs" t="Include" />
-                    <e p="UIImageTextToggle.cs" t="Include" />
                     <e p="UIInvertColours.cs" t="Include" />
                     <e p="UINavigation.cs" t="Include" />
                     <e p="UISizeAndPosition.cs" t="Include" />
+                    <e p="UISwapImageText.cs" t="Include" />
                     <e p="UITooltip.cs" t="Include" />
                   </e>
                 </e>
@@ -613,7 +623,7 @@
       <e p="Packages" t="ExcludeRecursive" />
       <e p="Temp\bin" t="ExcludeRecursive" />
     </e>
-    <e p="C:\Users\rplac\AppData\Local\JetBrains\Rider2020.3\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\rplac\AppData\Local\JetBrains\Rider2020.3\resharper-host\Local\Transient\Rider\v203\SolutionCaches\_GameDevHQ.628996154.00" t="ExcludeRecursive" />
+    <e p="C:\Users\rplac\AppData\Local\JetBrains\Rider2020.1\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\rplac\AppData\Local\JetBrains\Rider2020.1\resharper-host\Local\Transient\ReSharperHost\v201\SolutionCaches\_GameDevHQ.628996154.00" t="ExcludeRecursive" />
   </component>
 </project>

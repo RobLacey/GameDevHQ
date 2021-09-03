@@ -15,8 +15,14 @@ public class ShakeTween : TweenBase, IShakeTween
         BranchEvent.Do.Subscribe<IEndTween>(EndTweenEffect);
     }
 
+    public override void UnObserveEvents()
+    {
+        base.UnObserveEvents();
+        BranchEvent.Do.Unsubscribe<IEndTween>(EndTweenEffect);
+    }
+
     public override void SetUpTweens(List<BuildTweenData> buildObjectsList, TweenScheme tweenScheme, 
-                                    Action<BuildTweenData> effectCall)
+                                     Action<BuildTweenData> effectCall)
     {
         base.SetUpTweens(buildObjectsList, tweenScheme, effectCall);
         foreach (var item in _buildList)

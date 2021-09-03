@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2051041866853193726}
   - component: {fileID: 2051041866853193713}
   m_Layer: 0
-  m_Name: Node Number
+  m_Name: Dynamic Node
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51,8 +51,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00f12c3acdfb4140bd7b437f898978ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uiImage: {fileID: 0}
-  _uiText: {fileID: 0}
 --- !u!114 &2051041866853193726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,6 +65,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 0
   _autoOpen: 1
+  _isDynamic: 0
   _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
@@ -85,10 +84,11 @@ MonoBehaviour:
     _down: {fileID: 0}
     _left: {fileID: 0}
     _right: {fileID: 0}
-  _coloursTest:
-    _scheme: {fileID: 11400000, guid: 547a8a0ebb4e7b542af91cd3d2c07f2f, type: 2}
-    _textElements: {fileID: 0}
-    _imageElements:
+  _colours:
+    _scheme: {fileID: 0}
+    _overrideAlwaysHighlighted: 1
+    _text: {fileID: 0}
+    _images:
     - {fileID: 2051041868032460137}
   _invertColourCorrection:
     _activateWhen: 0

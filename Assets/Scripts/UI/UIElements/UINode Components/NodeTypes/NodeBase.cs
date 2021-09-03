@@ -1,7 +1,6 @@
 ﻿using System;
 using EZ.Events;
 using EZ.Service;
-using UnityEngine;
 using UnityEngine.EventSystems;
 
 public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, ISelectedNode, 
@@ -17,10 +16,7 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
     //Variables
     protected readonly INode _uiNode;
     private IDisabledNode _disabledNode;
-    private bool _inMenu;
     private bool _hasFinishedSetUp;
-    protected bool _allowKeys;
-    private INode _lastHighlighted;
     private IDataHub _myDataHub;
     private readonly IUiEvents _uiFunctionEvents;
     private bool _fromHotKey;
@@ -31,61 +27,37 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
     private Action<ISelectedNode> DoSelected { get; set; }
 
     //Properties
-    protected bool PointerOverNode { get; set; }
+    private INode LastHighlighted => _myDataHub.Highlighted;
+    private bool InMenu => _myDataHub.InMenu;
+    protected bool AllowKeys => _myDataHub.AllowKeys;
+    protected bool PointerOverNode { get; private set; }
     public IBranch MyBranch { get; protected set; }
     private bool IsDisabled => _disabledNode.IsDisabled;
     public UINavigation Navigation { get; set; }
     protected bool IsSelected { get; private set; }
     public INode Highlighted => _uiNode;
-    public INode UINode => _uiNode;
+    public INode UINode { get; private set; }
 
     //Set / Getters
-    private void ClearHighlight(ICancelButtonActivated args)
+    private void SetNewHighlighted(IHighlightedNode args) 
     {
-        if(_lastHighlighted == _uiNode && _allowKeys)
-            OnExit();
-    }
-    
-    private void SaveHighlighted(IHighlightedNode args) 
-    {
-        if (_lastHighlighted is null) _lastHighlighted = args.Highlighted;
-        UnHighlightThisNode(args);        
-        _lastHighlighted = args.Highlighted;
-    }
-
-    private void UnHighlightThisNode(IHighlightedNode args)
-    {
-        if (_allowKeys && PointerOverNode && args.Highlighted != _uiNode)
-            OnExit();
-    }
-    private void SaveAllowKeys(IAllowKeys args)
-    {
-        _allowKeys = args.CanAllowKeys;
-        ClearHighlightedIfSwitchedToMouse();
-    }
-
-    private void ClearHighlightedIfSwitchedToMouse()
-    {
-        var thisNode = ReferenceEquals(_lastHighlighted, _uiNode);
-
-        if (thisNode && !_allowKeys)
+        if ((PointerOverNode && _myDataHub.AllowKeys) && args.Highlighted != _uiNode)
             OnExit();
     }
 
     private void SaveInMenuOrInGame(IInMenu args)
     {
-        _inMenu = args.InTheMenu;
         if (HasNotFinishedSetUp()) return;
         
-        if(!ReferenceEquals(_lastHighlighted, _uiNode)) return;
+        if(!ReferenceEquals(LastHighlighted, _uiNode)) return;
         
-        if (!_inMenu)
+        if (!InMenu)
         {
             OnExit();
             return;
         }
         
-        if (ReferenceEquals(_lastHighlighted, _uiNode))
+        if (ReferenceEquals(LastHighlighted, _uiNode))
             SetNodeAsActive();
     }
     
@@ -96,12 +68,8 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
         return true;
     }
     
-    
     //Main
-    public void OnAwake()
-    {
-        _disabledNode = EZInject.Class.WithParams<IDisabledNode>(this);
-    }
+    public void OnAwake() => _disabledNode = EZInject.Class.WithParams<IDisabledNode>(this);
 
     public void OnEnable()
     {
@@ -117,12 +85,10 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
     {
         if(_myDataHub.IsNull()) return;
 
-        if (_myDataHub.SceneAlreadyStarted)
+        if (_myDataHub.SceneStarted)
         {
             SetNodeAsNotSelected_NoEffects();
-            _inMenu = _myDataHub.InMenu;
             PointerOverNode = false;
-            _allowKeys = _myDataHub.AllowKeys;
         }
     }
 
@@ -134,20 +100,16 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
 
     public void ObserveEvents()
     {
-        InputEvents.Do.Subscribe<IAllowKeys>(SaveAllowKeys);
         HistoryEvents.Do.Subscribe<IInMenu>(SaveInMenuOrInGame);
-        HistoryEvents.Do.Subscribe<IHighlightedNode>(SaveHighlighted);
-        CancelEvents.Do.Subscribe<ICancelButtonActivated>(ClearHighlight);
+        HistoryEvents.Do.Subscribe<IHighlightedNode>(SetNewHighlighted);
     }
 
-    private void UnObserveEvents()
+    public void UnObserveEvents()
     {
-        InputEvents.Do.Unsubscribe<IAllowKeys>(SaveAllowKeys);
         HistoryEvents.Do.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
-        HistoryEvents.Do.Unsubscribe<IHighlightedNode>(SaveHighlighted);
-        CancelEvents.Do.Unsubscribe<ICancelButtonActivated>(ClearHighlight);
+        HistoryEvents.Do.Unsubscribe<IHighlightedNode>(SetNewHighlighted);
     }
-
+    
     public void OnDisable()
     {
         EnableNodeAfterBeingDisabled();
@@ -166,6 +128,7 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
 
     public virtual void OnStart() { }
 
+    public void UnHighlightAlwaysOn() => OnExit();
     public virtual void DeactivateNodeByType() => OnExit();
 
     public virtual void ClearNodeCompletely()
@@ -192,7 +155,7 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
 
         ThisNodeIsHighLighted();
         
-        if (_allowKeys && _inMenu)
+        if (AllowKeys && InMenu)
         {
             OnEnter();
         }
@@ -217,9 +180,15 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
         _uiFunctionEvents.DoWhenPointerOver(PointerOverNode);
     }
 
-    protected virtual void ThisNodeIsSelected() => DoSelected?.Invoke(this);
+    protected void ThisNodeIsSelected(INode node)
+    {
+        UINode = node;
+        DoSelected?.Invoke(this);
+    }
 
     public virtual void ThisNodeIsHighLighted() => DoHighlighted?.Invoke(this);
+
+    public void ThisNodeNotHighLighted() => SetNotHighlighted();
 
     protected void DoPressOnNode() => _uiFunctionEvents.DoIsPressed();
 
@@ -281,7 +250,7 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
 
     protected virtual void TurnNodeOnOff()
     {
-        ThisNodeIsSelected();
+         ThisNodeIsSelected(_uiNode);
         
         if (IsSelected)
         {
@@ -295,13 +264,17 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
 
     protected virtual void Activate() => SetSelectedStatus(true, DoPressOnNode);
 
-    protected virtual void Deactivate() => SetSelectedStatus(false, DoPressOnNode);
+    protected void Deactivate()
+    {
+        SetSelectedStatus(false, DoPressOnNode);
+        ThisNodeIsSelected(null);
+    }
 
     public void HotKeyPressed(bool setAsActive)
     {
         _fromHotKey = true;
         ThisNodeIsHighLighted();
-        ThisNodeIsSelected();
+        ThisNodeIsSelected(_uiNode);
         if(!setAsActive) return;
         SetNodeAsSelected_NoEffects();
     }

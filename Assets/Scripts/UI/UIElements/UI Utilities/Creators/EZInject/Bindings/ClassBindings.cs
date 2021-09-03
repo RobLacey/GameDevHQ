@@ -22,7 +22,7 @@ public class ClassBindings : EZInjectBindingBase
         _injectMaster.Bind<HistoryTracker>().To<IHistoryTrack>();
         _injectMaster.Bind<UICancel>().To<ICancel>();
         _injectMaster.Bind<ReturnControlFromEditor>().To<IReturnFromEditor>();
-        _injectMaster.Bind<SwitchGroups>().To<ISwitchGroup>().WithParameters();
+        _injectMaster.Bind<SwitchGroups>().To<ISwitchGroup>();
 
         //Tweens
         _injectMaster.Bind<PositionTween>().To<IPositionTween>();
@@ -45,6 +45,9 @@ public class ClassBindings : EZInjectBindingBase
         _injectMaster.Bind<ToggleNotLinked>().To<IToggleNotLinked>().WithParameters();
         _injectMaster.Bind<DisabledNode>().To<IDisabledNode>().WithParameters();
         _injectMaster.Bind<InGameNode>().To<IInGameNode>().WithParameters();
+        
+        //NodeFunction
+        _injectMaster.Bind<AlwaysHighlighted>().To<IAlwaysHighlight>().WithParameters();
         
         //Branch Types
         _injectMaster.Bind<HomeScreenBranch>().To<IHomeScreenBranch>().WithParameters();

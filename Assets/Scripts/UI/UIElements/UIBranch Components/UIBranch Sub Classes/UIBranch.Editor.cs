@@ -9,25 +9,35 @@ public partial class UIBranch
     private const string OptionalBranch = nameof(IsOptional);
     private const string InGamUIBranch = nameof(InGameUI);
     private const string IsPauseMenu = nameof(PauseMenu);
+    private const string SaveLastHighlightedOff = nameof(DontSaveLastHighlighted);
     private const string TimedBranch = nameof(IsTimedPopUp);
     private const string ResolveBranch = nameof(IsResolve);
     private const string AnyPopUpBranch = nameof(IsAPopUpEditor);
     private const string HomeScreenButNotControl = nameof(IsHomeAndNotControl);
     private const string Stored = nameof(IsStored);
     private const string Fullscreen = nameof(IsFullScreen);
+    private const string Overlay = nameof(IsOverlay);
     private const string ShowManualOrder = nameof(IsManualOrder);
     private const string ValidInAndOutTweens = nameof(AllowableInAndOutTweens);
     private const string SetUpCanvasOrder = nameof(ChangeCanvasOrder);
     private bool CheckAutoOpenCloseStatus()
     {
-        if (!IsStandardBranch() && !IsInGameBranch() || IsFullScreen())
+        if (!IsStandardBranch() && !IsInGameBranch() && !IsInternalBranch() || IsFullScreen())
         {
             _autoClose = IsActive.No;
             return false;
         }
-
+        
         return true;
-    } 
+    }
+
+    private bool DontSaveLastHighlighted()
+    {
+        if (_saveExitSelection == IsActive.No)
+            _alwaysHighlighted = IsActive.No;
+        
+        return _saveExitSelection == IsActive.No;
+    }
 
     private void ChangeCanvasOrder()
     {
@@ -54,6 +64,14 @@ public partial class UIBranch
 
         _stayVisible = IsActive.No;
         return true;
+    }
+
+    private bool IsOverlay()
+    {
+        if(_screenType == ScreenType.Overlay)
+            _groupsList.Clear();
+        
+        return _screenType == ScreenType. Overlay;
     }
 
     private bool IsAPopUpEditor()

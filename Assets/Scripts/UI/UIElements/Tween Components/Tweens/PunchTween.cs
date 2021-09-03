@@ -15,6 +15,12 @@ public class PunchTween : TweenBase, IPunchTween
         BranchEvent.Do.Subscribe<IEndTween>(EndTweenEffect);
     }
 
+    public override void UnObserveEvents()
+    {
+        base.UnObserveEvents();
+        BranchEvent.Do.Unsubscribe<IEndTween>(EndTweenEffect);
+    }
+
     public override void SetUpTweens(List<BuildTweenData> buildObjectsList, 
                                      TweenScheme tweenScheme, Action<BuildTweenData> effectCall)
     {

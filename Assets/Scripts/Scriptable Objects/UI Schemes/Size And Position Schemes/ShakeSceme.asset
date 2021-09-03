@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e0988cae1f7438d9df2e80fdaea1821, type: 3}
   m_Name: ShakeSceme
   m_EditorClassIdentifier: 
-  _changeSizeOn: 1
+  _changeSizeOn: 3
   _tweenEffect: 3
   _time: 0.24
   _pixelsToMoveBy: {x: 20, y: 0, z: 0}
-  _changeBy: {x: 0.2, y: 0.5, z: 0}
+  _changeBy: {x: 0.2, y: 0.2, z: 0}
   _loop: 1
-  _vibrato: 8
+  _vibrato: 0
   _elasticity: 1
-  _shakeRandomness: 45
+  _shakeRandomness: 27.2
   _fadeOut: 1
   _ease: 7

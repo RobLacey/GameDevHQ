@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public interface IGroupedToggles : INodeBase { }
 
@@ -48,8 +49,6 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     public override void OnStart()
     {
         base.OnStart();
-        if(_uiNode.HasChildBranch is null) return;
-        
         SetUpToggleGroup();
         SetUpTabBranch();
         if (_startAsSelected)
@@ -142,7 +141,7 @@ public class GroupedToggles : NodeBase, IGroupedToggles
     {
         TurnOnTab();
         SetSelectedStatus(true, DoPressOnNode);
-        ThisNodeIsSelected();
+        ThisNodeIsSelected(_uiNode);
     }
 
     private void SetAsNotActive(Action callback = null)

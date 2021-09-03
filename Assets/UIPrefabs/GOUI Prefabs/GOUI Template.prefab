@@ -209,6 +209,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buttonFunction: 4
   _autoOpen: 1
+  _isDynamic: 1
   _autoOpenDelay: 0
   _escapeKeyFunction: 3
   _toggleData:
@@ -227,10 +228,11 @@ MonoBehaviour:
     _down: {fileID: 0}
     _left: {fileID: 0}
     _right: {fileID: 0}
-  _coloursTest:
-    _scheme: {fileID: 11400000, guid: f2317544bd8dcca428a7d48f1ccef21f, type: 2}
-    _textElements: {fileID: 0}
-    _imageElements:
+  _colours:
+    _scheme: {fileID: 11400000, guid: 547a8a0ebb4e7b542af91cd3d2c07f2f, type: 2}
+    _overrideAlwaysHighlighted: 1
+    _text: {fileID: 0}
+    _images:
     - {fileID: 5921039407125897730}
   _invertColourCorrection:
     _activateWhen: 0
@@ -290,8 +292,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00f12c3acdfb4140bd7b437f898978ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uiImage: {fileID: 5921039407125897730}
-  _uiText: {fileID: 5921039407769930204}
 --- !u!1 &5921039408018227071
 GameObject:
   m_ObjectHideFlags: 0
@@ -454,8 +454,6 @@ MonoBehaviour:
   _onlyAllowOnHomeScreen: 0
   _timer: 2
   _storeOrResetOptional: 1
-  _autoClose: 1
-  _autoCloseDelay: 0.25
   _moveType: 1
   _canvasOrderSetting: 3
   _orderInCanvas: 0
@@ -463,6 +461,9 @@ MonoBehaviour:
   _stayVisible: 1
   _tweenOnHome: 0
   _saveExitSelection: 0
+  _alwaysHighlighted: 1
+  _autoClose: 1
+  _autoCloseDelay: 0.25
   _escapeKeyFunction: 2
   _groupsList: []
   _branchEvents:

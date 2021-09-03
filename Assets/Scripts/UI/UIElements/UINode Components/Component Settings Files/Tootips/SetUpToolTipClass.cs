@@ -7,7 +7,6 @@ public static class SetUpToolTipClass
 {
     public static LayoutGroup[] SetUpList(LayoutGroup[] listOfTooltips)
     {
-        int count = 1;
         var correctList = new List<LayoutGroup>();
         var tooltipBinTransform = GetToolTipFolder();
         
@@ -18,7 +17,7 @@ public static class SetUpToolTipClass
                 CreateNewTooltip(tooltip, tooltipBinTransform, correctList);
                 continue;
             }
-            AddAlreadyExistingTooltip(tooltip, count, correctList);
+            AddAlreadyExistingTooltip(tooltip, correctList);
         }
         return correctList.ToArray();
     }
@@ -30,24 +29,24 @@ public static class SetUpToolTipClass
         fixedPosition.name = $"Fixed Position : {nodeName}";
     }
 
-    private static void CreateNewTooltip(LayoutGroup tooltip, Transform tooltipBinTransform, 
-                                      List<LayoutGroup> correctList)
+    private static void CreateNewTooltip(LayoutGroup tooltip, 
+                                         Transform tooltipBinTransform, 
+                                         List<LayoutGroup> correctList)
     {
         var newTooltip = Object.Instantiate(tooltip, tooltipBinTransform);
         newTooltip.transform.position = Vector3.zero;
         correctList.Add(newTooltip);
     }
 
-    private static void AddAlreadyExistingTooltip(LayoutGroup tooltip, int count, List<LayoutGroup> correctList)
+    private static void AddAlreadyExistingTooltip(LayoutGroup tooltip, List<LayoutGroup> correctList)
     {
-        tooltip.name = $"{tooltip.name} : {count}";
         correctList.Add(tooltip);
     }
 
     private static Transform GetToolTipFolder()
     {
         var hub = Object.FindObjectOfType<UIHub>();
-        return new CreateNewObjects().CreateToolTipFolder(hub.transform).GetTooltipBin();
+        return new CreateNewObjects().CreateToolTipFolder(hub.transform);
     }
 
     public static void SetRunTimeSetter(UITooltip tooltipClass, LayoutGroup[] tooltips, IRunTimeSetter myRunTimeSetter)

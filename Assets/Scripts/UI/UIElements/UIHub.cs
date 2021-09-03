@@ -81,7 +81,13 @@ namespace UIElements
         [Button("Add a In Game Object UI Bin")]
         private void MakeInGameUiFolder()
         {
-            new CreateNewObjects().CreateInGameUIBin(transform);
+            new CreateNewObjects().MakeGOUIBin(transform);
+        }
+        
+        [Button("Add a PopUp Bin")]
+        private void MakePopupFolder()
+        {
+            new CreateNewObjects().MakePopUpBin(transform);
         }
     
         //Variables
@@ -100,8 +106,8 @@ namespace UIElements
 
         //Events
         private Action<IOnStart> OnStart { get; set; } 
-        private Action<ISetUpStartBranches> SetUpBranchesAtStart { get; set; } 
-        public Action<ISceneIsChanging> SceneChanging { get; set; }
+        private Action<ISetUpStartBranches> SetUpBranchesAtStart { get; set; }
+        private Action<ISceneIsChanging> SceneChanging { get; set; }
 
         
         //Properties & Getters/ Setters
@@ -183,6 +189,8 @@ namespace UIElements
             HistoryEvents.Do.Subscribe<IInMenu>(SaveInMenu);
             InputEvents.Do.Subscribe<IAllowKeys>(SwitchedToKeys);
         }
+
+        public void UnObserveEvents() { }
 
         private void Start() => StartCoroutine(StartUIDelay());
 

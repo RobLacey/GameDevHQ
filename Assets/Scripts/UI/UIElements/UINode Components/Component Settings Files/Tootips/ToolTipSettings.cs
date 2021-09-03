@@ -52,12 +52,11 @@ public class ToolTipSettings : ITooltipSettings
 
     public NodeFunctionBase SetUp(IUiEvents uiNodeEvents, Setting functions)
     {
-        var activeFunction = (functions & Setting.ToolTip) != 0;
-
         UiNodeEvents = uiNodeEvents;
         _myNode = uiNodeEvents.ReturnMasterNode;
+        CheckForSetUpError(functions, _myNode);
         
-        if (activeFunction)
+        if (CanCreate(functions))
         {
             var name = $"{_myNode.MyBranch.ThisBranchesGameObject.name} : {_myNode.name}";
             SetUpToolTipClass.SetFixedPositionName(_fixedPosition, name);
@@ -68,6 +67,20 @@ public class ToolTipSettings : ITooltipSettings
         }
         return null;
     }
+    
+    private bool CanCreate(Setting functions) => (functions & Setting.ToolTip) != 0;
+
+    private void CheckForSetUpError(Setting functions, UINode parentNode) 
+    {
+        if(!CanCreate(functions)) return;
+        
+        if(_scheme.IsNull())
+            throw new Exception($"No Scheme set in Tooltip settings for {parentNode}");
+
+        if (_listOfTooltips.Length > 0 && _listOfTooltips[0] is null)
+            throw new Exception($"No Image set in Colour settings for {parentNode}");
+    }
+
 }
 
 
