@@ -71,7 +71,7 @@ public class DataHub: IEZEventUser, IIsAService, IDataHub
 
     public void UnObserveEvents() { }
 
-    private void SetSelected(ISelectedNode args) => Selected = args.UINode;
+    private void SetSelected(ISelectedNode args) => Selected = args.SelectedNode;
     
     private void SetHighlighted(IHighlightedNode args) => Highlighted = args.Highlighted;
 

@@ -154,10 +154,10 @@ public partial class UIBranch : MonoBehaviour, IEZEventUser, IActiveBranch, IBra
 
     private void SaveSelected(ISelectedNode args)
     {
-        if(args.UINode.IsNull()) return;
-        if(args.UINode.MyBranch.NotEqualTo(this)) return;
+        if(args.SelectedNode.IsNull()) return;
+        if(args.SelectedNode.MyBranch.NotEqualTo(this)) return;
 
-        LastSelected = NodeSearch.Find(args.UINode)
+        LastSelected = NodeSearch.Find(args.SelectedNode)
                                  .DefaultReturn(LastSelected)
                                  .RunOn(ThisGroupsUiNodes);
     }

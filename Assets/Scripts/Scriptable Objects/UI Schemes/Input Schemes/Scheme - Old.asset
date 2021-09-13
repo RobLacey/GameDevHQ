@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cf72707778a495380664443a05e90e8, type: 3}
   m_Name: Scheme - Old
   m_EditorClassIdentifier: 
-  _mainControlType: 2
+  _mainControlType: 1
   _hideMouseCursor: 0
-  _cancelClickOn: 1
   _customMouseCursor: 1
   _cursorSettings:
     _cursor: {fileID: 0}
@@ -37,19 +36,17 @@ MonoBehaviour:
   _delayUIStart: 0.5
   _controlActivateDelay: 1
   _pauseOptionButton: Pause
+  _cancelButton: Cancel
+  _selectButton: Submit Game
+  _multiSelectButton: Multi Select
   _posSwitchButton: Positive Group Switch
   _negSwitchButton: Negative Group Switch
   _posNextGOUIButton: Positive GOUI Switch
   _negNextGOUIButton: Negative GOUI Switch
-  _cancelButton: Cancel
   _switchToMenusButton: SwitchToInGameMenus
-  _mouseYAxis: Mouse X
-  _mouseXAxis: Mouse Y
   _switchToVC: Switch To Virtual Cursor
   _vCursorHorizontal: Horizontal
   _vCursorVertical: Vertical
-  _selectButton: Submit Game
-  _multiSelectButton: Multi Select
   _hotKey1: HotKey 1
   _hotKey2: HotKey 2
   _hotKey3: Hotkey 3

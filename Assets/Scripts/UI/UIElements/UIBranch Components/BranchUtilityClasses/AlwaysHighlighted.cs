@@ -66,7 +66,6 @@ public class AlwaysHighlighted : IServiceUser, IAlwaysHighlight
 
         if (IsAlwaysHighlighted && _myBranch.DefaultStartOnThisNode == _settings.UiNode)
         {
-            Debug.Log("Here");
             _settings.DoPointerOverSetUp.Invoke();
         }
     }

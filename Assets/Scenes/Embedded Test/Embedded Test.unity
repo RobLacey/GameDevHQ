@@ -14334,7 +14334,10 @@ MonoBehaviour:
       type: 3}
     _timedPrefab: {fileID: 1989339583218866511, guid: adbef19219254c343a1f6e636127928d,
       type: 3}
-  _testCase: {fileID: 6790820043816564219}
+  _disableTheseNodes:
+  - {fileID: 6790820043816564219}
+  - {fileID: 6790820044446171236}
+  - {fileID: 6790820044164496566}
 --- !u!4 &663133645
 Transform:
   m_ObjectHideFlags: 0
@@ -42055,7 +42058,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _startOnThisBranch
       value: 
-      objectReference: {fileID: 2054211502}
+      objectReference: {fileID: 1592079424}
     - target: {fileID: 4421614741107817081, guid: d4d4ae77ac7463a40afa29655e938f81,
         type: 3}
       propertyPath: _canvasData._pauseMenuCanvasOrder

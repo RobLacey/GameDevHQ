@@ -1,16 +1,26 @@
 ﻿using System;
 using EZ.Events;
+using EZ.Inject;
+using EZ.Service;
+using UnityEngine;
 
-public class DisabledNode : IDisabledNode, IEZEventDispatcher
+public interface IDisableData : IParameters
+{
+    INode ThisNode { get; }
+    void SetNodeAsNotSelected_NoEffects();
+}
+
+public class DisabledNode : IDisabledNode, IEZEventDispatcher, IServiceUser
 {
     public DisabledNode(IDisableData nodeBase)
     {
-        ThisIsTheDisabledNode = nodeBase.UINode;
+        ThisIsTheDisabledNode = nodeBase.ThisNode;
         _nodeBase = nodeBase;
     }
 
     private bool _isDisabled;
     private readonly IDisableData _nodeBase;
+    private IDataHub _myDataHub;
 
     //Events
     private Action<IDisabledNode> ThisIsDisabled { get; set; }
@@ -19,7 +29,11 @@ public class DisabledNode : IDisabledNode, IEZEventDispatcher
     public INode ThisIsTheDisabledNode { get; }
 
     //Main
-    public void OnEnable() => FetchEvents();
+    public void OnEnable()
+    {
+        UseEZServiceLocator();
+        FetchEvents();
+    }
 
     public void OnDisable()
     {
@@ -28,6 +42,8 @@ public class DisabledNode : IDisabledNode, IEZEventDispatcher
     }
 
     public void FetchEvents() => ThisIsDisabled = HistoryEvents.Do.Fetch<IDisabledNode>();
+    public void UseEZServiceLocator() => _myDataHub = EZService.Locator.Get<IDataHub>(this);
+
 
     public bool IsDisabled
     {
@@ -39,14 +55,30 @@ public class DisabledNode : IDisabledNode, IEZEventDispatcher
             
             ThisIsDisabled?.Invoke(this);
             _nodeBase.SetNodeAsNotSelected_NoEffects();
+            if(_myDataHub.Highlighted == ThisIsTheDisabledNode)
+                FindNextFreeNode();
         }
     }
 
-    public bool IsThisNodeIsDisabled()
+    public void FindNextFreeNode()
     {
-        if (!IsDisabled) return false;
-        _nodeBase.Navigation.MoveToNextFreeNode();
-        return true;
+        INode freeNode = null;
+        
+        foreach (var node in ThisIsTheDisabledNode.MyBranch.ThisGroupsUiNodes)
+        {
+            if(node.IsDisabled) continue;
+            freeNode = node;
+            break;
+        }
+
+        if (freeNode.IsNotNull())
+        {
+            freeNode.SetNodeAsActive();
+        }
+        else
+        {
+            Debug.Log("Help Nothing is free");
+        }
     }
 }
 

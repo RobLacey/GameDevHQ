@@ -33,7 +33,7 @@ public class TestRunner : MonoBehaviour
     [SerializeField] private PopUpTester _popUpPrefabs;
 
     [Header("Disable This Node Test")] 
-    [SerializeField] private UINode _testCase;
+    [SerializeField] private UINode[] _disableTheseNodes;
     
     
     private int minV = -5;
@@ -190,9 +190,21 @@ public class TestRunner : MonoBehaviour
     public void RemoveTimedPopUp() => _popUpPrefabs.RemoveTimedPopUp();
 
     [Button]
-    public void DisableButton() => _testCase.DisableNode();
+    public void DisableButton()
+    {
+        foreach (var disableTheseNode in _disableTheseNodes)
+        {
+            disableTheseNode.DisableNode();
+        }
+    }
     [Button]
-    public void EnableButton() => _testCase.EnableNode();
+    public void EnableButton()
+    {
+        foreach (var disableTheseNode in _disableTheseNodes)
+        {
+            disableTheseNode.EnableNode();
+        }
+    }
 
     public void PrintTest1()
     {

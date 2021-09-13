@@ -215,7 +215,7 @@ namespace UIElements
 
         private void ChildIsOpen(ISelectedNode args)
         {
-            if (args.UINode == _myGOUIBranch.LastSelected)
+            if (args.SelectedNode == _myGOUIBranch.LastSelected)
                 NodeIsSelected = !NodeIsSelected;
         }
 

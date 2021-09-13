@@ -50,7 +50,7 @@ public interface IHighlightedNode
 
 public interface ISelectedNode
 {
-    INode UINode { get; }
+    INode SelectedNode { get; }
 }
 
 public interface IActiveBranch
@@ -62,7 +62,7 @@ public interface IDisabledNode: IMonoEnable, IMonoDisable
 {
     INode ThisIsTheDisabledNode { get; }
     bool IsDisabled { get; set; }
-    bool IsThisNodeIsDisabled();
+    void FindNextFreeNode();
 }
 
 public interface IStoreNodeHistoryData

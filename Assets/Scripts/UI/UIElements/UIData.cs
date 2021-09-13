@@ -52,8 +52,8 @@ public class UIData : IMonoEnable, IEZEventUser
     }
     private void SaveLastSelected(ISelectedNode args)  
     {
-        _lastSelected = (UINode) args.UINode;
-        if(args.UINode.IsNull()) return;
+        _lastSelected = (UINode) args.SelectedNode;
+        if(args.SelectedNode.IsNull()) return;
         
         if (_lastSelected.InGameObject.IsNotNull())
             _lastSelectedGO = _lastSelected.InGameObject;

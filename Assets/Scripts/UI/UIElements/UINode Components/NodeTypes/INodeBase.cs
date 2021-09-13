@@ -18,6 +18,7 @@ public interface INodeBase : IMono
     void DoNonMouseMove(MoveDirection moveDirection);
     void EnableNodeAfterBeingDisabled();
     void DisableNode();
+    bool IsDisabled { get; }
     void HotKeyPressed(bool setAsActive);
     void SetUpGOUIParent(IGOUIModule module);
 }

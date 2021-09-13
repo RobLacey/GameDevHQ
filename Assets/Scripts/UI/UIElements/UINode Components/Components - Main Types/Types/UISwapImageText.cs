@@ -133,7 +133,7 @@ public class UISwapImageText : NodeFunctionBase, IAlwaysHighlightSettings
         }
         else
         {
-            if(_alwaysHighlighted.CanAllow()) return;
+            if(_alwaysHighlighted.IsNotNull() && _alwaysHighlighted.CanAllow()) return;
             PointerNotOver();
         }
     }

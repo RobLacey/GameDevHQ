@@ -1,6 +1,7 @@
 ﻿using System;
 using EZ.Events;
 using EZ.Service;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, ISelectedNode, 
@@ -32,11 +33,12 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
     protected bool AllowKeys => _myDataHub.AllowKeys;
     protected bool PointerOverNode { get; private set; }
     public IBranch MyBranch { get; protected set; }
-    private bool IsDisabled => _disabledNode.IsDisabled;
+    public bool IsDisabled => _disabledNode.IsDisabled;
     public UINavigation Navigation { get; set; }
     protected bool IsSelected { get; private set; }
     public INode Highlighted => _uiNode;
-    public INode UINode { get; private set; }
+    public INode SelectedNode { get; private set; }
+    public INode ThisNode => _uiNode;
 
     //Set / Getters
     private void SetNewHighlighted(IHighlightedNode args) 
@@ -102,12 +104,14 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
     {
         HistoryEvents.Do.Subscribe<IInMenu>(SaveInMenuOrInGame);
         HistoryEvents.Do.Subscribe<IHighlightedNode>(SetNewHighlighted);
+        _disabledNode.OnEnable();
     }
 
     public void UnObserveEvents()
     {
         HistoryEvents.Do.Unsubscribe<IInMenu>(SaveInMenuOrInGame);
         HistoryEvents.Do.Unsubscribe<IHighlightedNode>(SetNewHighlighted);
+        _disabledNode.OnDisable();
     }
     
     public void OnDisable()
@@ -140,22 +144,24 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
     public void EnableNodeAfterBeingDisabled()
     {
         _disabledNode.IsDisabled = false;
-        _uiFunctionEvents.DoIsDisabled(_disabledNode.IsDisabled);
+        _uiFunctionEvents.DoIsDisabled(IsDisabled);
     }
 
     public void DisableNode()
     {
+        if(IsDisabled) return;
         _disabledNode.IsDisabled = true;
-        _uiFunctionEvents.DoIsDisabled(_disabledNode.IsDisabled);
+        _uiFunctionEvents.DoIsDisabled(IsDisabled);
     }
 
     public virtual void SetNodeAsActive()
     {
-        if (_disabledNode.IsThisNodeIsDisabled()) return;
-
+        if (IsDisabled)
+            _disabledNode.FindNextFreeNode();
+        
         ThisNodeIsHighLighted();
         
-        if (AllowKeys && InMenu)
+        if (AllowKeys && InMenu || MyBranch.AlwaysHighlighted == IsActive.Yes)
         {
             OnEnter();
         }
@@ -168,7 +174,6 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
 
     private void SetAsHighlighted() 
     {
-        if (IsDisabled) return;
         ThisNodeIsHighLighted();
         PointerOverNode = true;
         _uiFunctionEvents.DoWhenPointerOver(PointerOverNode);
@@ -182,7 +187,7 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
 
     protected void ThisNodeIsSelected(INode node)
     {
-        UINode = node;
+        SelectedNode = node;
         DoSelected?.Invoke(this);
     }
 
@@ -238,14 +243,10 @@ public abstract class NodeBase : IEZEventUser, INodeBase, IEZEventDispatcher, IS
     {
         if(!MyBranch.CanvasIsEnabled)return;
         
+        OnEnter();
+        
         if (IsDisabled)
-        {
             DoMoveToNextNode(moveDirection);
-        }
-        else
-        {
-            OnEnter();
-        }
     }
 
     protected virtual void TurnNodeOnOff()

@@ -20,6 +20,7 @@ public class UINavigation : NodeFunctionBase
     private INode _myNode;
     private readonly INavigationSettings _mySettings;
     private InputScheme _inputScheme;
+    private int Index => Array.IndexOf(_myBranch.ThisGroupsUiNodes, _myBranch.LastHighlighted);
 
     //Properties
     private IBranch ChildBranch => _mySettings.ChildBranch;
@@ -28,9 +29,11 @@ public class UINavigation : NodeFunctionBase
     protected override bool CanBeHighlighted() => false;
     protected override bool CanBePressed() => !(ChildBranch is null);
     protected override void SavePointerStatus(bool pointerOver) { }
+    public override bool FunctionNotActive() => SetNavigation == NavigationType.None;
+
     private bool MultiSelectAllowed => _inputScheme.MultiSelectPressed() &&
                                        _myNode.MultiSelectSettings.OpenChildBranch == IsActive.No
-                                        && _myNode.MultiSelectSettings.AllowMultiSelect == IsActive.Yes ;
+                                       && _myNode.MultiSelectSettings.AllowMultiSelect == IsActive.Yes ;
 
     //Main
     public override void OnAwake()
@@ -60,7 +63,7 @@ public class UINavigation : NodeFunctionBase
 
     private void ProcessMoves(MoveDirection moveDirection)
     {
-        if (FunctionNotActive() || SetNavigation == NavigationType.None) return;
+        if (FunctionNotActive()) return;
 
         if (DoAutoMove(moveDirection)) return;
 
@@ -98,21 +101,19 @@ public class UINavigation : NodeFunctionBase
     {
         if (NodeGroupSize <= 1) return false;
 
-        var index = Array.IndexOf(_myBranch.ThisGroupsUiNodes, _myBranch.LastHighlighted);
-
         switch (moveDirection)
         {
             case MoveDirection.Down when SetNavigation == NavigationType.AutoUpDown:
-                CheckMoveDirection(PositiveInteract, moveDirection, index);
+                CheckMoveDirection(PositiveInteract, moveDirection, Index);
                 return true;
             case MoveDirection.Up when SetNavigation == NavigationType.AutoUpDown:
-                CheckMoveDirection(NegativeIterate, moveDirection, index);
+                CheckMoveDirection(NegativeIterate, moveDirection, Index);
                 return true;
             case MoveDirection.Left when SetNavigation == NavigationType.AutoRightLeft:
-                CheckMoveDirection(NegativeIterate, moveDirection, index);
+                CheckMoveDirection(NegativeIterate, moveDirection, Index);
                 return true;
             case MoveDirection.Right when SetNavigation == NavigationType.AutoRightLeft:
-                CheckMoveDirection(PositiveInteract, moveDirection, index);
+                CheckMoveDirection(PositiveInteract, moveDirection, Index);
                 return true;
             case MoveDirection.None:
                 return false;
@@ -152,27 +153,5 @@ public class UINavigation : NodeFunctionBase
         }
         
         void ToChildBranchProcess() => moveToo.MoveToThisBranch(_myBranch);
-    }
-    
-    public void MoveToNextFreeNode()
-    {
-        var nextFree = ReturnNextFreeMoveTarget();
-        if(nextFree is null) return;
-        EventSystem.current.SetSelectedGameObject(nextFree.gameObject);
-        nextFree.SetNodeAsActive();
-    }
-
-    private UINode ReturnNextFreeMoveTarget()
-    {
-        if (SetNavigation == NavigationType.UpAndDown || SetNavigation == NavigationType.AllDirections)
-        {
-            return _down ? _down : _up;
-        }
-
-        if (SetNavigation == NavigationType.RightAndLeft || SetNavigation == NavigationType.AllDirections)
-        {
-            return _right ? _right : _left;
-        }
-        return null;
     }
 }

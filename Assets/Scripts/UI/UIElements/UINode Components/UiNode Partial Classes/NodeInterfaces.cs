@@ -28,6 +28,7 @@ public interface INode : IToggles, IParameters
     IRunTimeSetter MyRunTimeSetter { get; }
     void DoNonMouseMove(MoveDirection moveDirection);
     void SetGOUIModule(IGOUIModule module);
+    bool IsDisabled { get; }
 }
 
 public interface IToggles

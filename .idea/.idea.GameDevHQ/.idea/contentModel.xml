@@ -569,7 +569,6 @@
                     <e p="CancelOrBackButton.cs" t="Include" />
                     <e p="Disable.cs" t="Include" />
                     <e p="GroupedToggles.cs" t="Include" />
-                    <e p="IDisableData.cs" t="Include" />
                     <e p="InGameNode.cs" t="Include" />
                     <e p="Standard.cs" t="Include" />
                     <e p="ToggleData.cs" t="Include" />

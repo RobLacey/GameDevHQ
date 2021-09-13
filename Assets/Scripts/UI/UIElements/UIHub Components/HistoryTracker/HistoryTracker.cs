@@ -133,8 +133,8 @@ public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IStore
     //Main
     private void SetSelected(ISelectedNode newNode)
     {
-        if(newNode.UINode.IsNull() || !CanStart) return;
-        if(newNode.UINode.CanNotStoreNodeInHistory) return;
+        if(newNode.SelectedNode.IsNull() || !CanStart) return;
+        if(newNode.SelectedNode.CanNotStoreNodeInHistory) return;
         
         if (IfMultiSelectPressed(newNode)) return;
        
@@ -147,9 +147,9 @@ public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IStore
 
     private bool IfMultiSelectPressed(ISelectedNode newNode)
     {
-        if (_multiSelectSystem.MultiSelectPressed(_history, newNode.UINode))
+        if (_multiSelectSystem.MultiSelectPressed(_history, newNode.SelectedNode))
         {
-            _lastSelected = newNode.UINode;
+            _lastSelected = newNode.SelectedNode;
             return true;
         }
         return false;
@@ -157,17 +157,19 @@ public class HistoryTracker : IHistoryTrack, IEZEventUser, IReturnToHome, IStore
 
     private void AddNewSelectedNode(ISelectedNode newNode)
     {
-        _lastSelected = SelectionProcess.NewNode(newNode.UINode)
+        _lastSelected = SelectionProcess.NewNode(newNode.SelectedNode)
                                         .CurrentHistory(_history)
                                         .LastSelectedNode(_lastSelected)
                                         .Run();
     }
 
     private void CloseNodesAfterDisabledNode(IDisabledNode args)
-        => HistoryListManagement.CurrentHistory(_history)
-                                .CloseToThisPoint(args.ThisIsTheDisabledNode)
-                                .Run();
-
+    {
+        HistoryListManagement.CurrentHistory(_history)
+                             .CloseToThisPoint(args.ThisIsTheDisabledNode)
+                             .Run();
+    }
+    
     public void BackOneLevel()
     {
         if (_multiSelectSystem.MultiSelectActive)

@@ -106,6 +106,7 @@ public partial class UINode : MonoBehaviour, INode, IPointerEnterHandler, IPoint
     public MultiSelectSettings MultiSelectSettings => _multiSelectSettings;
     public IRunTimeSetter MyRunTimeSetter { get; private set; }
     private void SceneIsChangeing(ISceneIsChanging args) => SceneIsChanging = true;
+    public bool IsDisabled => _nodeBase.IsDisabled;
 
     
     //Main

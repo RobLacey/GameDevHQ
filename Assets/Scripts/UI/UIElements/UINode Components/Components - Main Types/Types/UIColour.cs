@@ -88,6 +88,8 @@ public class UIColour : NodeFunctionBase, IAlwaysHighlightSettings
 
     protected override void SavePointerStatus(bool pointerOver)
     {
+        if(FunctionNotActive()) return;
+        
         if (pointerOver)
         {
             PointerOverSetUp();
